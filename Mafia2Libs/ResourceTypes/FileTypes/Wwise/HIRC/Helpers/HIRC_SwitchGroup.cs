@@ -4,38 +4,40 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class SwitchGroup
     {
-        public uint id { get; set; }
-        public List<uint> items { get; set; } //ulStateID
+        public uint ID { get; set; }
+        public List<uint> Items { get; set; } //ulStateid
         public SwitchGroup(BinaryReader br)
         {
-            id = br.ReadUInt32();
+            ID = br.ReadUInt32();
             uint itemCount = br.ReadUInt32();
-            items = new List<uint>();
+            Items = new List<uint>();
 
             for (int i = 0; i < itemCount; i++)
             {
-                uint id = br.ReadUInt32();
-                items.Add(id);
+                uint ID = br.ReadUInt32();
+                Items.Add(ID);
             }
         }
 
         public SwitchGroup()
         {
-            id = 0;
-            items = new List<uint>();
+            ID = 0;
+            Items = new List<uint>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(id);
-            bw.Write(items.Count);
+            bw.Write(ID);
+            bw.Write(Items.Count);
 
-            foreach (uint item in items)
+            foreach (uint item in Items)
             {
                 bw.Write(item);
             }
@@ -43,9 +45,9 @@ namespace ResourceTypes.Wwise.Helpers
 
         public int GetLength()
         {
-            int length = 8 + items.Count * 4;
+            int Length = 8 + Items.Count * 4;
 
-            return length;
+            return Length;
         }
     }
 }

@@ -3,47 +3,48 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
-
+using System.ComponentModel;
 using ResourceTypes.Wwise;
 using Utils;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class StateChunk
     {
         [System.ComponentModel.Browsable(false)]
-        public HIRCObject parent { get; set; }
-        public uint groupId { get; set; }
-        public byte syncType { get; set; } //0x00 = Immediate
-        public List<State> states { get; set; }
-        public StateChunk(BinaryReader br, HIRCObject parentObject)
+        public HIRCObject Parent { get; set; }
+        public uint GroupID { get; set; }
+        public byte SyncType { get; set; } //0x00 = Immediate
+        public List<State> States { get; set; }
+        public StateChunk(BinaryReader br, HIRCObject ParentObject)
         {
-            parent = parentObject;
-            groupId = br.ReadUInt32();
-            syncType = br.ReadByte();
+            Parent = ParentObject;
+            GroupID = br.ReadUInt32();
+            SyncType = br.ReadByte();
             int stateCount = br.ReadUInt16();
-            states = new List<State>();
+            States = new List<State>();
 
             for (int i = 0; i < stateCount; i++)
             {
-                states.Add(new State(br));
+                States.Add(new State(br));
             }
         }
 
         public StateChunk()
         {
-            groupId = 0;
-            syncType = 0;
-            states = new List<State>();
+            GroupID = 0;
+            SyncType = 0;
+            States = new List<State>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(groupId);
-            bw.Write(syncType);
-            bw.Write((short)states.Count);
+            bw.Write(GroupID);
+            bw.Write(SyncType);
+            bw.Write((short)States.Count);
 
-            foreach (State state in states)
+            foreach (State state in States)
             {
                 state.WriteToFile(bw);
             }
@@ -51,9 +52,9 @@ namespace ResourceTypes.Wwise.Helpers
 
         public int GetLength()
         {
-            int chunkLength = 7 + states.Count * 8;
+            int ChunkLength = 7 + States.Count * 8;
 
-            return chunkLength;
+            return ChunkLength;
         }
     }
 }

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Windows;
 using ResourceTypes.Wwise.Objects;
 using System.Xml.Linq;
+using System.Windows.Forms;
 
 namespace ResourceTypes.Wwise
 {
     public class HIRCObject
     {
-        public BNK bnk;
+        public BNK Bnk;
         public AudioDevice AudioDevice { get; set; }
         public State State { get; set; }
         public Settings SettingsObject { get; set; }
@@ -32,193 +33,193 @@ namespace ResourceTypes.Wwise
         public AuxiliaryBus AuxiliaryBus { get; set; }
         public LFO LFO { get; set; }
         public Envelope Envelope { get; set; }
-        public byte[] data { get; set; }
-        public long lastPos { get; set; }
+        public byte[] Data { get; set; }
+        public long LastPos { get; set; }
         public HIRCObject(BNK mainBnk, BinaryReader br)
         {
-            bnk = mainBnk;
-            int type = br.ReadByte();
-            lastPos = br.BaseStream.Position;
-            switch (type)
+            Bnk = mainBnk;
+            int Type = br.ReadByte();
+            LastPos = br.BaseStream.Position;
+            switch (Type)
             {
                 case 1:
-                    SettingsObject = new Settings(br, type);
+                    SettingsObject = new Settings(br, Type);
                     break;
                 case 2:
-                    SoundSFXObject = new SoundSFX(this, br, type);
+                    SoundSFXObject = new SoundSFX(this, br, Type);
                     break;
                 case 3:
-                    EventAction = new EventAction(this, br, type);
+                    EventAction = new EventAction(this, br, Type);
                     break;
                 case 4:
-                    Event = new Event(this, br, type);
+                    Event = new Event(this, br, Type);
                     break;
                 case 5:
-                    RandomContainer = new RandomContainer(this, br, type);
+                    RandomContainer = new RandomContainer(this, br, Type);
                     break;
                 case 6:
-                    SwitchContainer = new SwitchContainer(this, br, type);
+                    SwitchContainer = new SwitchContainer(this, br, Type);
                     break;
                 case 7:
-                    ActorMixer = new ActorMixer(this, br, type);
+                    ActorMixer = new ActorMixer(this, br, Type);
                     break;
                 case 8:
-                    AudioBus = new AudioBus(this, br, type);
+                    AudioBus = new AudioBus(this, br, Type);
                     break;
                 case 9:
-                    BlendContainer = new BlendContainer(this, br, type);
+                    BlendContainer = new BlendContainer(this, br, Type);
                     break;
                 case 10:
-                    MusicSegment = new MusicSegment(this, br, type);
+                    MusicSegment = new MusicSegment(this, br, Type);
                     break;
                 case 11:
-                    MusicTrack = new MusicTrack(this, br, type);
+                    MusicTrack = new MusicTrack(this, br, Type);
                     break;
                 case 12:
-                    MusicSwitchContainer = new MusicSwitchContainer(this, br, type);
+                    MusicSwitchContainer = new MusicSwitchContainer(this, br, Type);
                     break;
                 case 13:
-                    MusicSequence = new MusicSequence(this, br, type);
+                    MusicSequence = new MusicSequence(this, br, Type);
                     break;
                 case 14:
-                    Attenuation = new Attenuation(br, type);
+                    Attenuation = new Attenuation(br, Type);
                     break;
                 case 17:
-                    FeedbackNode = new FeedbackNode(this, br, type);
+                    FeedbackNode = new FeedbackNode(this, br, Type);
                     break;
                 case 18:
-                    FxShareSet = new FxShareSet(this, br, type);
+                    FxShareSet = new FxShareSet(this, br, Type);
                     break;
                 case 19:
-                    FxCustom = new FxCustom(this, br, type);
+                    FxCustom = new FxCustom(this, br, Type);
                     break;
                 case 20:
-                    AuxiliaryBus = new AuxiliaryBus(this, br, type);
+                    AuxiliaryBus = new AuxiliaryBus(this, br, Type);
                     break;
                 case 21:
-                    LFO = new LFO(br, type);
+                    LFO = new LFO(br, Type);
                     break;
                 case 22:
-                    Envelope = new Envelope(br, type);
+                    Envelope = new Envelope(br, Type);
                     break;
                 default:
-                    int length = br.ReadInt32();
+                    int Length = br.ReadInt32();
                     br.BaseStream.Position -= 5;
-                    data = br.ReadBytes(length + 5);
-                    MessageBox.Show("Detected Unknown HIRC Object!", "Detected unkown HIRC Object type at: " + (lastPos - 1).ToString("X"));
+                    Data = br.ReadBytes(Length + 5);
+                    System.Windows.MessageBox.Show("Detected Unknown HIRC Object!", "Detected unkown HIRC Object Type at: " + (LastPos - 1).ToString("X"));
                     break;
             }
         }
 
-        public HIRCObject(BNK bnkObject)
+        public HIRCObject(BNK BnkObject)
         {
-            bnk = bnkObject;
+            Bnk = BnkObject;
         }
 
         public int GetLength()
         {
-            int length = 5;
+            int Length = 5;
             if (SettingsObject != null)
             {
-                length += SettingsObject.GetLength();
+                Length += SettingsObject.GetLength();
             }
             else if (SoundSFXObject != null)
             {
-                length += SoundSFXObject.GetLength();
+                Length += SoundSFXObject.GetLength();
             }
             else if (EventAction != null)
             {
-                length += EventAction.GetLength();
+                Length += EventAction.GetLength();
             }
             else if (Event != null)
             {
-                length += Event.GetLength();
+                Length += Event.GetLength();
             }
             else if (RandomContainer != null)
             {
-                length += RandomContainer.GetLength();
+                Length += RandomContainer.GetLength();
             }
             else if (SwitchContainer != null)
             {
-                length += SwitchContainer.GetLength();
+                Length += SwitchContainer.GetLength();
             }
             else if (ActorMixer != null)
             {
-                length += ActorMixer.GetLength();
+                Length += ActorMixer.GetLength();
             }
             else if (AudioBus != null)
             {
-                length += AudioBus.GetLength();
+                Length += AudioBus.GetLength();
             }
             else if (BlendContainer != null)
             {
-                length += BlendContainer.GetLength();
+                Length += BlendContainer.GetLength();
             }
             else if (MusicSegment != null)
             {
-                length += MusicSegment.GetLength();
+                Length += MusicSegment.GetLength();
             }
             else if (MusicTrack != null)
             {
-                length += MusicTrack.GetLength();
+                Length += MusicTrack.GetLength();
             }
             else if (MusicSwitchContainer != null)
             {
-                length += MusicSwitchContainer.GetLength();
+                Length += MusicSwitchContainer.GetLength();
             }
             else if (MusicSequence != null)
             {
-                length += MusicSequence.GetLength();
+                Length += MusicSequence.GetLength();
             }
             else if (Attenuation != null)
             {
-                length += Attenuation.GetLength();
+                Length += Attenuation.GetLength();
             }
             else if (FeedbackNode != null)
             {
-                length += FeedbackNode.GetLength();
+                Length += FeedbackNode.GetLength();
             }
             else if (FxShareSet != null)
             {
-                length += FxShareSet.GetLength();
+                Length += FxShareSet.GetLength();
             }
             else if (FxCustom != null)
             {
-                length += FxCustom.GetLength();
+                Length += FxCustom.GetLength();
             }
             else if (AuxiliaryBus != null)
             {
-                length += AuxiliaryBus.GetLength();
+                Length += AuxiliaryBus.GetLength();
             }
             else if (LFO != null)
             {
-                length += LFO.GetLength();
+                Length += LFO.GetLength();
             }
             else if (Envelope != null)
             {
-                length += Envelope.GetLength();
+                Length += Envelope.GetLength();
             }
             else if (State != null)
             {
-                length += State.GetLength();
+                Length += State.GetLength();
             }
             else if (AudioDevice != null)
             {
-                length += AudioDevice.GetLength();
+                Length += AudioDevice.GetLength();
             }
             else
             {
-                if (data != null)
+                if (Data != null)
                 {
-                    length += data.Length;
+                    Length += Data.Length;
                 }
                 else
                 {
-                    length = -1;
+                    Length = -1;
                 }
             }
 
-            return length;
+            return Length;
         }
     }
 
@@ -277,6 +278,592 @@ namespace ResourceTypes.Wwise
             }
 
             return hircLength;
+        }
+
+        public void AssignHirc(WemHirc AssignedHirc)
+        {
+            foreach (int ID in AssignedHirc.MusicTrack)
+            {
+                int index = ID;
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                if (MusicSegment.ContainsKey((int)Data[index].MusicTrack.ID))
+                {
+                    foreach (int Type10 in MusicSegment[(int)Data[index].MusicTrack.ID])
+                    {
+                        AssignedHirc.MusicSegment.Add((int)Type10);
+                    }
+                }
+            }
+
+            List<int> CheckedIDs = new List<int>();
+            foreach (int ID in AssignedHirc.MusicSegment)
+            {
+                int index = ID;
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].MusicSegment.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                directParent = (int)Data[index].MusicSegment.NodeBase.AttenuationID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                if (EventAction.ContainsKey((int)Data[index].MusicSegment.ID))
+                {
+                    AssignedHirc.EventAction.AddRange(EventAction[(int)Data[index].MusicSegment.ID]);
+                }
+            }
+
+            CheckedIDs = new List<int>();
+            foreach (int ID in AssignedHirc.MusicSequence)
+            {
+                int index = ID;
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].MusicSequence.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                directParent = (int)Data[index].MusicSequence.NodeBase.AttenuationID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                if (EventAction.ContainsKey((int)Data[index].MusicSequence.ID))
+                {
+                    AssignedHirc.EventAction.AddRange(EventAction[(int)Data[index].MusicSequence.ID]);
+                }
+            }
+
+            CheckedIDs = new List<int>();
+            for (int i = 0; i < AssignedHirc.MusicSwitchContainer.Count; i++)
+            {
+                int index = AssignedHirc.MusicSwitchContainer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].MusicSwitchContainer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+            }
+
+            for (int i = 0; i < AssignedHirc.MusicSwitchContainer.Count; i++)
+            {
+                int index = AssignedHirc.MusicSwitchContainer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].MusicSwitchContainer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                directParent = (int)Data[index].MusicSwitchContainer.NodeBase.AttenuationID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                if (EventAction.ContainsKey((int)Data[index].MusicSwitchContainer.ID))
+                {
+                    AssignedHirc.EventAction.AddRange(EventAction[(int)Data[index].MusicSwitchContainer.ID]);
+                }
+            }
+
+            CheckedIDs = new List<int>();
+            foreach (int ID in AssignedHirc.SoundSFX)
+            {
+                int index = ID;
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].SoundSFXObject.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                directParent = (int)Data[index].SoundSFXObject.NodeBase.AttenuationID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                if (EventAction.ContainsKey((int)Data[index].SoundSFXObject.ID))
+                {
+                    AssignedHirc.EventAction.AddRange(EventAction[(int)Data[index].SoundSFXObject.ID]);
+                }
+            }
+
+            CheckedIDs = new List<int>();
+            for (int i = 0; i < AssignedHirc.RandomContainer.Count; i++)
+            {
+                int index = AssignedHirc.RandomContainer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].RandomContainer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+            }
+
+            for (int i = 0; i < AssignedHirc.RandomContainer.Count; i++)
+            {
+                int index = AssignedHirc.RandomContainer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].RandomContainer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                directParent = (int)Data[index].RandomContainer.NodeBase.AttenuationID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                if (EventAction.ContainsKey((int)Data[index].RandomContainer.ID))
+                {
+                    AssignedHirc.EventAction.AddRange(EventAction[(int)Data[index].RandomContainer.ID]);
+                }
+            }
+
+            CheckedIDs = new List<int>();
+            for (int i = 0; i < AssignedHirc.BlendContainer.Count; i++)
+            {
+                int index = AssignedHirc.BlendContainer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].BlendContainer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+            }
+
+            for (int i = 0; i < AssignedHirc.BlendContainer.Count; i++)
+            {
+                int index = AssignedHirc.BlendContainer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].BlendContainer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                directParent = (int)Data[index].BlendContainer.NodeBase.AttenuationID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                if (EventAction.ContainsKey((int)Data[index].BlendContainer.ID))
+                {
+                    AssignedHirc.EventAction.AddRange(EventAction[(int)Data[index].BlendContainer.ID]);
+                }
+            }
+
+            CheckedIDs = new List<int>();
+            for (int i = 0; i < AssignedHirc.SwitchContainer.Count; i++)
+            {
+                int index = AssignedHirc.SwitchContainer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].SwitchContainer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+            }
+
+            for (int i = 0; i < AssignedHirc.SwitchContainer.Count; i++)
+            {
+                int index = AssignedHirc.SwitchContainer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].SwitchContainer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                directParent = (int)Data[index].SwitchContainer.NodeBase.AttenuationID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                if (EventAction.ContainsKey((int)Data[index].SwitchContainer.ID))
+                {
+                    AssignedHirc.EventAction.AddRange(EventAction[(int)Data[index].SwitchContainer.ID]);
+                }
+            }
+
+            CheckedIDs = new List<int>();
+            for (int i = 0; i < AssignedHirc.ActorMixer.Count; i++)
+            {
+                int index = AssignedHirc.ActorMixer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].ActorMixer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+            }
+
+            for (int i = 0; i < AssignedHirc.ActorMixer.Count; i++)
+            {
+                int index = AssignedHirc.ActorMixer[i];
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                int directParent = (int)Data[index].ActorMixer.NodeBase.DirectParentID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                directParent = (int)Data[index].ActorMixer.NodeBase.AttenuationID;
+                if (!CheckedIDs.Contains(directParent))
+                {
+                    CheckHirc(AssignedHirc, directParent);
+                    CheckedIDs.Add(directParent);
+                }
+
+                if (EventAction.ContainsKey((int)Data[index].ActorMixer.ID))
+                {
+                    AssignedHirc.EventAction.AddRange(EventAction[(int)Data[index].ActorMixer.ID]);
+                }
+            }
+
+            foreach (int ID in AssignedHirc.EventAction)
+            {
+                int index = ID;
+
+                if (index < 0 || index > Data.Count)
+                {
+                    continue;
+                }
+
+                if (Event.ContainsKey((int)Data[index].EventAction.ID))
+                {
+                    AssignedHirc.Event.AddRange(Event[(int)Data[index].EventAction.ID]);
+                }
+            }
+        }
+
+        private void CheckHirc(WemHirc AssignedHirc, int Key)
+        {
+            if (Settings.ContainsKey(Key))
+            {
+                AssignedHirc.Settings.AddRange(Settings[Key]);
+            }
+            else if (Event.ContainsKey(Key))
+            {
+                AssignedHirc.Event.AddRange(Event[Key]);
+            }
+            else if (RandomContainer.ContainsKey(Key))
+            {
+                AssignedHirc.RandomContainer.AddRange(RandomContainer[Key]);
+            }
+            else if (SwitchContainer.ContainsKey(Key))
+            {
+                AssignedHirc.SwitchContainer.AddRange(SwitchContainer[Key]);
+            }
+            else if (ActorMixer.ContainsKey(Key))
+            {
+                AssignedHirc.ActorMixer.AddRange(ActorMixer[Key]);
+            }
+            else if (AudioBus.ContainsKey(Key))
+            {
+                AssignedHirc.AudioBus.AddRange(AudioBus[Key]);
+            }
+            else if (BlendContainer.ContainsKey(Key))
+            {
+                AssignedHirc.BlendContainer.AddRange(BlendContainer[Key]);
+            }
+            else if (MusicSequence.ContainsKey(Key))
+            {
+                AssignedHirc.MusicSequence.AddRange(MusicSequence[Key]);
+            }
+            else if (MusicSwitchContainer.ContainsKey(Key))
+            {
+                AssignedHirc.MusicSwitchContainer.AddRange(MusicSwitchContainer[Key]);
+            }
+            else if (Attenuation.ContainsKey(Key))
+            {
+                AssignedHirc.Attenuation.AddRange(Attenuation[Key]);
+            }
+            else if (FeedbackNode.ContainsKey(Key))
+            {
+                AssignedHirc.FeedbackNode.AddRange(FeedbackNode[Key]);
+            }
+            else if (FxShareSet.ContainsKey(Key))
+            {
+                AssignedHirc.FxShareSet.AddRange(FxShareSet[Key]);
+            }
+            else if (FxCustom.ContainsKey(Key))
+            {
+                AssignedHirc.FxCustom.AddRange(FxCustom[Key]);
+            }
+            else if (AuxiliaryBus.ContainsKey(Key))
+            {
+                AssignedHirc.AuxiliaryBus.AddRange(AuxiliaryBus[Key]);
+            }
+            else if (LFO.ContainsKey(Key))
+            {
+                AssignedHirc.LFO.AddRange(LFO[Key]);
+            }
+            else if (Envelope.ContainsKey(Key))
+            {
+                AssignedHirc.Envelope.AddRange(Envelope[Key]);
+            }
+        }
+
+        public TreeNode CreateNode(string name, int ID)
+        {
+            TreeNode tempItem = new TreeNode();
+
+            if (Data.Count > ID && ID > -1 && Data[ID] != null)
+            {
+                switch (name)
+                {
+                    case "Actor Mixer":
+                        if (Data[ID].ActorMixer != null)
+                        {
+                            tempItem.Text = Data[ID].ActorMixer.ID.ToString();
+                            tempItem.Tag = Data[ID].ActorMixer;
+                        }
+                        break;
+
+                    case "Attenuation":
+                        if (Data[ID].Attenuation != null)
+                        {
+                            tempItem.Text = Data[ID].Attenuation.ID.ToString();
+                            tempItem.Tag = Data[ID].Attenuation;
+                        }
+                        break;
+
+                    case "Blend Container":
+                        if (Data[ID].BlendContainer != null)
+                        {
+                            tempItem.Text = Data[ID].BlendContainer.ID.ToString();
+                            tempItem.Tag = Data[ID].BlendContainer;
+                        }
+                        break;
+
+                    case "Envelope":
+                        if (Data[ID].Envelope != null)
+                        {
+                            tempItem.Text = Data[ID].Envelope.ID.ToString();
+                            tempItem.Tag = Data[ID].Envelope;
+                        }
+                        break;
+
+                    case "Event":
+                        if (Data[ID].Event != null)
+                        {
+                            tempItem.Text = Data[ID].Event.ID.ToString();
+                            tempItem.Tag = Data[ID].Event;
+                        }
+                        break;
+
+                    case "Event Action":
+                        if (Data[ID].EventAction != null)
+                        {
+                            tempItem.Text = Data[ID].EventAction.ID.ToString();
+                            tempItem.Tag = Data[ID].EventAction;
+                        }
+                        break;
+
+                    case "Feedback Node":
+                        if (Data[ID].FeedbackNode != null)
+                        {
+                            tempItem.Text = Data[ID].FeedbackNode.ID.ToString();
+                            tempItem.Tag = Data[ID].FeedbackNode;
+                        }
+                        break;
+
+                    case "FxCustom":
+                        if (Data[ID].FxCustom != null)
+                        {
+                            tempItem.Text = Data[ID].FxCustom.ID.ToString();
+                            tempItem.Tag = Data[ID].FxCustom;
+                        }
+                        break;
+
+                    case "FxShareSet":
+                        if (Data[ID].FxShareSet != null)
+                        {
+                            tempItem.Text = Data[ID].FxShareSet.ID.ToString();
+                            tempItem.Tag = Data[ID].FxShareSet;
+                        }
+                        break;
+
+                    case "LFO":
+                        if (Data[ID].LFO != null)
+                        {
+                            tempItem.Text = Data[ID].LFO.ID.ToString();
+                            tempItem.Tag = Data[ID].LFO;
+                        }
+                        break;
+
+                    case "Music Segment":
+                        if (Data[ID].MusicSegment != null)
+                        {
+                            tempItem.Text = Data[ID].MusicSegment.ID.ToString();
+                            tempItem.Tag = Data[ID].MusicSegment;
+                        }
+                        break;
+
+                    case "Music Sequence":
+                        if (Data[ID].MusicSequence != null)
+                        {
+                            tempItem.Text = Data[ID].MusicSequence.ID.ToString();
+                            tempItem.Tag = Data[ID].MusicSequence;
+                        }
+                        break;
+
+                    case "Music Switch Container":
+                        if (Data[ID].MusicSwitchContainer != null)
+                        {
+                            tempItem.Text = Data[ID].MusicSwitchContainer.ID.ToString();
+                            tempItem.Tag = Data[ID].MusicSwitchContainer;
+                        }
+                        break;
+
+                    case "Music Track":
+                        if (Data[ID].MusicTrack != null)
+                        {
+                            tempItem.Text = Data[ID].MusicTrack.ID.ToString();
+                            tempItem.Tag = Data[ID].MusicTrack;
+                        }
+                        break;
+
+                    case "Random Container":
+                        if (Data[ID].RandomContainer != null)
+                        {
+                            tempItem.Text = Data[ID].RandomContainer.ID.ToString();
+                            tempItem.Tag = Data[ID].RandomContainer;
+                        }
+                        break;
+
+                    case "Settings":
+                        if (Data[ID].SettingsObject != null)
+                        {
+                            tempItem.Text = Data[ID].SettingsObject.ID.ToString();
+                            tempItem.Tag = Data[ID].SettingsObject;
+                        }
+                        break;
+
+                    case "Sound SFX":
+                        if (Data[ID].SoundSFXObject != null)
+                        {
+                            tempItem.Text = Data[ID].SoundSFXObject.ID.ToString();
+                            tempItem.Tag = Data[ID].SoundSFXObject;
+                        }
+                        break;
+
+                    case "Switch Container":
+                        if (Data[ID].SwitchContainer != null)
+                        {
+                            tempItem.Text = Data[ID].SwitchContainer.ID.ToString();
+                            tempItem.Tag = Data[ID].SwitchContainer;
+                        }
+                        break;
+                }
+            }
+
+            return tempItem;
         }
     }
 }

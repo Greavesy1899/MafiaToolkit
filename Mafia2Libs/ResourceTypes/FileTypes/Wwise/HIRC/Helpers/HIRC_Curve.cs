@@ -3,37 +3,39 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Curve
     {
-        public byte scaling { get; set; }
-        public List<GraphPoint> graphPoints { get; set; }
+        public byte Scaling { get; set; }
+        public List<GraphPoint> GraphPoints { get; set; }
         public Curve(BinaryReader br)
         {
-            scaling = br.ReadByte();
-            graphPoints = new List<GraphPoint>();
+            Scaling = br.ReadByte();
+            GraphPoints = new List<GraphPoint>();
             uint numPoints = br.ReadUInt16();
 
             for (int i = 0; i < numPoints; i++)
             {
-                graphPoints.Add(new GraphPoint(br));
+                GraphPoints.Add(new GraphPoint(br));
             }
         }
 
         public Curve()
         {
-            scaling = 0;
-            graphPoints = new List<GraphPoint>();
+            Scaling = 0;
+            GraphPoints = new List<GraphPoint>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(scaling);
-            bw.Write((short)graphPoints.Count);
+            bw.Write(Scaling);
+            bw.Write((short)GraphPoints.Count);
 
-            foreach (GraphPoint point in graphPoints)
+            foreach (GraphPoint point in GraphPoints)
             {
                 point.WriteToFile(bw);
             }
@@ -41,9 +43,9 @@ namespace ResourceTypes.Wwise.Helpers
 
         public int GetLength()
         {
-            int length = 3 + graphPoints.Count * 12;
+            int Length = 3 + GraphPoints.Count * 12;
 
-            return length;
+            return Length;
         }
     }
 }

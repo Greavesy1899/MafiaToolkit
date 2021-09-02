@@ -107,7 +107,7 @@ namespace Mafia2Tool
 
             using (BinaryWriter bw = new BinaryWriter(new FileStream(name, FileMode.OpenOrCreate)))
             {
-                bw.Write(wem.file);
+                bw.Write(wem.File);
             }
         }
 
@@ -201,6 +201,17 @@ namespace Mafia2Tool
                 {
                     Export(exportFile, exportIds, wem);
                 }
+            }
+        }
+
+        private void ContextEdit_Click(object sender, System.EventArgs e)
+        {
+            int itemIndex = bnk.WemList.IndexOf((Wem)WemGrid.SelectedObject);
+
+            if (itemIndex != -1)
+            {
+                HIRCEditor HircEditor = new HIRCEditor(bnk.Objects, bnk.WemList[itemIndex]);
+                HircEditor.Show();
             }
         }
 

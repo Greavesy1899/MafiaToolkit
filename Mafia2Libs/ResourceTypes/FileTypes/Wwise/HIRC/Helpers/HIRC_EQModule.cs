@@ -3,39 +3,41 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class EQModule
     {
-        public uint filterType { get; set; }
-        public float gain { get; set; }
-        public float frequency { get; set; }
+        public uint FilterType { get; set; }
+        public float Gain { get; set; }
+        public float Frequency { get; set; }
         public float qFactor { get; set; }
         public int on { get; set; }
         public EQModule(BinaryReader br)
         {
-            filterType = br.ReadUInt32();
-            gain = br.ReadSingle();
-            frequency = br.ReadSingle();
+            FilterType = br.ReadUInt32();
+            Gain = br.ReadSingle();
+            Frequency = br.ReadSingle();
             qFactor = br.ReadSingle();
             on = br.ReadByte();
         }
 
         public EQModule()
         {
-            filterType = 0;
-            gain = 0;
-            frequency = 0;
+            FilterType = 0;
+            Gain = 0;
+            Frequency = 0;
             qFactor = 0;
             on = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(filterType);
-            bw.Write(gain);
-            bw.Write(frequency);
+            bw.Write(FilterType);
+            bw.Write(Gain);
+            bw.Write(Frequency);
             bw.Write(qFactor);
             bw.Write((byte)on);
         }

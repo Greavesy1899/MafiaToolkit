@@ -33,6 +33,7 @@
             this.WemGrid = new System.Windows.Forms.PropertyGrid();
             this.TreeView_Wems = new Mafia2Tool.Controls.MTreeView();
             this.BnkContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ContextEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextExport = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -78,10 +79,18 @@
             // BnkContext
             // 
             this.BnkContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ContextEdit,
             this.ContextExport,
             this.ContextDelete});
             this.BnkContext.Name = "SDSContext";
-            this.BnkContext.Size = new System.Drawing.Size(159, 48);
+            this.BnkContext.Size = new System.Drawing.Size(159, 70);
+            // 
+            // ContextEdit
+            // 
+            this.ContextEdit.Name = "ContextEdit";
+            this.ContextEdit.Size = new System.Drawing.Size(158, 22);
+            this.ContextEdit.Text = "$EDIT_HIRC";
+            this.ContextEdit.Click += new System.EventHandler(this.ContextEdit_Click);
             // 
             // ContextExport
             // 
@@ -228,5 +237,6 @@
         private System.Windows.Forms.ToolStripMenuItem Button_ExportWem;
         private System.Windows.Forms.ToolStripMenuItem ContextExport;
         private System.Windows.Forms.ToolStripMenuItem Button_ExportAll;
+        private System.Windows.Forms.ToolStripMenuItem ContextEdit;
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Xml;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class AutomationParam
     {
         public float xRange { get; set; }

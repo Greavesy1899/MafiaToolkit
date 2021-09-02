@@ -3,37 +3,39 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Assoc
     {
-        public uint id { get; set; }
-        public List<GraphPoint> curves { get; set; }
+        public uint ID { get; set; }
+        public List<GraphPoint> Curves { get; set; }
         public Assoc(BinaryReader br)
         {
-            id = br.ReadUInt32();
-            curves = new List<GraphPoint>();
+            ID = br.ReadUInt32();
+            Curves = new List<GraphPoint>();
             uint numCurves = br.ReadUInt32();
 
             for (int i = 0; i < numCurves; i++)
             {
-                curves.Add(new GraphPoint(br));
+                Curves.Add(new GraphPoint(br));
             }
         }
 
         public Assoc()
         {
-            id = 0;
-            curves = new List<GraphPoint>();
+            ID = 0;
+            Curves = new List<GraphPoint>();
         }
 
         public static void WriteAssoc(BinaryWriter bw, Assoc assoc)
         {
-            bw.Write(assoc.id);
-            bw.Write(assoc.curves.Count);
+            bw.Write(assoc.ID);
+            bw.Write(assoc.Curves.Count);
 
-            foreach (GraphPoint point in assoc.curves)
+            foreach (GraphPoint point in assoc.Curves)
             {
                 point.WriteToFile(bw);
             }
@@ -41,9 +43,9 @@ namespace ResourceTypes.Wwise.Helpers
 
         public int GetLength()
         {
-            int length = 8 + curves.Count * 12;
+            int Length = 8 + Curves.Count * 12;
 
-            return length;
+            return Length;
         }
     }
 }

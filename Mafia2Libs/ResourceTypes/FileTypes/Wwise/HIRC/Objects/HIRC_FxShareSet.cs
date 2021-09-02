@@ -12,43 +12,43 @@ namespace ResourceTypes.Wwise.Objects
     public class FxShareSet
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
+        public int Type { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public HIRCObject parent { get; set; }
-        public uint id { get; set; }
-        public FXBase fxBase { get; set; }
+        public HIRCObject Parent { get; set; }
+        public uint ID { get; set; }
+        public FXBase FXBase { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public byte[] data { get; set; }
-        public FxShareSet(HIRCObject parentObject, BinaryReader br, int iType)
+        public byte[] Data { get; set; }
+        public FxShareSet(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            parent = parentObject;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            fxBase = new FXBase(parent, br);
+            Type = iType;
+            Parent = ParentObject;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            FXBase = new FXBase(Parent, br);
         }
 
-        public FxShareSet(HIRCObject parentObject)
+        public FxShareSet(HIRCObject ParentObject)
         {
-            parent = parentObject;
-            type = 0;
-            id = 0;
-            fxBase = new FXBase(parent);
+            Parent = ParentObject;
+            Type = 0;
+            ID = 0;
+            FXBase = new FXBase(Parent);
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            fxBase.WriteToFile(bw);
+            bw.Write(ID);
+            FXBase.WriteToFile(bw);
         }
 
         public int GetLength()
         {
-            int length = 4 + fxBase.GetLength();
+            int Length = 4 + FXBase.GetLength();
 
-            return length;
+            return Length;
         }
     }
 }

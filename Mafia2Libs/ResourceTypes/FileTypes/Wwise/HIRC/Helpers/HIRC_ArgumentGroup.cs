@@ -4,30 +4,32 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ArgumentGroup
     {
-        public uint id { get; set; }
-        public int value { get; set; }
-        public ArgumentGroup(uint iId, int iValue)
+        public uint ID { get; set; }
+        public int Value { get; set; }
+        public ArgumentGroup(uint iID, int iValue)
         {
-            id = iId;
-            value = iValue;
+            ID = iID;
+            Value = iValue;
         }
 
         public ArgumentGroup()
         {
-            id = 0;
-            value = 0;
+            ID = 0;
+            Value = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(id);
-            bw.Write((byte)value);
+            bw.Write(ID);
+            bw.Write((byte)Value);
         }
     }
 }

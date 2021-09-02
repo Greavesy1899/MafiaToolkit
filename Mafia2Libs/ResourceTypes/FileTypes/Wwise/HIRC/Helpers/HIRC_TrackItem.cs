@@ -3,46 +3,48 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TrackItem
     {
-        public uint id { get; set; }
-        public uint sourceId { get; set; }
-        public double playAt { get; set; }
-        public double beginTrimOffset { get; set; }
-        public double endTrimOffset { get; set; }
-        public double srcDuration { get; set; }
+        public uint ID { get; set; }
+        public uint SourceID { get; set; }
+        public double PlayAt { get; set; }
+        public double BeginTrimOffset { get; set; }
+        public double EndTrimOffset { get; set; }
+        public double SourceDuration { get; set; }
         public TrackItem(BinaryReader br)
         {
-            id = br.ReadUInt32();
-            sourceId = br.ReadUInt32();
-            playAt = br.ReadDouble();
-            beginTrimOffset = br.ReadDouble();
-            endTrimOffset = br.ReadDouble();
-            srcDuration = br.ReadDouble();
+            ID = br.ReadUInt32();
+            SourceID = br.ReadUInt32();
+            PlayAt = br.ReadDouble();
+            BeginTrimOffset = br.ReadDouble();
+            EndTrimOffset = br.ReadDouble();
+            SourceDuration = br.ReadDouble();
         }
 
         public TrackItem()
         {
-            id = 0;
-            sourceId = 0;
-            playAt = 0;
-            beginTrimOffset = 0;
-            endTrimOffset = 0;
-            srcDuration = 0;
+            ID = 0;
+            SourceID = 0;
+            PlayAt = 0;
+            BeginTrimOffset = 0;
+            EndTrimOffset = 0;
+            SourceDuration = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(id);
-            bw.Write(sourceId);
-            bw.Write(playAt);
-            bw.Write(beginTrimOffset);
-            bw.Write(endTrimOffset);
-            bw.Write(srcDuration);
+            bw.Write(ID);
+            bw.Write(SourceID);
+            bw.Write(PlayAt);
+            bw.Write(BeginTrimOffset);
+            bw.Write(EndTrimOffset);
+            bw.Write(SourceDuration);
         }
     }
 }

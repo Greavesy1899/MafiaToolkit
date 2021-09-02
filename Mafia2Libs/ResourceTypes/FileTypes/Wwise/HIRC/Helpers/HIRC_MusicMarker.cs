@@ -4,43 +4,45 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class MusicMarker
     {
-        public uint id { get; set; }
-        public double position { get; set; }
-        public string markerName { get; set; }
+        public uint ID { get; set; }
+        public double Position { get; set; }
+        public string MarkerName { get; set; }
         public MusicMarker(BinaryReader br)
         {
-            id = br.ReadUInt32();
-            position = br.ReadDouble();
+            ID = br.ReadUInt32();
+            Position = br.ReadDouble();
             uint stringSize = br.ReadUInt32();
             byte[] stringBytes = br.ReadBytes((int)stringSize);
-            markerName = Encoding.UTF8.GetString(stringBytes);
+            MarkerName = Encoding.UTF8.GetString(stringBytes);
         }
 
         public MusicMarker()
         {
-            id = 0;
-            position = 0;
-            markerName = "";
+            ID = 0;
+            Position = 0;
+            MarkerName = "";
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(id);
-            bw.Write(position);
-            bw.Write(markerName.Length);
-            bw.Write(markerName.ToCharArray());
+            bw.Write(ID);
+            bw.Write(Position);
+            bw.Write(MarkerName.Length);
+            bw.Write(MarkerName.ToCharArray());
         }
 
         public int GetLength()
         {
-            int length = 16 + markerName.Length;
+            int Length = 16 + MarkerName.Length;
 
-            return length;
+            return Length;
         }
     }
 }

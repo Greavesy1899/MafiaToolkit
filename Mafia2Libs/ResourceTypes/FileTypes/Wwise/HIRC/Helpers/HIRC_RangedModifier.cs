@@ -1,27 +1,29 @@
 ﻿using System;
 using System.Xml;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class RangedModifier
     {
-        public byte id { get; set; }
-        public uint min { get; set; }
-        public uint max { get; set; }
+        public byte ID { get; set; }
+        public uint Min { get; set; }
+        public uint Max { get; set; }
 
-        public RangedModifier(byte bId, uint fMin, uint fMax)
+        public RangedModifier(byte bID, uint fMin, uint fMax)
         {
-            id = bId;
-            min = fMin;
-            max = fMax;
+            ID = bID;
+            Min = fMin;
+            Max = fMax;
         }
 
         public RangedModifier()
         {
-            id = 0;
-            min = 0;
-            max = 0;
+            ID = 0;
+            Min = 0;
+            Max = 0;
         }
     }
 }

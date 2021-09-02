@@ -2,46 +2,48 @@
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Duck
     {
-        public uint busId { get; set; }
-        public float duckVolume { get; set; }
-        public int fadeOutTime { get; set; }
-        public int fadeInTime { get; set; }
-        public int fadeCurve { get; set; }
-        public int targetProp { get; set; }
+        public uint BusID { get; set; }
+        public float Volume { get; set; }
+        public int FadeOutTime { get; set; }
+        public int FadeInTime { get; set; }
+        public int FadeCurve { get; set; }
+        public int TargetProp { get; set; }
 
         public Duck(BinaryReader br)
         {
-            busId = br.ReadUInt32();
-            duckVolume = br.ReadSingle();
-            fadeOutTime = br.ReadInt32();
-            fadeInTime = br.ReadInt32();
-            fadeCurve = br.ReadByte();
-            targetProp = br.ReadByte();
+            BusID = br.ReadUInt32();
+            Volume = br.ReadSingle();
+            FadeOutTime = br.ReadInt32();
+            FadeInTime = br.ReadInt32();
+            FadeCurve = br.ReadByte();
+            TargetProp = br.ReadByte();
         }
 
         public Duck()
         {
-            busId = 0;
-            duckVolume = 0;
-            fadeOutTime = 0;
-            fadeInTime = 0;
-            fadeCurve = 0;
-            targetProp = 0;
+            BusID = 0;
+            Volume = 0;
+            FadeOutTime = 0;
+            FadeInTime = 0;
+            FadeCurve = 0;
+            TargetProp = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(busId);
-            bw.Write(duckVolume);
-            bw.Write(fadeOutTime);
-            bw.Write(fadeInTime);
-            bw.Write((byte)fadeCurve);
-            bw.Write((byte)targetProp);
+            bw.Write(BusID);
+            bw.Write(Volume);
+            bw.Write(FadeOutTime);
+            bw.Write(FadeInTime);
+            bw.Write((byte)FadeCurve);
+            bw.Write((byte)TargetProp);
         }
     }
 }

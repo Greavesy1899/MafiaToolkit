@@ -12,33 +12,33 @@ namespace ResourceTypes.Wwise.Objects
     public class SwitchContainer
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public NodeBase nodeBase { get; set; }
-        public byte groupType { get; set; }
-        public uint groupId { get; set; }
-        public uint defaultSwitch { get; set; }
-        public int continuousValidation { get; set; }
-        public List<uint> childIDs { get; set; } //IDs of child HIRC objects
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public NodeBase NodeBase { get; set; }
+        public byte GroupType { get; set; }
+        public uint GroupID { get; set; }
+        public uint DefaultSwitch { get; set; }
+        public int ContinuousValidation { get; set; }
+        public List<uint> ChildIDs { get; set; } //IDs of child HIRC objects
         public List<SwitchGroup> SwitchGroups { get; set; }
         public List<SwitchParam> SwitchParams { get; set; }
-        public SwitchContainer(HIRCObject parentObject, BinaryReader br, int iType)
+        public SwitchContainer(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            nodeBase = new NodeBase(br, parentObject);
-            groupType = br.ReadByte();
-            groupId = br.ReadUInt32();
-            defaultSwitch = br.ReadUInt32();
-            continuousValidation = br.ReadByte();
-            childIDs = new List<uint>();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            NodeBase = new NodeBase(br, ParentObject);
+            GroupType = br.ReadByte();
+            GroupID = br.ReadUInt32();
+            DefaultSwitch = br.ReadUInt32();
+            ContinuousValidation = br.ReadByte();
+            ChildIDs = new List<uint>();
             uint numChilds = br.ReadUInt32();
 
             for (int i = 0; i < numChilds; i++)
             {
-                uint key = br.ReadUInt32();
-                childIDs.Add(key);
+                uint Key = br.ReadUInt32();
+                ChildIDs.Add(Key);
             }
 
             SwitchGroups = new List<SwitchGroup>();
@@ -58,44 +58,44 @@ namespace ResourceTypes.Wwise.Objects
             }
         }
 
-        public SwitchContainer(HIRCObject parentObject)
+        public SwitchContainer(HIRCObject ParentObject)
         {
-            type = 0;
-            id = 0;
-            nodeBase = new NodeBase(parentObject);
-            groupType = 0;
-            groupId = 0;
-            defaultSwitch = 0;
-            continuousValidation = 0;
-            childIDs = new List<uint>();
+            Type = 0;
+            ID = 0;
+            NodeBase = new NodeBase(ParentObject);
+            GroupType = 0;
+            GroupID = 0;
+            DefaultSwitch = 0;
+            ContinuousValidation = 0;
+            ChildIDs = new List<uint>();
             SwitchGroups = new List<SwitchGroup>();
             SwitchParams = new List<SwitchParam>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
+            bw.Write(ID);
 
-            nodeBase.WriteToFile(bw);
+            NodeBase.WriteToFile(bw);
 
-            bw.Write(groupType);
-            bw.Write(groupId);
-            bw.Write(defaultSwitch);
-            bw.Write((byte)continuousValidation);
-            bw.Write(childIDs.Count);
+            bw.Write(GroupType);
+            bw.Write(GroupID);
+            bw.Write(DefaultSwitch);
+            bw.Write((byte)ContinuousValidation);
+            bw.Write(ChildIDs.Count);
 
-            foreach (uint child in childIDs)
+            foreach (uint child in ChildIDs)
             {
                 bw.Write(child);
             }
 
             bw.Write(SwitchGroups.Count);
 
-            foreach (SwitchGroup group in SwitchGroups)
+            foreach (SwitchGroup Group in SwitchGroups)
             {
-                group.WriteToFile(bw);
+                Group.WriteToFile(bw);
             }
 
             bw.Write(SwitchParams.Count);
@@ -108,14 +108,14 @@ namespace ResourceTypes.Wwise.Objects
 
         public int GetLength()
         {
-            int length = 26 + nodeBase.GetLength() + childIDs.Count * 4 + SwitchParams.Count * 14;
+            int Length = 26 + NodeBase.GetLength() + ChildIDs.Count * 4 + SwitchParams.Count * 14;
 
-            foreach (SwitchGroup group in SwitchGroups)
+            foreach (SwitchGroup Group in SwitchGroups)
             {
-                length += group.GetLength();
+                Length += Group.GetLength();
             }
 
-            return length;
+            return Length;
         }
     }
 }

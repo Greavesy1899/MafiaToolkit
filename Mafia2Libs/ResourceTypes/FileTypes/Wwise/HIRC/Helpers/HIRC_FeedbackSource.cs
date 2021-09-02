@@ -3,57 +3,59 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FeedbackSource
     {
-        public uint companyId { get; set; }
-        public uint deviceId { get; set; }
-        public float volumeOffset { get; set; }
-        public uint pluginId { get; set; }
-        public byte streamType { get; set; }
-        public uint sourceId { get; set; }
-        public int inMemoryMediaSize { get; set; }
-        public byte sourceBits { get; set; }
-        public int size { get; set; }
+        public uint CompanyID { get; set; }
+        public uint DeviceID { get; set; }
+        public float VolumeOffset { get; set; }
+        public uint PluginID { get; set; }
+        public byte StreamType { get; set; }
+        public uint SourceID { get; set; }
+        public int InMemoryMediaSize { get; set; }
+        public byte SourceBits { get; set; }
+        public int Size { get; set; }
         public FeedbackSource(BinaryReader br)
         {
-            companyId = br.ReadUInt16();
-            deviceId = br.ReadUInt16();
-            volumeOffset = br.ReadSingle();
-            pluginId = br.ReadUInt32();
-            streamType = br.ReadByte();
-            sourceId = br.ReadUInt32();
-            inMemoryMediaSize = br.ReadInt32();
-            sourceBits = br.ReadByte();
-            size = br.ReadInt32();
+            CompanyID = br.ReadUInt16();
+            DeviceID = br.ReadUInt16();
+            VolumeOffset = br.ReadSingle();
+            PluginID = br.ReadUInt32();
+            StreamType = br.ReadByte();
+            SourceID = br.ReadUInt32();
+            InMemoryMediaSize = br.ReadInt32();
+            SourceBits = br.ReadByte();
+            Size = br.ReadInt32();
         }
 
         public FeedbackSource()
         {
-            companyId = 0;
-            deviceId = 0;
-            volumeOffset = 0;
-            pluginId = 0;
-            streamType = 0;
-            sourceId = 0;
-            inMemoryMediaSize = 0;
-            sourceBits = 0;
-            size = 0;
+            CompanyID = 0;
+            DeviceID = 0;
+            VolumeOffset = 0;
+            PluginID = 0;
+            StreamType = 0;
+            SourceID = 0;
+            InMemoryMediaSize = 0;
+            SourceBits = 0;
+            Size = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((short)companyId);
-            bw.Write((short)deviceId);
-            bw.Write(volumeOffset);
-            bw.Write(pluginId);
-            bw.Write(streamType);
-            bw.Write(sourceId);
-            bw.Write(inMemoryMediaSize);
-            bw.Write(sourceBits);
-            bw.Write(size);
+            bw.Write((short)CompanyID);
+            bw.Write((short)DeviceID);
+            bw.Write(VolumeOffset);
+            bw.Write(PluginID);
+            bw.Write(StreamType);
+            bw.Write(SourceID);
+            bw.Write(InMemoryMediaSize);
+            bw.Write(SourceBits);
+            bw.Write(Size);
         }
     }
 }

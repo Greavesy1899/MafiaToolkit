@@ -107,7 +107,7 @@ namespace Mafia2Tool
 
             using (BinaryWriter bw = new BinaryWriter(new FileStream(name, FileMode.OpenOrCreate)))
             {
-                bw.Write(wem.file);
+                bw.Write(wem.File);
             }
         }
 

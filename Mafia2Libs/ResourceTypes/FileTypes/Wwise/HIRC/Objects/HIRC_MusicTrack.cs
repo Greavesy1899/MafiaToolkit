@@ -13,214 +13,214 @@ namespace ResourceTypes.Wwise.Objects
     public class MusicTrack
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
+        public int Type { get; set; }
         [System.ComponentModel.Browsable(false)]
-        private HIRCObject parent { get; set; }
-        public uint id { get; set; }
-        public byte musicFlags { get; set; } //bit1 = "bOverrideParentMidiTempo", bit2 = "bOverrideParentMidiTarget", bit3 = "bMidiTargetTypeBus"
-        public List<TrackSource> trackSources { get; set; }
-        public List<TrackItem> trackPlaylist { get; set; }
-        public uint numSubtrack { get; set; }
-        public uint sourceId { get; set; }
-        public List<AutomationItem> automationItems { get; set; }
-        public NodeBase nodeBase { get; set; }
-        public byte trackType { get; set; } //0x03 = Switch
-        public byte switchGroupType { get; set; }
-        public uint switchGroupID { get; set; }
-        public uint defaultSwitch { get; set; }
-        public List<uint> switchAssoc { get; set; }
-        public uint srcFadeTransitionTime { get; set; }
-        public uint srcFadeCurve { get; set; } //0x04 = Linear
-        public uint srcFadeOffset { get; set; }
-        public uint transitionSyncType { get; set; } //0x02 = NextBar
-        public uint transitionCueFilterHash { get; set; }
-        public uint destFadeTransitionTime { get; set; }
-        public uint destFadeCurve { get; set; } //0x04 = Linear
-        public uint destFadeOffset { get; set; }
-        public uint lookAheadTime { get; set; }
-        public MusicTrack(HIRCObject parentObject, BinaryReader br, int iType)
+        private HIRCObject Parent { get; set; }
+        public uint ID { get; set; }
+        public byte MusicFlags { get; set; } //bit1 = "bOverrideParentMidiTempo", bit2 = "bOverrideParentMidiTarget", bit3 = "bMidiTargetTypeBus"
+        public List<TrackSource> TrackSources { get; set; }
+        public List<TrackItem> TrackPlaylist { get; set; }
+        public uint SubtrackCount { get; set; }
+        public uint SourceID { get; set; }
+        public List<AutomationItem> AutomationItems { get; set; }
+        public NodeBase NodeBase { get; set; }
+        public byte TrackType { get; set; } //0x03 = Switch
+        public byte SwitchGroupType { get; set; }
+        public uint SwitchGroupID { get; set; }
+        public uint DefaultSwitch { get; set; }
+        public List<uint> SwitchAssoc { get; set; }
+        public uint SourceFadeTransitionTime { get; set; }
+        public uint SourceFadeCurve { get; set; } //0x04 = Linear
+        public uint SourceFadeOffset { get; set; }
+        public uint TransitionSyncType { get; set; } //0x02 = NextBar
+        public uint TransitionCueFilterHash { get; set; }
+        public uint DestinationFadeTransitionTime { get; set; }
+        public uint DestinationFadeCurve { get; set; } //0x04 = Linear
+        public uint DestinationFadeOffset { get; set; }
+        public uint LookAheadTime { get; set; }
+        public MusicTrack(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            parent = parentObject;
-            uint length = br.ReadUInt32();
+            Type = iType;
+            Parent = ParentObject;
+            uint Length = br.ReadUInt32();
             long initPos = br.BaseStream.Position;
-            id = br.ReadUInt32();
-            musicFlags = br.ReadByte();
-            trackSources = new List<TrackSource>();
+            ID = br.ReadUInt32();
+            MusicFlags = br.ReadByte();
+            TrackSources = new List<TrackSource>();
             uint numSources = br.ReadUInt32();
 
             for (int i = 0; i < numSources; i++)
             {
-                trackSources.Add(new TrackSource(br));
+                TrackSources.Add(new TrackSource(br));
             }
 
-            trackPlaylist = new List<TrackItem>();
+            TrackPlaylist = new List<TrackItem>();
             uint numTracks = br.ReadUInt32();
 
             for (int i = 0; i < numTracks; i++)
             {
-                trackPlaylist.Add(new TrackItem(br));
+                TrackPlaylist.Add(new TrackItem(br));
             }
 
             if (numTracks != 0)
             {
-                numSubtrack = br.ReadUInt32();
+                SubtrackCount = br.ReadUInt32();
             }
 
-            automationItems = new List<AutomationItem>();
+            AutomationItems = new List<AutomationItem>();
             uint numAutomationItems = br.ReadUInt32();
 
             for (int i = 0; i < numAutomationItems; i++)
             {
-                automationItems.Add(new AutomationItem(br));
+                AutomationItems.Add(new AutomationItem(br));
             }
 
-            nodeBase = new NodeBase(br, parentObject);
-            trackType = br.ReadByte();
+            NodeBase = new NodeBase(br, ParentObject);
+            TrackType = br.ReadByte();
 
-            if (trackType == 0 || trackType == 1 || trackType == 2)
+            if (TrackType == 0 || TrackType == 1 || TrackType == 2)
             { }
-            else if (trackType == 3)
+            else if (TrackType == 3)
             {
-                switchGroupType = br.ReadByte();
-                switchGroupID = br.ReadUInt32();
-                defaultSwitch = br.ReadUInt32();
-                switchAssoc = new List<uint>();
+                SwitchGroupType = br.ReadByte();
+                SwitchGroupID = br.ReadUInt32();
+                DefaultSwitch = br.ReadUInt32();
+                SwitchAssoc = new List<uint>();
                 uint numSwitchAssoc = br.ReadUInt32();
 
                 for (int i = 0; i < numSwitchAssoc; i++)
                 {
-                    switchAssoc.Add(br.ReadUInt32());
+                    SwitchAssoc.Add(br.ReadUInt32());
                 }
 
-                srcFadeTransitionTime = br.ReadUInt32();
-                srcFadeCurve = br.ReadUInt32();
-                srcFadeOffset = br.ReadUInt32();
-                transitionSyncType = br.ReadUInt32();
-                transitionCueFilterHash = br.ReadUInt32();
-                destFadeTransitionTime = br.ReadUInt32();
-                destFadeCurve = br.ReadUInt32();
-                destFadeOffset = br.ReadUInt32();
+                SourceFadeTransitionTime = br.ReadUInt32();
+                SourceFadeCurve = br.ReadUInt32();
+                SourceFadeOffset = br.ReadUInt32();
+                TransitionSyncType = br.ReadUInt32();
+                TransitionCueFilterHash = br.ReadUInt32();
+                DestinationFadeTransitionTime = br.ReadUInt32();
+                DestinationFadeCurve = br.ReadUInt32();
+                DestinationFadeOffset = br.ReadUInt32();
             }
             else
             {
-                MessageBox.Show("Detected unknown type 11 track type at: " + br.BaseStream.Position.ToString("X") + " Type: " + trackType.ToString());
+                MessageBox.Show("Detected unknown Type 11 track Type at: " + br.BaseStream.Position.ToString("X") + " Type: " + TrackType.ToString());
             }
 
-            lookAheadTime = br.ReadUInt32();
+            LookAheadTime = br.ReadUInt32();
         }
 
-        public MusicTrack(HIRCObject parentObject)
+        public MusicTrack(HIRCObject ParentObject)
         {
-            type = 0;
-            parent = parentObject;
-            id = 0;
-            musicFlags = 0;
-            trackSources = new List<TrackSource>();
-            trackPlaylist = new List<TrackItem>();
-            numSubtrack = 0;
-            sourceId = 0;
-            automationItems = new List<AutomationItem>();
-            nodeBase = new NodeBase(parentObject);
-            trackType = 0;
-            switchGroupType = 0;
-            switchGroupID = 0;
-            defaultSwitch = 0;
-            switchAssoc = new List<uint>();
-            srcFadeTransitionTime = 0;
-            srcFadeCurve = 0;
-            srcFadeOffset = 0;
-            transitionSyncType = 0;
-            transitionCueFilterHash = 0;
-            destFadeTransitionTime = 0;
-            destFadeCurve = 0;
-            destFadeOffset = 0;
-            lookAheadTime = 0;
+            Type = 0;
+            Parent = ParentObject;
+            ID = 0;
+            MusicFlags = 0;
+            TrackSources = new List<TrackSource>();
+            TrackPlaylist = new List<TrackItem>();
+            SubtrackCount = 0;
+            SourceID = 0;
+            AutomationItems = new List<AutomationItem>();
+            NodeBase = new NodeBase(ParentObject);
+            TrackType = 0;
+            SwitchGroupType = 0;
+            SwitchGroupID = 0;
+            DefaultSwitch = 0;
+            SwitchAssoc = new List<uint>();
+            SourceFadeTransitionTime = 0;
+            SourceFadeCurve = 0;
+            SourceFadeOffset = 0;
+            TransitionSyncType = 0;
+            TransitionCueFilterHash = 0;
+            DestinationFadeTransitionTime = 0;
+            DestinationFadeCurve = 0;
+            DestinationFadeOffset = 0;
+            LookAheadTime = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write(musicFlags);
-            bw.Write(trackSources.Count);
+            bw.Write(ID);
+            bw.Write(MusicFlags);
+            bw.Write(TrackSources.Count);
 
-            foreach (TrackSource source in trackSources)
+            foreach (TrackSource source in TrackSources)
             {
                 TrackSource.WriteTrackSource(bw, source);
             }
 
-            bw.Write(trackPlaylist.Count);
+            bw.Write(TrackPlaylist.Count);
 
-            foreach (TrackItem item in trackPlaylist)
+            foreach (TrackItem item in TrackPlaylist)
             {
                 item.WriteToFile(bw);
             }
 
-            if (trackPlaylist.Count != 0)
+            if (TrackPlaylist.Count != 0)
             {
-                bw.Write(numSubtrack);
+                bw.Write(SubtrackCount);
             }
 
-            bw.Write(automationItems.Count);
+            bw.Write(AutomationItems.Count);
 
-            foreach (AutomationItem item in automationItems)
+            foreach (AutomationItem item in AutomationItems)
             {
                 AutomationItem.WriteAutomationItem(bw, item);
             }
 
-            nodeBase.WriteToFile(bw);
+            NodeBase.WriteToFile(bw);
 
-            bw.Write(trackType);
+            bw.Write(TrackType);
 
-            if (trackType == 3)
+            if (TrackType == 3)
             {
-                bw.Write(switchGroupType);
-                bw.Write(switchGroupID);
-                bw.Write(defaultSwitch);
-                bw.Write(switchAssoc.Count);
+                bw.Write(SwitchGroupType);
+                bw.Write(SwitchGroupID);
+                bw.Write(DefaultSwitch);
+                bw.Write(SwitchAssoc.Count);
 
-                foreach (uint assoc in switchAssoc)
+                foreach (uint assoc in SwitchAssoc)
                 {
                     bw.Write(assoc);
                 }
 
-                bw.Write(srcFadeTransitionTime);
-                bw.Write(srcFadeCurve);
-                bw.Write(srcFadeOffset);
-                bw.Write(transitionSyncType);
-                bw.Write(transitionCueFilterHash);
-                bw.Write(destFadeTransitionTime);
-                bw.Write(destFadeCurve);
-                bw.Write(destFadeOffset);
+                bw.Write(SourceFadeTransitionTime);
+                bw.Write(SourceFadeCurve);
+                bw.Write(SourceFadeOffset);
+                bw.Write(TransitionSyncType);
+                bw.Write(TransitionCueFilterHash);
+                bw.Write(DestinationFadeTransitionTime);
+                bw.Write(DestinationFadeCurve);
+                bw.Write(DestinationFadeOffset);
             }
 
-            bw.Write(lookAheadTime);
+            bw.Write(LookAheadTime);
         }
 
         public int GetLength()
         {
-            int length = 22 + nodeBase.GetLength() + trackSources.Count * 14 + trackPlaylist.Count * 40;
+            int Length = 22 + NodeBase.GetLength() + TrackSources.Count * 14 + TrackPlaylist.Count * 40;
 
-            foreach (AutomationItem item in automationItems)
+            foreach (AutomationItem item in AutomationItems)
             {
-                length += item.GetLength();
+                Length += item.GetLength();
             }
 
-            if (trackPlaylist.Count != 0)
+            if (TrackPlaylist.Count != 0)
             {
-                length += 4;
+                Length += 4;
             }
 
-            if (trackType == 0 || trackType == 1 || trackType == 2)
+            if (TrackType == 0 || TrackType == 1 || TrackType == 2)
             { }
-            else if (trackType == 3)
+            else if (TrackType == 3)
             {
-                length += 45 + switchAssoc.Count * 4;
+                Length += 45 + SwitchAssoc.Count * 4;
             }
 
-            return length;
+            return Length;
         }
     }
 }

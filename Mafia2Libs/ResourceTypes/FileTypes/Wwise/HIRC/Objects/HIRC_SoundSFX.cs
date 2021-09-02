@@ -12,32 +12,32 @@ namespace ResourceTypes.Wwise.Objects
     public class SoundSFX
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public uint pluginId { get; set; }
-        public int pluginType { get; set; }
-        public int pluginCompany { get; set; }
-        public byte streamType { get; set; } //0x00 = Data/Bnk, 0x02 = Streaming
-        public uint sourceId { get; set; }
-        public int inMemoryMediaSize { get; set; }
-        public byte sourceBits { get; set; } //bit0 = "bIsLanguageSpecific", bit1 = "bPrefetch", bit3 = "bNonCachable", bit7 = "bHasSource"
-        public int soundInitialSize { get; set; }
-        public NodeBase nodeBase { get; set; }
-        public SoundSFX(HIRCObject parentObject, BinaryReader br, int iType)
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public uint PluginID { get; set; }
+        public int PluginType { get; set; }
+        public int PluginCompany { get; set; }
+        public byte StreamType { get; set; } //0x00 = Data/Bnk, 0x02 = Streaming
+        public uint SourceID { get; set; }
+        public int InMemoryMediaSize { get; set; }
+        public byte SourceBits { get; set; } //bit0 = "bIsLanguageSpecific", bit1 = "bPrefetch", bit3 = "bNonCachable", bit7 = "bHasSource"
+        public int SoundInitialSize { get; set; }
+        public NodeBase NodeBase { get; set; }
+        public SoundSFX(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            pluginType = br.ReadByte();
-            pluginCompany = br.ReadByte();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            PluginType = br.ReadByte();
+            PluginCompany = br.ReadByte();
             br.BaseStream.Seek((int)br.BaseStream.Position - 2, SeekOrigin.Begin);
-            pluginId = br.ReadUInt32();
-            streamType = br.ReadByte();
-            sourceId = br.ReadUInt32();
-            inMemoryMediaSize = br.ReadInt32();
-            sourceBits = br.ReadByte();
+            PluginID = br.ReadUInt32();
+            StreamType = br.ReadByte();
+            SourceID = br.ReadUInt32();
+            InMemoryMediaSize = br.ReadInt32();
+            SourceBits = br.ReadByte();
 
-            switch(pluginId)
+            switch(PluginID)
             {
                 case 13107202:
                 case 7798786:
@@ -46,44 +46,44 @@ namespace ResourceTypes.Wwise.Objects
                 case 6619138:
                 case 6684674:
                 case 6553602:
-                    soundInitialSize = br.ReadInt32();
+                    SoundInitialSize = br.ReadInt32();
                     break;
 
                 default:
                     break;
             }
 
-            nodeBase = new NodeBase(br, parentObject);
+            NodeBase = new NodeBase(br, ParentObject);
         }
 
-        public SoundSFX(HIRCObject parent)
+        public SoundSFX(HIRCObject Parent)
         {
-            type = 0;
-            id = 0;
-            pluginType = 0;
-            pluginCompany = 0;
-            pluginId = 0;
-            streamType = 0;
-            sourceId = 0;
-            inMemoryMediaSize = 0;
-            sourceBits = 0;
-            soundInitialSize = 0;
+            Type = 0;
+            ID = 0;
+            PluginType = 0;
+            PluginCompany = 0;
+            PluginID = 0;
+            StreamType = 0;
+            SourceID = 0;
+            InMemoryMediaSize = 0;
+            SourceBits = 0;
+            SoundInitialSize = 0;
 
-            nodeBase = new NodeBase(parent);
+            NodeBase = new NodeBase(Parent);
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write(pluginId);
-            bw.Write(streamType);
-            bw.Write(sourceId);
-            bw.Write(inMemoryMediaSize);
-            bw.Write(sourceBits);
+            bw.Write(ID);
+            bw.Write(PluginID);
+            bw.Write(StreamType);
+            bw.Write(SourceID);
+            bw.Write(InMemoryMediaSize);
+            bw.Write(SourceBits);
 
-            switch (pluginId)
+            switch (PluginID)
             {
                 case 13107202:
                 case 7798786:
@@ -92,21 +92,21 @@ namespace ResourceTypes.Wwise.Objects
                 case 6619138:
                 case 6684674:
                 case 6553602:
-                    bw.Write(soundInitialSize);
+                    bw.Write(SoundInitialSize);
                     break;
 
                 default:
                     break;
             }
 
-            nodeBase.WriteToFile(bw);
+            NodeBase.WriteToFile(bw);
         }
 
         public int GetLength()
         {
-            int length = 18;
+            int Length = 18;
 
-            switch (pluginId)
+            switch (PluginID)
             {
                 case 13107202:
                 case 7798786:
@@ -115,16 +115,16 @@ namespace ResourceTypes.Wwise.Objects
                 case 6619138:
                 case 6684674:
                 case 6553602:
-                    length += 4;
+                    Length += 4;
                     break;
 
                 default:
                     break;
             }
 
-            length += nodeBase.GetLength();
+            Length += NodeBase.GetLength();
 
-            return length;
+            return Length;
         }
     }
 }

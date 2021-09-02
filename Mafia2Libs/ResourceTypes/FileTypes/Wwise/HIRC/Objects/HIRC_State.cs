@@ -12,60 +12,60 @@ namespace ResourceTypes.Wwise.Objects
     public class State
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public List<Prop> props { get; set; }
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public List<Prop> Props { get; set; }
         public State(BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            props = new List<Prop>();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            Props = new List<Prop>();
             uint numProps = br.ReadUInt16();
 
             for (int i = 0; i < numProps; i++)
             {
-                int id = br.ReadInt16();
-                props.Add(new Prop(id));
+                int ID = br.ReadInt16();
+                Props.Add(new Prop(ID));
             }
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
                 uint value = br.ReadUInt32();
-                prop.value = value;
+                prop.Value = value;
             }
         }
 
         public State()
         {
-            type = 0;
-            id = 0;
-            props = new List<Prop>();
+            Type = 0;
+            ID = 0;
+            Props = new List<Prop>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write((short)props.Count);
+            bw.Write(ID);
+            bw.Write((short)Props.Count);
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                bw.Write((short)prop.id);
+                bw.Write((short)prop.ID);
             }
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                bw.Write(prop.value);
+                bw.Write(prop.Value);
             }
         }
 
         public int GetLength()
         {
-            int length = 6 + props.Count * 6;
+            int Length = 6 + Props.Count * 6;
 
-            return length;
+            return Length;
         }
     }
 }

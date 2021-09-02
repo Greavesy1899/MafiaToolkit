@@ -3,74 +3,76 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class SeqPlaylistItem
     {
-        public uint segmentId { get; set; }
-        public uint itemId { get; set; }
+        public uint SegmentID { get; set; }
+        public uint ItemID { get; set; }
         public int RSType { get; set; }
         public int Loop { get; set; }
         public int LoopMin { get; set; }
         public int LoopMax { get; set; }
-        public uint weight { get; set; }
-        public uint avoidRepeatCount { get; set; }
-        public int isUsingWeight { get; set; }
-        public int isShuffle { get; set; }
-        public List<SeqPlaylistItem> children { get; set; }
+        public uint Weight { get; set; }
+        public uint AvoidRepeatCount { get; set; }
+        public int IsUsingWeight { get; set; }
+        public int IsShuffle { get; set; }
+        public List<SeqPlaylistItem> Children { get; set; }
         public SeqPlaylistItem(BinaryReader br)
         {
-            segmentId = br.ReadUInt32();
-            itemId = br.ReadUInt32();
+            SegmentID = br.ReadUInt32();
+            ItemID = br.ReadUInt32();
             uint numChildren = br.ReadUInt32();
             RSType = br.ReadInt32();
             Loop = br.ReadInt16();
             LoopMin = br.ReadInt16();
             LoopMax = br.ReadInt16();
-            weight = br.ReadUInt32();
-            avoidRepeatCount = br.ReadUInt16();
-            isUsingWeight = br.ReadByte();
-            isShuffle = br.ReadByte();
-            children = new List<SeqPlaylistItem>();
+            Weight = br.ReadUInt32();
+            AvoidRepeatCount = br.ReadUInt16();
+            IsUsingWeight = br.ReadByte();
+            IsShuffle = br.ReadByte();
+            Children = new List<SeqPlaylistItem>();
 
             for (int i = 0; i < numChildren; i++)
             {
-                children.Add(new SeqPlaylistItem(br));
+                Children.Add(new SeqPlaylistItem(br));
             }
         }
 
         public SeqPlaylistItem()
         {
-            segmentId = 0;
-            itemId = 0;
+            SegmentID = 0;
+            ItemID = 0;
             RSType = 0;
             Loop = 0;
             LoopMin = 0;
             LoopMax = 0;
-            weight = 0;
-            avoidRepeatCount = 0;
-            isUsingWeight = 0;
-            isShuffle = 0;
-            children = new List<SeqPlaylistItem>();
+            Weight = 0;
+            AvoidRepeatCount = 0;
+            IsUsingWeight = 0;
+            IsShuffle = 0;
+            Children = new List<SeqPlaylistItem>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(segmentId);
-            bw.Write(itemId);
-            bw.Write(children.Count);
+            bw.Write(SegmentID);
+            bw.Write(ItemID);
+            bw.Write(Children.Count);
             bw.Write(RSType);
             bw.Write((short)Loop);
             bw.Write((short)LoopMin);
             bw.Write((short)LoopMax);
-            bw.Write(weight);
-            bw.Write((short)avoidRepeatCount);
-            bw.Write((byte)isUsingWeight);
-            bw.Write((byte)isShuffle);
+            bw.Write(Weight);
+            bw.Write((short)AvoidRepeatCount);
+            bw.Write((byte)IsUsingWeight);
+            bw.Write((byte)IsShuffle);
 
-            foreach (SeqPlaylistItem child in children)
+            foreach (SeqPlaylistItem child in Children)
             {
                 child.WriteToFile(bw);
             }
@@ -80,7 +82,7 @@ namespace ResourceTypes.Wwise.Helpers
         {
             int count = 1;
 
-            foreach (SeqPlaylistItem child in children)
+            foreach (SeqPlaylistItem child in Children)
             {
                 count += child.GetCount();
             }
@@ -92,7 +94,7 @@ namespace ResourceTypes.Wwise.Helpers
         {
             int itemLength = 30;
 
-            foreach (SeqPlaylistItem item in children)
+            foreach (SeqPlaylistItem item in Children)
             {
                 itemLength += item.GetLength();
             }

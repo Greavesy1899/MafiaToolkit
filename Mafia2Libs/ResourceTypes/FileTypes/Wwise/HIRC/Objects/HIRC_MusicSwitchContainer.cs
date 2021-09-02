@@ -12,159 +12,159 @@ namespace ResourceTypes.Wwise.Objects
     public class MusicSwitchContainer
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public byte musicFlags { get; set; } //bit1 = "bOverrideParentMidiTempo", bit2 = "bOverrideParentMidiTarget", bit3 = "bMidiTargetTypeBus" 
-        public NodeBase nodeBase { get; set; }
-        public List<uint> childIDs { get; set; } //IDs of child HIRC objects
-        public double akMeterGridPeriod { get; set; }
-        public double akMeterGridOffset { get; set; }
-        public float akMeterTempo { get; set; }
-        public byte akMeterTimeSigNumBeatsBar { get; set; }
-        public byte akMeterTimeSigBeatValue { get; set; }
-        public byte akMeterInfoFlag { get; set; }
-        public List<byte[]> stingers { get; set; }
-        public List<TransitionRule> rules { get; set; }
-        public int continuePlayback { get; set; }
-        public List<ArgumentGroup> argumentGroups { get; set; }
-        public byte mode { get; set; } //0x00 = BestMatch
-        public List<DecisionTree> decisionTrees { get; set; }
-        public MusicSwitchContainer(HIRCObject parentObject, BinaryReader br, int iType)
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public byte MusicFlags { get; set; } //bit1 = "bOverrideParentMidiTempo", bit2 = "bOverrideParentMidiTarget", bit3 = "bMidiTargetTypeBus" 
+        public NodeBase NodeBase { get; set; }
+        public List<uint> ChildIDs { get; set; } //IDs of child HIRC objects
+        public double AKMeterGridPeriod { get; set; }
+        public double AKMeterGridOffset { get; set; }
+        public float AKMeterTempo { get; set; }
+        public byte AKMeterTimeSigNumBeatsBar { get; set; }
+        public byte AKMeterTimeSigBeatValue { get; set; }
+        public byte AKMeterInfoFlag { get; set; }
+        public List<byte[]> Stingers { get; set; }
+        public List<TransitionRule> Rules { get; set; }
+        public int ContinuePlayback { get; set; }
+        public List<ArgumentGroup> ArgumentGroups { get; set; }
+        public byte Mode { get; set; } //0x00 = BestMatch
+        public List<DecisionTree> DecisionTrees { get; set; }
+        public MusicSwitchContainer(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            musicFlags = br.ReadByte();
-            nodeBase = new NodeBase(br, parentObject);
-            childIDs = new List<uint>();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            MusicFlags = br.ReadByte();
+            NodeBase = new NodeBase(br, ParentObject);
+            ChildIDs = new List<uint>();
             uint numChilds = br.ReadUInt32();
 
             for (int i = 0; i < numChilds; i++)
             {
-                uint key = br.ReadUInt32();
-                childIDs.Add(key);
+                uint Key = br.ReadUInt32();
+                ChildIDs.Add(Key);
             }
 
-            akMeterGridPeriod = br.ReadDouble();
-            akMeterGridOffset = br.ReadDouble();
-            akMeterTempo = br.ReadSingle();
-            akMeterTimeSigNumBeatsBar = br.ReadByte();
-            akMeterTimeSigBeatValue = br.ReadByte();
-            akMeterInfoFlag = br.ReadByte();
-            stingers = new List<byte[]>();
+            AKMeterGridPeriod = br.ReadDouble();
+            AKMeterGridOffset = br.ReadDouble();
+            AKMeterTempo = br.ReadSingle();
+            AKMeterTimeSigNumBeatsBar = br.ReadByte();
+            AKMeterTimeSigBeatValue = br.ReadByte();
+            AKMeterInfoFlag = br.ReadByte();
+            Stingers = new List<byte[]>();
             uint numStingers = br.ReadUInt32();
 
             for (int i = 0; i < numStingers; i++)
             {
-                stingers.Add(br.ReadBytes(24));
+                Stingers.Add(br.ReadBytes(24));
             }
 
-            rules = new List<TransitionRule>();
+            Rules = new List<TransitionRule>();
             uint numRules = br.ReadUInt32();
 
             for (int i = 0; i < numRules; i++)
             {
-                rules.Add(new TransitionRule(br, parentObject));
+                Rules.Add(new TransitionRule(br, ParentObject));
             }
 
-            continuePlayback = br.ReadByte();
+            ContinuePlayback = br.ReadByte();
             uint treeDepth = br.ReadUInt32();
-            argumentGroups = new List<ArgumentGroup>();
+            ArgumentGroups = new List<ArgumentGroup>();
 
             for (int i = 0; i < treeDepth; i++)
             {
-                uint id = br.ReadUInt32();
+                uint ID = br.ReadUInt32();
                 int value = br.ReadByte();
-                argumentGroups.Add(new ArgumentGroup(id, value));
+                ArgumentGroups.Add(new ArgumentGroup(ID, value));
             }
 
-            decisionTrees = new List<DecisionTree>();
+            DecisionTrees = new List<DecisionTree>();
             uint treeDataSize = br.ReadUInt32(); //DecisionTree = 12, DecisionTreeNode = 12 --> treeDataSize = 12 * treeDepth + 12 * DecisionTreeNodeCount
-            mode = br.ReadByte();
+            Mode = br.ReadByte();
 
             long initOffset = br.BaseStream.Position;
             long endOffset = br.BaseStream.Position;
 
             while ((endOffset - initOffset) != treeDataSize)
             {
-                decisionTrees.Add(new DecisionTree(br, treeDataSize));
+                DecisionTrees.Add(new DecisionTree(br, treeDataSize));
                 endOffset = br.BaseStream.Position;
             }
         }
 
-        public MusicSwitchContainer(HIRCObject parentObject)
+        public MusicSwitchContainer(HIRCObject ParentObject)
         {
-            type = 0;
-            id = 0;
-            musicFlags = 0;
-            nodeBase = new NodeBase(parentObject);
-            childIDs = new List<uint>();
-            akMeterGridPeriod = 0;
-            akMeterGridOffset = 0;
-            akMeterTempo = 0;
-            akMeterTimeSigNumBeatsBar = 0;
-            akMeterTimeSigBeatValue = 0;
-            akMeterInfoFlag = 0;
-            stingers = new List<byte[]>();
-            rules = new List<TransitionRule>();
-            continuePlayback = 0;
-            argumentGroups = new List<ArgumentGroup>();
-            mode = 0;
-            decisionTrees = new List<DecisionTree>();
+            Type = 0;
+            ID = 0;
+            MusicFlags = 0;
+            NodeBase = new NodeBase(ParentObject);
+            ChildIDs = new List<uint>();
+            AKMeterGridPeriod = 0;
+            AKMeterGridOffset = 0;
+            AKMeterTempo = 0;
+            AKMeterTimeSigNumBeatsBar = 0;
+            AKMeterTimeSigBeatValue = 0;
+            AKMeterInfoFlag = 0;
+            Stingers = new List<byte[]>();
+            Rules = new List<TransitionRule>();
+            ContinuePlayback = 0;
+            ArgumentGroups = new List<ArgumentGroup>();
+            Mode = 0;
+            DecisionTrees = new List<DecisionTree>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write(musicFlags);
+            bw.Write(ID);
+            bw.Write(MusicFlags);
 
-            nodeBase.WriteToFile(bw);
+            NodeBase.WriteToFile(bw);
 
-            bw.Write(childIDs.Count);
+            bw.Write(ChildIDs.Count);
 
-            foreach (uint value in childIDs)
+            foreach (uint value in ChildIDs)
             {
                 bw.Write(value);
             }
 
-            bw.Write(akMeterGridPeriod);
-            bw.Write(akMeterGridOffset);
-            bw.Write(akMeterTempo);
-            bw.Write(akMeterTimeSigNumBeatsBar);
-            bw.Write(akMeterTimeSigBeatValue);
-            bw.Write(akMeterInfoFlag);
-            bw.Write(stingers.Count);
+            bw.Write(AKMeterGridPeriod);
+            bw.Write(AKMeterGridOffset);
+            bw.Write(AKMeterTempo);
+            bw.Write(AKMeterTimeSigNumBeatsBar);
+            bw.Write(AKMeterTimeSigBeatValue);
+            bw.Write(AKMeterInfoFlag);
+            bw.Write(Stingers.Count);
 
-            foreach (byte[] stinger in stingers)
+            foreach (byte[] stinger in Stingers)
             {
                 bw.Write(stinger);
             }
 
-            bw.Write(rules.Count);
+            bw.Write(Rules.Count);
 
-            foreach (TransitionRule rule in rules)
+            foreach (TransitionRule rule in Rules)
             {
                 rule.WriteToFile(bw);
             }
 
-            bw.Write((byte)continuePlayback);
-            bw.Write(argumentGroups.Count);
+            bw.Write((byte)ContinuePlayback);
+            bw.Write(ArgumentGroups.Count);
 
-            foreach (ArgumentGroup group in argumentGroups)
+            foreach (ArgumentGroup Group in ArgumentGroups)
             {
-                group.WriteToFile(bw);
+                Group.WriteToFile(bw);
             }
 
             uint treeDataSize = 0;
             long treePos = bw.BaseStream.Position;
             bw.Write(treeDataSize);
-            bw.Write(mode);
+            bw.Write(Mode);
 
-            foreach (DecisionTree tree in decisionTrees)
+            foreach (DecisionTree tree in DecisionTrees)
             {
-                treeDataSize += (uint)tree.nodes.Count * 12;
+                treeDataSize += (uint)tree.Nodes.Count * 12;
 
                 if (tree.isSingle == 0)
                 {
@@ -174,32 +174,32 @@ namespace ResourceTypes.Wwise.Objects
                 tree.WriteToFile(bw);
             }
 
-            long lastPos = bw.BaseStream.Position;
+            long LastPos = bw.BaseStream.Position;
             bw.Seek((int)treePos, SeekOrigin.Begin);
             bw.Write(treeDataSize);
-            bw.Seek((int)lastPos, SeekOrigin.Begin);
+            bw.Seek((int)LastPos, SeekOrigin.Begin);
         }
 
         public int GetLength()
         {
-            int length = 50 + nodeBase.GetLength() + childIDs.Count * 4 + stingers.Count * 24 + argumentGroups.Count * 5;
+            int Length = 50 + NodeBase.GetLength() + ChildIDs.Count * 4 + Stingers.Count * 24 + ArgumentGroups.Count * 5;
 
-            foreach (TransitionRule rule in rules)
+            foreach (TransitionRule rule in Rules)
             {
-                length += rule.GetLength();
+                Length += rule.GetLength();
             }
 
-            foreach (DecisionTree tree in decisionTrees)
+            foreach (DecisionTree tree in DecisionTrees)
             {
-                length += tree.nodes.Count * 12;
+                Length += tree.Nodes.Count * 12;
 
                 if (tree.isSingle == 0)
                 {
-                    length += 12;
+                    Length += 12;
                 }
             }
 
-            return length;
+            return Length;
         }
     }
 }

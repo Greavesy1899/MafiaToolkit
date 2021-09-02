@@ -12,93 +12,91 @@ namespace ResourceTypes.Wwise
 {
     public class PCKString
     {
-        public string value;
-        public uint index;
+        public string Value;
+        public uint Index;
 
         public PCKString(BinaryReader br, long start)
         {
-            uint offset = br.ReadUInt32();
-            index = br.ReadUInt32();
+            uint Offset = br.ReadUInt32();
+            Index = br.ReadUInt32();
             long retval = br.BaseStream.Position;
-            br.BaseStream.Seek(start + offset, SeekOrigin.Begin);
-            value = StringHelpers.ReadUniNullTerminatedString(br);
+            br.BaseStream.Seek(start + Offset, SeekOrigin.Begin);
+            Value = StringHelpers.ReadUniNullTerminatedString(br);
             br.BaseStream.Seek(retval, SeekOrigin.Begin);
 
         }
-        public PCKString(uint Index, string Value)
+        public PCKString(uint index, string value)
         {
-            index = Index;
-            value = Value;
+            Index = index;
+            Value = value;
         }
     }
     public class PCK
     {
-        public byte[] magic = { (byte)'A', (byte)'K', (byte)'P', (byte)'K' };
-        public byte[] metaMagic = { (byte)'M', (byte)'E', (byte)'T', (byte)'A' };
-        public uint headerLength;
-        public uint unkn2 = 1;
-        public uint languageLength;
-        public uint bnkTableLength = 4;
-        public uint wemATableLength;
-        public uint wemBTableLength;
-        public uint multiplier;
-        public List<PCKString> pckStrings = new List<PCKString>();
+        public byte[] Magic = { (byte)'A', (byte)'K', (byte)'P', (byte)'K' };
+        public uint HeaderLength;
+        public uint Version = 1;
+        public uint LanguageLength;
+        public uint BnkTableLength = 4;
+        public uint WemATableLength;
+        public uint WemBTableLength;
+        public uint Multiplier;
+        public List<PCKString> PckStrings = new List<PCKString>();
         public List<Wem> WemList = new List<Wem>();
         public List<int> WemAList = new List<int>();
         public List<int> WemBList = new List<int>();
-        public byte[] bnkTable;
-        public int MetaData = 0;
+        public byte[] BnkTable;
         public PCK()
         {
-            headerLength = 0;
-            unkn2 = 1;
-            languageLength = 0;
-            bnkTableLength = 0;
-            wemATableLength = 0;
-            wemBTableLength = 0;
-            multiplier = 16;
-            pckStrings.Add(new PCKString(0, "sfx"));
+            HeaderLength = 0;
+            Version = 1;
+            LanguageLength = 0;
+            BnkTableLength = 0;
+            WemATableLength = 0;
+            WemBTableLength = 0;
+            Multiplier = 16;
+            PckStrings.Add(new PCKString(0, "sfx"));
         }
         public PCK(string fileName)
         {
             using (BinaryReader br = new BinaryReader(new FileStream(fileName, FileMode.Open), Encoding.ASCII))
             {
-                char[] magicBytes = br.ReadChars(4);
+                char[] MagicBytes = br.ReadChars(4);
                 uint headerLen = br.ReadUInt32();
-                headerLength = headerLen;
-                unkn2 = br.ReadUInt32();
-                languageLength = br.ReadUInt32();
-                bnkTableLength = br.ReadUInt32();
-                wemATableLength = br.ReadUInt32();
-                wemBTableLength = br.ReadUInt32();
+                HeaderLength = headerLen;
+                Version = br.ReadUInt32();
+                LanguageLength = br.ReadUInt32();
+                BnkTableLength = br.ReadUInt32();
+                WemATableLength = br.ReadUInt32();
+                WemBTableLength = br.ReadUInt32();
                 long stringHeaderStart = br.BaseStream.Position;
                 uint stringCount = br.ReadUInt32();
 
                 for (int i = 0; i < stringCount; i++)
                 {
                     PCKString stringData = new PCKString(br, stringHeaderStart);
-                    pckStrings.Add(stringData);
+                    PckStrings.Add(stringData);
                 }
 
-                br.BaseStream.Seek(stringHeaderStart + languageLength, SeekOrigin.Begin);
+                br.BaseStream.Seek(stringHeaderStart + LanguageLength, SeekOrigin.Begin);
 
-                uint bnksCount = br.ReadUInt32();
+                uint BnksCount = br.ReadUInt32();
 
                 uint wemACount = br.ReadUInt32();
 
                 for (int i = 0; i < wemACount; i++)
                 {
-                    ulong id = br.ReadUInt32();
-                    multiplier = br.ReadUInt32();
-                    uint length = br.ReadUInt32();
-                    uint offset = br.ReadUInt32() * multiplier;
+                    ulong ID = br.ReadUInt32();
+                    Multiplier = br.ReadUInt32();
+                    uint Length = br.ReadUInt32();
+                    uint Offset = br.ReadUInt32() * Multiplier;
                     uint languageEnum = br.ReadUInt32();
                     int workingOffset = (int)br.BaseStream.Position;
-                    br.BaseStream.Seek(offset, SeekOrigin.Begin);
-                    byte[] file = br.ReadBytes((int)length);
+                    br.BaseStream.Seek(Offset, SeekOrigin.Begin);
+                    byte[] file = br.ReadBytes((int)Length);
                     br.BaseStream.Seek(workingOffset, SeekOrigin.Begin);
                     string name = "Imported_Wem_" + i;
-                    Wem newWem = new Wem(name, id, file, languageEnum, offset);
+                    Wem newWem = new Wem(name, ID, file, languageEnum, Offset);
                     WemList.Add(newWem);
                 }
 
@@ -106,23 +104,23 @@ namespace ResourceTypes.Wwise
 
                 for (int i = 0; i < wemBCount; i++)
                 {
-                    ulong id = br.ReadUInt64();
-                    multiplier = br.ReadUInt32();
-                    int length = br.ReadInt32();
-                    uint offset = br.ReadUInt32() * multiplier;
+                    ulong ID = br.ReadUInt64();
+                    Multiplier = br.ReadUInt32();
+                    int Length = br.ReadInt32();
+                    uint Offset = br.ReadUInt32() * Multiplier;
                     uint languageEnum = br.ReadUInt32();
 
                     int workingOffset = (int)br.BaseStream.Position;
 
-                    br.BaseStream.Seek(offset, SeekOrigin.Begin);
+                    br.BaseStream.Seek(Offset, SeekOrigin.Begin);
 
-                    byte[] file = br.ReadBytes(length);
+                    byte[] file = br.ReadBytes(Length);
 
                     br.BaseStream.Seek(workingOffset, SeekOrigin.Begin);
 
                     string name = "Imported_Wem_" + i;
 
-                    Wem newWem = new Wem(name, id, file, languageEnum, offset);
+                    Wem newWem = new Wem(name, ID, file, languageEnum, Offset);
                     WemList.Add(newWem);
                 }
             }
@@ -131,15 +129,15 @@ namespace ResourceTypes.Wwise
         public List<string> GetLanguages()
         {
             List<string> langList = new List<string>();
-            for (int i = 0; i < pckStrings.Count; i++)
+            for (int i = 0; i < PckStrings.Count; i++)
             {
                 try
                 {
-                    langList.Insert((int)pckStrings[i].index, pckStrings[i].value);
+                    langList.Insert((int)PckStrings[i].Index, PckStrings[i].Value);
                 }
                 catch (ArgumentOutOfRangeException)
                 {
-                    langList.Add(pckStrings[i].value);
+                    langList.Add(PckStrings[i].Value);
                 }
             }
             return langList;
@@ -149,18 +147,18 @@ namespace ResourceTypes.Wwise
         {
             List<byte> languageBytes = new List<byte>();
 
-            byte[] count = BitConverter.GetBytes(pckStrings.Count);
+            byte[] count = BitConverter.GetBytes(PckStrings.Count);
             for (int i = 0; i < count.Length; i++)
             {
                 languageBytes.Add(count[i]);
             }
-            int headerSize = 4 + (pckStrings.Count * 8);
+            int headerSize = 4 + (PckStrings.Count * 8);
             List<byte> stringTable = new List<byte>();
-            int[] offsets = new int[pckStrings.Count];
+            int[] Offsets = new int[PckStrings.Count];
             List<string> strings = new List<string>();
-            for (int i = 0; i < pckStrings.Count; i++)
+            for (int i = 0; i < PckStrings.Count; i++)
             {
-                strings.Add(pckStrings[i].value);
+                strings.Add(PckStrings[i].Value);
             }
             strings.Sort();
             for (int i = 0; i < strings.Count; i++)
@@ -168,11 +166,11 @@ namespace ResourceTypes.Wwise
                 byte[] asBytes;
                 asBytes = Encoding.Unicode.GetBytes(strings[i]);
 
-                for (int j = 0; j < pckStrings.Count; j++)
+                for (int j = 0; j < PckStrings.Count; j++)
                 {
-                    if (pckStrings[j].value == strings[i])
+                    if (PckStrings[j].Value == strings[i])
                     {
-                        offsets[j] = Math.Max(0, headerSize + stringTable.Count);
+                        Offsets[j] = Math.Max(0, headerSize + stringTable.Count);
                         for (int k = 0; k < asBytes.Length; k++)
                         {
                             stringTable.Add(asBytes[k]);
@@ -182,14 +180,14 @@ namespace ResourceTypes.Wwise
                     }
                 }
             }
-            for (int i = 0; i < pckStrings.Count; i++)
+            for (int i = 0; i < PckStrings.Count; i++)
             {
-                byte[] offset = BitConverter.GetBytes(offsets[i]);
-                for (int j = 0; j < offset.Length; j++)
+                byte[] Offset = BitConverter.GetBytes(Offsets[i]);
+                for (int j = 0; j < Offset.Length; j++)
                 {
-                    languageBytes.Add(offset[j]);
+                    languageBytes.Add(Offset[j]);
                 }
-                byte[] index = BitConverter.GetBytes(pckStrings[i].index);
+                byte[] index = BitConverter.GetBytes(PckStrings[i].Index);
                 for (int j = 0; j < index.Length; j++)
                 {
                     languageBytes.Add(index[j]);
@@ -209,9 +207,9 @@ namespace ResourceTypes.Wwise
 
         public void WriteToFile(BinaryWriter bw)
         {
-            if (multiplier == 0)
+            if (Multiplier == 0)
             {
-                multiplier = 16;
+                Multiplier = 16;
             }
 
             WemList = new List<Wem>(WemList.OrderBy(i => i.ID));
@@ -238,28 +236,28 @@ namespace ResourceTypes.Wwise
 
                 if (i == 0)
                 {
-                    wem.Offset = (uint)Math.Ceiling((decimal)MathHelpers.RoundUp16((int)(40 + WemAList.Count * 20 + WemBList.Count * 24 + languageLength), false) / multiplier);
+                    wem.Offset = (uint)Math.Ceiling((decimal)MathHelpers.RoundUp16((int)(40 + WemAList.Count * 20 + WemBList.Count * 24 + LanguageLength), false) / Multiplier);
                 }
                 else
                 {
                     Wem lastWem = WemList[i - 1];
-                    wem.Offset = (uint)Math.Ceiling((decimal)MathHelpers.RoundUp16((int)((lastWem.Offset * multiplier) + lastWem.file.Length), false) / multiplier);
+                    wem.Offset = (uint)Math.Ceiling((decimal)MathHelpers.RoundUp16((int)((lastWem.Offset * Multiplier) + lastWem.File.Length), false) / Multiplier);
                 }
             }
 
             List<byte> languageBytes = GenerateLanguageBytes();
-            wemATableLength = (uint)(WemAList.Count * 20) + 4;
-            wemBTableLength = (uint)(WemBList.Count * 24) + 4;
-            bnkTableLength = 4; //Const in Mafia games
-            headerLength = (uint)(wemATableLength + 20 + languageBytes.Count + bnkTableLength + wemBTableLength);
+            WemATableLength = (uint)(WemAList.Count * 20) + 4;
+            WemBTableLength = (uint)(WemBList.Count * 24) + 4;
+            BnkTableLength = 4; //Const in Mafia games
+            HeaderLength = (uint)(WemATableLength + 20 + languageBytes.Count + BnkTableLength + WemBTableLength);
 
-            bw.Write(magic);
-            bw.Write(headerLength);
-            bw.Write(unkn2);
+            bw.Write(Magic);
+            bw.Write(HeaderLength);
+            bw.Write(Version);
             bw.Write(languageBytes.Count);
-            bw.Write(bnkTableLength);
-            bw.Write(wemATableLength);
-            bw.Write(wemBTableLength);
+            bw.Write(BnkTableLength);
+            bw.Write(WemATableLength);
+            bw.Write(WemBTableLength);
 
             for (int i = 0; i < languageBytes.Count; i++)
             {
@@ -270,34 +268,34 @@ namespace ResourceTypes.Wwise
 
             bw.Write(WemAList.Count);
 
-            foreach (int id in WemAList)
+            foreach (int ID in WemAList)
             {
-                Wem wem = WemList[id];
+                Wem wem = WemList[ID];
 
                 bw.Write((uint)wem.ID);
-                bw.Write(multiplier);
-                bw.Write(wem.file.Length);
+                bw.Write(Multiplier);
+                bw.Write(wem.File.Length);
                 bw.Write(wem.Offset);
                 int workingOffset = (int)bw.BaseStream.Position;
-                bw.Seek((int)(wem.Offset * multiplier), SeekOrigin.Begin);
-                bw.Write(wem.file);
+                bw.Seek((int)(wem.Offset * Multiplier), SeekOrigin.Begin);
+                bw.Write(wem.File);
                 bw.Seek(workingOffset, SeekOrigin.Begin);
                 bw.Write(wem.LanguageEnum);
             }
 
             bw.Write(WemBList.Count);
 
-            foreach (int id in WemBList)
+            foreach (int ID in WemBList)
             {
-                Wem wem = WemList[id];
+                Wem wem = WemList[ID];
 
                 bw.Write(wem.ID);
-                bw.Write(multiplier);
-                bw.Write(wem.file.Length);
+                bw.Write(Multiplier);
+                bw.Write(wem.File.Length);
                 bw.Write(wem.Offset);
                 int workingOffset = (int)bw.BaseStream.Position;
-                bw.Seek((int)(wem.Offset * multiplier), SeekOrigin.Begin);
-                bw.Write(wem.file);
+                bw.Seek((int)(wem.Offset * Multiplier), SeekOrigin.Begin);
+                bw.Write(wem.File);
                 bw.Seek(workingOffset, SeekOrigin.Begin);
                 bw.Write(wem.LanguageEnum);
             }

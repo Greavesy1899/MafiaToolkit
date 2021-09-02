@@ -4,24 +4,26 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ExceptionItem
     {
-        public uint id { get; set; }
-        public int isBus { get; set; }
+        public uint ID { get; set; }
+        public int IsBus { get; set; }
 
         public ExceptionItem(BinaryReader br)
         {
-            id = br.ReadUInt32();
-            isBus = br.ReadByte();
+            ID = br.ReadUInt32();
+            IsBus = br.ReadByte();
         }
 
         public ExceptionItem()
         {
-            id = 0;
-            isBus = 0;
+            ID = 0;
+            IsBus = 0;
         }
     }
 }

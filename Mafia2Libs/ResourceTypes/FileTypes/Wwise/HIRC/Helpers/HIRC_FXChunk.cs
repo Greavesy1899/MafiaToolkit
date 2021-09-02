@@ -1,30 +1,32 @@
 ﻿using System;
 using System.Xml;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FXChunk
     {
-        public byte index { get; set; }
-        public uint id { get; set; }
-        public int isShareSet { get; set; }
-        public int isRendered { get; set; }
+        public byte Index { get; set; }
+        public uint ID { get; set; }
+        public int IsShareSet { get; set; }
+        public int IsRendered { get; set; }
 
-        public FXChunk(byte bIndex,uint iId, byte bIsShareSet, byte bIsRendered)
+        public FXChunk(byte bIndex,uint iID, byte bIsShareSet, byte bIsRendered)
         {
-            index = bIndex;
-            id = iId;
-            isShareSet = bIsShareSet;
-            isRendered = bIsRendered;
+            Index = bIndex;
+            ID = iID;
+            IsShareSet = bIsShareSet;
+            IsRendered = bIsRendered;
         }
 
         public FXChunk()
         {
-            index = 0;
-            id = 0;
-            isShareSet = 0;
-            isRendered = 0;
+            Index = 0;
+            ID = 0;
+            IsShareSet = 0;
+            IsRendered = 0;
         }
     }
 }

@@ -1,24 +1,26 @@
 ﻿using System;
 using System.Xml;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class PlaylistItem
     {
-        public uint vertexOffset { get; set; }
-        public uint numVertices { get; set; }
+        public uint VertexOffset { get; set; }
+        public uint VertexCount { get; set; }
 
         public PlaylistItem(uint iVertexOffset, uint iNumVertices)
         {
-            vertexOffset = iVertexOffset;
-            numVertices = iNumVertices;
+            VertexOffset = iVertexOffset;
+            VertexCount = iNumVertices;
         }
 
         public PlaylistItem()
         {
-            vertexOffset = 0;
-            numVertices = 0;
+            VertexOffset = 0;
+            VertexCount = 0;
         }
     }
 }

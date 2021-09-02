@@ -3,16 +3,18 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class DecisionTree
     {
-        public uint key { get; set; }
-        public int nodeId { get; set; }
-        public int weight { get; set; }
-        public int probability { get; set; }
-        public List<DecisionTreeNode> nodes { get; set; }
+        public uint Key { get; set; }
+        public int NodeID { get; set; }
+        public int Weight { get; set; }
+        public int Probability { get; set; }
+        public List<DecisionTreeNode> Nodes { get; set; }
         public int isSingle { get; set; }
 
         public DecisionTree(BinaryReader br, uint treeDataSize)
@@ -20,87 +22,88 @@ namespace ResourceTypes.Wwise.Helpers
             if (treeDataSize != 12)
             {
                 isSingle = 0;
-                nodes = new List<DecisionTreeNode>();
-                key = br.ReadUInt32();
-                nodeId = br.ReadUInt16();
+                Nodes = new List<DecisionTreeNode>();
+                Key = br.ReadUInt32();
+                NodeID = br.ReadUInt16();
                 int nodeCount = br.ReadUInt16();
-                weight = br.ReadUInt16();
-                probability = br.ReadUInt16();
+                Weight = br.ReadUInt16();
+                Probability = br.ReadUInt16();
 
                 for (int i = 0; i < nodeCount; i++)
                 {
-                    nodes.Add(new DecisionTreeNode(br));
+                    Nodes.Add(new DecisionTreeNode(br));
                 }
             }
             else
             {
                 isSingle = 1;
-                nodes = new List<DecisionTreeNode>();
-                nodes.Add(new DecisionTreeNode(br));
+                Nodes = new List<DecisionTreeNode>();
+                Nodes.Add(new DecisionTreeNode(br));
             }
         }
 
         public DecisionTree()
         {
             isSingle = 0;
-            nodes = new List<DecisionTreeNode>();
-            key = 0;
-            nodeId = 0;
-            weight = 0;
-            probability = 0;
+            Nodes = new List<DecisionTreeNode>();
+            Key = 0;
+            NodeID = 0;
+            Weight = 0;
+            Probability = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
             if (isSingle == 0)
             {
-                bw.Write(key);
-                bw.Write((short)nodeId);
-                bw.Write((short)nodes.Count);
-                bw.Write((short)weight);
-                bw.Write((short)probability);
+                bw.Write(Key);
+                bw.Write((short)NodeID);
+                bw.Write((short)Nodes.Count);
+                bw.Write((short)Weight);
+                bw.Write((short)Probability);
 
-                foreach (DecisionTreeNode node in nodes)
+                foreach (DecisionTreeNode node in Nodes)
                 {
-                    bw.Write(node.key);
-                    bw.Write(node.audioNodeId);
-                    bw.Write((short)node.weight);
-                    bw.Write((short)node.probability);
+                    bw.Write(node.Key);
+                    bw.Write(node.audioNodeID);
+                    bw.Write((short)node.Weight);
+                    bw.Write((short)node.Probability);
                 }
             }
             else
             {
-                foreach (DecisionTreeNode node in nodes)
+                foreach (DecisionTreeNode node in Nodes)
                 {
-                    bw.Write(node.key);
-                    bw.Write(node.audioNodeId);
-                    bw.Write((short)node.weight);
-                    bw.Write((short)node.probability);
+                    bw.Write(node.Key);
+                    bw.Write(node.audioNodeID);
+                    bw.Write((short)node.Weight);
+                    bw.Write((short)node.Probability);
                 }
             }
         }
     }
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class DecisionTreeNode
     {
-        public uint key { get; set; }
-        public uint audioNodeId { get; set; }
-        public int weight { get; set; }
-        public int probability { get; set; }
+        public uint Key { get; set; }
+        public uint audioNodeID { get; set; }
+        public int Weight { get; set; }
+        public int Probability { get; set; }
         public DecisionTreeNode(BinaryReader br)
         {
-            key = br.ReadUInt32();
-            audioNodeId = br.ReadUInt32();
-            weight = br.ReadUInt16();
-            probability = br.ReadUInt16();
+            Key = br.ReadUInt32();
+            audioNodeID = br.ReadUInt32();
+            Weight = br.ReadUInt16();
+            Probability = br.ReadUInt16();
         }
 
         public DecisionTreeNode()
         {
-            key = 0;
-            audioNodeId = 0;
-            weight = 0;
-            probability = 0;
+            Key = 0;
+            audioNodeID = 0;
+            Weight = 0;
+            Probability = 0;
         }
     }
 }

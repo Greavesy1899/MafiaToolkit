@@ -12,111 +12,111 @@ namespace ResourceTypes.Wwise.Objects
     public class MusicSegment
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public byte musicFlags { get; set; } //bit1 = "bOverrideParentMidiTempo", bit2 = "bOverrideParentMidiTarget", bit3 = "bMidiTargetTypeBus" 
-        public NodeBase nodeBase { get; set; }
-        public List<uint> childIDs { get; set; } //IDs of child HIRC objects
-        public double akMeterGridPeriod { get; set; }
-        public double akMeterGridOffset { get; set; }
-        public float akMeterTempo { get; set; }
-        public byte akMeterTimeSigNumBeatsBar { get; set; }
-        public byte akMeterTimeSigBeatValue { get; set; }
-        public byte akMeterInfoFlag { get; set; }
-        public List<byte[]> stingers { get; set; }
-        public double duration { get; set; }
-        public List<MusicMarker> musicMarkers { get; set; }
-        public MusicSegment(HIRCObject parentObject, BinaryReader br, int iType)
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public byte MusicFlags { get; set; } //bit1 = "bOverrideParentMidiTempo", bit2 = "bOverrideParentMidiTarget", bit3 = "bMidiTargetTypeBus" 
+        public NodeBase NodeBase { get; set; }
+        public List<uint> ChildIDs { get; set; } //IDs of child HIRC objects
+        public double AKMeterGridPeriod { get; set; }
+        public double AKMeterGridOffset { get; set; }
+        public float AKMeterTempo { get; set; }
+        public byte AKMeterTimeSigNumBeatsBar { get; set; }
+        public byte AKMeterTimeSigBeatValue { get; set; }
+        public byte AKMeterInfoFlag { get; set; }
+        public List<byte[]> Stingers { get; set; }
+        public double Duration { get; set; }
+        public List<MusicMarker> MusicMarkers { get; set; }
+        public MusicSegment(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            musicFlags = br.ReadByte();
-            nodeBase = new NodeBase(br, parentObject);
-            childIDs = new List<uint>();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            MusicFlags = br.ReadByte();
+            NodeBase = new NodeBase(br, ParentObject);
+            ChildIDs = new List<uint>();
             uint numChilds = br.ReadUInt32();
 
             for (int i = 0; i < numChilds; i++)
             {
-                uint key = br.ReadUInt32();
-                childIDs.Add(key);
+                uint Key = br.ReadUInt32();
+                ChildIDs.Add(Key);
             }
 
-            akMeterGridPeriod = br.ReadDouble();
-            akMeterGridOffset = br.ReadDouble();
-            akMeterTempo = br.ReadSingle();
-            akMeterTimeSigNumBeatsBar = br.ReadByte();
-            akMeterTimeSigBeatValue = br.ReadByte();
-            akMeterInfoFlag = br.ReadByte();
-            stingers = new List<byte[]>();
+            AKMeterGridPeriod = br.ReadDouble();
+            AKMeterGridOffset = br.ReadDouble();
+            AKMeterTempo = br.ReadSingle();
+            AKMeterTimeSigNumBeatsBar = br.ReadByte();
+            AKMeterTimeSigBeatValue = br.ReadByte();
+            AKMeterInfoFlag = br.ReadByte();
+            Stingers = new List<byte[]>();
             uint numStingers = br.ReadUInt32();
 
             for (int i = 0; i < numStingers; i++)
             {
-                stingers.Add(br.ReadBytes(24));
+                Stingers.Add(br.ReadBytes(24));
             }
 
-            duration = br.ReadDouble();
-            musicMarkers = new List<MusicMarker>();
+            Duration = br.ReadDouble();
+            MusicMarkers = new List<MusicMarker>();
             uint numMarkers = br.ReadUInt32();
 
             for (int i = 0; i < numMarkers; i++)
             {
-                musicMarkers.Add(new MusicMarker(br));
+                MusicMarkers.Add(new MusicMarker(br));
             }
         }
 
-        public MusicSegment(HIRCObject parentObject)
+        public MusicSegment(HIRCObject ParentObject)
         {
-            type = 0;
-            id = 0;
-            musicFlags = 0;
-            nodeBase = new NodeBase(parentObject);
-            childIDs = new List<uint>();
-            akMeterGridPeriod = 0;
-            akMeterGridOffset = 0;
-            akMeterTempo = 0;
-            akMeterTimeSigNumBeatsBar = 0;
-            akMeterTimeSigBeatValue = 0;
-            akMeterInfoFlag = 0;
-            stingers = new List<byte[]>();
-            duration = 0;
-            musicMarkers = new List<MusicMarker>();
+            Type = 0;
+            ID = 0;
+            MusicFlags = 0;
+            NodeBase = new NodeBase(ParentObject);
+            ChildIDs = new List<uint>();
+            AKMeterGridPeriod = 0;
+            AKMeterGridOffset = 0;
+            AKMeterTempo = 0;
+            AKMeterTimeSigNumBeatsBar = 0;
+            AKMeterTimeSigBeatValue = 0;
+            AKMeterInfoFlag = 0;
+            Stingers = new List<byte[]>();
+            Duration = 0;
+            MusicMarkers = new List<MusicMarker>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write(musicFlags);
+            bw.Write(ID);
+            bw.Write(MusicFlags);
 
-            nodeBase.WriteToFile(bw);
+            NodeBase.WriteToFile(bw);
 
-            bw.Write(childIDs.Count);
+            bw.Write(ChildIDs.Count);
 
-            foreach (uint child in childIDs)
+            foreach (uint child in ChildIDs)
             {
                 bw.Write(child);
             }
 
-            bw.Write(akMeterGridPeriod);
-            bw.Write(akMeterGridOffset);
-            bw.Write(akMeterTempo);
-            bw.Write(akMeterTimeSigNumBeatsBar);
-            bw.Write(akMeterTimeSigBeatValue);
-            bw.Write(akMeterInfoFlag);
-            bw.Write(stingers.Count);
+            bw.Write(AKMeterGridPeriod);
+            bw.Write(AKMeterGridOffset);
+            bw.Write(AKMeterTempo);
+            bw.Write(AKMeterTimeSigNumBeatsBar);
+            bw.Write(AKMeterTimeSigBeatValue);
+            bw.Write(AKMeterInfoFlag);
+            bw.Write(Stingers.Count);
 
-            foreach (byte[] stinger in stingers)
+            foreach (byte[] stinger in Stingers)
             {
                 bw.Write(stinger);
             }
 
-            bw.Write(duration);
-            bw.Write(musicMarkers.Count);
+            bw.Write(Duration);
+            bw.Write(MusicMarkers.Count);
 
-            foreach (MusicMarker marker in musicMarkers)
+            foreach (MusicMarker marker in MusicMarkers)
             {
                 marker.WriteToFile(bw);
             }
@@ -124,14 +124,14 @@ namespace ResourceTypes.Wwise.Objects
 
         public int GetLength()
         {
-            int length = 48 + nodeBase.GetLength() + childIDs.Count * 4 + stingers.Count * 24;
+            int Length = 48 + NodeBase.GetLength() + ChildIDs.Count * 4 + Stingers.Count * 24;
 
-            foreach (MusicMarker marker in musicMarkers)
+            foreach (MusicMarker marker in MusicMarkers)
             {
-                length += marker.GetLength();
+                Length += marker.GetLength();
             }
 
-            return length;
+            return Length;
         }
     }
 }

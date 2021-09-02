@@ -4,41 +4,43 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class SwitchParam
     {
-        public uint id { get; set; }
-        public byte paramBitVector { get; set; }
-        public byte paramBitVector2 { get; set; }
-        public float fadeOutTime { get; set; }
-        public float fadeInTime { get; set; }
+        public uint ID { get; set; }
+        public byte ParamBitVector { get; set; }
+        public byte ParamBitVector2 { get; set; }
+        public float FadeOutTime { get; set; }
+        public float FadeInTime { get; set; }
         public SwitchParam(BinaryReader br)
         {
-            id = br.ReadUInt32();
-            paramBitVector = br.ReadByte();
-            paramBitVector2 = br.ReadByte();
-            fadeOutTime = br.ReadSingle();
-            fadeInTime = br.ReadSingle();
+            ID = br.ReadUInt32();
+            ParamBitVector = br.ReadByte();
+            ParamBitVector2 = br.ReadByte();
+            FadeOutTime = br.ReadSingle();
+            FadeInTime = br.ReadSingle();
         }
 
         public SwitchParam()
         {
-            id = 0;
-            paramBitVector = 0;
-            paramBitVector2 = 0;
-            fadeOutTime = 0;
-            fadeInTime = 0;
+            ID = 0;
+            ParamBitVector = 0;
+            ParamBitVector2 = 0;
+            FadeOutTime = 0;
+            FadeInTime = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(id);
-            bw.Write(paramBitVector);
-            bw.Write(paramBitVector2);
-            bw.Write(fadeOutTime);
-            bw.Write(fadeInTime);
+            bw.Write(ID);
+            bw.Write(ParamBitVector);
+            bw.Write(ParamBitVector2);
+            bw.Write(FadeOutTime);
+            bw.Write(FadeInTime);
         }
     }
 }

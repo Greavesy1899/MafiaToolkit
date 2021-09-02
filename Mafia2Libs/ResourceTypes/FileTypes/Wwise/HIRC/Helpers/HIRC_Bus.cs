@@ -4,87 +4,88 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ResourceTypes.Wwise.Helpers;
 using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Bus
     {
-        [System.ComponentModel.Browsable(false)]
-        public HIRCObject parent { get; set; }
-        public uint overrideBusId { get; set; }
-        public List<Prop> props { get; set; }
-        public byte busInitialBitVector1 { get; set; } //bit0 = bMainOutputHierarchy, bit1 = bIsBackgroundMusic
-        public byte busInitialBitVector2 { get; set; }  //bit0 = bKillNewest, bit1 = bUseVirtualBehavior
-        public uint maxNumInstance { get; set; }
-        public uint channelConfig { get; set; } //bit0 = uNumChannels, bit8 = eConfigType, bit12 = uChannelMask
-        public byte busInitialBitVector3 { get; set; } //bit0 = bIsHdrBus, bit1 = bHdrReleaseModeExponential
-        public uint recoveryTime { get; set; }
-        public float maxDuckVolume { get; set; }
-        public List<Duck> ducks { get; set; }
-        public byte bitsFxBypass { get; set; }
-        public List<FXChunk> fxChunks { get; set; }
-        public uint fxId { get; set; }
-        public int isShareSet { get; set; }
-        public byte overrideAttachmentParams { get; set; }
+        [Browsable(false)]
+        public HIRCObject Parent { get; set; }
+        public uint OverrideBusID { get; set; }
+        public List<Prop> Props { get; set; }
+        public byte BusInitialBitVector1 { get; set; } //bit0 = bMainOutputHierarchy, bit1 = bIsBackgroundMusic
+        public byte BusInitialBitVector2 { get; set; }  //bit0 = bKillNewest, bit1 = bUseVirtualBehavior
+        public uint MaxInstanceCount { get; set; }
+        public uint ChannelConfig { get; set; } //bit0 = uNumChannels, bit8 = eConfigType, bit12 = uChannelMask
+        public byte BusInitialBitVector3 { get; set; } //bit0 = bIsHdrBus, bit1 = bHdrReleaseModeExponential
+        public uint RecoveryTime { get; set; }
+        public float MaxDuckVolume { get; set; }
+        public List<Duck> Ducks { get; set; }
+        public byte BitsFXBypass { get; set; }
+        public List<FXChunk> FXChunks { get; set; }
+        public uint FXID { get; set; }
+        public int IsShareSet { get; set; }
+        public byte OverrideAttachmentParams { get; set; }
         public List<RTPC> rtpc { get; set; }
-        public List<StateChunk> stateChunks { get; set; }
-        public List<StateProp> stateProps { get; set; }
-        public Bus(HIRCObject parentObject, BinaryReader br, uint length)
+        public List<StateChunk> StateChunks { get; set; }
+        public Bus(HIRCObject ParentObject, BinaryReader br, uint Length)
         {
-            parent = parentObject;
-            overrideBusId = br.ReadUInt32();
-            props = new List<Prop>();
-            int propsCount = br.ReadByte();
+            Parent = ParentObject;
+            OverrideBusID = br.ReadUInt32();
+            Props = new List<Prop>();
+            int PropsCount = br.ReadByte();
 
-            for (int i = 0; i < propsCount; i++)
+            for (int i = 0; i < PropsCount; i++)
             {
-                byte key = br.ReadByte();
-                props.Add(new Prop(key));
+                byte Key = br.ReadByte();
+                Props.Add(new Prop(Key));
             }
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                prop.value = br.ReadUInt32();
+                prop.Value = br.ReadUInt32();
             }
 
-            busInitialBitVector1 = br.ReadByte();
-            busInitialBitVector2 = br.ReadByte();
+            BusInitialBitVector1 = br.ReadByte();
+            BusInitialBitVector2 = br.ReadByte();
 
-            maxNumInstance = br.ReadUInt16();
-            channelConfig = br.ReadUInt32();
-            busInitialBitVector3 = br.ReadByte();
-            recoveryTime = br.ReadUInt32();
-            maxDuckVolume = br.ReadSingle();
-            ducks = new List<Duck>();
-            uint ducksCount = br.ReadUInt32();
+            MaxInstanceCount = br.ReadUInt16();
+            ChannelConfig = br.ReadUInt32();
+            BusInitialBitVector3 = br.ReadByte();
+            RecoveryTime = br.ReadUInt32();
+            MaxDuckVolume = br.ReadSingle();
+            Ducks = new List<Duck>();
+            uint DucksCount = br.ReadUInt32();
 
-            for (int i = 0; i < ducksCount; i++)
+            for (int i = 0; i < DucksCount; i++)
             {
-                ducks.Add(new Duck(br));
+                Ducks.Add(new Duck(br));
             }
 
             int numFx = br.ReadByte();
-            fxChunks = new List<FXChunk>();
+            FXChunks = new List<FXChunk>();
 
             if (numFx != 0)
             {
-                bitsFxBypass = br.ReadByte();
+                BitsFXBypass = br.ReadByte();
             }
 
             for (int i = 0; i < numFx; i++)
             {
                 byte Index = br.ReadByte();
-                uint Id = br.ReadUInt32();
+                uint ID = br.ReadUInt32();
                 byte bIsShareSet = br.ReadByte();
                 byte bIsRendered = br.ReadByte();
-                fxChunks.Add(new FXChunk(Index, Id, bIsShareSet, bIsRendered));
+                FXChunks.Add(new FXChunk(Index, ID, bIsShareSet, bIsRendered));
             }
 
-            fxId = br.ReadUInt32();
-            isShareSet = br.ReadByte();
-            overrideAttachmentParams = br.ReadByte();
+            FXID = br.ReadUInt32();
+            IsShareSet = br.ReadByte();
+            OverrideAttachmentParams = br.ReadByte();
             uint rtpcCount = br.ReadUInt16();
             rtpc = new List<RTPC>();
 
@@ -93,86 +94,85 @@ namespace ResourceTypes.Wwise.Helpers
                 rtpc.Add(new RTPC(br));
             }
 
-            stateChunks = new List<StateChunk>();
-            stateProps = new List<StateProp>();
+            StateChunks = new List<StateChunk>();
 
             uint stateChunkCount = br.ReadUInt32();
 
             for (int i = 0; i < stateChunkCount; i++)
             {
-                stateChunks.Add(new StateChunk(br, parent));
+                StateChunks.Add(new StateChunk(br, Parent));
             }
         }
 
-        public Bus(HIRCObject parentObject)
+        public Bus(HIRCObject ParentObject)
         {
-            parent = parentObject;
-            overrideBusId = 0;
-            props = new List<Prop>();
-            busInitialBitVector1 = 0;
-            busInitialBitVector2 = 0;
-            maxNumInstance = 0;
-            channelConfig = 0;
-            busInitialBitVector3 = 0;
-            recoveryTime = 0;
-            maxDuckVolume = 0;
-            ducks = new List<Duck>();
-            bitsFxBypass = 0;
-            fxChunks = new List<FXChunk>();
-            fxId = 0;
-            isShareSet = 0;
-            overrideAttachmentParams = 0;
+            Parent = ParentObject;
+            OverrideBusID = 0;
+            Props = new List<Prop>();
+            BusInitialBitVector1 = 0;
+            BusInitialBitVector2 = 0;
+            MaxInstanceCount = 0;
+            ChannelConfig = 0;
+            BusInitialBitVector3 = 0;
+            RecoveryTime = 0;
+            MaxDuckVolume = 0;
+            Ducks = new List<Duck>();
+            BitsFXBypass = 0;
+            FXChunks = new List<FXChunk>();
+            FXID = 0;
+            IsShareSet = 0;
+            OverrideAttachmentParams = 0;
             rtpc = new List<RTPC>();
-            stateChunks = new List<StateChunk>();
+            StateChunks = new List<StateChunk>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(overrideBusId);
-            bw.Write((byte)props.Count);
+            bw.Write(OverrideBusID);
+            bw.Write((byte)Props.Count);
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                bw.Write((byte)prop.id);
+                bw.Write((byte)prop.ID);
             }
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                bw.Write(prop.value);
+                bw.Write(prop.Value);
             }
 
-            bw.Write(busInitialBitVector1);
-            bw.Write(busInitialBitVector2);
-            bw.Write((short)maxNumInstance);
-            bw.Write(channelConfig);
-            bw.Write(busInitialBitVector3);
-            bw.Write(recoveryTime);
-            bw.Write(maxDuckVolume);
-            bw.Write(ducks.Count);
+            bw.Write(BusInitialBitVector1);
+            bw.Write(BusInitialBitVector2);
+            bw.Write((short)MaxInstanceCount);
+            bw.Write(ChannelConfig);
+            bw.Write(BusInitialBitVector3);
+            bw.Write(RecoveryTime);
+            bw.Write(MaxDuckVolume);
+            bw.Write(Ducks.Count);
 
-            foreach (Duck duck in ducks)
+            foreach (Duck duck in Ducks)
             {
                 duck.WriteToFile(bw);
             }
 
-            bw.Write((byte)fxChunks.Count);
+            bw.Write((byte)FXChunks.Count);
 
-            if (fxChunks.Count != 0)
+            if (FXChunks.Count != 0)
             {
-                bw.Write(bitsFxBypass);
+                bw.Write(BitsFXBypass);
             }
 
-            foreach (FXChunk chunk in fxChunks)
+            foreach (FXChunk chunk in FXChunks)
             {
-                bw.Write((byte)chunk.index);
-                bw.Write(chunk.id);
-                bw.Write((byte)chunk.isShareSet);
-                bw.Write((byte)chunk.isRendered);
+                bw.Write((byte)chunk.Index);
+                bw.Write(chunk.ID);
+                bw.Write((byte)chunk.IsShareSet);
+                bw.Write((byte)chunk.IsRendered);
             }
 
-            bw.Write(fxId);
-            bw.Write((byte)isShareSet);
-            bw.Write(overrideAttachmentParams);
+            bw.Write(FXID);
+            bw.Write((byte)IsShareSet);
+            bw.Write(OverrideAttachmentParams);
             bw.Write((short)rtpc.Count);
 
             foreach (RTPC value in rtpc)
@@ -180,9 +180,9 @@ namespace ResourceTypes.Wwise.Helpers
                 value.WriteToFile(bw);
             }
 
-            bw.Write(stateChunks.Count);
+            bw.Write(StateChunks.Count);
 
-            foreach (StateChunk chunk in stateChunks)
+            foreach (StateChunk chunk in StateChunks)
             {
                 chunk.WriteToFile(bw);
             }
@@ -190,25 +190,25 @@ namespace ResourceTypes.Wwise.Helpers
 
         public int GetLength()
         {
-            int length = 40 + props.Count * 5 + fxChunks.Count * 7 + ducks.Count * 18;
+            int Length = 40 + Props.Count * 5 + FXChunks.Count * 7 + Ducks.Count * 18;
 
-            if (fxChunks.Count == 0)
+            if (FXChunks.Count == 0)
             {
-                length -= 1;
+                Length -= 1;
             }
 
             foreach (RTPC value in rtpc)
             {
-                length += value.GetLength();
+                Length += value.GetLength();
             }
 
-            foreach (StateChunk chunk in stateChunks)
+            foreach (StateChunk chunk in StateChunks)
 
             {
-                length += chunk.GetLength();
+                Length += chunk.GetLength();
             }
 
-            return length;
+            return Length;
         }
     }
 }

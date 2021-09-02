@@ -4,23 +4,25 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Prop
     {
-        public int id { get; set; }
-        public uint value { get; set; }
-        public Prop(int iId)
+        public int ID { get; set; }
+        public uint Value { get; set; }
+        public Prop(int iID)
         {
-            id = iId;
+            ID = iID;
         }
 
         public Prop()
         {
-            id = 0;
-            value = 0;
+            ID = 0;
+            Value = 0;
         }
     }
 }

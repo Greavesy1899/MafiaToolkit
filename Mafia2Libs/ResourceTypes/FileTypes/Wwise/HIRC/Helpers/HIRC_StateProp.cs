@@ -4,34 +4,36 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class StateProp
     {
-        public int id { get; set; }
-        public int accumulatorType { get; set; }
-        public int inDb { get; set; }
+        public int ID { get; set; }
+        public int AccumulatorType { get; set; }
+        public int InDb { get; set; }
         public StateProp(BinaryReader br)
         {
-            id = br.ReadByte();
-            accumulatorType = br.ReadByte();
-            inDb = br.ReadByte();
+            ID = br.ReadByte();
+            AccumulatorType = br.ReadByte();
+            InDb = br.ReadByte();
         }
 
         public StateProp()
         {
-            id = 0;
-            accumulatorType = 0;
-            inDb = 0;
+            ID = 0;
+            AccumulatorType = 0;
+            InDb = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)id);
-            bw.Write((byte)accumulatorType);
-            bw.Write((byte)inDb);
+            bw.Write((byte)ID);
+            bw.Write((byte)AccumulatorType);
+            bw.Write((byte)InDb);
         }
     }
 }

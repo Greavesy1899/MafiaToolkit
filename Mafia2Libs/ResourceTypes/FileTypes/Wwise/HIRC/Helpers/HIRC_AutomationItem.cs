@@ -4,42 +4,44 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class AutomationItem
     {
-        public uint clipId { get; set; }
-        public uint autoType { get; set; }
-        public List<GraphPoint> graphPoints { get; set; }
+        public uint ClipID { get; set; }
+        public uint AutoType { get; set; }
+        public List<GraphPoint> GraphPoints { get; set; }
 
         public AutomationItem(BinaryReader br)
         {
-            clipId = br.ReadUInt32();
-            autoType = br.ReadUInt32();
-            graphPoints = new List<GraphPoint>();
+            ClipID = br.ReadUInt32();
+            AutoType = br.ReadUInt32();
+            GraphPoints = new List<GraphPoint>();
             uint numPoints = br.ReadUInt32();
 
             for (int i = 0; i < numPoints; i++)
             {
-                graphPoints.Add(new GraphPoint(br));
+                GraphPoints.Add(new GraphPoint(br));
             }
         }
 
         public AutomationItem()
         {
-            clipId = 0;
-            autoType = 0;
-            graphPoints = new List<GraphPoint>();
+            ClipID = 0;
+            AutoType = 0;
+            GraphPoints = new List<GraphPoint>();
         }
 
         public static void WriteAutomationItem(BinaryWriter bw, AutomationItem item)
         {
-            bw.Write(item.clipId);
-            bw.Write(item.autoType);
-            bw.Write(item.graphPoints.Count);
+            bw.Write(item.ClipID);
+            bw.Write(item.AutoType);
+            bw.Write(item.GraphPoints.Count);
 
-            foreach (GraphPoint point in item.graphPoints)
+            foreach (GraphPoint point in item.GraphPoints)
             {
                 point.WriteToFile(bw);
             }
@@ -47,9 +49,9 @@ namespace ResourceTypes.Wwise.Helpers
 
         public int GetLength()
         {
-            int length = 12 + graphPoints.Count * 12;
+            int Length = 12 + GraphPoints.Count * 12;
 
-            return length;
+            return Length;
         }
     }
 }

@@ -12,41 +12,41 @@ namespace ResourceTypes.Wwise.Objects
     public class AuxiliaryBus
     {
         [System.ComponentModel.Browsable(false)]
-        public HIRCObject parent { get; set; }
+        public HIRCObject Parent { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public Bus audioBusData { get; set; }
-        public AuxiliaryBus(HIRCObject parentObject, BinaryReader br, int iType)
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public Bus BusData { get; set; }
+        public AuxiliaryBus(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            parent = parentObject;
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            audioBusData = new Bus(parent, br, length);
+            Parent = ParentObject;
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            BusData = new Bus(Parent, br, Length);
         }
 
-        public AuxiliaryBus(HIRCObject parentObject)
+        public AuxiliaryBus(HIRCObject ParentObject)
         {
-            parent = parentObject;
-            type = 0;
-            id = 0;
-            audioBusData = new Bus(parent);
+            Parent = ParentObject;
+            Type = 0;
+            ID = 0;
+            BusData = new Bus(Parent);
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            audioBusData.WriteToFile(bw);
+            bw.Write(ID);
+            BusData.WriteToFile(bw);
         }
 
         public int GetLength()
         {
-            int length = 4 + audioBusData.GetLength();
+            int Length = 4 + BusData.GetLength();
 
-            return length;
+            return Length;
         }
     }
 }

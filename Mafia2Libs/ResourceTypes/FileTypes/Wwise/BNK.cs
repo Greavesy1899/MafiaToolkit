@@ -17,11 +17,11 @@ namespace ResourceTypes.Wwise
     public class BNK
     {
         public byte[] BKHDTypeString = { (byte)'B', (byte)'K', (byte)'H', (byte)'D' };
-        public byte[] DIDXTypeString = { (byte)'D', (byte)'I', (byte)'D', (byte)'X' };
+        public byte[] DidXTypeString = { (byte)'D', (byte)'I', (byte)'D', (byte)'X' };
         public byte[] DATATypeString = { (byte)'D', (byte)'A', (byte)'T', (byte)'A' };
         public byte[] HIRCTypeString = { (byte)'H', (byte)'I', (byte)'R', (byte)'C' };
         public BKHD Header { get; set; }
-        public DIDX Wems;
+        public DidX Wems;
         public HIRC Objects;
         public List<Wem> WemList = new List<Wem>();
         public Dictionary<uint, byte[]> ExtraData { get; set; }
@@ -44,24 +44,24 @@ namespace ResourceTypes.Wwise
 
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    uint typeString = br.ReadUInt32();
+                    uint TypeString = br.ReadUInt32();
 
-                    switch (typeString)
+                    switch (TypeString)
                     {
                         case 1480870212:
-                            ReadDIDX(br);
-                            ExtraData.Add(typeString, new byte[0]);
+                            ReadDidX(br);
+                            ExtraData.Add(TypeString, new byte[0]);
                             break;
 
                         case 1129466184:
                             ReadHIRC(br);
-                            ExtraData.Add(typeString, new byte[0]);
+                            ExtraData.Add(TypeString, new byte[0]);
                             break;
 
                         default:
                             int sectionLength = br.ReadInt32();
-                            byte[] data = br.ReadBytes(sectionLength);
-                            ExtraData.Add(typeString, data);
+                            byte[] Data = br.ReadBytes(sectionLength);
+                            ExtraData.Add(TypeString, Data);
                             break;
                     }
                 }
@@ -90,19 +90,19 @@ namespace ResourceTypes.Wwise
             ExtraData = new Dictionary<uint, byte[]>();
         }
 
-        public void ReadDIDX(BinaryReader br)
+        public void ReadDidX(BinaryReader br)
         {
             uint headerLen = br.ReadUInt32();
-            Wems = new DIDX(headerLen);
+            Wems = new DidX(headerLen);
             uint wemCount = headerLen / 12;
             for (int i = 0; i < wemCount; i++)
             {
-                uint DIDXId = br.ReadUInt32();
-                uint DIDXOffset = br.ReadUInt32();
-                uint DIDXLength = br.ReadUInt32();
-                Wems.data.Add(new DIDXChunk(DIDXId, DIDXOffset, DIDXLength));
+                uint DidXID = br.ReadUInt32();
+                uint DidXOffset = br.ReadUInt32();
+                uint DidXLength = br.ReadUInt32();
+                Wems.Data.Add(new DidXChunk(DidXID, DidXOffset, DidXLength));
             }
-            Wems.offset = br.BaseStream.Position;
+            Wems.Offset = br.BaseStream.Position;
 
             uint DataStartString = br.ReadUInt32();
 
@@ -115,28 +115,28 @@ namespace ResourceTypes.Wwise
             long initPos = br.BaseStream.Position;
 
             uint ii = 0;
-            foreach (DIDXChunk chunk in Wems.data)
+            foreach (DidXChunk chunk in Wems.Data)
             {
                 ii++;
-                br.BaseStream.Seek(initPos + chunk.chunkOffset, SeekOrigin.Begin);
-                byte[] file = br.ReadBytes((int)chunk.chunkLength);
+                br.BaseStream.Seek(initPos + chunk.ChunkOffset, SeekOrigin.Begin);
+                byte[] file = br.ReadBytes((int)chunk.ChunkLength);
                 string name = "Imported_Wem_" + ii;
 
-                Wem newWem = new Wem(name, chunk.chunkId, file, 0, chunk.chunkOffset);
+                Wem newWem = new Wem(name, chunk.ChunkID, file, 0, chunk.ChunkOffset);
                 WemList.Add(newWem);
             }
         }
 
-        public void WriteDIDX(BinaryWriter bw)
+        public void WriteDidX(BinaryWriter bw)
         {
             WemList = new List<Wem>(WemList.OrderBy(i => i.ID));
 
-            bw.Write(DIDXTypeString);
+            bw.Write(DidXTypeString);
             bw.Write(WemList.Count * 12);
 
-            int dataLength = 0;
+            int DataLength = 0;
 
-            int offset = (int)bw.BaseStream.Position + (WemList.Count * 12);
+            int Offset = (int)bw.BaseStream.Position + (WemList.Count * 12);
 
             for (int i = 0; i < WemList.Count; i++)
             {
@@ -150,24 +150,24 @@ namespace ResourceTypes.Wwise
                 {
                     Wem prevWem = WemList[i - 1];
 
-                    wem.Offset = (uint)(prevWem.Offset + prevWem.file.Length);
+                    wem.Offset = (uint)(prevWem.Offset + prevWem.File.Length);
                 }
 
                 bw.Write((uint)wem.ID);
                 bw.Write(wem.Offset);
-                bw.Write(wem.file.Length);
+                bw.Write(wem.File.Length);
                 long workingOffset = bw.BaseStream.Position;
-                bw.Seek((int)wem.Offset + offset + 8, SeekOrigin.Begin);
-                bw.Write(wem.file);
+                bw.Seek((int)wem.Offset + Offset + 8, SeekOrigin.Begin);
+                bw.Write(wem.File);
                 bw.Seek((int)workingOffset, SeekOrigin.Begin);
-                dataLength += wem.file.Length;
+                DataLength += wem.File.Length;
             }
 
             bw.Write(DATATypeString);
-            bw.Write(dataLength);
+            bw.Write(DataLength);
 
             Wem lastWem = WemList[WemList.Count - 1];
-            bw.Seek((int)lastWem.Offset + (int)lastWem.file.Length + offset + 8, SeekOrigin.Begin);
+            bw.Seek((int)lastWem.Offset + (int)lastWem.File.Length + Offset + 8, SeekOrigin.Begin);
         }
 
         public void ReadHIRC(BinaryReader br)
@@ -184,94 +184,94 @@ namespace ResourceTypes.Wwise
 
                 if (tempObj.SettingsObject != null)
                 {
-                    if (!Objects.Settings.ContainsKey((int)tempObj.SettingsObject.id))
+                    if (!Objects.Settings.ContainsKey((int)tempObj.SettingsObject.ID))
                     {
-                        Objects.Settings.Add((int)tempObj.SettingsObject.id, new List<int>());
+                        Objects.Settings.Add((int)tempObj.SettingsObject.ID, new List<int>());
                     }
 
-                    Objects.Settings[(int)tempObj.SettingsObject.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.Settings[(int)tempObj.SettingsObject.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.SoundSFXObject != null)
                 {
-                    if (!Objects.SoundSFX.ContainsKey(tempObj.SoundSFXObject.sourceId))
+                    if (!Objects.SoundSFX.ContainsKey(tempObj.SoundSFXObject.SourceID))
                     {
-                        Objects.SoundSFX.Add(tempObj.SoundSFXObject.sourceId, new List<int>());
+                        Objects.SoundSFX.Add(tempObj.SoundSFXObject.SourceID, new List<int>());
                     }
 
-                    if (!Objects.SoundSFX[tempObj.SoundSFXObject.sourceId].Contains(Objects.Data.IndexOf(tempObj)))
+                    if (!Objects.SoundSFX[tempObj.SoundSFXObject.SourceID].Contains(Objects.Data.IndexOf(tempObj)))
                     {
-                        Objects.SoundSFX[tempObj.SoundSFXObject.sourceId].Add(Objects.Data.IndexOf(tempObj));
+                        Objects.SoundSFX[tempObj.SoundSFXObject.SourceID].Add(Objects.Data.IndexOf(tempObj));
                     }
                 }
                 else if (tempObj.EventAction != null)
                 {
-                    if (!Objects.EventAction.ContainsKey((int)tempObj.EventAction.objectID))
+                    if (!Objects.EventAction.ContainsKey((int)tempObj.EventAction.ObjectID))
                     {
-                        Objects.EventAction.Add((int)tempObj.EventAction.objectID, new List<int>());
+                        Objects.EventAction.Add((int)tempObj.EventAction.ObjectID, new List<int>());
                     }
 
-                    Objects.EventAction[(int)tempObj.EventAction.objectID].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.EventAction[(int)tempObj.EventAction.ObjectID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.Event != null)
                 {
-                    foreach (int id in tempObj.Event.actionIDs)
+                    foreach (int ID in tempObj.Event.ActionIDs)
                     {
-                        if (!Objects.Event.ContainsKey(id))
+                        if (!Objects.Event.ContainsKey(ID))
                         {
-                            Objects.Event.Add(id, new List<int>());
+                            Objects.Event.Add(ID, new List<int>());
                         }
 
-                        Objects.Event[id].Add(Objects.Data.IndexOf(tempObj));
+                        Objects.Event[ID].Add(Objects.Data.IndexOf(tempObj));
                     }
                 }
                 else if (tempObj.RandomContainer != null)
                 {
-                    if (!Objects.RandomContainer.ContainsKey((int)tempObj.RandomContainer.id))
+                    if (!Objects.RandomContainer.ContainsKey((int)tempObj.RandomContainer.ID))
                     {
-                        Objects.RandomContainer.Add((int)tempObj.RandomContainer.id, new List<int>());
+                        Objects.RandomContainer.Add((int)tempObj.RandomContainer.ID, new List<int>());
                     }
 
-                    Objects.RandomContainer[(int)tempObj.RandomContainer.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.RandomContainer[(int)tempObj.RandomContainer.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.SwitchContainer != null)
                 {
-                    if (!Objects.SwitchContainer.ContainsKey((int)tempObj.SwitchContainer.id))
+                    if (!Objects.SwitchContainer.ContainsKey((int)tempObj.SwitchContainer.ID))
                     {
-                        Objects.SwitchContainer.Add((int)tempObj.SwitchContainer.id, new List<int>());
+                        Objects.SwitchContainer.Add((int)tempObj.SwitchContainer.ID, new List<int>());
                     }
 
-                    Objects.SwitchContainer[(int)tempObj.SwitchContainer.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.SwitchContainer[(int)tempObj.SwitchContainer.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.ActorMixer != null)
                 {
-                    if (!Objects.ActorMixer.ContainsKey((int)tempObj.ActorMixer.id))
+                    if (!Objects.ActorMixer.ContainsKey((int)tempObj.ActorMixer.ID))
                     {
-                        Objects.ActorMixer.Add((int)tempObj.ActorMixer.id, new List<int>());
+                        Objects.ActorMixer.Add((int)tempObj.ActorMixer.ID, new List<int>());
                     }
 
-                    Objects.ActorMixer[(int)tempObj.ActorMixer.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.ActorMixer[(int)tempObj.ActorMixer.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.AudioBus != null)
                 {
-                    if (!Objects.AudioBus.ContainsKey((int)tempObj.AudioBus.id))
+                    if (!Objects.AudioBus.ContainsKey((int)tempObj.AudioBus.ID))
                     {
-                        Objects.AudioBus.Add((int)tempObj.AudioBus.id, new List<int>());
+                        Objects.AudioBus.Add((int)tempObj.AudioBus.ID, new List<int>());
                     }
 
-                    Objects.AudioBus[(int)tempObj.AudioBus.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.AudioBus[(int)tempObj.AudioBus.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.BlendContainer != null)
                 {
-                    if (!Objects.BlendContainer.ContainsKey((int)tempObj.BlendContainer.id))
+                    if (!Objects.BlendContainer.ContainsKey((int)tempObj.BlendContainer.ID))
                     {
-                        Objects.BlendContainer.Add((int)tempObj.BlendContainer.id, new List<int>());
+                        Objects.BlendContainer.Add((int)tempObj.BlendContainer.ID, new List<int>());
                     }
 
-                    Objects.BlendContainer[(int)tempObj.BlendContainer.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.BlendContainer[(int)tempObj.BlendContainer.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.MusicSegment != null)
                 {
-                    foreach (uint child in tempObj.MusicSegment.childIDs)
+                    foreach (uint child in tempObj.MusicSegment.ChildIDs)
                     {
                         if (!Objects.MusicSegment.ContainsKey((int)child))
                         {
@@ -283,114 +283,114 @@ namespace ResourceTypes.Wwise
                 }
                 else if (tempObj.MusicTrack != null)
                 {
-                    foreach (TrackSource src in tempObj.MusicTrack.trackSources)
+                    foreach (TrackSource src in tempObj.MusicTrack.TrackSources)
                     {
-                        if (!Objects.MusicTrack.ContainsKey((int)src.sourceId))
+                        if (!Objects.MusicTrack.ContainsKey((int)src.SourceID))
                         {
-                            Objects.MusicTrack.Add((int)src.sourceId, new List<int>());
+                            Objects.MusicTrack.Add((int)src.SourceID, new List<int>());
                         }
 
-                        Objects.MusicTrack[(int)src.sourceId].Add(Objects.Data.IndexOf(tempObj));
+                        Objects.MusicTrack[(int)src.SourceID].Add(Objects.Data.IndexOf(tempObj));
                     }
                 }
                 else if (tempObj.MusicSwitchContainer != null)
                 {
-                    if (!Objects.MusicSwitchContainer.ContainsKey((int)tempObj.MusicSwitchContainer.id))
+                    if (!Objects.MusicSwitchContainer.ContainsKey((int)tempObj.MusicSwitchContainer.ID))
                     {
-                        Objects.MusicSwitchContainer.Add((int)tempObj.MusicSwitchContainer.id, new List<int>());
+                        Objects.MusicSwitchContainer.Add((int)tempObj.MusicSwitchContainer.ID, new List<int>());
                     }
 
-                    Objects.MusicSwitchContainer[(int)tempObj.MusicSwitchContainer.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.MusicSwitchContainer[(int)tempObj.MusicSwitchContainer.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.MusicSequence != null)
                 {
-                    if (!Objects.MusicSequence.ContainsKey((int)tempObj.MusicSequence.id))
+                    if (!Objects.MusicSequence.ContainsKey((int)tempObj.MusicSequence.ID))
                     {
-                        Objects.MusicSequence.Add((int)tempObj.MusicSequence.id, new List<int>());
+                        Objects.MusicSequence.Add((int)tempObj.MusicSequence.ID, new List<int>());
                     }
 
-                    Objects.MusicSequence[(int)tempObj.MusicSequence.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.MusicSequence[(int)tempObj.MusicSequence.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.Attenuation != null)
                 {
-                    if (!Objects.Attenuation.ContainsKey((int)tempObj.Attenuation.id))
+                    if (!Objects.Attenuation.ContainsKey((int)tempObj.Attenuation.ID))
                     {
-                        Objects.Attenuation.Add((int)tempObj.Attenuation.id, new List<int>());
+                        Objects.Attenuation.Add((int)tempObj.Attenuation.ID, new List<int>());
                     }
 
-                    Objects.Attenuation[(int)tempObj.Attenuation.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.Attenuation[(int)tempObj.Attenuation.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.FeedbackNode != null)
                 {
-                    if (!Objects.FeedbackNode.ContainsKey((int)tempObj.FeedbackNode.id))
+                    if (!Objects.FeedbackNode.ContainsKey((int)tempObj.FeedbackNode.ID))
                     {
-                        Objects.FeedbackNode.Add((int)tempObj.FeedbackNode.id, new List<int>());
+                        Objects.FeedbackNode.Add((int)tempObj.FeedbackNode.ID, new List<int>());
                     }
 
-                    Objects.FeedbackNode[(int)tempObj.FeedbackNode.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.FeedbackNode[(int)tempObj.FeedbackNode.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.FxShareSet != null)
                 {
-                    if (!Objects.FxShareSet.ContainsKey((int)tempObj.FxShareSet.id))
+                    if (!Objects.FxShareSet.ContainsKey((int)tempObj.FxShareSet.ID))
                     {
-                        Objects.FxShareSet.Add((int)tempObj.FxShareSet.id, new List<int>());
+                        Objects.FxShareSet.Add((int)tempObj.FxShareSet.ID, new List<int>());
                     }
 
-                    Objects.FxShareSet[(int)tempObj.FxShareSet.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.FxShareSet[(int)tempObj.FxShareSet.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.FxCustom != null)
                 {
-                    if (!Objects.FxCustom.ContainsKey((int)tempObj.FxCustom.id))
+                    if (!Objects.FxCustom.ContainsKey((int)tempObj.FxCustom.ID))
                     {
-                        Objects.FxCustom.Add((int)tempObj.FxCustom.id, new List<int>());
+                        Objects.FxCustom.Add((int)tempObj.FxCustom.ID, new List<int>());
                     }
 
-                    Objects.FxCustom[(int)tempObj.FxCustom.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.FxCustom[(int)tempObj.FxCustom.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.AuxiliaryBus != null)
                 {
-                    if (!Objects.AuxiliaryBus.ContainsKey((int)tempObj.AuxiliaryBus.id))
+                    if (!Objects.AuxiliaryBus.ContainsKey((int)tempObj.AuxiliaryBus.ID))
                     {
-                        Objects.AuxiliaryBus.Add((int)tempObj.AuxiliaryBus.id, new List<int>());
+                        Objects.AuxiliaryBus.Add((int)tempObj.AuxiliaryBus.ID, new List<int>());
                     }
 
-                    Objects.AuxiliaryBus[(int)tempObj.AuxiliaryBus.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.AuxiliaryBus[(int)tempObj.AuxiliaryBus.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.LFO != null)
                 {
-                    if (!Objects.LFO.ContainsKey((int)tempObj.LFO.id))
+                    if (!Objects.LFO.ContainsKey((int)tempObj.LFO.ID))
                     {
-                        Objects.LFO.Add((int)tempObj.LFO.id, new List<int>());
+                        Objects.LFO.Add((int)tempObj.LFO.ID, new List<int>());
                     }
 
-                    Objects.LFO[(int)tempObj.LFO.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.LFO[(int)tempObj.LFO.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.Envelope != null)
                 {
-                    if (!Objects.Envelope.ContainsKey((int)tempObj.Envelope.id))
+                    if (!Objects.Envelope.ContainsKey((int)tempObj.Envelope.ID))
                     {
-                        Objects.Envelope.Add((int)tempObj.Envelope.id, new List<int>());
+                        Objects.Envelope.Add((int)tempObj.Envelope.ID, new List<int>());
                     }
 
-                    Objects.Envelope[(int)tempObj.Envelope.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.Envelope[(int)tempObj.Envelope.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.State != null)
                 {
-                    if (!Objects.State.ContainsKey(tempObj.State.id))
+                    if (!Objects.State.ContainsKey(tempObj.State.ID))
                     {
-                        Objects.State.Add(tempObj.State.id, new List<int>());
+                        Objects.State.Add(tempObj.State.ID, new List<int>());
                     }
 
-                    Objects.State[tempObj.State.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.State[tempObj.State.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
                 else if (tempObj.AudioDevice != null)
                 {
-                    if (!Objects.AudioDevice.ContainsKey(tempObj.AudioDevice.id))
+                    if (!Objects.AudioDevice.ContainsKey(tempObj.AudioDevice.ID))
                     {
-                        Objects.AudioDevice.Add(tempObj.AudioDevice.id, new List<int>());
+                        Objects.AudioDevice.Add(tempObj.AudioDevice.ID, new List<int>());
                     }
 
-                    Objects.AudioDevice[tempObj.AudioDevice.id].Add(Objects.Data.IndexOf(tempObj));
+                    Objects.AudioDevice[tempObj.AudioDevice.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
             }
         }
@@ -496,7 +496,7 @@ namespace ResourceTypes.Wwise
                 }
                 else
                 {
-                    bw.Write(obj.data);
+                    bw.Write(obj.Data);
                 }
             }
         }
@@ -511,55 +511,55 @@ namespace ResourceTypes.Wwise
             bw.Write(Header.Feedback);
             bw.Write(Header.ProjectID);
 
-            foreach (uint dataPart in Header.Data)
+            foreach (uint DataPart in Header.Data)
             {
-                bw.Write(dataPart);
+                bw.Write(DataPart);
             }
 
-            foreach (var data in ExtraData)
+            foreach (var Data in ExtraData)
             {
-                if (data.Key == 1129466184)
+                if (Data.Key == 1129466184)
                 {
                     WriteHIRC(bw);
                 }
-                else if (data.Key == 1480870212)
+                else if (Data.Key == 1480870212)
                 {
-                    WriteDIDX(bw);
+                    WriteDidX(bw);
                 }
                 else
                 {
-                    bw.Write(data.Key);
-                    bw.Write(data.Value.Length);
-                    bw.Write(data.Value);
+                    bw.Write(Data.Key);
+                    bw.Write(Data.Value.Length);
+                    bw.Write(Data.Value);
                 }
             }
         }
 
         public uint GetLength()
         {
-            uint length = 28 + (uint)(Header.Data.Count * 4);
+            uint Length = 28 + (uint)(Header.Data.Count * 4);
 
             if (ExtraData.ContainsKey(1480870212))
             {
-                length += (uint)WemList.Count * 12 + 8;
+                Length += (uint)WemList.Count * 12 + 8;
 
                 foreach (Wem wem in WemList)
                 {
-                    length += (uint)wem.file.Length;
+                    Length += (uint)wem.File.Length;
                 }
             }
 
             if (ExtraData.ContainsKey(1129466184))
             {
-                length += (uint)Objects.GetLength();
+                Length += (uint)Objects.GetLength();
             }
 
-            foreach (var data in ExtraData)
+            foreach (var Data in ExtraData)
             {
-                length += 8 + (uint)data.Value.Length;
+                Length += 8 + (uint)Data.Value.Length;
             }
 
-            return length;
+            return Length;
         }
     }
 }

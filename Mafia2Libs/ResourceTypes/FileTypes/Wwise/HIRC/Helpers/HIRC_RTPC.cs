@@ -3,57 +3,59 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class RTPC
     {
-        public uint id { get; set; }
-        public byte type { get; set; } //0x00 = GameParameter, 0x02 = Modulaltor
-        public byte accumulator { get; set; } //0x00 = Exclusive, 0x01 = Additive
-        public byte paramId { get; set; } //0x00 = Volume, 0x01 = LFE, 0x02 = Pitch, 0x03 = LPF, 0x04 = HPF, 0x05 = BusVolume, 0x0A = PositioningType, 0x1B = BypassFX3, 0x1E = FeedbackLowpass, 0x1F = FeedbackPitch, 0x29 = PlaybackSpeed, 0x2A = ModulatorLfoDepth, 0x3C = OutputBusVolume
-        public uint curveId { get; set; }
-        public byte scaling { get; set; } //0x00 = None, 0x02 = dB
-        public List<GraphPoint> graphPoints { get; set; }
+        public uint ID { get; set; }
+        public byte Type { get; set; } //0x00 = GameParameter, 0x02 = Modulaltor
+        public byte Accumulator { get; set; } //0x00 = Exclusive, 0x01 = Additive
+        public byte ParameterID { get; set; } //0x00 = Volume, 0x01 = LFE, 0x02 = Pitch, 0x03 = LPF, 0x04 = HPF, 0x05 = BusVolume, 0x0A = PositioningType, 0x1B = BypassFX3, 0x1E = FeedbackLowpass, 0x1F = FeedbackPitch, 0x29 = PlaybackSpeed, 0x2A = ModulatorLfoDepth, 0x3C = OutputBusVolume
+        public uint CurveID { get; set; }
+        public byte Scaling { get; set; } //0x00 = None, 0x02 = dB
+        public List<GraphPoint> GraphPoints { get; set; }
         public RTPC(BinaryReader br)
         {
-            id = br.ReadUInt32();
-            type = br.ReadByte();
-            accumulator = br.ReadByte();
-            paramId = br.ReadByte();
-            curveId = br.ReadUInt32();
-            scaling = br.ReadByte();
+            ID = br.ReadUInt32();
+            Type = br.ReadByte();
+            Accumulator = br.ReadByte();
+            ParameterID = br.ReadByte();
+            CurveID = br.ReadUInt32();
+            Scaling = br.ReadByte();
             int graphCount = br.ReadUInt16();
-            graphPoints = new List<GraphPoint>();
+            GraphPoints = new List<GraphPoint>();
 
             for (int i = 0; i < graphCount; i++)
             {
-                graphPoints.Add(new GraphPoint(br));
+                GraphPoints.Add(new GraphPoint(br));
             }
         }
 
         public RTPC()
         {
-            id = 0;
-            type = 0;
-            accumulator = 0;
-            paramId = 0;
-            curveId = 0;
-            scaling = 0;
-            graphPoints = new List<GraphPoint>();
+            ID = 0;
+            Type = 0;
+            Accumulator = 0;
+            ParameterID = 0;
+            CurveID = 0;
+            Scaling = 0;
+            GraphPoints = new List<GraphPoint>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(id);
-            bw.Write(type);
-            bw.Write(accumulator);
-            bw.Write(paramId);
-            bw.Write(curveId);
-            bw.Write(scaling);
-            bw.Write((short)graphPoints.Count);
+            bw.Write(ID);
+            bw.Write(Type);
+            bw.Write(Accumulator);
+            bw.Write(ParameterID);
+            bw.Write(CurveID);
+            bw.Write(Scaling);
+            bw.Write((short)GraphPoints.Count);
 
-            foreach (GraphPoint point in graphPoints)
+            foreach (GraphPoint point in GraphPoints)
             {
                 point.WriteToFile(bw);
             }
@@ -61,7 +63,7 @@ namespace ResourceTypes.Wwise.Helpers
 
         public int GetLength()
         {
-            int rtpcLength = 14 + graphPoints.Count * 12;
+            int rtpcLength = 14 + GraphPoints.Count * 12;
 
             return rtpcLength;
         }

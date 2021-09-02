@@ -18,25 +18,25 @@ namespace ResourceTypes.Wwise
         [Browsable(false)]
         public WemHirc AssignedHirc { get; set; }
         [Browsable(false)]
-        public byte[] file { get; set; }
-        public bool nameChanged = false;
+        public byte[] File { get; set; }
+        public bool NameChanged = false;
 
-        public Wem(string aName, string aId, BinaryReader aFile, uint newOffset)
+        public Wem(string aName, string aID, BinaryReader aFile, uint newOffset)
         {
             Name = Path.GetFileName(aName);
 
-            ulong tempId = 0;
+            ulong TempID = 0;
 
-            if (UInt64.TryParse(Path.GetFileName(aId.Replace(".wem", "")), out tempId))
+            if (UInt64.TryParse(Path.GetFileName(aID.Replace(".wem", "")), out TempID))
             {
-                ID = tempId;
+                ID = TempID;
             }
             else
             {
                 ID = 0;
             }
 
-            file = aFile.ReadBytes((int)aFile.BaseStream.Length);
+            File = aFile.ReadBytes((int)aFile.BaseStream.Length);
             LanguageEnum = 0;
             Offset = newOffset;
             AssignedHirc = new WemHirc();
@@ -47,18 +47,18 @@ namespace ResourceTypes.Wwise
         {
             Name = aName;
             ID = aID;
-            file = aBinary;
+            File = aBinary;
             LanguageEnum = 0;
             AssignedHirc = new WemHirc();
         }
 
-        public Wem(string aName, ulong aID, byte[] aBinary, uint lanEnum, uint fileOffset)
+        public Wem(string aName, ulong aID, byte[] aBinary, uint lanEnum, uint FileOffset)
         {
             Name = aName;
             ID = aID;
-            file = aBinary;
+            File = aBinary;
             LanguageEnum = lanEnum;
-            Offset = fileOffset;
+            Offset = FileOffset;
             AssignedHirc = new WemHirc();
         }
     }

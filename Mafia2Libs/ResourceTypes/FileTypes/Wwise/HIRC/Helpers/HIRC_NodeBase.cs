@@ -4,142 +4,142 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ResourceTypes.Wwise;
 using Utils.MathHelpers;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class NodeBase
     {
-        [System.ComponentModel.Browsable(false)]
-        public HIRCObject parent { get; set; }
-        public int overrideParentFX { get; set; }
-        public byte unkByte { get; set; }
-        public List<FXChunk> fxChunks { get; set; }
-        public byte overrideAttachmentParams { get; set; }
-        public uint overrideBusId { get; set; }
-        [System.ComponentModel.ReadOnly(true)]
-        public uint directParentId { get; set; }
-        public byte nodeFXBitVector { get; set; } //bit0 = "bPriorityOverrideParent", bit1 = "bPriorityApplyDistFactor", bit2 = "bOverrideMidiEventsBehavior", bit3 = "bOverrideMidiNoteTracking", bit4 = "bEnableMidiNoteTracking", bit5 = "bIsMidiBreakLoopOnNoteOff"
-        public List<Prop> props { get; set; }
-        public List<RangedModifier> rangedModifiers { get; set; }
-        public byte posByVector { get; set; } //bit0 = "bPositioningInfoOverrideParent", bit1 = "bHasListenerRelativeRouting", bit1 = "unknown2d", bit2 = "unknown2d", bit3 = "cbIs3DPositioningAvailable"
-        public byte bits3d { get; set; }
-        public uint attenuationId { get; set; }
-        public byte pathMode { get; set; }
-        public uint transitionTime { get; set; }
-        public List<Vertex> vertices { get; set; }
-        public List<PlaylistItem> playListItems { get; set; }
-        public List<AutomationParam> automationParams { get; set; }
-        public byte auxBitVector { get; set; } //Start of Aux Parameters section. bit2 = "bOverrideUserAuxSends", bit3 = "bHasAux", bit4 = "bOverrideReflectionsAuxBus"
-        public List<uint> auxParams { get; set; }
-        public int reflectionsAuxBus { get; set; }
-        public byte advSettingsBitVector { get; set; } //Start of Advanced Settings Section. bit0 = "bKillNewest", bit1 = "bUseVirtualBehavior", bit3 = "bIgnoreParentMaxNumInst", bit4 = "bIsVVoicesOptOverrideParent"
-        public byte virtualQueueBehavior { get; set; } //0x01 = FromElapsedTime
-        public int maxNumInstance { get; set; }
-        public byte belowThresholdBehavior { get; set; } //0x00 = ContinueToPlay
-        public byte advSettingsEndBitVector { get; set; } //bit0 = "bOverrideHdrEnvelope", bit1 = "bOverrideAnalysis", bit2 = "bNormalizeLoudness", bit3 = "bEnableEnvelope"
-        public List<StateChunk> stateChunks { get; set; }
-        public List<StateProp> stateProps { get; set; }
+        [Browsable(false)]
+        public HIRCObject Parent { get; set; }
+        public int OverrideParentFX { get; set; }
+        public byte UnkByte { get; set; }
+        public List<FXChunk> FXChunks { get; set; }
+        public byte OverrideAttachmentParams { get; set; }
+        public uint OverrideBusID { get; set; }
+        public uint DirectParentID { get; set; }
+        public byte NodeFXBitVector { get; set; } //bit0 = "bPriorityOverrideParent", bit1 = "bPriorityApplyDistFactor", bit2 = "bOverrideMidiEventsBehavior", bit3 = "bOverrideMidiNoteTracking", bit4 = "bEnableMidiNoteTracking", bit5 = "bIsMidiBreakLoopOnNoteOff"
+        public List<Prop> Props { get; set; }
+        public List<RangedModifier> RangedModifiers { get; set; }
+        public byte PositioningVector { get; set; } //bit0 = "bPositioningInfoOverrideParent", bit1 = "bHasListenerRelativeRouting", bit1 = "unknown2d", bit2 = "unknown2d", bit3 = "cbIs3DPositioningAvailable"
+        public byte Bits3D { get; set; }
+        public uint AttenuationID { get; set; }
+        public byte PathMode { get; set; }
+        public uint TransitionTime { get; set; }
+        public List<Vertex> Vertices { get; set; }
+        public List<PlaylistItem> PlaylistItems { get; set; }
+        public List<AutomationParam> AutomationParams { get; set; }
+        public byte AuxBitVector { get; set; } //Start of Aux Parameters section. bit2 = "bOverrideUserAuxSends", bit3 = "bHasAux", bit4 = "bOverrideReflectionsAuxBus"
+        public List<uint> AuxParams { get; set; }
+        public int ReflectionsAuxBus { get; set; }
+        public byte AdvSettingsBitVector { get; set; } //Start of Advanced Settings Section. bit0 = "bKillNewest", bit1 = "bUseVirtualBehavior", bit3 = "bIgnoreParentMaxNumInst", bit4 = "bIsVVoicesOptOverrideParent"
+        public byte VirtualQueueBehavior { get; set; } //0x01 = FromElapsedTime
+        public int MaxInstanceCount { get; set; }
+        public byte BelowThresholdBehavior { get; set; } //0x00 = ContinueToPlay
+        public byte AdvSettingsEndBitVector { get; set; } //bit0 = "bOverrideHdrEnvelope", bit1 = "bOverrideAnalysis", bit2 = "bNormalizeLoudness", bit3 = "bEnableEnvelope"
+        public List<StateChunk> StateChunks { get; set; }
         public List<RTPC> rtpc { get; set; }
-        public int feedbackBusId { get; set; }
-        public NodeBase(BinaryReader br, HIRCObject parentObject)
+        public int FeedbackBusID { get; set; }
+        public NodeBase(BinaryReader br, HIRCObject ParentObject)
         {
-            parent = parentObject;
-            overrideParentFX = br.ReadByte();
+            Parent = ParentObject;
+            OverrideParentFX = br.ReadByte();
             int numFx = br.ReadByte();
-            fxChunks = new List<FXChunk>();
+            FXChunks = new List<FXChunk>();
 
             if (numFx != 0)
             {
-                unkByte = br.ReadByte();
+                UnkByte = br.ReadByte();
             }
 
             for (int i = 0; i < numFx; i++)
             {
                 byte index = br.ReadByte();
-                uint id = br.ReadUInt32();
-                byte isShareSet = br.ReadByte();
-                byte isRendered = br.ReadByte();
-                fxChunks.Add(new FXChunk(index, id, isShareSet, isRendered));
+                uint ID = br.ReadUInt32();
+                byte IsShareSet = br.ReadByte();
+                byte IsRendered = br.ReadByte();
+                FXChunks.Add(new FXChunk(index, ID, IsShareSet, IsRendered));
             }
 
-            overrideAttachmentParams = br.ReadByte();
-            overrideBusId = br.ReadUInt32();
-            directParentId = br.ReadUInt32();
-            nodeFXBitVector = br.ReadByte();
-            props = new List<Prop>();
-            int propsCount = br.ReadByte();
+            OverrideAttachmentParams = br.ReadByte();
+            OverrideBusID = br.ReadUInt32();
+            DirectParentID = br.ReadUInt32();
+            NodeFXBitVector = br.ReadByte();
+            Props = new List<Prop>();
+            int PropsCount = br.ReadByte();
 
-            for (int i = 0; i < propsCount; i++)
+            for (int i = 0; i < PropsCount; i++)
             {
-                int id = br.ReadByte();
-                props.Add(new Prop(id));
+                int ID = br.ReadByte();
+                Props.Add(new Prop(ID));
             }
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                prop.value = br.ReadUInt32();
+                prop.Value = br.ReadUInt32();
             }
 
-            rangedModifiers = new List<RangedModifier>();
-            int rangedModifiersCount = br.ReadByte();
+            RangedModifiers = new List<RangedModifier>();
+            int RangedModifiersCount = br.ReadByte();
 
-            for (int i = 0; i < rangedModifiersCount; i++)
+            for (int i = 0; i < RangedModifiersCount; i++)
             {
-                byte id = br.ReadByte();
+                byte ID = br.ReadByte();
                 uint min = br.ReadUInt32();
                 uint max = br.ReadUInt32();
-                rangedModifiers.Add(new RangedModifier(id, min, max));
+                RangedModifiers.Add(new RangedModifier(ID, min, max));
             }
 
-            posByVector = br.ReadByte();
-            vertices = new List<Vertex>();
-            playListItems = new List<PlaylistItem>();
-            automationParams = new List<AutomationParam>();
+            PositioningVector = br.ReadByte();
+            Vertices = new List<Vertex>();
+            PlaylistItems = new List<PlaylistItem>();
+            AutomationParams = new List<AutomationParam>();
             uint numPlayListItem = 0;
-            uint numVertices = 0;
+            uint VertexCount = 0;
 
-            switch (posByVector)
+            switch (PositioningVector)
             {
                 case 3:
                 case 7:
-                    bits3d = br.ReadByte();
+                    Bits3D = br.ReadByte();
                     break;
 
                 case 201:
                 case 217:
                 case 219:
                 case 223:
-                    bits3d = br.ReadByte();
-                    attenuationId = br.ReadUInt32();
+                    Bits3D = br.ReadByte();
+                    AttenuationID = br.ReadUInt32();
                     break;
 
                 case 35:
                 case 39:
                 case 67:
                 case 71:
-                    bits3d = br.ReadByte();
-                    pathMode = br.ReadByte();
-                    transitionTime = br.ReadUInt32();
-                    numVertices = br.ReadUInt32();
+                    Bits3D = br.ReadByte();
+                    PathMode = br.ReadByte();
+                    TransitionTime = br.ReadUInt32();
+                    VertexCount = br.ReadUInt32();
 
-                    for (int i = 0; i < numVertices; i++)
+                    for (int i = 0; i < VertexCount; i++)
                     {
                         float xValue = br.ReadSingle();
                         float yValue = br.ReadSingle();
                         float zValue = br.ReadSingle();
-                        uint duration = br.ReadUInt32();
-                        vertices.Add(new Vertex(xValue, yValue, zValue, duration));
+                        uint Duration = br.ReadUInt32();
+                        Vertices.Add(new Vertex(xValue, yValue, zValue, Duration));
                     }
 
                     numPlayListItem = br.ReadUInt32();
 
                     for (int i = 0; i < numPlayListItem; i++)
                     {
-                        uint vertexOffset = br.ReadUInt32();
+                        uint VertexOffset = br.ReadUInt32();
                         uint numPlaylistVertices = br.ReadUInt32();
-                        playListItems.Add(new PlaylistItem(vertexOffset, numPlaylistVertices));
+                        PlaylistItems.Add(new PlaylistItem(VertexOffset, numPlaylistVertices));
                     }
 
                     for (int i = 0; i < numPlayListItem; i++)
@@ -147,35 +147,35 @@ namespace ResourceTypes.Wwise.Helpers
                         float xValue = br.ReadSingle();
                         float yValue = br.ReadSingle();
                         float zValue = br.ReadSingle();
-                        automationParams.Add(new AutomationParam(xValue, yValue, zValue));
+                        AutomationParams.Add(new AutomationParam(xValue, yValue, zValue));
                     }
                     break;
 
                 case 89:
                 case 121:
                 case 249:
-                    bits3d = br.ReadByte();
-                    attenuationId = br.ReadUInt32();
-                    pathMode = br.ReadByte();
-                    transitionTime = br.ReadUInt32();
-                    numVertices = br.ReadUInt32();
+                    Bits3D = br.ReadByte();
+                    AttenuationID = br.ReadUInt32();
+                    PathMode = br.ReadByte();
+                    TransitionTime = br.ReadUInt32();
+                    VertexCount = br.ReadUInt32();
 
-                    for (int i = 0; i < numVertices; i++)
+                    for (int i = 0; i < VertexCount; i++)
                     {
                         float xValue = br.ReadSingle();
                         float yValue = br.ReadSingle();
                         float zValue = br.ReadSingle();
-                        uint duration = br.ReadUInt32();
-                        vertices.Add(new Vertex(xValue, yValue, zValue, duration));
+                        uint Duration = br.ReadUInt32();
+                        Vertices.Add(new Vertex(xValue, yValue, zValue, Duration));
                     }
 
                     numPlayListItem = br.ReadUInt32();
 
                     for (int i = 0; i < numPlayListItem; i++)
                     {
-                        uint vertexOffset = br.ReadUInt32();
+                        uint VertexOffset = br.ReadUInt32();
                         uint numPlaylistVertices = br.ReadUInt32();
-                        playListItems.Add(new PlaylistItem(vertexOffset, numPlaylistVertices));
+                        PlaylistItems.Add(new PlaylistItem(VertexOffset, numPlaylistVertices));
                     }
 
                     for (int i = 0; i < numPlayListItem; i++)
@@ -183,7 +183,7 @@ namespace ResourceTypes.Wwise.Helpers
                         float xValue = br.ReadSingle();
                         float yValue = br.ReadSingle();
                         float zValue = br.ReadSingle();
-                        automationParams.Add(new AutomationParam(xValue, yValue, zValue));
+                        AutomationParams.Add(new AutomationParam(xValue, yValue, zValue));
                     }
                     break;
 
@@ -197,18 +197,18 @@ namespace ResourceTypes.Wwise.Helpers
                     break;
             }
 
-            auxBitVector = br.ReadByte();
-            auxParams = new List<uint>();
+            AuxBitVector = br.ReadByte();
+            AuxParams = new List<uint>();
 
-            if (MathHelpers.GetBit(auxBitVector, 3))
+            if (MathHelpers.GetBit(AuxBitVector, 3))
             {
-                auxParams.Add(br.ReadUInt32());
-                auxParams.Add(br.ReadUInt32());
-                auxParams.Add(br.ReadUInt32());
-                auxParams.Add(br.ReadUInt32());
+                AuxParams.Add(br.ReadUInt32());
+                AuxParams.Add(br.ReadUInt32());
+                AuxParams.Add(br.ReadUInt32());
+                AuxParams.Add(br.ReadUInt32());
             }
 
-            switch (posByVector)
+            switch (PositioningVector)
             {
                 case 0:
                 case 1:
@@ -219,25 +219,24 @@ namespace ResourceTypes.Wwise.Helpers
                 case 39:
                 case 67:
                 case 71:
-                    if (parent.bnk.Header.Version != 134)
+                    if (Parent.Bnk.Header.Version != 134)
                     {
-                        reflectionsAuxBus = br.ReadInt32();
+                        ReflectionsAuxBus = br.ReadInt32();
                     }
                     break;
             }
 
-            advSettingsBitVector = br.ReadByte();
-            virtualQueueBehavior = br.ReadByte();
-            maxNumInstance = br.ReadUInt16();
-            belowThresholdBehavior = br.ReadByte();
-            advSettingsEndBitVector = br.ReadByte();
-            stateChunks = new List<StateChunk>();
-            stateProps = new List<StateProp>();
+            AdvSettingsBitVector = br.ReadByte();
+            VirtualQueueBehavior = br.ReadByte();
+            MaxInstanceCount = br.ReadUInt16();
+            BelowThresholdBehavior = br.ReadByte();
+            AdvSettingsEndBitVector = br.ReadByte();
+            StateChunks = new List<StateChunk>();
             uint stateChunkCount = br.ReadUInt32();
 
             for (int i = 0; i < stateChunkCount; i++)
             {
-                stateChunks.Add(new StateChunk(br, parent));
+                StateChunks.Add(new StateChunk(br, Parent));
             }
 
             rtpc = new List<RTPC>();
@@ -248,7 +247,7 @@ namespace ResourceTypes.Wwise.Helpers
                 rtpc.Add(new RTPC(br));
             }
 
-            switch (parent.bnk.Header.Feedback)
+            switch (Parent.Bnk.Header.Feedback)
             {
                 case 0:
                 case 16:
@@ -256,79 +255,78 @@ namespace ResourceTypes.Wwise.Helpers
                     break;
 
                 default:
-                    feedbackBusId = br.ReadInt32();
+                    FeedbackBusID = br.ReadInt32();
                     break;
             }
         }
 
-        public NodeBase(HIRCObject parentObject)
+        public NodeBase(HIRCObject ParentObject)
         {
-            parent = parentObject;
-            overrideParentFX = 0;
-            fxChunks = new List<FXChunk>();
-            unkByte = 0;
-            overrideAttachmentParams = 0;
-            overrideBusId = 0;
-            directParentId = 0;
-            nodeFXBitVector = 0;
-            props = new List<Prop>();
-            rangedModifiers = new List<RangedModifier>();
-            posByVector = 0;
-            vertices = new List<Vertex>();
-            playListItems = new List<PlaylistItem>();
-            automationParams = new List<AutomationParam>();
-            bits3d = 0;
-            attenuationId = 0;
-            pathMode = 0;
-            transitionTime = 0;
-            auxBitVector = 0;
-            auxParams = new List<uint>();
-            reflectionsAuxBus = 0;
-            advSettingsBitVector = 0;
-            virtualQueueBehavior = 0;
-            maxNumInstance = 0;
-            belowThresholdBehavior = 0;
-            advSettingsEndBitVector = 0;
-            stateChunks = new List<StateChunk>();
+            Parent = ParentObject;
+            OverrideParentFX = 0;
+            FXChunks = new List<FXChunk>();
+            UnkByte = 0;
+            OverrideAttachmentParams = 0;
+            OverrideBusID = 0;
+            DirectParentID = 0;
+            NodeFXBitVector = 0;
+            Props = new List<Prop>();
+            RangedModifiers = new List<RangedModifier>();
+            PositioningVector = 0;
+            Vertices = new List<Vertex>();
+            PlaylistItems = new List<PlaylistItem>();
+            AutomationParams = new List<AutomationParam>();
+            Bits3D = 0;
+            AttenuationID = 0;
+            PathMode = 0;
+            TransitionTime = 0;
+            AuxBitVector = 0;
+            AuxParams = new List<uint>();
+            ReflectionsAuxBus = 0;
+            AdvSettingsBitVector = 0;
+            VirtualQueueBehavior = 0;
+            MaxInstanceCount = 0;
+            BelowThresholdBehavior = 0;
+            AdvSettingsEndBitVector = 0;
+            StateChunks = new List<StateChunk>();
             rtpc = new List<RTPC>();
-            feedbackBusId = 0;
-            stateProps = new List<StateProp>();
+            FeedbackBusID = 0;
         }
 
         public int GetLength()
         {
-            int nodeBaseLength = 28 + fxChunks.Count * 7 + props.Count * 5 + rangedModifiers.Count * 9;
+            int NodeBaseLength = 28 + FXChunks.Count * 7 + Props.Count * 5 + RangedModifiers.Count * 9;
 
-            if (fxChunks.Count != 0)
+            if (FXChunks.Count != 0)
             {
-                nodeBaseLength += 1;
+                NodeBaseLength += 1;
             }
 
-            switch (posByVector)
+            switch (PositioningVector)
             {
                 case 3:
                 case 7:
-                    nodeBaseLength += 1;
+                    NodeBaseLength += 1;
                     break;
 
                 case 201:
                 case 217:
                 case 219:
                 case 223:
-                    nodeBaseLength += 5;
+                    NodeBaseLength += 5;
                     break;
 
                 case 35:
                 case 39:
                 case 67:
                 case 71:
-                    nodeBaseLength += 14 + vertices.Count * 16 + playListItems.Count * 8 + automationParams.Count * 12;
+                    NodeBaseLength += 14 + Vertices.Count * 16 + PlaylistItems.Count * 8 + AutomationParams.Count * 12;
                     break;
 
                 case 89:
                 case 121:
                 case 249:
-                    nodeBaseLength += 18 + vertices.Count * 16 + playListItems.Count * 8 + automationParams.Count * 12;
+                    NodeBaseLength += 18 + Vertices.Count * 16 + PlaylistItems.Count * 8 + AutomationParams.Count * 12;
 
                     break;
 
@@ -343,12 +341,12 @@ namespace ResourceTypes.Wwise.Helpers
 
             }
 
-            if (MathHelpers.GetBit(auxBitVector, 3))
+            if (MathHelpers.GetBit(AuxBitVector, 3))
             {
-                nodeBaseLength += 16;
+                NodeBaseLength += 16;
             }
 
-            switch (posByVector)
+            switch (PositioningVector)
             {
                 case 0:
                 case 1:
@@ -359,24 +357,24 @@ namespace ResourceTypes.Wwise.Helpers
                 case 39:
                 case 67:
                 case 71:
-                    if (parent.bnk.Header.Version != 134)
+                    if (Parent.Bnk.Header.Version != 134)
                     {
-                        nodeBaseLength += 4;
+                        NodeBaseLength += 4;
                     }
                     break;
             }
 
-            foreach (StateChunk chunk in stateChunks)
+            foreach (StateChunk chunk in StateChunks)
             {
-                nodeBaseLength += chunk.GetLength();
+                NodeBaseLength += chunk.GetLength();
             }
 
             foreach (RTPC value in rtpc)
             {
-                nodeBaseLength += value.GetLength();
+                NodeBaseLength += value.GetLength();
             }
 
-            switch (parent.bnk.Header.Feedback)
+            switch (Parent.Bnk.Header.Feedback)
             {
                 case 0:
                 case 16:
@@ -384,99 +382,99 @@ namespace ResourceTypes.Wwise.Helpers
                     break;
 
                 default:
-                    nodeBaseLength += 4;
+                    NodeBaseLength += 4;
                     break;
             }
 
-            return nodeBaseLength;
+            return NodeBaseLength;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)overrideParentFX);
-            bw.Write((byte)fxChunks.Count);
+            bw.Write((byte)OverrideParentFX);
+            bw.Write((byte)FXChunks.Count);
 
-            if (fxChunks.Count != 0)
+            if (FXChunks.Count != 0)
             {
-                bw.Write(unkByte);
+                bw.Write(UnkByte);
             }
 
-            foreach (FXChunk chunk in fxChunks)
+            foreach (FXChunk chunk in FXChunks)
             {
-                bw.Write((byte)chunk.index);
-                bw.Write(chunk.id);
-                bw.Write((byte)chunk.isShareSet);
-                bw.Write((byte)chunk.isRendered);
+                bw.Write((byte)chunk.Index);
+                bw.Write(chunk.ID);
+                bw.Write((byte)chunk.IsShareSet);
+                bw.Write((byte)chunk.IsRendered);
             }
 
-            bw.Write(overrideAttachmentParams);
-            bw.Write(overrideBusId);
-            bw.Write(directParentId);
-            bw.Write(nodeFXBitVector);
-            bw.Write((byte)props.Count);
+            bw.Write(OverrideAttachmentParams);
+            bw.Write(OverrideBusID);
+            bw.Write(DirectParentID);
+            bw.Write(NodeFXBitVector);
+            bw.Write((byte)Props.Count);
 
-            foreach(Prop prop in props)
+            foreach(Prop prop in Props)
             {
-                bw.Write((byte)prop.id);
+                bw.Write((byte)prop.ID);
             }
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                bw.Write(prop.value);
+                bw.Write(prop.Value);
             }
 
-            bw.Write((byte)rangedModifiers.Count);
+            bw.Write((byte)RangedModifiers.Count);
 
-            foreach (RangedModifier mod in rangedModifiers)
+            foreach (RangedModifier mod in RangedModifiers)
             {
-                bw.Write(mod.id);
-                bw.Write(mod.min);
-                bw.Write(mod.max);
+                bw.Write(mod.ID);
+                bw.Write(mod.Min);
+                bw.Write(mod.Max);
             }
 
-            bw.Write(posByVector);
+            bw.Write(PositioningVector);
 
-            switch (posByVector)
+            switch (PositioningVector)
             {
                 case 3:
                 case 7:
-                    bw.Write(bits3d);
+                    bw.Write(Bits3D);
                     break;
 
                 case 201:
                 case 217:
                 case 219:
                 case 223:
-                    bw.Write(bits3d);
-                    bw.Write(attenuationId);
+                    bw.Write(Bits3D);
+                    bw.Write(AttenuationID);
                     break;
 
                 case 35:
                 case 39:
                 case 67:
                 case 71:
-                    bw.Write(bits3d);
-                    bw.Write(pathMode);
-                    bw.Write(transitionTime);
-                    bw.Write(vertices.Count);
+                    bw.Write(Bits3D);
+                    bw.Write(PathMode);
+                    bw.Write(TransitionTime);
+                    bw.Write(Vertices.Count);
 
-                    foreach (Vertex vert in vertices)
+                    foreach (Vertex vert in Vertices)
                     {
                         bw.Write(vert.xValue);
                         bw.Write(vert.yValue);
                         bw.Write(vert.zValue);
-                        bw.Write(vert.duration);
+                        bw.Write(vert.Duration);
                     }
 
-                    bw.Write(playListItems.Count);
+                    bw.Write(PlaylistItems.Count);
 
-                    foreach (PlaylistItem item in playListItems)
+                    foreach (PlaylistItem item in PlaylistItems)
                     {
-                        bw.Write(item.vertexOffset);
-                        bw.Write(item.numVertices);
+                        bw.Write(item.VertexOffset);
+                        bw.Write(item.VertexCount);
                     }
 
-                    foreach (AutomationParam param in automationParams)
+                    foreach (AutomationParam param in AutomationParams)
                     {
                         bw.Write(param.xRange);
                         bw.Write(param.yRange);
@@ -487,29 +485,29 @@ namespace ResourceTypes.Wwise.Helpers
                 case 89:
                 case 121:
                 case 249:
-                    bw.Write(bits3d);
-                    bw.Write(attenuationId);
-                    bw.Write(pathMode);
-                    bw.Write(transitionTime);
-                    bw.Write(vertices.Count);
+                    bw.Write(Bits3D);
+                    bw.Write(AttenuationID);
+                    bw.Write(PathMode);
+                    bw.Write(TransitionTime);
+                    bw.Write(Vertices.Count);
 
-                    foreach (Vertex vert in vertices)
+                    foreach (Vertex vert in Vertices)
                     {
                         bw.Write(vert.xValue);
                         bw.Write(vert.yValue);
                         bw.Write(vert.zValue);
-                        bw.Write(vert.duration);
+                        bw.Write(vert.Duration);
                     }
 
-                    bw.Write(playListItems.Count);
+                    bw.Write(PlaylistItems.Count);
 
-                    foreach (PlaylistItem item in playListItems)
+                    foreach (PlaylistItem item in PlaylistItems)
                     {
-                        bw.Write(item.vertexOffset);
-                        bw.Write(item.numVertices);
+                        bw.Write(item.VertexOffset);
+                        bw.Write(item.VertexCount);
                     }
 
-                    foreach (AutomationParam param in automationParams)
+                    foreach (AutomationParam param in AutomationParams)
                     {
                         bw.Write(param.xRange);
                         bw.Write(param.yRange);
@@ -518,17 +516,17 @@ namespace ResourceTypes.Wwise.Helpers
                     break;
             }
 
-            bw.Write(auxBitVector);
+            bw.Write(AuxBitVector);
 
-            if (MathHelpers.GetBit(auxBitVector, 3))
+            if (MathHelpers.GetBit(AuxBitVector, 3))
             {
-                foreach (uint param in auxParams)
+                foreach (uint param in AuxParams)
                 {
                     bw.Write(param);
                 }
             }
 
-            switch (posByVector)
+            switch (PositioningVector)
             {
                 case 0:
                 case 1:
@@ -539,21 +537,21 @@ namespace ResourceTypes.Wwise.Helpers
                 case 39:
                 case 67:
                 case 71:
-                    if (parent.bnk.Header.Version != 134)
+                    if (Parent.Bnk.Header.Version != 134)
                     {
-                        bw.Write(reflectionsAuxBus);
+                        bw.Write(ReflectionsAuxBus);
                     }
                     break;
             }
 
-            bw.Write(advSettingsBitVector);
-            bw.Write(virtualQueueBehavior);
-            bw.Write((short)maxNumInstance);
-            bw.Write(belowThresholdBehavior);
-            bw.Write(advSettingsEndBitVector);
-            bw.Write(stateChunks.Count);
+            bw.Write(AdvSettingsBitVector);
+            bw.Write(VirtualQueueBehavior);
+            bw.Write((short)MaxInstanceCount);
+            bw.Write(BelowThresholdBehavior);
+            bw.Write(AdvSettingsEndBitVector);
+            bw.Write(StateChunks.Count);
 
-            foreach (StateChunk chunk in stateChunks)
+            foreach (StateChunk chunk in StateChunks)
             {
                 chunk.WriteToFile(bw);
             }
@@ -565,7 +563,7 @@ namespace ResourceTypes.Wwise.Helpers
                 value.WriteToFile(bw);
             }
 
-            switch (parent.bnk.Header.Feedback)
+            switch (Parent.Bnk.Header.Feedback)
             {
                 case 0:
                 case 16:
@@ -573,7 +571,7 @@ namespace ResourceTypes.Wwise.Helpers
                     break;
 
                 default:
-                    bw.Write(feedbackBusId);
+                    bw.Write(FeedbackBusID);
                     break;
             }
         }

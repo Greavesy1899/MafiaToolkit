@@ -3,19 +3,21 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Layer
     {
-        public uint id { get; set; }
+        public uint ID { get; set; }
         public List<RTPC> rtpc { get; set; } //0x00 = Exclusive, 0x01 = Additive
-        public uint rtpcId { get; set; }
+        public uint rtpcID { get; set; }
         public byte rtpcType { get; set; }
-        public List<Assoc> associates { get; set; }
+        public List<Assoc> Associates { get; set; }
         public Layer(BinaryReader br)
         {
-            id = br.ReadUInt32();
+            ID = br.ReadUInt32();
             int rtpcCount = br.ReadUInt16();
             rtpc = new List<RTPC>();
 
@@ -24,29 +26,29 @@ namespace ResourceTypes.Wwise.Helpers
                 rtpc.Add(new RTPC(br));
             }
 
-            rtpcId = br.ReadUInt32();
+            rtpcID = br.ReadUInt32();
             rtpcType = br.ReadByte();
-            associates = new List<Assoc>();
+            Associates = new List<Assoc>();
             uint numAssoc = br.ReadUInt32();
 
             for (int i = 0; i < numAssoc; i++)
             {
-                associates.Add(new Assoc(br));
+                Associates.Add(new Assoc(br));
             }
         }
 
         public Layer()
         {
-            id = 0;
+            ID = 0;
             rtpc = new List<RTPC>();
-            rtpcId = 0;
+            rtpcID = 0;
             rtpcType = 0;
-            associates = new List<Assoc>();
+            Associates = new List<Assoc>();
         }
 
         public static void WriteLayer(BinaryWriter bw, Layer layer)
         {
-            bw.Write(layer.id);
+            bw.Write(layer.ID);
             bw.Write((short)layer.rtpc.Count);
 
             foreach (RTPC value in layer.rtpc)
@@ -54,11 +56,11 @@ namespace ResourceTypes.Wwise.Helpers
                 value.WriteToFile(bw);
             }
 
-            bw.Write(layer.rtpcId);
+            bw.Write(layer.rtpcID);
             bw.Write(layer.rtpcType);
-            bw.Write(layer.associates.Count);
+            bw.Write(layer.Associates.Count);
             
-            foreach (Assoc assoc in layer.associates)
+            foreach (Assoc assoc in layer.Associates)
             {
                 Assoc.WriteAssoc(bw, assoc);
             }
@@ -66,19 +68,19 @@ namespace ResourceTypes.Wwise.Helpers
 
         public int GetLength()
         {
-            int length = 15;
+            int Length = 15;
 
             foreach (RTPC value in rtpc)
             {
-                length += value.GetLength();
+                Length += value.GetLength();
             }
 
-            foreach (Assoc value in associates)
+            foreach (Assoc value in Associates)
             {
-                length += value.GetLength();
+                Length += value.GetLength();
             }
 
-            return length;
+            return Length;
         }
     }
 }

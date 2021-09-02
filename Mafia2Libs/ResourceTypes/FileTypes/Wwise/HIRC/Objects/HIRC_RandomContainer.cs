@@ -11,121 +11,121 @@ namespace ResourceTypes.Wwise.Objects
 {
     public class RandomContainer
     {
-        //TODO - Read bitVectors on bit level
+        //TODO - Read BitVectors on bit level
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public NodeBase nodeBase { get; set; }
-        public uint loopCount { get; set; }
-        public uint loopModMin { get; set; }
-        public uint loopModMax { get; set; }
-        public float transitionTimeBase { get; set; }
-        public float transitionTimeModMin { get; set; }
-        public float transitionTimeModMax { get; set; }
-        public uint avoidRepeatCount { get; set; }
-        public byte transitionMode { get; set; } //0x00 = Disabled
-        public byte randomMode { get; set; } //0x00 = Normal
-        public byte mode { get; set; } //0x00 = Random
-        public byte bitVector { get; set; } //bit0 = "_bIsUsingWeight", bit1 = "bResetPlayListAtEachPlay", bit2 = "bIsRestartBackward", bit3 = "bIsContinuous", bit4 = "bIsGlobal"
-        public List<uint> childIDs { get; set; } //IDs of child HIRC objects
-        public List<PlaylistItem> mainPlaylist { get; set; } //PlayID, Weight
-        public RandomContainer(HIRCObject parentObject, BinaryReader br, int iType)
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public NodeBase NodeBase { get; set; }
+        public uint LoopCount { get; set; }
+        public uint LoopModMin { get; set; }
+        public uint LoopModMax { get; set; }
+        public float TransitionTimeBase { get; set; }
+        public float TransitionTimeModMin { get; set; }
+        public float TransitionTimeModMax { get; set; }
+        public uint AvoidRepeatCount { get; set; }
+        public byte TransitionMode { get; set; } //0x00 = Disabled
+        public byte RandomMode { get; set; } //0x00 = Normal
+        public byte Mode { get; set; } //0x00 = Random
+        public byte BitVector { get; set; } //bit0 = "_bIsUsingWeight", bit1 = "bResetPlayListAtEachPlay", bit2 = "bIsRestartBackward", bit3 = "bIsContinuous", bit4 = "bIsGlobal"
+        public List<uint> ChildIDs { get; set; } //IDs of child HIRC objects
+        public List<PlaylistItem> Playlist { get; set; } //PlayID, Weight
+        public RandomContainer(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            nodeBase = new NodeBase(br, parentObject);
-            loopCount = br.ReadUInt16();
-            loopModMin = br.ReadUInt16();
-            loopModMax = br.ReadUInt16();
-            transitionTimeBase = br.ReadSingle();
-            transitionTimeModMin = br.ReadSingle();
-            transitionTimeModMax = br.ReadSingle();
-            avoidRepeatCount = br.ReadUInt16();
-            transitionMode = br.ReadByte();
-            randomMode = br.ReadByte();
-            mode = br.ReadByte();
-            bitVector = br.ReadByte();
-            childIDs = new List<uint>();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            NodeBase = new NodeBase(br, ParentObject);
+            LoopCount = br.ReadUInt16();
+            LoopModMin = br.ReadUInt16();
+            LoopModMax = br.ReadUInt16();
+            TransitionTimeBase = br.ReadSingle();
+            TransitionTimeModMin = br.ReadSingle();
+            TransitionTimeModMax = br.ReadSingle();
+            AvoidRepeatCount = br.ReadUInt16();
+            TransitionMode = br.ReadByte();
+            RandomMode = br.ReadByte();
+            Mode = br.ReadByte();
+            BitVector = br.ReadByte();
+            ChildIDs = new List<uint>();
             uint numChilds = br.ReadUInt32();
 
             for (int i = 0; i < numChilds; i++)
             {
-                uint key = br.ReadUInt32();
-                childIDs.Add(key);
+                uint Key = br.ReadUInt32();
+                ChildIDs.Add(Key);
             }
 
             int numPlayList = br.ReadUInt16();
-            mainPlaylist= new List<PlaylistItem>();
+            Playlist= new List<PlaylistItem>();
 
             for (int i = 0; i < numPlayList; i++)
             {
-                uint vertexOffset = br.ReadUInt32();
+                uint VertexOffset = br.ReadUInt32();
                 uint numPlaylistVertices = br.ReadUInt32();
-                mainPlaylist.Add(new PlaylistItem(vertexOffset, numPlaylistVertices));
+                Playlist.Add(new PlaylistItem(VertexOffset, numPlaylistVertices));
             }
         }
 
-        public RandomContainer(HIRCObject parentObject)
+        public RandomContainer(HIRCObject ParentObject)
         {
-            type = 0;
-            id = 0;
-            nodeBase = new NodeBase(parentObject);
-            loopCount = 0;
-            loopModMin = 0;
-            loopModMax = 0;
-            transitionTimeBase = 0;
-            transitionTimeModMin = 0;
-            transitionTimeModMax = 0;
-            avoidRepeatCount = 0;
-            transitionMode = 0;
-            randomMode = 0;
-            mode = 0;
-            bitVector = 0;
-            childIDs = new List<uint>();
-            mainPlaylist = new List<PlaylistItem>();
+            Type = 0;
+            ID = 0;
+            NodeBase = new NodeBase(ParentObject);
+            LoopCount = 0;
+            LoopModMin = 0;
+            LoopModMax = 0;
+            TransitionTimeBase = 0;
+            TransitionTimeModMin = 0;
+            TransitionTimeModMax = 0;
+            AvoidRepeatCount = 0;
+            TransitionMode = 0;
+            RandomMode = 0;
+            Mode = 0;
+            BitVector = 0;
+            ChildIDs = new List<uint>();
+            Playlist = new List<PlaylistItem>();
     }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
+            bw.Write(ID);
 
-            nodeBase.WriteToFile(bw);
+            NodeBase.WriteToFile(bw);
 
-            bw.Write((short)loopCount);
-            bw.Write((short)loopModMin);
-            bw.Write((short)loopModMax);
-            bw.Write(transitionTimeBase);
-            bw.Write(transitionTimeModMin);
-            bw.Write(transitionTimeModMax);
-            bw.Write((short)avoidRepeatCount);
-            bw.Write(transitionMode);
-            bw.Write(randomMode);
-            bw.Write(mode);
-            bw.Write(bitVector);
-            bw.Write(childIDs.Count);
+            bw.Write((short)LoopCount);
+            bw.Write((short)LoopModMin);
+            bw.Write((short)LoopModMax);
+            bw.Write(TransitionTimeBase);
+            bw.Write(TransitionTimeModMin);
+            bw.Write(TransitionTimeModMax);
+            bw.Write((short)AvoidRepeatCount);
+            bw.Write(TransitionMode);
+            bw.Write(RandomMode);
+            bw.Write(Mode);
+            bw.Write(BitVector);
+            bw.Write(ChildIDs.Count);
 
-            foreach (uint child in childIDs)
+            foreach (uint child in ChildIDs)
             {
                 bw.Write(child);
             }
 
-            bw.Write((short)mainPlaylist.Count);
+            bw.Write((short)Playlist.Count);
 
-            foreach (PlaylistItem item in mainPlaylist)
+            foreach (PlaylistItem item in Playlist)
             {
-                bw.Write(item.vertexOffset);
-                bw.Write(item.numVertices);
+                bw.Write(item.VertexOffset);
+                bw.Write(item.VertexCount);
             }
         }
 
         public int GetLength()
         {
-            int length = 34 + childIDs.Count * 4 + nodeBase.GetLength() + mainPlaylist.Count * 8;
+            int Length = 34 + ChildIDs.Count * 4 + NodeBase.GetLength() + Playlist.Count * 8;
 
-            return length;
+            return Length;
         }
     }
 }

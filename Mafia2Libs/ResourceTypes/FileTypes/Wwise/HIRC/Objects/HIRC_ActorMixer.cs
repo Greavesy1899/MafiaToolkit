@@ -12,45 +12,45 @@ namespace ResourceTypes.Wwise.Objects
     public class ActorMixer
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public NodeBase nodeBase { get; set; }
-        public List<uint> childIDs { get; set; } //IDs of child HIRC objects
-        public ActorMixer(HIRCObject parentObject, BinaryReader br, int iType)
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public NodeBase NodeBase { get; set; }
+        public List<uint> ChildIDs { get; set; } //IDs of child HIRC objects
+        public ActorMixer(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            nodeBase = new NodeBase(br, parentObject);
-            childIDs = new List<uint>();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            NodeBase = new NodeBase(br, ParentObject);
+            ChildIDs = new List<uint>();
             uint numChilds = br.ReadUInt32();
 
             for (int i = 0; i < numChilds; i++)
             {
-                uint key = br.ReadUInt32();
-                childIDs.Add(key);
+                uint Key = br.ReadUInt32();
+                ChildIDs.Add(Key);
             }
         }
 
-        public ActorMixer(HIRCObject parentObject)
+        public ActorMixer(HIRCObject ParentObject)
         {
-            type = 0;
-            id = 0;
-            nodeBase = new NodeBase(parentObject);
-            childIDs = new List<uint>();
+            Type = 0;
+            ID = 0;
+            NodeBase = new NodeBase(ParentObject);
+            ChildIDs = new List<uint>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
+            bw.Write(ID);
 
-            nodeBase.WriteToFile(bw);
+            NodeBase.WriteToFile(bw);
 
-            bw.Write(childIDs.Count);
+            bw.Write(ChildIDs.Count);
 
-            foreach (uint child in childIDs)
+            foreach (uint child in ChildIDs)
             {
                 bw.Write(child);
             }
@@ -58,9 +58,9 @@ namespace ResourceTypes.Wwise.Objects
 
         public int GetLength()
         {
-            int length = 8 + nodeBase.GetLength() + childIDs.Count * 4;
+            int Length = 8 + NodeBase.GetLength() + ChildIDs.Count * 4;
 
-            return length;
+            return Length;
         }
     }
 }

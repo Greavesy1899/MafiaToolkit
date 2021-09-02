@@ -4,231 +4,236 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransitionRule
     {
         [System.ComponentModel.Browsable(false)]
-        public HIRCObject parent { get; set; }
-        public List<TransitionSrcRule> sources { get; set; }
-        public int sourceId { get; set; }
-        public List<TransitionDstRule> destinations { get; set; }
-        public int destinationId { get; set; }
-        public byte allocTransObjectFlag { get; set; }
-        public TransitionObject transitionObject { get; set; }
-        public TransitionRule(BinaryReader br, HIRCObject parentObject)
+        public HIRCObject Parent { get; set; }
+        public List<TransitionSrcRule> Sources { get; set; }
+        public int SourceID { get; set; }
+        public List<TransitionDstRule> Destinations { get; set; }
+        public int DestinationID { get; set; }
+        public byte AllocTransObjectFlag { get; set; }
+        public TransitionObject TransitionObject { get; set; }
+        public TransitionRule(BinaryReader br, HIRCObject ParentObject)
         {
-            parent = parentObject;
-            sources = new List<TransitionSrcRule>();
-            destinations = new List<TransitionDstRule>();
+            Parent = ParentObject;
+            Sources = new List<TransitionSrcRule>();
+            Destinations = new List<TransitionDstRule>();
             uint numSrcs = br.ReadUInt32();
-            sourceId = br.ReadInt32();
+            SourceID = br.ReadInt32();
             uint numDsts = br.ReadUInt32();
-            destinationId = br.ReadInt32();
+            DestinationID = br.ReadInt32();
 
             for (int i = 0; i < numSrcs; i++)
             {
-                sources.Add(new TransitionSrcRule(br));
+                Sources.Add(new TransitionSrcRule(br));
             }
 
             for (int i = 0; i < numDsts; i++)
             {
-                destinations.Add(new TransitionDstRule(br, parent));
+                Destinations.Add(new TransitionDstRule(br, Parent));
             }
 
-            allocTransObjectFlag = br.ReadByte();
+            AllocTransObjectFlag = br.ReadByte();
 
-            if (allocTransObjectFlag == 1)
+            if (AllocTransObjectFlag == 1)
             {
-                transitionObject = new TransitionObject(br);
+                TransitionObject = new TransitionObject(br);
             }
-            else if (allocTransObjectFlag != 1 && allocTransObjectFlag != 0)
+            else if (AllocTransObjectFlag != 1 && AllocTransObjectFlag != 0)
             {
                 long testOffset = br.BaseStream.Position;
-                MessageBox.Show("allocTransObjectFlag != 0 nor 1 at: " + testOffset.ToString("X"));
+                MessageBox.Show("AllocTransObjectFlag != 0 nor 1 at: " + testOffset.ToString("X"));
             }
             else
             {
-                transitionObject = new TransitionObject();
+                TransitionObject = new TransitionObject();
             }
         }
 
         public TransitionRule()
         {
-            sources = new List<TransitionSrcRule>();
-            destinations = new List<TransitionDstRule>();
-            sourceId = 0;
-            destinationId = 0;
-            allocTransObjectFlag = 0;
-            transitionObject = new TransitionObject();
+            Sources = new List<TransitionSrcRule>();
+            Destinations = new List<TransitionDstRule>();
+            SourceID = 0;
+            DestinationID = 0;
+            AllocTransObjectFlag = 0;
+            TransitionObject = new TransitionObject();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write(sources.Count);
-            bw.Write(sourceId);
-            bw.Write(destinations.Count);
-            bw.Write(destinationId);
+            bw.Write(Sources.Count);
+            bw.Write(SourceID);
+            bw.Write(Destinations.Count);
+            bw.Write(DestinationID);
 
-            foreach (TransitionSrcRule src in sources)
+            foreach (TransitionSrcRule src in Sources)
             {
-                bw.Write(src.transitionTime);
-                bw.Write(src.fadeCurve);
-                bw.Write(src.fadeOffset);
-                bw.Write(src.syncType);
-                bw.Write(src.cueFilterHash);
-                bw.Write((byte)src.playPostExit);
+                bw.Write(src.TransitionTime);
+                bw.Write(src.FadeCurve);
+                bw.Write(src.FadeOffset);
+                bw.Write(src.SyncType);
+                bw.Write(src.CueFilterHash);
+                bw.Write((byte)src.PlayPostExit);
             }
 
-            foreach (TransitionDstRule dst in destinations)
+            foreach (TransitionDstRule dst in Destinations)
             {
-                bw.Write(dst.transitionTime);
-                bw.Write(dst.fadeCurve);
-                bw.Write(dst.fadeOffset);
-                bw.Write(dst.cueFilterHash);
-                bw.Write(dst.jumpToID);
-                bw.Write((short)dst.entryType);
-                bw.Write((byte)dst.playPreEntry);
-                bw.Write(dst.destMatchSourceCueName);
+                bw.Write(dst.TransitionTime);
+                bw.Write(dst.FadeCurve);
+                bw.Write(dst.FadeOffset);
+                bw.Write(dst.CueFilterHash);
+                bw.Write(dst.JumpToID);
+                bw.Write((short)dst.EntryType);
+                bw.Write((byte)dst.PlayPreEntry);
+                bw.Write(dst.DestMatchSourceCueName);
             }
 
-            bw.Write(allocTransObjectFlag);
+            bw.Write(AllocTransObjectFlag);
 
-            if (allocTransObjectFlag == 1)
+            if (AllocTransObjectFlag == 1)
             {
-                bw.Write(transitionObject.id);
-                bw.Write(transitionObject.fadeInTransitionTime);
-                bw.Write(transitionObject.fadeInFadeCurve);
-                bw.Write(transitionObject.fadeInFadeOffset);
-                bw.Write(transitionObject.fadeOutTransitionTime);
-                bw.Write(transitionObject.fadeOutFadeCurve);
-                bw.Write(transitionObject.fadeOutFadeOffset);
-                bw.Write((byte)transitionObject.playPreEntry);
-                bw.Write((byte)transitionObject.playPostExit);
+                bw.Write(TransitionObject.ID);
+                bw.Write(TransitionObject.FadeInTransitionTime);
+                bw.Write(TransitionObject.FadeInFadeCurve);
+                bw.Write(TransitionObject.FadeInFadeOffset);
+                bw.Write(TransitionObject.FadeOutTransitionTime);
+                bw.Write(TransitionObject.FadeOutFadeCurve);
+                bw.Write(TransitionObject.FadeOutFadeOffset);
+                bw.Write((byte)TransitionObject.PlayPreEntry);
+                bw.Write((byte)TransitionObject.PlayPostExit);
             }
         }
 
         public int GetLength()
         {
-            int ruleLength = 17 + sources.Count * 21 + destinations.Count * 24;
+            int ruleLength = 17 + Sources.Count * 21 + Destinations.Count * 24;
 
-            if (allocTransObjectFlag == 1)
+            if (AllocTransObjectFlag == 1)
             {
-                ruleLength += transitionObject.GetLength();
+                ruleLength += TransitionObject.GetLength();
             }
 
             return ruleLength;
         }
     }
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransitionSrcRule
     {
         [System.ComponentModel.Browsable(false)]
-        public HIRCObject parent { get; set; }
-        public uint transitionTime { get; set; }
-        public uint fadeCurve { get; set; }
-        public uint fadeOffset { get; set; }
-        public uint syncType { get; set; }
-        public uint cueFilterHash { get; set; }
-        public int playPostExit { get; set; }
+        public HIRCObject Parent { get; set; }
+        public uint TransitionTime { get; set; }
+        public uint FadeCurve { get; set; }
+        public uint FadeOffset { get; set; }
+        public uint SyncType { get; set; }
+        public uint CueFilterHash { get; set; }
+        public int PlayPostExit { get; set; }
         public TransitionSrcRule(BinaryReader br)
         {
-            transitionTime = br.ReadUInt32();
-            fadeCurve = br.ReadUInt32();
-            fadeOffset = br.ReadUInt32();
-            syncType = br.ReadUInt32();
-            cueFilterHash = br.ReadUInt32();
-            playPostExit = br.ReadByte();
+            TransitionTime = br.ReadUInt32();
+            FadeCurve = br.ReadUInt32();
+            FadeOffset = br.ReadUInt32();
+            SyncType = br.ReadUInt32();
+            CueFilterHash = br.ReadUInt32();
+            PlayPostExit = br.ReadByte();
         }
 
         public TransitionSrcRule()
         {
-            transitionTime = 0;
-            fadeCurve = 0;
-            fadeOffset = 0;
-            syncType = 0;
-            cueFilterHash = 0;
-            playPostExit = 0;
+            TransitionTime = 0;
+            FadeCurve = 0;
+            FadeOffset = 0;
+            SyncType = 0;
+            CueFilterHash = 0;
+            PlayPostExit = 0;
         }
     }
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransitionDstRule
     {
         [System.ComponentModel.Browsable(false)]
-        public HIRCObject parent { get; set; }
-        public uint transitionTime { get; set; }
-        public uint fadeCurve { get; set; }
-        public uint fadeOffset { get; set; }
-        public uint cueFilterHash { get; set; }
-        public uint jumpToID { get; set; }
-        public uint entryType { get; set; } //0x01 = SameTime
-        public int playPreEntry { get; set; }
-        public byte destMatchSourceCueName { get; set; }
-        public TransitionDstRule(BinaryReader br, HIRCObject parentObject)
+        public HIRCObject Parent { get; set; }
+        public uint TransitionTime { get; set; }
+        public uint FadeCurve { get; set; }
+        public uint FadeOffset { get; set; }
+        public uint CueFilterHash { get; set; }
+        public uint JumpToID { get; set; }
+        public uint EntryType { get; set; } //0x01 = SameTime
+        public int PlayPreEntry { get; set; }
+        public byte DestMatchSourceCueName { get; set; }
+        public TransitionDstRule(BinaryReader br, HIRCObject ParentObject)
         {
-            parent = parentObject;
-            transitionTime = br.ReadUInt32();
-            fadeCurve = br.ReadUInt32();
-            fadeOffset = br.ReadUInt32();
-            cueFilterHash = br.ReadUInt32();
-            jumpToID = br.ReadUInt32();
-            entryType = br.ReadUInt16();
-            playPreEntry = br.ReadByte();
-            destMatchSourceCueName = br.ReadByte();
+            Parent = ParentObject;
+            TransitionTime = br.ReadUInt32();
+            FadeCurve = br.ReadUInt32();
+            FadeOffset = br.ReadUInt32();
+            CueFilterHash = br.ReadUInt32();
+            JumpToID = br.ReadUInt32();
+            EntryType = br.ReadUInt16();
+            PlayPreEntry = br.ReadByte();
+            DestMatchSourceCueName = br.ReadByte();
         }
 
         public TransitionDstRule()
         {
-            transitionTime = 0;
-            fadeCurve = 0;
-            fadeOffset = 0;
-            cueFilterHash = 0;
-            jumpToID = 0;
-            entryType = 0;
-            playPreEntry = 0;
-            destMatchSourceCueName = 0;
+            TransitionTime = 0;
+            FadeCurve = 0;
+            FadeOffset = 0;
+            CueFilterHash = 0;
+            JumpToID = 0;
+            EntryType = 0;
+            PlayPreEntry = 0;
+            DestMatchSourceCueName = 0;
         }
     }
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransitionObject
     {
         [System.ComponentModel.Browsable(false)]
-        private HIRCObject parent { get; set; }
-        public uint id { get; set; }
-        public uint fadeInTransitionTime { get; set; }
-        public uint fadeInFadeCurve { get; set; }
-        public uint fadeInFadeOffset { get; set; }
-        public uint fadeOutTransitionTime { get; set; }
-        public uint fadeOutFadeCurve { get; set; }
-        public uint fadeOutFadeOffset { get; set; }
-        public int playPreEntry { get; set; }
-        public int playPostExit { get; set; }
+        private HIRCObject Parent { get; set; }
+        public uint ID { get; set; }
+        public uint FadeInTransitionTime { get; set; }
+        public uint FadeInFadeCurve { get; set; }
+        public uint FadeInFadeOffset { get; set; }
+        public uint FadeOutTransitionTime { get; set; }
+        public uint FadeOutFadeCurve { get; set; }
+        public uint FadeOutFadeOffset { get; set; }
+        public int PlayPreEntry { get; set; }
+        public int PlayPostExit { get; set; }
         public TransitionObject(BinaryReader br)
         {
-            id = br.ReadUInt32();
-            fadeInTransitionTime = br.ReadUInt32();
-            fadeInFadeCurve = br.ReadUInt32();
-            fadeInFadeOffset = br.ReadUInt32();
-            fadeOutTransitionTime = br.ReadUInt32();
-            fadeOutFadeCurve = br.ReadUInt32();
-            fadeOutFadeOffset = br.ReadUInt32();
-            playPreEntry = br.ReadByte();
-            playPostExit = br.ReadByte();
+            ID = br.ReadUInt32();
+            FadeInTransitionTime = br.ReadUInt32();
+            FadeInFadeCurve = br.ReadUInt32();
+            FadeInFadeOffset = br.ReadUInt32();
+            FadeOutTransitionTime = br.ReadUInt32();
+            FadeOutFadeCurve = br.ReadUInt32();
+            FadeOutFadeOffset = br.ReadUInt32();
+            PlayPreEntry = br.ReadByte();
+            PlayPostExit = br.ReadByte();
         }
 
         public TransitionObject()
         {
-            id = 0;
-            fadeInTransitionTime = 0;
-            fadeInFadeCurve = 0;
-            fadeInFadeOffset = 0;
-            fadeOutTransitionTime = 0;
-            fadeOutFadeCurve = 0;
-            fadeOutFadeOffset = 0;
-            playPreEntry = 0;
-            playPostExit = 0;
+            ID = 0;
+            FadeInTransitionTime = 0;
+            FadeInFadeCurve = 0;
+            FadeInFadeOffset = 0;
+            FadeOutTransitionTime = 0;
+            FadeOutFadeCurve = 0;
+            FadeOutFadeOffset = 0;
+            PlayPreEntry = 0;
+            PlayPostExit = 0;
         }
 
         public int GetLength()

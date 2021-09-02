@@ -10,58 +10,58 @@ namespace ResourceTypes.Wwise.Objects
     public class Settings
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public List<Setting> settings { get; set; }
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public List<Setting> SettingsList { get; set; }
         public Settings(BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
             uint settingCount = br.ReadByte();
-            settings = new List<Setting>();
+            SettingsList = new List<Setting>();
 
             for (int i = 0; i < settingCount; i++)
             {
-                settings.Add(new Setting(br.ReadByte()));
+                SettingsList.Add(new Setting(br.ReadByte()));
             }
 
-            foreach (Setting set in settings)
+            foreach (Setting set in SettingsList)
             {
-                set.value = br.ReadSingle();
+                set.Value = br.ReadSingle();
             }
         }
 
         public Settings()
         {
-            type = 0;
-            id = 0;
-            settings = new List<Setting>();
+            Type = 0;
+            ID = 0;
+            SettingsList = new List<Setting>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write((byte)settings.Count);
+            bw.Write(ID);
+            bw.Write((byte)SettingsList.Count);
 
-            foreach (Setting set in settings)
+            foreach (Setting set in SettingsList)
             {
-                bw.Write((byte)set.id);
+                bw.Write((byte)set.ID);
             }
 
-            foreach (Setting set in settings)
+            foreach (Setting set in SettingsList)
             {
-                bw.Write(set.value);
+                bw.Write(set.Value);
             }
         }
 
         public int GetLength()
         {
-            int length = 5 + settings.Count * 5;
+            int Length = 5 + SettingsList.Count * 5;
 
-            return length;
+            return Length;
         }
     }
 }

@@ -11,41 +11,41 @@ namespace ResourceTypes.Wwise.Objects
     public class LFO
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public List<Prop> props { get; set; }
-        public List<RangedModifier> rangedModifiers { get; set; }
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public List<Prop> Props { get; set; }
+        public List<RangedModifier> RangedModifiers { get; set; }
         public List<RTPC> rtpc { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public byte[] data { get; set; }
+        public byte[] Data { get; set; }
         public LFO(BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            props = new List<Prop>();
-            int propsCount = br.ReadByte();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            Props = new List<Prop>();
+            int PropsCount = br.ReadByte();
 
-            for (int i = 0; i < propsCount; i++)
+            for (int i = 0; i < PropsCount; i++)
             {
-                byte key = br.ReadByte();
-                props.Add(new Prop(key));
+                byte Key = br.ReadByte();
+                Props.Add(new Prop(Key));
             }
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                prop.value = br.ReadUInt32();
+                prop.Value = br.ReadUInt32();
             }
 
-            rangedModifiers = new List<RangedModifier>();
-            int rangedModifiersCount = br.ReadByte();
+            RangedModifiers = new List<RangedModifier>();
+            int RangedModifiersCount = br.ReadByte();
 
-            for (int i = 0; i < rangedModifiersCount; i++)
+            for (int i = 0; i < RangedModifiersCount; i++)
             {
-                byte id = br.ReadByte();
+                byte ID = br.ReadByte();
                 uint min = br.ReadUInt32();
                 uint max = br.ReadUInt32();
-                rangedModifiers.Add(new RangedModifier(id, min, max));
+                RangedModifiers.Add(new RangedModifier(ID, min, max));
             }
 
             rtpc = new List<RTPC>();
@@ -59,37 +59,37 @@ namespace ResourceTypes.Wwise.Objects
 
         public LFO()
         {
-            type = 0;
-            id = 0;
-            props = new List<Prop>();
-            rangedModifiers = new List<RangedModifier>();
+            Type = 0;
+            ID = 0;
+            Props = new List<Prop>();
+            RangedModifiers = new List<RangedModifier>();
             rtpc = new List<RTPC>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write((byte)props.Count);
+            bw.Write(ID);
+            bw.Write((byte)Props.Count);
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                bw.Write((byte)prop.id);
+                bw.Write((byte)prop.ID);
             }
 
-            foreach (Prop prop in props)
+            foreach (Prop prop in Props)
             {
-                bw.Write(prop.value);
+                bw.Write(prop.Value);
             }
 
-            bw.Write((byte)rangedModifiers.Count);
+            bw.Write((byte)RangedModifiers.Count);
 
-            foreach (RangedModifier mod in rangedModifiers)
+            foreach (RangedModifier mod in RangedModifiers)
             {
-                bw.Write(mod.id);
-                bw.Write(mod.min);
-                bw.Write(mod.max);
+                bw.Write(mod.ID);
+                bw.Write(mod.Min);
+                bw.Write(mod.Max);
             }
 
             bw.Write((short)rtpc.Count);
@@ -102,14 +102,14 @@ namespace ResourceTypes.Wwise.Objects
 
         public int GetLength()
         {
-            int length = 8 + props.Count * 5 + rangedModifiers.Count * 9;
+            int Length = 8 + Props.Count * 5 + RangedModifiers.Count * 9;
 
             foreach (RTPC value in rtpc)
             {
-                length += value.GetLength();
+                Length += value.GetLength();
             }
 
-            return length;
+            return Length;
         }
     }
 }

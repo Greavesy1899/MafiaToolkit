@@ -4,30 +4,32 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class RTPCInit
     {
-        public int id { get; set; }
-        public float value { get; set; }
+        public int ID { get; set; }
+        public float Value { get; set; }
 
         public RTPCInit(BinaryReader br)
         {
-            id = br.ReadByte();
-            value = br.ReadSingle();
+            ID = br.ReadByte();
+            Value = br.ReadSingle();
         }
 
         public RTPCInit()
         {
-            id = 0;
-            value = 0;
+            ID = 0;
+            Value = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)id);
-            bw.Write(value);
+            bw.Write((byte)ID);
+            bw.Write(Value);
         }
     }
 }

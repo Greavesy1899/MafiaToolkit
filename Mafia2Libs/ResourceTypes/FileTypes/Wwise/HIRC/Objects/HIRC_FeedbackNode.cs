@@ -12,54 +12,54 @@ namespace ResourceTypes.Wwise.Objects
     public class FeedbackNode
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
-        public uint id { get; set; }
-        public List<FeedbackSource> feedbackSources { get; set; }
-        public NodeBase nodeBase { get; set; }
-        public FeedbackNode(HIRCObject parentObject, BinaryReader br, int iType)
+        public int Type { get; set; }
+        public uint ID { get; set; }
+        public List<FeedbackSource> FeedbackSources { get; set; }
+        public NodeBase NodeBase { get; set; }
+        public FeedbackNode(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            feedbackSources = new List<FeedbackSource>();
+            Type = iType;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            FeedbackSources = new List<FeedbackSource>();
             uint numSources = br.ReadUInt32();
 
             for (int i = 0; i < numSources; i++)
             {
-                feedbackSources.Add(new FeedbackSource(br));
+                FeedbackSources.Add(new FeedbackSource(br));
             }
 
-            nodeBase = new NodeBase(br, parentObject);
+            NodeBase = new NodeBase(br, ParentObject);
         }
 
-        public FeedbackNode(HIRCObject parentObject)
+        public FeedbackNode(HIRCObject ParentObject)
         {
-            type = 0;
-            id = 0;
-            feedbackSources = new List<FeedbackSource>();
-            nodeBase = new NodeBase(parentObject);
+            Type = 0;
+            ID = 0;
+            FeedbackSources = new List<FeedbackSource>();
+            NodeBase = new NodeBase(ParentObject);
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write(feedbackSources.Count);
+            bw.Write(ID);
+            bw.Write(FeedbackSources.Count);
 
-            foreach (FeedbackSource source in feedbackSources)
+            foreach (FeedbackSource source in FeedbackSources)
             {
                 source.WriteToFile(bw);
             }
 
-            nodeBase.WriteToFile(bw);
+            NodeBase.WriteToFile(bw);
         }
 
         public int GetLength()
         {
-            int length = 8 + nodeBase.GetLength() + feedbackSources.Count * 26;
+            int Length = 8 + NodeBase.GetLength() + FeedbackSources.Count * 26;
 
-            return length;
+            return Length;
         }
     }
 }

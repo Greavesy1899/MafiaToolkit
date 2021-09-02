@@ -6,18 +6,18 @@ namespace ResourceTypes.Wwise.Objects
     public class MotionBus //Probably unused
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
+        public int Type { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public uint length { get; set; }
-        public uint id { get; set; }
+        public uint Length { get; set; }
+        public uint ID { get; set; }
         [System.ComponentModel.Browsable(false)]
-        public byte[] data { get; set; }
+        public byte[] Data { get; set; }
         public MotionBus(BinaryReader br, int iType)
         {
-            type = iType;
-            length = br.ReadUInt32();
-            id = br.ReadUInt32();
-            data = br.ReadBytes((int)length - 4);
+            Type = iType;
+            Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
+            Data = br.ReadBytes((int)Length - 4);
         }
     }
 }

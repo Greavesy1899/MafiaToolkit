@@ -10,42 +10,42 @@ namespace ResourceTypes.Wwise.Objects
     public class Event
     {
         [System.ComponentModel.Browsable(false)]
-        public int type { get; set; }
+        public int Type { get; set; }
         [System.ComponentModel.Browsable(false)]
-        private HIRCObject parent { get; set; }
-        public uint id { get; set; }
-        public List<uint> actionIDs { get; set; }
-        public Event(HIRCObject parentObject, BinaryReader br, int iType)
+        private HIRCObject Parent { get; set; }
+        public uint ID { get; set; }
+        public List<uint> ActionIDs { get; set; }
+        public Event(HIRCObject ParentObject, BinaryReader br, int iType)
         {
-            type = iType;
-            parent = parentObject;
-            uint length = br.ReadUInt32();
-            id = br.ReadUInt32();
+            Type = iType;
+            Parent = ParentObject;
+            uint Length = br.ReadUInt32();
+            ID = br.ReadUInt32();
             int actionsCount = br.ReadInt32();
-            actionIDs = new List<uint>();
+            ActionIDs = new List<uint>();
 
             for (uint i = 0; i < actionsCount; i++)
             {
-                actionIDs.Add(br.ReadUInt32());
+                ActionIDs.Add(br.ReadUInt32());
             }
         }
 
-        public Event(HIRCObject parentObject)
+        public Event(HIRCObject ParentObject)
         {
-            type = 0;
-            parent = parentObject;
-            id = 0;
-            actionIDs = new List<uint>();
+            Type = 0;
+            Parent = ParentObject;
+            ID = 0;
+            ActionIDs = new List<uint>();
         }
 
         public void WriteToFile(BinaryWriter bw)
         {
-            bw.Write((byte)type);
+            bw.Write((byte)Type);
             bw.Write(GetLength());
-            bw.Write(id);
-            bw.Write(actionIDs.Count);
+            bw.Write(ID);
+            bw.Write(ActionIDs.Count);
 
-            foreach (uint action in actionIDs)
+            foreach (uint action in ActionIDs)
             {
                 bw.Write(action);
             }
@@ -53,8 +53,8 @@ namespace ResourceTypes.Wwise.Objects
 
         public int GetLength()
         {
-            int length = 8 + actionIDs.Count * 4;
-            return length;
+            int Length = 8 + ActionIDs.Count * 4;
+            return Length;
         }
     }
 }
