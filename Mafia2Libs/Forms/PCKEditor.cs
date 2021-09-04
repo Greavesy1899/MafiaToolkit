@@ -43,7 +43,7 @@ namespace Mafia2Tool
             ContextExport.Text = Language.GetString("$EXPORT_WEM");
             ContextDelete.Text = Language.GetString("$DELETE_WEM");
             ContextEditHIRC.Text = Language.GetString("$EDIT_HIRC");
-            ContextLoadHIRC.Text = Language.GetString("LOAD_HIRC");
+            ContextLoadHIRC.Text = Language.GetString("$LOAD_HIRC");
         }
 
         private void BuildData()
@@ -242,6 +242,9 @@ namespace Mafia2Tool
                 HIRCEditor HircEditor = new HIRCEditor(pck.LoadedBNK.Objects, pck.WemList[itemIndex]);
                 HircEditor.Show();
             }
+
+            Text = Language.GetString("$PCK_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void PckTreeView_OnKeyUp(object sender, KeyEventArgs e)
@@ -285,16 +288,16 @@ namespace Mafia2Tool
 
         private void Context_Opening(object sender, System.EventArgs e)
         {
-            //if (pck.LoadedBNK == null)
-            //{
-            //    ContextLoad.Enabled = true;
-            //    ContextEdit.Enabled = false;
-            //}
-            //else
-            //{
-            //    ContextLoad.Enabled = false;
-            //    ContextEdit.Enabled = true;
-            //}
+            if (pck.LoadedBNK == null)
+            {
+                PckContext.Items[3].Visible = true;
+                PckContext.Items[2].Visible = false;
+            }
+            else
+            {
+                PckContext.Items[2].Visible = true;
+                PckContext.Items[3].Visible = false;
+            }
         }
 
         private void ContextDelete_Click(object sender, System.EventArgs e) => Delete();

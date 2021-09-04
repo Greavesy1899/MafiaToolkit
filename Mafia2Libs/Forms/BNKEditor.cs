@@ -213,6 +213,9 @@ namespace Mafia2Tool
                 HIRCEditor HircEditor = new HIRCEditor(bnk.Objects, bnk.WemList[itemIndex]);
                 HircEditor.Show();
             }
+
+            Text = Language.GetString("$BNK_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void BnkTreeView_OnKeyUp(object sender, KeyEventArgs e)
