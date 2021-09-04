@@ -46,6 +46,7 @@ namespace ResourceTypes.Wwise
         public List<int> WemAList = new List<int>();
         public List<int> WemBList = new List<int>();
         public byte[] BnkTable;
+        public BNK LoadedBNK;
         public PCK()
         {
             HeaderLength = 0;
@@ -124,6 +125,7 @@ namespace ResourceTypes.Wwise
                     WemList.Add(newWem);
                 }
             }
+            GC.Collect();
         }
 
         public List<string> GetLanguages()
@@ -205,8 +207,17 @@ namespace ResourceTypes.Wwise
             return languageBytes;
         }
 
-        public void WriteToFile(BinaryWriter bw)
+        public void WriteToFile(BinaryWriter bw, string BnkPath)
         {
+            if (LoadedBNK != null)
+            {
+                File.Copy(BnkPath, BnkPath + "_old", true);
+                using (BinaryWriter bnkWrite = new BinaryWriter(File.Open(BnkPath, FileMode.Create)))
+                {
+                    LoadedBNK.WriteToFile(bnkWrite);
+                }
+            }
+
             if (Multiplier == 0)
             {
                 Multiplier = 16;

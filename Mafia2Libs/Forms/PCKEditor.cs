@@ -13,7 +13,7 @@ namespace Mafia2Tool
     {
         private FileInfo PckFile;
         private PCK pck;
-
+        private string BnkPath = "";
         private bool bIsFileEdited = false;
 
 
@@ -39,8 +39,11 @@ namespace Mafia2Tool
             Button_ExportWem.Text = Language.GetString("$EXPORT_WEM");
             Button_ExportAll.Text = Language.GetString("$EXPORT_ALL_WEMS");
             Button_DeleteWem.Text = Language.GetString("$DELETE_WEM");
+            Button_LoadHIRC.Text = Language.GetString("$LOAD_HIRC");
             ContextExport.Text = Language.GetString("$EXPORT_WEM");
             ContextDelete.Text = Language.GetString("$DELETE_WEM");
+            ContextEditHIRC.Text = Language.GetString("$EDIT_HIRC");
+            ContextLoadHIRC.Text = Language.GetString("LOAD_HIRC");
         }
 
         private void BuildData()
@@ -61,11 +64,12 @@ namespace Mafia2Tool
             File.Copy(PckFile.FullName, PckFile.FullName + "_old", true);
             using (BinaryWriter writer = new BinaryWriter(File.Open(PckFile.FullName, FileMode.Create)))
             {
-                pck.WriteToFile(writer);
+                pck.WriteToFile(writer, BnkPath);
             }
 
             Text = Language.GetString("$PCK_EDITOR_TITLE");
             bIsFileEdited = false;
+            System.GC.Collect();
         }
 
         private void Reload()
@@ -204,6 +208,42 @@ namespace Mafia2Tool
             }
         }
 
+        private void Button_LoadHIRC_Click(object sender, System.EventArgs e)
+        {
+            OpenFileDialog importFile = new OpenFileDialog();
+            importFile.InitialDirectory = PckFile.DirectoryName;
+            importFile.Multiselect = false;
+            importFile.Filter = "WWise Soundbank file (*.bnk)|*.bnk";
+            if (importFile.ShowDialog() == DialogResult.OK)
+            {
+                BnkPath = importFile.FileName;
+                pck.LoadedBNK = new BNK(BnkPath);
+                foreach (Wem wem in pck.WemList)
+                {
+                    if (pck.LoadedBNK.Objects.SoundSFX.ContainsKey((uint)wem.ID))
+                    {
+                        wem.AssignedHirc.SoundSFX = pck.LoadedBNK.Objects.SoundSFX[(uint)wem.ID];
+                    }
+
+                    if (pck.LoadedBNK.Objects.MusicTrack.ContainsKey((int)wem.ID))
+                    {
+                        wem.AssignedHirc.MusicTrack = pck.LoadedBNK.Objects.MusicTrack[(int)wem.ID];
+                    }
+                }
+            }
+        }
+
+        private void Button_EditHIRC_Click(object sender, System.EventArgs e)
+        {
+            int itemIndex = pck.WemList.IndexOf((Wem)WemGrid.SelectedObject);
+
+            if (itemIndex != -1)
+            {
+                HIRCEditor HircEditor = new HIRCEditor(pck.LoadedBNK.Objects, pck.WemList[itemIndex]);
+                HircEditor.Show();
+            }
+        }
+
         private void PckTreeView_OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.D)
@@ -241,6 +281,20 @@ namespace Mafia2Tool
                     e.Cancel = true;
                 }
             }
+        }
+
+        private void Context_Opening(object sender, System.EventArgs e)
+        {
+            //if (pck.LoadedBNK == null)
+            //{
+            //    ContextLoad.Enabled = true;
+            //    ContextEdit.Enabled = false;
+            //}
+            //else
+            //{
+            //    ContextLoad.Enabled = false;
+            //    ContextEdit.Enabled = true;
+            //}
         }
 
         private void ContextDelete_Click(object sender, System.EventArgs e) => Delete();

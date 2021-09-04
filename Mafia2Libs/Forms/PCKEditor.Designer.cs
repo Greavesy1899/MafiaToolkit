@@ -35,6 +35,8 @@
             this.PckContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextExport = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextEditHIRC = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextLoadHIRC = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,6 +47,7 @@
             this.Button_ExportWem = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_DeleteWem = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_ExportAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_LoadHIRC = new System.Windows.Forms.ToolStripMenuItem();
             this.PckContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -79,9 +82,12 @@
             // 
             this.PckContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ContextExport,
-            this.ContextDelete});
+            this.ContextDelete,
+            this.ContextEditHIRC,
+            this.ContextLoadHIRC});
             this.PckContext.Name = "SDSContext";
-            this.PckContext.Size = new System.Drawing.Size(159, 48);
+            this.PckContext.Size = new System.Drawing.Size(159, 92);
+            this.PckContext.Opening += new System.ComponentModel.CancelEventHandler(this.Context_Opening);
             // 
             // ContextExport
             // 
@@ -97,6 +103,20 @@
             this.ContextDelete.Size = new System.Drawing.Size(158, 22);
             this.ContextDelete.Text = "Delete";
             this.ContextDelete.Click += new System.EventHandler(this.ContextDelete_Click);
+            // 
+            // ContextEditHIRC
+            // 
+            this.ContextEditHIRC.Name = "ContextEditHIRC";
+            this.ContextEditHIRC.Size = new System.Drawing.Size(158, 22);
+            this.ContextEditHIRC.Text = "$EDIT_HIRC";
+            this.ContextEditHIRC.Click += new System.EventHandler(this.Button_EditHIRC_Click);
+            // 
+            // ContextLoadHIRC
+            // 
+            this.ContextLoadHIRC.Name = "ContextLoadHIRC";
+            this.ContextLoadHIRC.Size = new System.Drawing.Size(158, 22);
+            this.ContextLoadHIRC.Text = "$LOAD_HIRC";
+            this.ContextLoadHIRC.Click += new System.EventHandler(this.Button_LoadHIRC_Click);
             // 
             // toolStrip1
             // 
@@ -152,7 +172,8 @@
             this.Button_ImportWem,
             this.Button_ExportWem,
             this.Button_DeleteWem,
-            this.Button_ExportAll});
+            this.Button_ExportAll,
+            this.Button_LoadHIRC});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
@@ -188,6 +209,13 @@
             this.Button_ExportAll.Size = new System.Drawing.Size(185, 22);
             this.Button_ExportAll.Text = "$EXPORT_ALL_WEMS";
             this.Button_ExportAll.Click += new System.EventHandler(this.Button_ExportAll_Click);
+            // 
+            // Button_LoadHIRC
+            // 
+            this.Button_LoadHIRC.Name = "Button_LoadHIRC";
+            this.Button_LoadHIRC.Size = new System.Drawing.Size(185, 22);
+            this.Button_LoadHIRC.Text = "$LOAD_HIRC";
+            this.Button_LoadHIRC.Click += new System.EventHandler(this.Button_LoadHIRC_Click);
             // 
             // PCKEditor
             // 
@@ -227,5 +255,10 @@
         private System.Windows.Forms.ToolStripMenuItem ContextExport;
         private System.Windows.Forms.ToolStripMenuItem Button_ExportWem;
         private System.Windows.Forms.ToolStripMenuItem Button_ExportAll;
+        private System.Windows.Forms.ToolStripMenuItem ContextEdit;
+        private System.Windows.Forms.ToolStripMenuItem ContextLoad;
+        private System.Windows.Forms.ToolStripMenuItem ContextEditHIRC;
+        private System.Windows.Forms.ToolStripMenuItem ContextLoadHIRC;
+        private System.Windows.Forms.ToolStripMenuItem Button_LoadHIRC;
     }
 }
