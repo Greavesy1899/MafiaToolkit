@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System;
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Wwise;
@@ -69,7 +70,6 @@ namespace Mafia2Tool
 
             Text = Language.GetString("$PCK_EDITOR_TITLE");
             bIsFileEdited = false;
-            System.GC.Collect();
         }
 
         private void Reload()
@@ -284,6 +284,9 @@ namespace Mafia2Tool
                     e.Cancel = true;
                 }
             }
+
+            System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect();
         }
 
         private void Context_Opening(object sender, System.EventArgs e)
