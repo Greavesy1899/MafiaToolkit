@@ -284,9 +284,6 @@ namespace Mafia2Tool
                     e.Cancel = true;
                 }
             }
-
-            System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
-            GC.Collect();
         }
 
         private void Context_Opening(object sender, System.EventArgs e)

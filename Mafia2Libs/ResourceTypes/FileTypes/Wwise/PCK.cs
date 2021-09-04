@@ -125,7 +125,6 @@ namespace ResourceTypes.Wwise
                     WemList.Add(newWem);
                 }
             }
-            GC.Collect();
         }
 
         public List<string> GetLanguages()
