@@ -1,18 +1,26 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using System.Windows;
 using ResourceTypes.Wwise.Objects;
+using ResourceTypes.Wwise.Helpers;
+using System.Xml;
 using System.Xml.Linq;
-using System.Windows.Forms;
+using System.Reflection;
+using System.Diagnostics;
+using System.Windows.Controls;
+using Utils;
 
 namespace ResourceTypes.Wwise
 {
+    public class hircError
+    {
+        public static bool errorOccured = false;
+    }
     public class HIRCObject
     {
         public BNK Bnk;
-        public AudioDevice AudioDevice { get; set; }
-        public State State { get; set; }
         public Settings SettingsObject { get; set; }
         public SoundSFX SoundSFXObject { get; set; }
         public EventAction EventAction { get; set; }
@@ -33,222 +41,225 @@ namespace ResourceTypes.Wwise
         public AuxiliaryBus AuxiliaryBus { get; set; }
         public LFO LFO { get; set; }
         public Envelope Envelope { get; set; }
+        public FeedbackBus FeedbackBus { get; set; }
         public byte[] Data { get; set; }
         public long LastPos { get; set; }
         public HIRCObject(BNK mainBnk, BinaryReader br)
         {
             Bnk = mainBnk;
-            int Type = br.ReadByte();
-            LastPos = br.BaseStream.Position;
-            switch (Type)
+            if (!hircError.errorOccured)
             {
-                case 1:
-                    SettingsObject = new Settings(br, Type);
-                    break;
-                case 2:
-                    SoundSFXObject = new SoundSFX(this, br, Type);
-                    break;
-                case 3:
-                    EventAction = new EventAction(this, br, Type);
-                    break;
-                case 4:
-                    Event = new Event(this, br, Type);
-                    break;
-                case 5:
-                    RandomContainer = new RandomContainer(this, br, Type);
-                    break;
-                case 6:
-                    SwitchContainer = new SwitchContainer(this, br, Type);
-                    break;
-                case 7:
-                    ActorMixer = new ActorMixer(this, br, Type);
-                    break;
-                case 8:
-                    AudioBus = new AudioBus(this, br, Type);
-                    break;
-                case 9:
-                    BlendContainer = new BlendContainer(this, br, Type);
-                    break;
-                case 10:
-                    MusicSegment = new MusicSegment(this, br, Type);
-                    break;
-                case 11:
-                    MusicTrack = new MusicTrack(this, br, Type);
-                    break;
-                case 12:
-                    MusicSwitchContainer = new MusicSwitchContainer(this, br, Type);
-                    break;
-                case 13:
-                    MusicSequence = new MusicSequence(this, br, Type);
-                    break;
-                case 14:
-                    Attenuation = new Attenuation(br, Type);
-                    break;
-                case 17:
-                    FeedbackNode = new FeedbackNode(this, br, Type);
-                    break;
-                case 18:
-                    FxShareSet = new FxShareSet(this, br, Type);
-                    break;
-                case 19:
-                    FxCustom = new FxCustom(this, br, Type);
-                    break;
-                case 20:
-                    AuxiliaryBus = new AuxiliaryBus(this, br, Type);
-                    break;
-                case 21:
-                    LFO = new LFO(br, Type);
-                    break;
-                case 22:
-                    Envelope = new Envelope(br, Type);
-                    break;
-                default:
-                    int Length = br.ReadInt32();
-                    br.BaseStream.Position -= 5;
-                    Data = br.ReadBytes(Length + 5);
-                    System.Windows.MessageBox.Show("Detected Unknown HIRC Object!", "Detected unkown HIRC Object Type at: " + (LastPos - 1).ToString("X"));
-                    break;
+                int type = br.ReadByte();
+                LastPos = br.BaseStream.Position;
+                switch (type)
+                {
+                    case 1:
+                        SettingsObject = new Settings(br, type);
+                        break;
+                    case 2:
+                        SoundSFXObject = new SoundSFX(this, br, type);
+                        break;
+                    case 3:
+                        EventAction = new EventAction(this, br, type);
+                        break;
+                    case 4:
+                        Event = new Event(this, br, type);
+                        break;
+                    case 5:
+                        RandomContainer = new RandomContainer(this, br, type);
+                        break;
+                    case 6:
+                        SwitchContainer = new SwitchContainer(this, br, type);
+                        break;
+                    case 7:
+                        ActorMixer = new ActorMixer(this, br, type);
+                        break;
+                    case 8:
+                        AudioBus = new AudioBus(this, br, type);
+                        break;
+                    case 9:
+                        BlendContainer = new BlendContainer(this, br, type);
+                        break;
+                    case 10:
+                        MusicSegment = new MusicSegment(this, br, type);
+                        break;
+                    case 11:
+                        MusicTrack = new MusicTrack(this, br, type);
+                        break;
+                    case 12:
+                        MusicSwitchContainer = new MusicSwitchContainer(this, br, type);
+                        break;
+                    case 13:
+                        MusicSequence = new MusicSequence(this, br, type);
+                        break;
+                    case 14:
+                        Attenuation = new Attenuation(br, type);
+                        break;
+                    case 16:
+                        FeedbackBus = new FeedbackBus(this, br, type);
+                        break;
+                    case 17:
+                        FeedbackNode = new FeedbackNode(this, br, type);
+                        break;
+                    case 18:
+                        FxShareSet = new FxShareSet(this, br, type);
+                        break;
+                    case 19:
+                        FxCustom = new FxCustom(this, br, type);
+                        break;
+                    case 20:
+                        AuxiliaryBus = new AuxiliaryBus(this, br, type);
+                        break;
+                    case 21:
+                        LFO = new LFO(br, type);
+                        break;
+                    case 22:
+                        Envelope = new Envelope(br, type);
+                        break;
+                    default:
+                        int length = br.ReadInt32();
+                        br.BaseStream.Position -= 5;
+                        Data = br.ReadBytes(length + 5);
+                        System.Windows.MessageBox.Show("Detected unkown HIRC Object type at: " + (LastPos - 1).ToString("X"), "Toolkit");
+                        break;
+                }
             }
         }
 
-        public HIRCObject(BNK BnkObject)
+        public HIRCObject(BNK bnkObject)
         {
-            Bnk = BnkObject;
+            Bnk = bnkObject;
         }
 
         public int GetLength()
         {
-            int Length = 5;
+            int length = 5;
             if (SettingsObject != null)
             {
-                Length += SettingsObject.GetLength();
+                length += SettingsObject.GetLength();
             }
             else if (SoundSFXObject != null)
             {
-                Length += SoundSFXObject.GetLength();
+                length += SoundSFXObject.GetLength();
             }
             else if (EventAction != null)
             {
-                Length += EventAction.GetLength();
+                length += EventAction.GetLength();
             }
             else if (Event != null)
             {
-                Length += Event.GetLength();
+                length += Event.GetLength();
             }
             else if (RandomContainer != null)
             {
-                Length += RandomContainer.GetLength();
+                length += RandomContainer.GetLength();
             }
             else if (SwitchContainer != null)
             {
-                Length += SwitchContainer.GetLength();
+                length += SwitchContainer.GetLength();
             }
             else if (ActorMixer != null)
             {
-                Length += ActorMixer.GetLength();
+                length += ActorMixer.GetLength();
             }
             else if (AudioBus != null)
             {
-                Length += AudioBus.GetLength();
+                length += AudioBus.GetLength();
             }
             else if (BlendContainer != null)
             {
-                Length += BlendContainer.GetLength();
+                length += BlendContainer.GetLength();
             }
             else if (MusicSegment != null)
             {
-                Length += MusicSegment.GetLength();
+                length += MusicSegment.GetLength();
             }
             else if (MusicTrack != null)
             {
-                Length += MusicTrack.GetLength();
+                length += MusicTrack.GetLength();
             }
             else if (MusicSwitchContainer != null)
             {
-                Length += MusicSwitchContainer.GetLength();
+                length += MusicSwitchContainer.GetLength();
             }
             else if (MusicSequence != null)
             {
-                Length += MusicSequence.GetLength();
+                length += MusicSequence.GetLength();
             }
             else if (Attenuation != null)
             {
-                Length += Attenuation.GetLength();
+                length += Attenuation.GetLength();
             }
             else if (FeedbackNode != null)
             {
-                Length += FeedbackNode.GetLength();
+                length += FeedbackNode.GetLength();
             }
             else if (FxShareSet != null)
             {
-                Length += FxShareSet.GetLength();
+                length += FxShareSet.GetLength();
             }
             else if (FxCustom != null)
             {
-                Length += FxCustom.GetLength();
+                length += FxCustom.GetLength();
             }
             else if (AuxiliaryBus != null)
             {
-                Length += AuxiliaryBus.GetLength();
+                length += AuxiliaryBus.GetLength();
             }
             else if (LFO != null)
             {
-                Length += LFO.GetLength();
+                length += LFO.GetLength();
             }
             else if (Envelope != null)
             {
-                Length += Envelope.GetLength();
+                length += Envelope.GetLength();
             }
-            else if (State != null)
+            else if (FeedbackBus != null)
             {
-                Length += State.GetLength();
-            }
-            else if (AudioDevice != null)
-            {
-                Length += AudioDevice.GetLength();
+                length += FeedbackBus.GetLength();
             }
             else
             {
                 if (Data != null)
                 {
-                    Length += Data.Length;
+                    length += Data.Length;
                 }
                 else
                 {
-                    Length = -1;
+                    length = -1;
                 }
             }
 
-            return Length;
+            return length;
         }
     }
 
     public class HIRC
     {
-        public Dictionary<uint,List<int>> AudioDevice = new Dictionary<uint, List<int>>();
-        public Dictionary<int,List<int>> ActorMixer = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> Attenuation = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> AudioBus = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> AuxiliaryBus = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> BlendContainer = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> DialogueEvent = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> Envelope = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> Event = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> EventAction = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> FeedbackNode = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> FxCustom = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> FxShareSet = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> LFO = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> MotionBus = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> MusicSegment = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> MusicSequence = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> MusicSwitchContainer = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> MusicTrack = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> RandomContainer = new Dictionary<int, List<int>>();
-        public Dictionary<int,List<int>> Settings = new Dictionary<int, List<int>>();
-        public Dictionary<uint,List<int>> SoundSFX = new Dictionary<uint, List<int>>();
-        public Dictionary<uint,List<int>> State = new Dictionary<uint, List<int>>();
-        public Dictionary<int,List<int>> SwitchContainer = new Dictionary<int, List<int>>();
+        public Dictionary<uint, List<int>> AudioDevice = new Dictionary<uint, List<int>>();
+        public Dictionary<int, List<int>> ActorMixer = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> Attenuation = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> AudioBus = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> AuxiliaryBus = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> BlendContainer = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> DialogueEvent = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> Envelope = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> Event = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> EventAction = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> FeedbackNode = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> FxCustom = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> FxShareSet = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> LFO = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> MotionBus = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> MusicSegment = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> MusicSequence = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> MusicSwitchContainer = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> MusicTrack = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> RandomContainer = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> Settings = new Dictionary<int, List<int>>();
+        public Dictionary<uint, List<int>> SoundSFX = new Dictionary<uint, List<int>>();
+        public Dictionary<uint, List<int>> State = new Dictionary<uint, List<int>>();
+        public Dictionary<int, List<int>> SwitchContainer = new Dictionary<int, List<int>>();
         public int Length { get; set; }
         public List<HIRCObject> Data { get; set; }
         public byte[] bytes { get; set; }

@@ -5,8 +5,7 @@ using System.Xml.Linq;
 using System.Windows;
 using System.Collections.Generic;
 using System.ComponentModel;
-using ResourceTypes.Wwise.Helpers;
-using ResourceTypes.Wwise;
+using Utils;
 
 namespace ResourceTypes.Wwise.Helpers
 {
@@ -32,17 +31,19 @@ namespace ResourceTypes.Wwise.Helpers
         public byte OverrideAttachmentParams { get; set; }
         public List<RTPC> rtpc { get; set; }
         public List<StateChunk> StateChunks { get; set; }
-        public Bus(HIRCObject ParentObject, BinaryReader br, uint Length)
+        public uint FeedbackBusId { get; set; }
+        public Bus(HIRCObject ParentObject, BinaryReader br, uint length)
         {
             Parent = ParentObject;
+            long initPos = br.BaseStream.Position - 4;
             OverrideBusID = br.ReadUInt32();
             Props = new List<Prop>();
             int PropsCount = br.ReadByte();
 
             for (int i = 0; i < PropsCount; i++)
             {
-                byte Key = br.ReadByte();
-                Props.Add(new Prop(Key));
+                byte key = br.ReadByte();
+                Props.Add(new Prop(key));
             }
 
             foreach (Prop prop in Props)
@@ -52,7 +53,6 @@ namespace ResourceTypes.Wwise.Helpers
 
             BusInitialBitVector1 = br.ReadByte();
             BusInitialBitVector2 = br.ReadByte();
-
             MaxInstanceCount = br.ReadUInt16();
             ChannelConfig = br.ReadUInt32();
             BusInitialBitVector3 = br.ReadByte();
@@ -77,10 +77,10 @@ namespace ResourceTypes.Wwise.Helpers
             for (int i = 0; i < numFx; i++)
             {
                 byte Index = br.ReadByte();
-                uint ID = br.ReadUInt32();
+                uint Id = br.ReadUInt32();
                 byte bIsShareSet = br.ReadByte();
                 byte bIsRendered = br.ReadByte();
-                FXChunks.Add(new FXChunk(Index, ID, bIsShareSet, bIsRendered));
+                FXChunks.Add(new FXChunk(Index, Id, bIsShareSet, bIsRendered));
             }
 
             FXID = br.ReadUInt32();
@@ -95,12 +95,23 @@ namespace ResourceTypes.Wwise.Helpers
             }
 
             StateChunks = new List<StateChunk>();
-
             uint stateChunkCount = br.ReadUInt32();
 
             for (int i = 0; i < stateChunkCount; i++)
             {
                 StateChunks.Add(new StateChunk(br, Parent));
+            }
+
+            switch (Parent.Bnk.Header.Feedback)
+            {
+                case 0:
+                case 16:
+
+                    break;
+
+                default:
+                    FeedbackBusId = br.ReadUInt32();
+                    break;
             }
         }
 
@@ -124,6 +135,7 @@ namespace ResourceTypes.Wwise.Helpers
             OverrideAttachmentParams = 0;
             rtpc = new List<RTPC>();
             StateChunks = new List<StateChunk>();
+            FeedbackBusId = 0;
         }
 
         public void WriteToFile(BinaryWriter bw)
@@ -140,7 +152,6 @@ namespace ResourceTypes.Wwise.Helpers
             {
                 bw.Write(prop.Value);
             }
-
             bw.Write(BusInitialBitVector1);
             bw.Write(BusInitialBitVector2);
             bw.Write((short)MaxInstanceCount);
@@ -186,29 +197,53 @@ namespace ResourceTypes.Wwise.Helpers
             {
                 chunk.WriteToFile(bw);
             }
+
+            switch (Parent.Bnk.Header.Feedback)
+            {
+                case 0:
+                case 16:
+
+                    break;
+
+                default:
+                    bw.Write(FeedbackBusId);
+                    break;
+            }
         }
 
         public int GetLength()
         {
-            int Length = 40 + Props.Count * 5 + FXChunks.Count * 7 + Ducks.Count * 18;
+            int length = 40 + Props.Count * 5 + FXChunks.Count * 7 + Ducks.Count * 18;
 
             if (FXChunks.Count == 0)
             {
-                Length -= 1;
+                length -= 1;
             }
 
             foreach (RTPC value in rtpc)
             {
-                Length += value.GetLength();
+                length += value.GetLength();
             }
 
             foreach (StateChunk chunk in StateChunks)
 
             {
-                Length += chunk.GetLength();
+                length += chunk.GetLength();
             }
 
-            return Length;
+            switch (Parent.Bnk.Header.Feedback)
+            {
+                case 0:
+                case 16:
+
+                    break;
+
+                default:
+                    length += 4;
+                    break;
+            }
+
+            return length;
         }
     }
 }

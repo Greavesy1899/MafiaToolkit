@@ -374,24 +374,6 @@ namespace ResourceTypes.Wwise
 
                     Objects.Envelope[(int)tempObj.Envelope.ID].Add(Objects.Data.IndexOf(tempObj));
                 }
-                else if (tempObj.State != null)
-                {
-                    if (!Objects.State.ContainsKey(tempObj.State.ID))
-                    {
-                        Objects.State.Add(tempObj.State.ID, new List<int>());
-                    }
-
-                    Objects.State[tempObj.State.ID].Add(Objects.Data.IndexOf(tempObj));
-                }
-                else if (tempObj.AudioDevice != null)
-                {
-                    if (!Objects.AudioDevice.ContainsKey(tempObj.AudioDevice.ID))
-                    {
-                        Objects.AudioDevice.Add(tempObj.AudioDevice.ID, new List<int>());
-                    }
-
-                    Objects.AudioDevice[tempObj.AudioDevice.ID].Add(Objects.Data.IndexOf(tempObj));
-                }
             }
         }
 
@@ -485,14 +467,6 @@ namespace ResourceTypes.Wwise
                 else if (obj.Envelope != null)
                 {
                     obj.Envelope.WriteToFile(bw);
-                }
-                else if (obj.State != null)
-                {
-                    obj.State.WriteToFile(bw);
-                }
-                else if (obj.AudioDevice != null)
-                {
-                    obj.AudioDevice.WriteToFile(bw);
                 }
                 else
                 {
