@@ -35,10 +35,10 @@ namespace Mafia2Tool
             System.Windows.Forms.StatusStrip StatusStrip;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapEditor));
             this.CurrentModeButton = new System.Windows.Forms.ToolStripSplitButton();
-            this.PositionXTool = new Utils.Extensions.NumericUpDownToolStrip();
-            this.PositionYTool = new Utils.Extensions.NumericUpDownToolStrip();
-            this.PositionZTool = new Utils.Extensions.NumericUpDownToolStrip();
-            this.CameraSpeedTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.PositionXTool = new NumericUpDownToolStrip();
+            this.PositionYTool = new NumericUpDownToolStrip();
+            this.PositionZTool = new NumericUpDownToolStrip();
+            this.CameraSpeedTool = new NumericUpDownToolStrip();
             this.Label_FPS = new System.Windows.Forms.ToolStripStatusLabel();
             this.Label_MemoryUsage = new System.Windows.Forms.ToolStripStatusLabel();
             this.ToolbarStrip = new System.Windows.Forms.ToolStrip();

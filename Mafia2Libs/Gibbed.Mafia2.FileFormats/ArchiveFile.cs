@@ -38,6 +38,7 @@ using Utils.Logging;
 using Utils.Settings;
 using Utils.Types;
 using System.Diagnostics;
+using Mafia2Tool.Utils;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -221,7 +222,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             if (IsGameType(GamesEnumerator.MafiaI_DE))
             {
-                if (!File.Exists("oo2core_8_win64.dll"))
+                if (!OodleDllResolver.TryResolveFrom(GameStorage.Instance.GetSelectedGame().Directory))
                 {
                     MessageBox.Show(Language.GetString("$M1DE_OODLEERROR"), "Toolkit");
                     return;

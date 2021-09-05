@@ -17,7 +17,7 @@ Not the best feature in this Toolkit, its primary reason it exists is because it
 
 **SDS Packing/Repacking:**
 
-This feature uses Gibbed's SDS code from his [repository](https://github.com/gibbed/Gibbed.Illusion), with multiple fixes and improvements. XML files and the games tables are automatically decompiled, with the option to decompile the LUA files. There is an option to unpack SDS files in the format like "SDS Tools GUI", for the people who would like to open the contents in ZModeler3. For repacking, the modder can either choose compressed or uncompressed in the toolkits options. Double clicking any SDS in the game explorer will unpack, and to repack right click the SDS you unpacked, and click "pack". SDS's from Mafia III and Mafia: DE are also supported. However, with Mafia: DE, the Toolkit requires the end-user (you) to copy and paste the 'Oodle' dll from the game folder into the Toolkit's library folder to function. The Toolkit *does not* redistribute this DLL.
+This feature uses Gibbed's SDS code from his [repository](https://github.com/gibbed/Gibbed.Illusion), with multiple fixes and improvements. XML files and the games tables are automatically decompiled, with the option to decompile the LUA files. There is an option to unpack SDS files in the format like "SDS Tools GUI", for the people who would like to open the contents in ZModeler3. For repacking, the modder can either choose compressed or uncompressed in the toolkits options. Double clicking any SDS in the game explorer will unpack, and to repack right click the SDS you unpacked, and click "pack". SDS's from Mafia III and Mafia: DE are also supported.
 
 **Material Editor:**
 
