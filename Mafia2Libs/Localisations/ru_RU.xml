@@ -39,7 +39,7 @@
   <String ID="$REFRESH">Обновить</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Путь к папке </String>
   <String ID="$UP_TOOLTIP">Вверх</String>
-  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder into the same folder as the Toolkit executable.</String>
+  <String ID="$M1DE_OODLEERROR">Не удалось найти библиотеку Oodle, необходимую для сжатия/распаковки архивов. Пожалуйста, убедитесь, что файл 'oo2core_8_win64.dll' присутствует в игровой директории.</String>
   
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Запуск Toolkit</String>
