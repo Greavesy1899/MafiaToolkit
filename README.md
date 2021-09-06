@@ -59,4 +59,4 @@ For M2FBX, you'll need to have the Fbx SDK and PhysX 2.8.X to compile the soluti
 You can check the current issues [here](https://github.com/Greavesy1899/Mafia2Toolkit/issues "Issues").
 
 ## Discord link:
-To keep upto date on the progress of this toolkit, I recommend joining this discord by using the link [here](discord.gg/WX8RGpQSYu "Discord invite")
+To keep upto date on the progress of this toolkit, I recommend joining this discord by using the link [here](https://discord.gg/WX8RGpQSYu "Discord invite")
