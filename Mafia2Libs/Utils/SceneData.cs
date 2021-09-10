@@ -19,6 +19,7 @@ using ResourceTypes.Prefab;
 using ResourceTypes.Misc;
 using Utils.Types;
 using System.Diagnostics;
+using Utils.Models;
 
 namespace Mafia2Tool
 {
@@ -64,7 +65,7 @@ namespace Mafia2Tool
             List<NAVData> obj = new List<NAVData>();
 
             isBigEndian = forceBigEndian;
-            Utils.Models.VertexTranslator.IsBigEndian = forceBigEndian;
+            VertexTranslator.IsBigEndian = forceBigEndian;
 
             if (isBigEndian)
             {
