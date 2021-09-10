@@ -42,16 +42,27 @@ namespace Forms.Docking
             this.ExportFrameButton = new System.Windows.Forms.ToolStripMenuItem();
             this.LinkToActorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.Split_Main = new System.Windows.Forms.SplitContainer();
-            this.Label_FilterFrame = new System.Windows.Forms.Label();
-            this.TextBox_FilterFrame = new System.Windows.Forms.TextBox();
+            this.TreeView_Explorer = new Mafia2Tool.Controls.MTreeView();
+            this.Tab_Explorer = new System.Windows.Forms.TabControl();
+            this.TabPage_Explorer = new System.Windows.Forms.TabPage();
+            this.TabPage_Searcher = new System.Windows.Forms.TabPage();
+            this.Split_Searcher_Root = new System.Windows.Forms.SplitContainer();
+            this.Split_Searcher_TextButton = new System.Windows.Forms.SplitContainer();
+            this.TextBox_Search = new System.Windows.Forms.TextBox();
             this.Button_Search = new System.Windows.Forms.Button();
-            this.treeView1 = new Mafia2Tool.Controls.MTreeView();
+            this.TreeView_Searcher = new Mafia2Tool.Controls.MTreeView();
             this.EntryMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Split_Main)).BeginInit();
-            this.Split_Main.Panel1.SuspendLayout();
-            this.Split_Main.Panel2.SuspendLayout();
-            this.Split_Main.SuspendLayout();
+            this.Tab_Explorer.SuspendLayout();
+            this.TabPage_Explorer.SuspendLayout();
+            this.TabPage_Searcher.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Split_Searcher_Root)).BeginInit();
+            this.Split_Searcher_Root.Panel1.SuspendLayout();
+            this.Split_Searcher_Root.Panel2.SuspendLayout();
+            this.Split_Searcher_Root.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Split_Searcher_TextButton)).BeginInit();
+            this.Split_Searcher_TextButton.Panel1.SuspendLayout();
+            this.Split_Searcher_TextButton.Panel2.SuspendLayout();
+            this.Split_Searcher_TextButton.SuspendLayout();
             this.SuspendLayout();
             // 
             // EntryMenuStrip
@@ -63,31 +74,31 @@ namespace Forms.Docking
             this.Export3DButton,
             this.FrameActions});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 136);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(165, 114);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // JumpToButton
             // 
             this.JumpToButton.Name = "JumpToButton";
-            this.JumpToButton.Size = new System.Drawing.Size(180, 22);
+            this.JumpToButton.Size = new System.Drawing.Size(164, 22);
             this.JumpToButton.Text = "Jump To Position";
             // 
             // DeleteButton
             // 
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteButton.Size = new System.Drawing.Size(164, 22);
             this.DeleteButton.Text = "Delete";
             // 
             // DuplicateButton
             // 
             this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
+            this.DuplicateButton.Size = new System.Drawing.Size(164, 22);
             this.DuplicateButton.Text = "Duplicate";
             // 
             // Export3DButton
             // 
             this.Export3DButton.Name = "Export3DButton";
-            this.Export3DButton.Size = new System.Drawing.Size(180, 22);
+            this.Export3DButton.Size = new System.Drawing.Size(164, 22);
             this.Export3DButton.Text = "Export 3D";
             // 
             // FrameActions
@@ -98,35 +109,36 @@ namespace Forms.Docking
             this.ExportFrameButton,
             this.LinkToActorButton});
             this.FrameActions.Name = "FrameActions";
-            this.FrameActions.Size = new System.Drawing.Size(180, 22);
+            this.FrameActions.Size = new System.Drawing.Size(164, 22);
             this.FrameActions.Text = "Frame Actions";
             // 
             // UpdateParent1Button
             // 
             this.UpdateParent1Button.Name = "UpdateParent1Button";
-            this.UpdateParent1Button.Size = new System.Drawing.Size(180, 22);
+            this.UpdateParent1Button.Size = new System.Drawing.Size(166, 22);
             this.UpdateParent1Button.Text = "Update Parent 1";
             // 
             // UpdateParent2Button
             // 
             this.UpdateParent2Button.Name = "UpdateParent2Button";
-            this.UpdateParent2Button.Size = new System.Drawing.Size(180, 22);
+            this.UpdateParent2Button.Size = new System.Drawing.Size(166, 22);
             this.UpdateParent2Button.Text = "Update Parent 2";
             // 
             // ExportFrameButton
             // 
             this.ExportFrameButton.Name = "ExportFrameButton";
-            this.ExportFrameButton.Size = new System.Drawing.Size(180, 22);
+            this.ExportFrameButton.Size = new System.Drawing.Size(166, 22);
             this.ExportFrameButton.Text = "Export Frame";
             // 
             // LinkToActorButton
             // 
             this.LinkToActorButton.Name = "LinkToActorButton";
-            this.LinkToActorButton.Size = new System.Drawing.Size(180, 22);
+            this.LinkToActorButton.Size = new System.Drawing.Size(166, 22);
             this.LinkToActorButton.Text = "$LINK_TO_ACTOR";
             // 
             // imageList1
             // 
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "ActorFrame.png");
@@ -141,87 +153,161 @@ namespace Forms.Docking
             this.imageList1.Images.SetKeyName(9, "SkinnedFrame.png");
             this.imageList1.Images.SetKeyName(10, "DummyFrame.png");
             // 
-            // Split_Main
+            // TreeView_Explorer
             // 
-            this.Split_Main.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Split_Main.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.Split_Main.Location = new System.Drawing.Point(0, 0);
-            this.Split_Main.Name = "Split_Main";
-            this.Split_Main.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.TreeView_Explorer.CheckBoxes = true;
+            this.TreeView_Explorer.ContextMenuStrip = this.EntryMenuStrip;
+            this.TreeView_Explorer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TreeView_Explorer.HideSelection = false;
+            this.TreeView_Explorer.ImageIndex = 3;
+            this.TreeView_Explorer.ImageList = this.imageList1;
+            this.TreeView_Explorer.Location = new System.Drawing.Point(3, 3);
+            this.TreeView_Explorer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TreeView_Explorer.Name = "TreeView_Explorer";
+            this.TreeView_Explorer.SelectedImageIndex = 0;
+            this.TreeView_Explorer.Size = new System.Drawing.Size(316, 485);
+            this.TreeView_Explorer.TabIndex = 0;
+            this.TreeView_Explorer.DoubleClick += new System.EventHandler(this.OnDoubleClick);
             // 
-            // Split_Main.Panel1
+            // Tab_Explorer
             // 
-            this.Split_Main.Panel1.Controls.Add(this.Label_FilterFrame);
-            this.Split_Main.Panel1.Controls.Add(this.TextBox_FilterFrame);
-            this.Split_Main.Panel1.Controls.Add(this.Button_Search);
+            this.Tab_Explorer.Controls.Add(this.TabPage_Explorer);
+            this.Tab_Explorer.Controls.Add(this.TabPage_Searcher);
+            this.Tab_Explorer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Tab_Explorer.Location = new System.Drawing.Point(0, 0);
+            this.Tab_Explorer.Name = "Tab_Explorer";
+            this.Tab_Explorer.SelectedIndex = 0;
+            this.Tab_Explorer.Size = new System.Drawing.Size(330, 519);
+            this.Tab_Explorer.TabIndex = 1;
             // 
-            // Split_Main.Panel2
+            // TabPage_Explorer
             // 
-            this.Split_Main.Panel2.Controls.Add(this.treeView1);
-            this.Split_Main.Size = new System.Drawing.Size(244, 450);
-            this.Split_Main.SplitterDistance = 48;
-            this.Split_Main.TabIndex = 1;
+            this.TabPage_Explorer.Controls.Add(this.TreeView_Explorer);
+            this.TabPage_Explorer.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_Explorer.Name = "TabPage_Explorer";
+            this.TabPage_Explorer.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPage_Explorer.Size = new System.Drawing.Size(322, 491);
+            this.TabPage_Explorer.TabIndex = 0;
+            this.TabPage_Explorer.Text = "tabPage1";
+            this.TabPage_Explorer.UseVisualStyleBackColor = true;
             // 
-            // Label_FilterFrame
+            // TabPage_Searcher
             // 
-            this.Label_FilterFrame.AutoSize = true;
-            this.Label_FilterFrame.Location = new System.Drawing.Point(3, 5);
-            this.Label_FilterFrame.Name = "Label_FilterFrame";
-            this.Label_FilterFrame.Size = new System.Drawing.Size(105, 13);
-            this.Label_FilterFrame.TabIndex = 4;
-            this.Label_FilterFrame.Text = "Filter By Name/Hash";
+            this.TabPage_Searcher.Controls.Add(this.Split_Searcher_Root);
+            this.TabPage_Searcher.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_Searcher.Name = "TabPage_Searcher";
+            this.TabPage_Searcher.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPage_Searcher.Size = new System.Drawing.Size(322, 491);
+            this.TabPage_Searcher.TabIndex = 1;
+            this.TabPage_Searcher.Text = "tabPage2";
+            this.TabPage_Searcher.UseVisualStyleBackColor = true;
             // 
-            // TextBox_FilterFrame
+            // Split_Searcher_Root
             // 
-            this.TextBox_FilterFrame.Enabled = false;
-            this.TextBox_FilterFrame.Location = new System.Drawing.Point(3, 21);
-            this.TextBox_FilterFrame.Name = "TextBox_FilterFrame";
-            this.TextBox_FilterFrame.Size = new System.Drawing.Size(194, 20);
-            this.TextBox_FilterFrame.TabIndex = 3;
+            this.Split_Searcher_Root.Cursor = System.Windows.Forms.Cursors.HSplit;
+            this.Split_Searcher_Root.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Split_Searcher_Root.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.Split_Searcher_Root.IsSplitterFixed = true;
+            this.Split_Searcher_Root.Location = new System.Drawing.Point(3, 3);
+            this.Split_Searcher_Root.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.Split_Searcher_Root.Name = "Split_Searcher_Root";
+            this.Split_Searcher_Root.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // Split_Searcher_Root.Panel1
+            // 
+            this.Split_Searcher_Root.Panel1.Controls.Add(this.Split_Searcher_TextButton);
+            // 
+            // Split_Searcher_Root.Panel2
+            // 
+            this.Split_Searcher_Root.Panel2.Controls.Add(this.TreeView_Searcher);
+            this.Split_Searcher_Root.Size = new System.Drawing.Size(316, 485);
+            this.Split_Searcher_Root.SplitterDistance = 25;
+            this.Split_Searcher_Root.SplitterWidth = 5;
+            this.Split_Searcher_Root.TabIndex = 2;
+            // 
+            // Split_Searcher_TextButton
+            // 
+            this.Split_Searcher_TextButton.Cursor = System.Windows.Forms.Cursors.VSplit;
+            this.Split_Searcher_TextButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Split_Searcher_TextButton.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.Split_Searcher_TextButton.IsSplitterFixed = true;
+            this.Split_Searcher_TextButton.Location = new System.Drawing.Point(0, 0);
+            this.Split_Searcher_TextButton.Name = "Split_Searcher_TextButton";
+            // 
+            // Split_Searcher_TextButton.Panel1
+            // 
+            this.Split_Searcher_TextButton.Panel1.Controls.Add(this.TextBox_Search);
+            // 
+            // Split_Searcher_TextButton.Panel2
+            // 
+            this.Split_Searcher_TextButton.Panel2.Controls.Add(this.Button_Search);
+            this.Split_Searcher_TextButton.Size = new System.Drawing.Size(316, 25);
+            this.Split_Searcher_TextButton.SplitterDistance = 269;
+            this.Split_Searcher_TextButton.TabIndex = 1;
+            // 
+            // TextBox_Search
+            // 
+            this.TextBox_Search.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TextBox_Search.Location = new System.Drawing.Point(0, 0);
+            this.TextBox_Search.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TextBox_Search.Name = "TextBox_Search";
+            this.TextBox_Search.Size = new System.Drawing.Size(269, 23);
+            this.TextBox_Search.TabIndex = 3;
+            this.TextBox_Search.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_Search_OnKeyUp);
             // 
             // Button_Search
             // 
-            this.Button_Search.Enabled = false;
-            this.Button_Search.Location = new System.Drawing.Point(203, 19);
+            this.Button_Search.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Button_Search.Location = new System.Drawing.Point(0, 0);
+            this.Button_Search.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Button_Search.Name = "Button_Search";
-            this.Button_Search.Size = new System.Drawing.Size(28, 23);
+            this.Button_Search.Size = new System.Drawing.Size(43, 25);
             this.Button_Search.TabIndex = 0;
             this.Button_Search.Text = ">>";
             this.Button_Search.UseVisualStyleBackColor = true;
-            this.Button_Search.Click += new System.EventHandler(this.button1_Click);
+            this.Button_Search.Click += new System.EventHandler(this.Button_Search_OnClick);
             // 
-            // treeView1
+            // TreeView_Searcher
             // 
-            this.treeView1.CheckBoxes = true;
-            this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.HideSelection = false;
-            this.treeView1.ImageIndex = 3;
-            this.treeView1.ImageList = this.imageList1;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.SelectedImageIndex = 0;
-            this.treeView1.Size = new System.Drawing.Size(244, 398);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.DoubleClick += new System.EventHandler(this.OnDoubleClick);
+            this.TreeView_Searcher.CheckBoxes = true;
+            this.TreeView_Searcher.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TreeView_Searcher.HideSelection = false;
+            this.TreeView_Searcher.ImageIndex = 3;
+            this.TreeView_Searcher.ImageList = this.imageList1;
+            this.TreeView_Searcher.Location = new System.Drawing.Point(0, 0);
+            this.TreeView_Searcher.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TreeView_Searcher.Name = "TreeView_Searcher";
+            this.TreeView_Searcher.SelectedImageIndex = 0;
+            this.TreeView_Searcher.Size = new System.Drawing.Size(316, 455);
+            this.TreeView_Searcher.TabIndex = 0;
+            this.TreeView_Searcher.DoubleClick += new System.EventHandler(this.TreeView_Searcher_OnDoubleClick);
+            this.TreeView_Searcher.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeView_Searcher_OnKeyUp);
             // 
             // DockSceneTree
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(244, 450);
-            this.Controls.Add(this.Split_Main);
+            this.ClientSize = new System.Drawing.Size(330, 519);
+            this.Controls.Add(this.Tab_Explorer);
             this.HideOnClose = true;
-            this.MinimumSize = new System.Drawing.Size(260, 39);
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.MinimumSize = new System.Drawing.Size(301, 39);
             this.Name = "DockSceneTree";
             this.TabText = "Scene Outliner";
             this.Text = "DockSceneTree";
             this.EntryMenuStrip.ResumeLayout(false);
-            this.Split_Main.Panel1.ResumeLayout(false);
-            this.Split_Main.Panel1.PerformLayout();
-            this.Split_Main.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.Split_Main)).EndInit();
-            this.Split_Main.ResumeLayout(false);
+            this.Tab_Explorer.ResumeLayout(false);
+            this.TabPage_Explorer.ResumeLayout(false);
+            this.TabPage_Searcher.ResumeLayout(false);
+            this.Split_Searcher_Root.Panel1.ResumeLayout(false);
+            this.Split_Searcher_Root.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.Split_Searcher_Root)).EndInit();
+            this.Split_Searcher_Root.ResumeLayout(false);
+            this.Split_Searcher_TextButton.Panel1.ResumeLayout(false);
+            this.Split_Searcher_TextButton.Panel1.PerformLayout();
+            this.Split_Searcher_TextButton.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.Split_Searcher_TextButton)).EndInit();
+            this.Split_Searcher_TextButton.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -233,15 +319,19 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
-        private Mafia2Tool.Controls.MTreeView treeView1;
+        private Mafia2Tool.Controls.MTreeView TreeView_Explorer;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
         private System.Windows.Forms.ToolStripMenuItem FrameActions;
         public System.Windows.Forms.ToolStripMenuItem ExportFrameButton;
         public System.Windows.Forms.ToolStripMenuItem LinkToActorButton;
-        private System.Windows.Forms.SplitContainer Split_Main;
-        private System.Windows.Forms.TextBox TextBox_FilterFrame;
+        private System.Windows.Forms.TabControl Tab_Explorer;
+        private System.Windows.Forms.TabPage TabPage_Explorer;
+        private System.Windows.Forms.TabPage TabPage_Searcher;
+        private System.Windows.Forms.SplitContainer Split_Searcher_Root;
+        private System.Windows.Forms.TextBox TextBox_Search;
         private System.Windows.Forms.Button Button_Search;
-        private System.Windows.Forms.Label Label_FilterFrame;
+        private Mafia2Tool.Controls.MTreeView TreeView_Searcher;
+        private System.Windows.Forms.SplitContainer Split_Searcher_TextButton;
     }
 }

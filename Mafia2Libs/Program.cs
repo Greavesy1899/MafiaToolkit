@@ -29,6 +29,7 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             ToolkitAssemblyLoadContext.SetupLoadContext();
+            ToolkitExceptionHandler.Initialise();
 
             CheckINIExists();
             ToolkitSettings.ReadINI();
@@ -154,6 +155,23 @@ namespace Mafia2Tool
             }
 
             return null;
+        }
+    }
+
+    public static class ToolkitExceptionHandler
+    {
+        public static void Initialise()
+        {
+            Application.ThreadException += Application_ThreadException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+        }
+
+        private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        {
         }
     }
 }

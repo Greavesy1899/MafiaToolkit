@@ -17,6 +17,14 @@ namespace Rendering.Factories
             return RenderBox;
         }
 
+        public static RenderPlane3D BuildPlane3D(Vector4[] Planes, Matrix4x4 WorldTransform)
+        {
+            RenderPlane3D Plane3D = new RenderPlane3D();
+            Plane3D.InitPlanes(Planes, WorldTransform);
+            Plane3D.SetTransform(WorldTransform);
+            return Plane3D;
+        }
+
         public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh)
         {
             if (Mesh.MaterialIndex == -1 && Mesh.MeshIndex == -1)
