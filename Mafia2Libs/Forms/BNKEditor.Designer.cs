@@ -33,21 +33,24 @@
             this.WemGrid = new System.Windows.Forms.PropertyGrid();
             this.TreeView_Wems = new Mafia2Tool.Controls.MTreeView();
             this.BnkContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ContextReplace = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextExport = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.Toolstrip_Bnk = new System.Windows.Forms.ToolStrip();
             this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.Button_ImportWem = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_ExportWem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ReplaceWem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ImportWem = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_DeleteWem = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_ExportAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.Checkbox_Trim = new System.Windows.Forms.CheckBox();
             this.BnkContext.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
+            this.Toolstrip_Bnk.SuspendLayout();
             this.SuspendLayout();
             // 
             // WemGrid
@@ -79,23 +82,31 @@
             // BnkContext
             // 
             this.BnkContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ContextReplace,
             this.ContextEdit,
             this.ContextExport,
             this.ContextDelete});
             this.BnkContext.Name = "SDSContext";
-            this.BnkContext.Size = new System.Drawing.Size(159, 70);
+            this.BnkContext.Size = new System.Drawing.Size(162, 92);
+            // 
+            // ContextReplace
+            // 
+            this.ContextReplace.Name = "ContextReplace";
+            this.ContextReplace.Size = new System.Drawing.Size(161, 22);
+            this.ContextReplace.Text = "$REPLACE_WEM";
+            this.ContextReplace.Click += new System.EventHandler(this.Button_ReplaceWem_Click);
             // 
             // ContextEdit
             // 
             this.ContextEdit.Name = "ContextEdit";
-            this.ContextEdit.Size = new System.Drawing.Size(158, 22);
+            this.ContextEdit.Size = new System.Drawing.Size(161, 22);
             this.ContextEdit.Text = "$EDIT_HIRC";
             this.ContextEdit.Click += new System.EventHandler(this.ContextEdit_Click);
             // 
             // ContextExport
             // 
             this.ContextExport.Name = "ContextExport";
-            this.ContextExport.Size = new System.Drawing.Size(158, 22);
+            this.ContextExport.Size = new System.Drawing.Size(161, 22);
             this.ContextExport.Text = "$EXPORT_WEM";
             this.ContextExport.Click += new System.EventHandler(this.Button_ExportWem_Click);
             // 
@@ -103,20 +114,20 @@
             // 
             this.ContextDelete.Name = "ContextDelete";
             this.ContextDelete.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.ContextDelete.Size = new System.Drawing.Size(158, 22);
+            this.ContextDelete.Size = new System.Drawing.Size(161, 22);
             this.ContextDelete.Text = "Delete";
             this.ContextDelete.Click += new System.EventHandler(this.ContextDelete_Click);
             // 
-            // toolStrip1
+            // Toolstrip_Bnk
             // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Toolstrip_Bnk.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileButton,
             this.EditButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(933, 25);
-            this.toolStrip1.TabIndex = 15;
-            this.toolStrip1.Text = "toolStrip1";
+            this.Toolstrip_Bnk.Location = new System.Drawing.Point(0, 0);
+            this.Toolstrip_Bnk.Name = "Toolstrip_Bnk";
+            this.Toolstrip_Bnk.Size = new System.Drawing.Size(933, 25);
+            this.Toolstrip_Bnk.TabIndex = 15;
+            this.Toolstrip_Bnk.Text = "Toolstrip_Bnk";
             // 
             // FileButton
             // 
@@ -158,8 +169,9 @@
             // 
             this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Button_ImportWem,
             this.Button_ExportWem,
+            this.Button_ReplaceWem,
+            this.Button_ImportWem,
             this.Button_DeleteWem,
             this.Button_ExportAll});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
@@ -168,6 +180,20 @@
             this.EditButton.Size = new System.Drawing.Size(49, 22);
             this.EditButton.Text = "$EDIT";
             // 
+            // Button_ExportWem
+            // 
+            this.Button_ExportWem.Name = "Button_ExportWem";
+            this.Button_ExportWem.Size = new System.Drawing.Size(202, 22);
+            this.Button_ExportWem.Text = "$EXPORT_WEM";
+            this.Button_ExportWem.Click += new System.EventHandler(this.Button_ExportWem_Click);
+            // 
+            // Button_ReplaceWem
+            // 
+            this.Button_ReplaceWem.Name = "Button_ReplaceWem";
+            this.Button_ReplaceWem.Size = new System.Drawing.Size(202, 22);
+            this.Button_ReplaceWem.Text = "$REPLACE_WEM";
+            this.Button_ReplaceWem.Click += new System.EventHandler(this.Button_ReplaceWem_Click);
+            // 
             // Button_ImportWem
             // 
             this.Button_ImportWem.Name = "Button_ImportWem";
@@ -175,13 +201,6 @@
             this.Button_ImportWem.Text = "$IMPORT_WEM";
             this.Button_ImportWem.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.Button_ImportWem.Click += new System.EventHandler(this.Button_ImportWem_Click);
-            // 
-            // Button_ExportWem
-            // 
-            this.Button_ExportWem.Name = "Button_ExportWem";
-            this.Button_ExportWem.Size = new System.Drawing.Size(202, 22);
-            this.Button_ExportWem.Text = "$EXPORT_WEM";
-            this.Button_ExportWem.Click += new System.EventHandler(this.Button_ExportWem_Click);
             // 
             // Button_DeleteWem
             // 
@@ -199,12 +218,23 @@
             this.Button_ExportAll.Text = "$EXPORT_ALL_WEMS";
             this.Button_ExportAll.Click += new System.EventHandler(this.Button_ExportAll_Click);
             // 
+            // Checkbox_Trim
+            // 
+            this.Checkbox_Trim.AutoSize = true;
+            this.Checkbox_Trim.Location = new System.Drawing.Point(112, 3);
+            this.Checkbox_Trim.Name = "Checkbox_Trim";
+            this.Checkbox_Trim.Size = new System.Drawing.Size(98, 19);
+            this.Checkbox_Trim.TabIndex = 16;
+            this.Checkbox_Trim.Text = "$TRIM_WEMS";
+            this.Checkbox_Trim.UseVisualStyleBackColor = true;
+            // 
             // BNKEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(933, 519);
-            this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.Checkbox_Trim);
+            this.Controls.Add(this.Toolstrip_Bnk);
             this.Controls.Add(this.WemGrid);
             this.Controls.Add(this.TreeView_Wems);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -213,8 +243,8 @@
             this.Text = "$PCK_EDITOR_TITLE";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BnkEditor_Closing);
             this.BnkContext.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.Toolstrip_Bnk.ResumeLayout(false);
+            this.Toolstrip_Bnk.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -223,7 +253,7 @@
         #endregion
 
         private System.Windows.Forms.PropertyGrid WemGrid;
-        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStrip Toolstrip_Bnk;
         private System.Windows.Forms.ToolStripDropDownButton FileButton;
         private System.Windows.Forms.ToolStripMenuItem SaveButton;
         private System.Windows.Forms.ToolStripMenuItem ReloadButton;
@@ -238,5 +268,8 @@
         private System.Windows.Forms.ToolStripMenuItem ContextExport;
         private System.Windows.Forms.ToolStripMenuItem Button_ExportAll;
         private System.Windows.Forms.ToolStripMenuItem ContextEdit;
+        private System.Windows.Forms.CheckBox Checkbox_Trim;
+        private System.Windows.Forms.ToolStripMenuItem ContextReplace;
+        private System.Windows.Forms.ToolStripMenuItem Button_ReplaceWem;
     }
 }

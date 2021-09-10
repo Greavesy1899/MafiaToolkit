@@ -36,11 +36,13 @@ namespace Mafia2Tool
             ReloadButton.Text = Language.GetString("$RELOAD");
             ExitButton.Text = Language.GetString("$EXIT");
             EditButton.Text = Language.GetString("$EDIT");
+            Button_ReplaceWem.Text = Language.GetString("$REPLACE_WEM");
             Button_ImportWem.Text = Language.GetString("$IMPORT_WEM");
             Button_ExportWem.Text = Language.GetString("$EXPORT_WEM");
             Button_ExportAll.Text = Language.GetString("$EXPORT_ALL_WEMS");
             Button_DeleteWem.Text = Language.GetString("$DELETE_WEM");
             Button_LoadHIRC.Text = Language.GetString("$LOAD_HIRC");
+            ContextReplace.Text = Language.GetString("$REPLACE_WEM");
             ContextExport.Text = Language.GetString("$EXPORT_WEM");
             ContextDelete.Text = Language.GetString("$DELETE_WEM");
             ContextEditHIRC.Text = Language.GetString("$EDIT_HIRC");
@@ -164,11 +166,55 @@ namespace Mafia2Tool
                     node.Tag = newWem;
                     TreeView_Wems.Nodes.Add(node);
                     pck.WemList.Add(newWem);
+
+                    Text = Language.GetString("$PCK_EDITOR_TITLE") + "*";
+                    bIsFileEdited = true;
                 }
             }
+        }
 
-            Text = Language.GetString("$PCK_EDITOR_TITLE") + "*";
-            bIsFileEdited = true;
+        private void Button_ReplaceWem_Click(object sender, System.EventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+
+            if (PckFile.DirectoryName != null)
+            {
+                openFile.InitialDirectory = PckFile.DirectoryName;
+            }
+
+            openFile.Multiselect = true;
+            openFile.Filter = "WWise Wem files (*.wem)|*.wem";
+
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+                foreach (string fileName in openFile.FileNames)
+                {
+                    if (pck != null)
+                    {
+                        int itemIndex = pck.WemList.IndexOf((Wem)WemGrid.SelectedObject);
+                        Wem selWem = pck.WemList[itemIndex];
+                        Wem newWem;
+
+                        using (BinaryReader br = new BinaryReader(File.Open(fileName, FileMode.Open)))
+                        {
+                            newWem = new Wem(fileName, "", br, selWem.Offset);
+                        }
+
+                        newWem.ID = selWem.ID;
+                        newWem.LanguageEnum = selWem.LanguageEnum;
+
+                        if (!(selWem.Name == ("Imported_Wem_" + itemIndex)))
+                        {
+                            newWem.Name = selWem.Name;
+                        }
+
+                        pck.WemList[itemIndex] = newWem;
+
+                        Text = Language.GetString("$PCK_EDITOR_TITLE") + "*";
+                        bIsFileEdited = true;
+                    }
+                }
+            }
         }
 
         private void Button_ExportWem_Click(object sender, System.EventArgs e)

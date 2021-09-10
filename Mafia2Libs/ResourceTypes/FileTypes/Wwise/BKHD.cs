@@ -38,12 +38,12 @@ namespace ResourceTypes.Wwise
         }
     }
 
-    public class DidXChunk
+    public class DIDXChunk
     {
         public uint ChunkID { get; set; }
         public uint ChunkOffset { get; set; }
         public uint ChunkLength { get; set; }
-        public DidXChunk(uint iChunkID, uint iChunkOffset, uint iChunkLength)
+        public DIDXChunk(uint iChunkID, uint iChunkOffset, uint iChunkLength)
         {
             ChunkID = iChunkID;
             ChunkOffset = iChunkOffset;
@@ -55,12 +55,12 @@ namespace ResourceTypes.Wwise
     {
         public uint Length { get; set; }
         public long Offset { get; set; }
-        public List<DidXChunk> Data { get; set; }
+        public List<DIDXChunk> Data { get; set; }
         public DidX(uint iLength)
         {
             Length = iLength;
             Offset = iLength;
-            Data = new List<DidXChunk>();
+            Data = new List<DIDXChunk>();
         }
     }
 }

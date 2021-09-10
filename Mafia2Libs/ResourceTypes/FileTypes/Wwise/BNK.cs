@@ -100,7 +100,7 @@ namespace ResourceTypes.Wwise
                 uint DidXID = br.ReadUInt32();
                 uint DidXOffset = br.ReadUInt32();
                 uint DidXLength = br.ReadUInt32();
-                Wems.Data.Add(new DidXChunk(DidXID, DidXOffset, DidXLength));
+                Wems.Data.Add(new DIDXChunk(DidXID, DidXOffset, DidXLength));
             }
             Wems.Offset = br.BaseStream.Position;
 
@@ -115,7 +115,7 @@ namespace ResourceTypes.Wwise
             long initPos = br.BaseStream.Position;
 
             uint ii = 0;
-            foreach (DidXChunk chunk in Wems.Data)
+            foreach (DIDXChunk chunk in Wems.Data)
             {
                 ii++;
                 br.BaseStream.Seek(initPos + chunk.ChunkOffset, SeekOrigin.Begin);
