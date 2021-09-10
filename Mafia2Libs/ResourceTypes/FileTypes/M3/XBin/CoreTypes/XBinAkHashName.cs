@@ -10,32 +10,6 @@ using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.M3.XBin
 {
-    public static class XBinAkHashStorage
-    {
-        static Dictionary<uint, string> HashStorage;
-
-        public static void LoadStorage()
-        {
-            HashStorage = new Dictionary<uint, string>();
-            HashStorage.Add(2166136261, "");
-
-            string[] LoadedLines = File.ReadAllLines("Resources//GameData//XBin_Hashes.txt");
-
-            foreach (string Line in LoadedLines)
-            {
-                uint FNVHash = FNV32.Hash(Line);
-                HashStorage.TryAdd(FNVHash, Line);
-            }
-        }
-
-        public static string GetNameFromHash(uint Hash, out bool bSuccessful)
-        {
-            string Value = "";
-            bSuccessful = HashStorage.TryGetValue(Hash, out Value);
-            return Value != null ? Value : "";
-        }
-    }
-
     public class XBinAkHashNameConverter : ExpandableObjectConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -124,7 +98,7 @@ namespace ResourceTypes.M3.XBin
             Hash = reader.ReadUInt32();
 
             bool bSuccess = false;
-            _name = XBinAkHashStorage.GetNameFromHash(Hash, out bSuccess);
+            _name = XBinHashStorage.GetNameFromHash(Hash, out bSuccess);
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -141,7 +115,7 @@ namespace ResourceTypes.M3.XBin
         public void ForceToCheckStorage()
         {
             bool bSuccess = false;
-            string ReturnedName = XBinAkHashStorage.GetNameFromHash(Hash, out bSuccess);
+            string ReturnedName = XBinHashStorage.GetNameFromHash(Hash, out bSuccess);
 
             if (bSuccess)
             {

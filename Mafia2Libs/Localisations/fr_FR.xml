@@ -153,6 +153,11 @@
   <String ID="$FRADD_TYPE">Type de frame</String>
   <String ID="$QUESTION_FRADD">Entrer le nom et le type de la frame.</String>
 
+  <!-- Scene Outliner Dock Strings-->
+  <String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
+  <String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
+  <String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+  
   <!-- Actor Editor -->
   <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
   <String ID="$ADD_ITEM">Add Item</String>

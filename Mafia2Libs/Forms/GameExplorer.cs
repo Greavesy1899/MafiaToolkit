@@ -21,6 +21,8 @@ namespace Mafia2Tool
         private FileInfo launcher;
         private Game game;
 
+        private FileSystemWatcher DirectoryWatcher;
+
         public GameExplorer()
         {
             InitializeComponent();
@@ -40,6 +42,7 @@ namespace Mafia2Tool
             Localise();
             infoText.Text = "Loading..";
             InitExplorerSettings();
+            InitFileWatcher();
             FileListViewTypeController(1);
             infoText.Text = "Ready..";
             TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
@@ -140,6 +143,27 @@ namespace Mafia2Tool
             folderView.Nodes.Add(rootTreeNode);
             infoText.Text = "Done building folders..";
             OpenDirectory(rootDirectory);
+        }
+
+        private void InitFileWatcher()
+        {
+            DirectoryWatcher = new FileSystemWatcher(rootDirectory.FullName);
+            DirectoryWatcher.SynchronizingObject = this;
+            DirectoryWatcher.IncludeSubdirectories = true;
+            DirectoryWatcher.EnableRaisingEvents = false;
+            DirectoryWatcher.Changed += DirectoryWatcher_OnAnyChange;
+            DirectoryWatcher.Created += DirectoryWatcher_OnAnyChange;
+            DirectoryWatcher.Created += DirectoryWatcher_OnAnyChange;
+            DirectoryWatcher.Renamed += DirectoryWatcher_OnAnyChange;
+            DirectoryWatcher.Deleted += DirectoryWatcher_OnAnyChange;
+        }
+
+        private void DirectoryWatcher_OnAnyChange(object sender, FileSystemEventArgs e)
+        {
+            if (e.FullPath.Contains(currentDirectory.FullName))
+            {
+                this.BeginInvoke((MethodInvoker)(() => OpenDirectory(currentDirectory)));
+            }
         }
 
         private void GetSubdirectories(DirectoryInfo directory, TreeNode rootTreeNode)
@@ -332,13 +356,14 @@ namespace Mafia2Tool
             }
 
             if (asset is FileSDS)
-            {
+            {           
                 OpenSDSDirectory(asset.GetUnderlyingFileInfo());
             }
             else
             {
                 OpenDirectory(currentDirectory);
             }
+
             return true;
         }
 

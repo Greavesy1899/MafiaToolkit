@@ -42,26 +42,27 @@ namespace Forms.Docking
             this.ExportFrameButton = new System.Windows.Forms.ToolStripMenuItem();
             this.LinkToActorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.treeView1 = new Mafia2Tool.Controls.MTreeView();
+            this.TreeView_Explorer = new Mafia2Tool.Controls.MTreeView();
             this.Tab_Explorer = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.Label_SearchByName = new System.Windows.Forms.Label();
+            this.TabPage_Explorer = new System.Windows.Forms.TabPage();
+            this.TabPage_Searcher = new System.Windows.Forms.TabPage();
+            this.Split_Searcher_Root = new System.Windows.Forms.SplitContainer();
+            this.Split_Searcher_TextButton = new System.Windows.Forms.SplitContainer();
             this.TextBox_Search = new System.Windows.Forms.TextBox();
             this.Button_Search = new System.Windows.Forms.Button();
-            this.mTreeView1 = new Mafia2Tool.Controls.MTreeView();
-            this.SearchContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.Button_JumpToTreeView = new System.Windows.Forms.ToolStripMenuItem();
+            this.TreeView_Searcher = new Mafia2Tool.Controls.MTreeView();
             this.EntryMenuStrip.SuspendLayout();
             this.Tab_Explorer.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            this.SearchContextMenu.SuspendLayout();
+            this.TabPage_Explorer.SuspendLayout();
+            this.TabPage_Searcher.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Split_Searcher_Root)).BeginInit();
+            this.Split_Searcher_Root.Panel1.SuspendLayout();
+            this.Split_Searcher_Root.Panel2.SuspendLayout();
+            this.Split_Searcher_Root.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Split_Searcher_TextButton)).BeginInit();
+            this.Split_Searcher_TextButton.Panel1.SuspendLayout();
+            this.Split_Searcher_TextButton.Panel2.SuspendLayout();
+            this.Split_Searcher_TextButton.SuspendLayout();
             this.SuspendLayout();
             // 
             // EntryMenuStrip
@@ -152,142 +153,139 @@ namespace Forms.Docking
             this.imageList1.Images.SetKeyName(9, "SkinnedFrame.png");
             this.imageList1.Images.SetKeyName(10, "DummyFrame.png");
             // 
-            // treeView1
+            // TreeView_Explorer
             // 
-            this.treeView1.CheckBoxes = true;
-            this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.HideSelection = false;
-            this.treeView1.ImageIndex = 3;
-            this.treeView1.ImageList = this.imageList1;
-            this.treeView1.Location = new System.Drawing.Point(3, 3);
-            this.treeView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.SelectedImageIndex = 0;
-            this.treeView1.Size = new System.Drawing.Size(271, 485);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.DoubleClick += new System.EventHandler(this.OnDoubleClick);
+            this.TreeView_Explorer.CheckBoxes = true;
+            this.TreeView_Explorer.ContextMenuStrip = this.EntryMenuStrip;
+            this.TreeView_Explorer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TreeView_Explorer.HideSelection = false;
+            this.TreeView_Explorer.ImageIndex = 3;
+            this.TreeView_Explorer.ImageList = this.imageList1;
+            this.TreeView_Explorer.Location = new System.Drawing.Point(3, 3);
+            this.TreeView_Explorer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TreeView_Explorer.Name = "TreeView_Explorer";
+            this.TreeView_Explorer.SelectedImageIndex = 0;
+            this.TreeView_Explorer.Size = new System.Drawing.Size(316, 485);
+            this.TreeView_Explorer.TabIndex = 0;
+            this.TreeView_Explorer.DoubleClick += new System.EventHandler(this.OnDoubleClick);
             // 
             // Tab_Explorer
             // 
-            this.Tab_Explorer.Controls.Add(this.tabPage1);
-            this.Tab_Explorer.Controls.Add(this.tabPage2);
+            this.Tab_Explorer.Controls.Add(this.TabPage_Explorer);
+            this.Tab_Explorer.Controls.Add(this.TabPage_Searcher);
             this.Tab_Explorer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Tab_Explorer.Location = new System.Drawing.Point(0, 0);
             this.Tab_Explorer.Name = "Tab_Explorer";
             this.Tab_Explorer.SelectedIndex = 0;
-            this.Tab_Explorer.Size = new System.Drawing.Size(285, 519);
+            this.Tab_Explorer.Size = new System.Drawing.Size(330, 519);
             this.Tab_Explorer.TabIndex = 1;
             // 
-            // tabPage1
+            // TabPage_Explorer
             // 
-            this.tabPage1.Controls.Add(this.treeView1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 24);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(277, 491);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.TabPage_Explorer.Controls.Add(this.TreeView_Explorer);
+            this.TabPage_Explorer.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_Explorer.Name = "TabPage_Explorer";
+            this.TabPage_Explorer.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPage_Explorer.Size = new System.Drawing.Size(322, 491);
+            this.TabPage_Explorer.TabIndex = 0;
+            this.TabPage_Explorer.Text = "tabPage1";
+            this.TabPage_Explorer.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // TabPage_Searcher
             // 
-            this.tabPage2.Controls.Add(this.splitContainer1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 24);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(277, 491);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.TabPage_Searcher.Controls.Add(this.Split_Searcher_Root);
+            this.TabPage_Searcher.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_Searcher.Name = "TabPage_Searcher";
+            this.TabPage_Searcher.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPage_Searcher.Size = new System.Drawing.Size(322, 491);
+            this.TabPage_Searcher.TabIndex = 1;
+            this.TabPage_Searcher.Text = "tabPage2";
+            this.TabPage_Searcher.UseVisualStyleBackColor = true;
             // 
-            // splitContainer1
+            // Split_Searcher_Root
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer1.Location = new System.Drawing.Point(3, 3);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.Split_Searcher_Root.Cursor = System.Windows.Forms.Cursors.HSplit;
+            this.Split_Searcher_Root.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Split_Searcher_Root.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.Split_Searcher_Root.IsSplitterFixed = true;
+            this.Split_Searcher_Root.Location = new System.Drawing.Point(3, 3);
+            this.Split_Searcher_Root.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.Split_Searcher_Root.Name = "Split_Searcher_Root";
+            this.Split_Searcher_Root.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainer1.Panel1
+            // Split_Searcher_Root.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.Label_SearchByName);
-            this.splitContainer1.Panel1.Controls.Add(this.TextBox_Search);
-            this.splitContainer1.Panel1.Controls.Add(this.Button_Search);
+            this.Split_Searcher_Root.Panel1.Controls.Add(this.Split_Searcher_TextButton);
             // 
-            // splitContainer1.Panel2
+            // Split_Searcher_Root.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.mTreeView1);
-            this.splitContainer1.Size = new System.Drawing.Size(271, 485);
-            this.splitContainer1.SplitterDistance = 48;
-            this.splitContainer1.SplitterWidth = 5;
-            this.splitContainer1.TabIndex = 2;
+            this.Split_Searcher_Root.Panel2.Controls.Add(this.TreeView_Searcher);
+            this.Split_Searcher_Root.Size = new System.Drawing.Size(316, 485);
+            this.Split_Searcher_Root.SplitterDistance = 25;
+            this.Split_Searcher_Root.SplitterWidth = 5;
+            this.Split_Searcher_Root.TabIndex = 2;
             // 
-            // Label_SearchByName
+            // Split_Searcher_TextButton
             // 
-            this.Label_SearchByName.AutoSize = true;
-            this.Label_SearchByName.Location = new System.Drawing.Point(4, 6);
-            this.Label_SearchByName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Label_SearchByName.Name = "Label_SearchByName";
-            this.Label_SearchByName.Size = new System.Drawing.Size(93, 15);
-            this.Label_SearchByName.TabIndex = 4;
-            this.Label_SearchByName.Text = "Search By Name";
+            this.Split_Searcher_TextButton.Cursor = System.Windows.Forms.Cursors.VSplit;
+            this.Split_Searcher_TextButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Split_Searcher_TextButton.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.Split_Searcher_TextButton.IsSplitterFixed = true;
+            this.Split_Searcher_TextButton.Location = new System.Drawing.Point(0, 0);
+            this.Split_Searcher_TextButton.Name = "Split_Searcher_TextButton";
+            // 
+            // Split_Searcher_TextButton.Panel1
+            // 
+            this.Split_Searcher_TextButton.Panel1.Controls.Add(this.TextBox_Search);
+            // 
+            // Split_Searcher_TextButton.Panel2
+            // 
+            this.Split_Searcher_TextButton.Panel2.Controls.Add(this.Button_Search);
+            this.Split_Searcher_TextButton.Size = new System.Drawing.Size(316, 25);
+            this.Split_Searcher_TextButton.SplitterDistance = 269;
+            this.Split_Searcher_TextButton.TabIndex = 1;
             // 
             // TextBox_Search
             // 
-            this.TextBox_Search.Location = new System.Drawing.Point(4, 24);
+            this.TextBox_Search.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TextBox_Search.Location = new System.Drawing.Point(0, 0);
             this.TextBox_Search.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.TextBox_Search.Name = "TextBox_Search";
-            this.TextBox_Search.Size = new System.Drawing.Size(226, 23);
+            this.TextBox_Search.Size = new System.Drawing.Size(269, 23);
             this.TextBox_Search.TabIndex = 3;
             // 
             // Button_Search
             // 
-            this.Button_Search.Location = new System.Drawing.Point(237, 22);
+            this.Button_Search.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Button_Search.Location = new System.Drawing.Point(0, 0);
             this.Button_Search.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Button_Search.Name = "Button_Search";
-            this.Button_Search.Size = new System.Drawing.Size(33, 27);
+            this.Button_Search.Size = new System.Drawing.Size(43, 25);
             this.Button_Search.TabIndex = 0;
             this.Button_Search.Text = ">>";
             this.Button_Search.UseVisualStyleBackColor = true;
             this.Button_Search.Click += new System.EventHandler(this.Button_Search_OnClick);
             // 
-            // mTreeView1
+            // TreeView_Searcher
             // 
-            this.mTreeView1.CheckBoxes = true;
-            this.mTreeView1.ContextMenuStrip = this.SearchContextMenu;
-            this.mTreeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mTreeView1.HideSelection = false;
-            this.mTreeView1.ImageIndex = 3;
-            this.mTreeView1.ImageList = this.imageList1;
-            this.mTreeView1.Location = new System.Drawing.Point(0, 0);
-            this.mTreeView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mTreeView1.Name = "mTreeView1";
-            this.mTreeView1.SelectedImageIndex = 0;
-            this.mTreeView1.Size = new System.Drawing.Size(271, 432);
-            this.mTreeView1.TabIndex = 0;
-            // 
-            // SearchContextMenu
-            // 
-            this.SearchContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Button_JumpToTreeView});
-            this.SearchContextMenu.Name = "SearchContextMenu";
-            this.SearchContextMenu.Size = new System.Drawing.Size(187, 26);
-            this.SearchContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.SearchContextMenu_Opening);
-            // 
-            // Button_JumpToTreeView
-            // 
-            this.Button_JumpToTreeView.Name = "Button_JumpToTreeView";
-            this.Button_JumpToTreeView.Size = new System.Drawing.Size(186, 22);
-            this.Button_JumpToTreeView.Text = "$JUMP_TO_TREEVIEW";
-            this.Button_JumpToTreeView.Click += new System.EventHandler(this.Button_JumpToTreeView_OnClick);
+            this.TreeView_Searcher.CheckBoxes = true;
+            this.TreeView_Searcher.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TreeView_Searcher.HideSelection = false;
+            this.TreeView_Searcher.ImageIndex = 3;
+            this.TreeView_Searcher.ImageList = this.imageList1;
+            this.TreeView_Searcher.Location = new System.Drawing.Point(0, 0);
+            this.TreeView_Searcher.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.TreeView_Searcher.Name = "TreeView_Searcher";
+            this.TreeView_Searcher.SelectedImageIndex = 0;
+            this.TreeView_Searcher.Size = new System.Drawing.Size(316, 455);
+            this.TreeView_Searcher.TabIndex = 0;
+            this.TreeView_Searcher.DoubleClick += new System.EventHandler(this.TreeView_Searcher_OnDoubleClick);
             // 
             // DockSceneTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(285, 519);
+            this.ClientSize = new System.Drawing.Size(330, 519);
             this.Controls.Add(this.Tab_Explorer);
             this.HideOnClose = true;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -297,14 +295,17 @@ namespace Forms.Docking
             this.Text = "DockSceneTree";
             this.EntryMenuStrip.ResumeLayout(false);
             this.Tab_Explorer.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.SearchContextMenu.ResumeLayout(false);
+            this.TabPage_Explorer.ResumeLayout(false);
+            this.TabPage_Searcher.ResumeLayout(false);
+            this.Split_Searcher_Root.Panel1.ResumeLayout(false);
+            this.Split_Searcher_Root.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.Split_Searcher_Root)).EndInit();
+            this.Split_Searcher_Root.ResumeLayout(false);
+            this.Split_Searcher_TextButton.Panel1.ResumeLayout(false);
+            this.Split_Searcher_TextButton.Panel1.PerformLayout();
+            this.Split_Searcher_TextButton.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.Split_Searcher_TextButton)).EndInit();
+            this.Split_Searcher_TextButton.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -316,21 +317,19 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
-        private Mafia2Tool.Controls.MTreeView treeView1;
+        private Mafia2Tool.Controls.MTreeView TreeView_Explorer;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
         private System.Windows.Forms.ToolStripMenuItem FrameActions;
         public System.Windows.Forms.ToolStripMenuItem ExportFrameButton;
         public System.Windows.Forms.ToolStripMenuItem LinkToActorButton;
         private System.Windows.Forms.TabControl Tab_Explorer;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Label Label_SearchByName;
+        private System.Windows.Forms.TabPage TabPage_Explorer;
+        private System.Windows.Forms.TabPage TabPage_Searcher;
+        private System.Windows.Forms.SplitContainer Split_Searcher_Root;
         private System.Windows.Forms.TextBox TextBox_Search;
         private System.Windows.Forms.Button Button_Search;
-        private Mafia2Tool.Controls.MTreeView mTreeView1;
-        private System.Windows.Forms.ContextMenuStrip SearchContextMenu;
-        private System.Windows.Forms.ToolStripMenuItem Button_JumpToTreeView;
+        private Mafia2Tool.Controls.MTreeView TreeView_Searcher;
+        private System.Windows.Forms.SplitContainer Split_Searcher_TextButton;
     }
 }

@@ -10,32 +10,6 @@ using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.M3.XBin
 {
-    public static class XBinHashStorage
-    {
-        static Dictionary<ulong, string> HashStorage;
-
-        public static void LoadStorage()
-        {
-            HashStorage = new Dictionary<ulong, string>();
-            HashStorage.Add(14695981039346656037, "");
-
-            string[] LoadedLines = File.ReadAllLines("Resources//GameData//XBin_Hashes.txt");
-
-            foreach(string Line in LoadedLines)
-            {
-                ulong FNVHash = FNV64.Hash(Line);
-                HashStorage.TryAdd(FNVHash, Line);
-            }
-        }
-
-        public static string GetNameFromHash(ulong Hash, out bool bSuccessful)
-        {
-            string Value = "";
-            bSuccessful = HashStorage.TryGetValue(Hash, out Value);
-            return Value != null ? Value : "";
-        }
-    }
-
     public class XBinHashNameConverter : ExpandableObjectConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -150,7 +124,7 @@ namespace ResourceTypes.M3.XBin
 
         public override string ToString()
         {
-            if(!string.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(Name))
             {
                 return string.Format("{0} [{1}]", Name, Hash);
             }

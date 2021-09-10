@@ -43,7 +43,6 @@ namespace ResourceTypes.M3.XBin
         private void ConstructHashPool()
         {
             XBinHashStorage.LoadStorage();
-            XBinAkHashStorage.LoadStorage();
         }
     }
 }

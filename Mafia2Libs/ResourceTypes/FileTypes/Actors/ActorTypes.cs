@@ -759,10 +759,6 @@ namespace ResourceTypes.Actors
             get { return unk09; }
             set { unk09 = value; }
         }
-        public byte Count {
-            get { return count; }
-            set { count = value; }
-        }
         public int Unk10 {
             get { return unk10; }
             set { unk10 = value; }
@@ -872,7 +868,6 @@ namespace ResourceTypes.Actors
             padding = new byte[10];
             uMatrix0 = Matrix4x4.Identity;
             uMatrix1 = Matrix4x4.Identity;
-            count = 0;
             frameLinks = new HashName[0];
             sceneLinks = new HashName[0];
             frameIdxLinks = new int[0];
@@ -903,7 +898,7 @@ namespace ResourceTypes.Actors
                 unk07 = stream.ReadInt32(isBigEndian);
                 unk08 = stream.ReadInt32(isBigEndian);
                 unk09 = stream.ReadInt32(isBigEndian);
-                count = stream.ReadByte8();
+                uint count = stream.ReadByte8();
                 unk10 = stream.ReadInt32(isBigEndian);
 
                 frameLinks = new HashName[count];
@@ -959,6 +954,10 @@ namespace ResourceTypes.Actors
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
+            // Sanity check whether the user has got it right
+            int Length = sceneLinks.Length;
+            Debug.Assert(frameLinks.Length == Length && frameIdxLinks.Length == Length, "SceneLinks, FrameLinks and FrameIDXLinks should be all equal. Fix this problem and resave");
+
             writer.Write(new byte[2316]);
             writer.Seek(0, SeekOrigin.Begin);
             size = CalculateSize();
@@ -973,7 +972,7 @@ namespace ResourceTypes.Actors
             writer.WriteByte((byte)sceneLinks.Length);
             writer.Write(unk10, isBigEndian);
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < sceneLinks.Length; i++)
             {
                 sceneLinks[i].WriteToFile(writer, isBigEndian);
                 frameLinks[i].WriteToFile(writer, isBigEndian);

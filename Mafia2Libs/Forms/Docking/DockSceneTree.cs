@@ -12,8 +12,8 @@ namespace Forms.Docking
     public partial class DockSceneTree : DockContent
     {
         public TreeNode SelectedNode {
-            get { return treeView1.SelectedNode; }
-            set { treeView1.SelectedNode = value; }
+            get { return TreeView_Explorer.SelectedNode; }
+            set { TreeView_Explorer.SelectedNode = value; }
         }
 
         public DockSceneTree()
@@ -26,9 +26,8 @@ namespace Forms.Docking
         public void Localize()
         {
             Text = Language.GetString("$SCENE_OUTLINER_FORMNAME");
-            tabPage1.Text = Language.GetString("$SCENE_OUTLINER_EXPLORER");
-            tabPage2.Text = Language.GetString("$SCENE_OUTLINER_SEARCHER");
-            Label_SearchByName.Text = Language.GetString("$SEARCH_OUTLINER_SEARCHBYNAME");
+            TabPage_Explorer.Text = Language.GetString("$SCENE_OUTLINER_EXPLORER");
+            TabPage_Searcher.Text = Language.GetString("$SCENE_OUTLINER_SEARCHER");
         }
 
         /* Abstract Functions for the outliner */
@@ -36,11 +35,11 @@ namespace Forms.Docking
         {
             if(eventType.Equals("AfterSelect"))
             {
-                treeView1.AfterSelect += handler;
+                TreeView_Explorer.AfterSelect += handler;
             }
             else if (eventType.Equals("AfterCheck"))
             {
-                treeView1.AfterCheck += handler;
+                TreeView_Explorer.AfterCheck += handler;
             }
             else
             {
@@ -52,7 +51,7 @@ namespace Forms.Docking
         {
             if (eventType.Equals("AfterCheck"))
             {
-                treeView1.AfterCheck -= handler;
+                TreeView_Explorer.AfterCheck -= handler;
             }
             else
             {
@@ -64,11 +63,11 @@ namespace Forms.Docking
         {
             if (eventType.Equals("KeyUp"))
             {
-                treeView1.KeyUp += handler;
+                TreeView_Explorer.KeyUp += handler;
             }
             else if (eventType.Equals("KeyDown"))
             {
-                treeView1.KeyDown += handler;
+                TreeView_Explorer.KeyDown += handler;
             }
             else
             {
@@ -78,12 +77,12 @@ namespace Forms.Docking
 
         public TreeNode[] Find(string key, bool searchAllChildren)
         {
-            return treeView1.Nodes.Find(key, searchAllChildren);
+            return TreeView_Explorer.Nodes.Find(key, searchAllChildren);
         }
 
         public void RemoveNode(TreeNode node)
         {
-            treeView1.Nodes.Remove(node);
+            TreeView_Explorer.Nodes.Remove(node);
         }
 
         public void AddToTree(TreeNode node, TreeNode parentNode = null)
@@ -93,9 +92,13 @@ namespace Forms.Docking
             RecurseChildren(node);
 
             if (parentNode != null)
+            {
                 parentNode.Nodes.Add(node);
+            }
             else
-                treeView1.Nodes.Add(node);
+            {
+                TreeView_Explorer.Nodes.Add(node);
+            }
         }
 
         public TreeNode GetTreeNode(string TreeNodeKey, TreeNode ParentNode = null, bool bSearchChildren = false)
@@ -108,7 +111,7 @@ namespace Forms.Docking
             }
             else
             {
-                AttemptedFoundNodes = treeView1.Nodes.Find(TreeNodeKey, bSearchChildren);
+                AttemptedFoundNodes = TreeView_Explorer.Nodes.Find(TreeNodeKey, bSearchChildren);
             }
 
             // If we have found nodes, then get the first one
@@ -189,30 +192,30 @@ namespace Forms.Docking
             EntryMenuStrip.Items[4].Visible = false;
             FrameActions.DropDownItems[3].Visible = false;
 
-            if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag != null)
+            if (TreeView_Explorer.SelectedNode != null && TreeView_Explorer.SelectedNode.Tag != null)
             {
 
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
 
-                object data = treeView1.SelectedNode.Tag;
+                object data = TreeView_Explorer.SelectedNode.Tag;
                 if (FrameResource.IsFrameType(data) || data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || data.GetType() == typeof(Rendering.Graphics.RenderJunction) ||
                     data.GetType() == typeof(ResourceTypes.Actors.ActorEntry) || data.GetType() == typeof(Rendering.Graphics.RenderNav))
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
-                if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || 
-                    treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) ||                   
-                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
+                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || 
+                    TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) ||                   
+                    TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
                 {
                     EntryMenuStrip.Items[3].Visible = true;
                 }
 
-                if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag))
+                if (FrameResource.IsFrameType(TreeView_Explorer.SelectedNode.Tag))
                 {
                     EntryMenuStrip.Items[4].Visible = true;
 
-                    if(treeView1.SelectedNode.Tag is FrameObjectFrame)
+                    if(TreeView_Explorer.SelectedNode.Tag is FrameObjectFrame)
                     {
                         FrameActions.DropDownItems[3].Visible = true;
                     }
@@ -222,7 +225,7 @@ namespace Forms.Docking
 
         public Vector3 JumpToHelper()
         {
-            object data = treeView1.SelectedNode.Tag;
+            object data = TreeView_Explorer.SelectedNode.Tag;
 
             if (FrameResource.IsFrameType(data))
             {
@@ -246,9 +249,9 @@ namespace Forms.Docking
 
         private void OnDoubleClick(object sender, EventArgs e)
         {
-            Point localPosition = treeView1.PointToClient(Cursor.Position);
+            Point localPosition = TreeView_Explorer.PointToClient(Cursor.Position);
 
-            TreeViewHitTestInfo hitTestInfo = treeView1.HitTest(localPosition);
+            TreeViewHitTestInfo hitTestInfo = TreeView_Explorer.HitTest(localPosition);
             if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
             {
                 return;
@@ -257,16 +260,18 @@ namespace Forms.Docking
 
         private void Button_Search_OnClick(object sender, EventArgs e)
         {
-            mTreeView1.Nodes.Clear();
+            TreeView_Searcher.Nodes.Clear();
 
-            if (treeView1.Nodes.Count > 0)
+            // Search for the node. We expect nodes to be added and that the text box includes text.
+            if (TreeView_Explorer.Nodes.Count > 0 && TextBox_Search.TextLength > 0)
             {
                 List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
-                List<TreeNode> FoundNodes = SearchNodes(TextBox_Search.Text, treeView1.Nodes[0], ref CurrentNodeMatches);
+                List<TreeNode> FoundNodes = SearchNodes(TextBox_Search.Text, TreeView_Explorer.Nodes[0], ref CurrentNodeMatches);
                 foreach(TreeNode Tree in FoundNodes)
                 {
                     TreeNode CloneNode = (TreeNode)Tree.Clone();
-                    mTreeView1.Nodes.Add(CloneNode);
+                    CloneNode.Nodes.Clear();
+                    TreeView_Searcher.Nodes.Add(CloneNode);
                 }
             }
         }
@@ -278,29 +283,35 @@ namespace Forms.Docking
                 if (StartNode.Text.ToLower().Contains(SearchText.ToLower()))
                 {
                     CurrentNodeMatches.Add(StartNode);
-                };
+                }
                 if (StartNode.Nodes.Count != 0)
                 {
                     SearchNodes(SearchText, StartNode.Nodes[0], ref CurrentNodeMatches);
-                };
+                }
                 StartNode = StartNode.NextNode;
             };
 
             return CurrentNodeMatches;
         }
 
-        private void SearchContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TreeView_Searcher_OnDoubleClick(object sender, EventArgs e)
         {
-            // TODO..
-        }
-
-        private void Button_JumpToTreeView_OnClick(object sender, EventArgs e)
-        {
-            TreeNode[] SearchResult = treeView1.Nodes.Find(mTreeView1.SelectedNode.Name, true);
-            if(SearchResult.Length > 0)
+            // C# will throw an error if name is null.
+            string NodeName = TreeView_Searcher.SelectedNode.Name;
+            if(string.IsNullOrEmpty(NodeName))
             {
-                treeView1.SelectedNode = SearchResult[0];
-                Tab_Explorer.SelectedTab = tabPage1;
+                string ErrorMessage = string.Format("Selected Node: [{0}] had an invalid name, cannot search in explorer.", TreeView_Searcher.SelectedNode.Text);
+                MessageBox.Show(ErrorMessage, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            // TODO: Is there a way to improve this, in a way we don't have to call the find function again?
+            TreeNode[] SearchResult = TreeView_Explorer.Nodes.Find(TreeView_Searcher.SelectedNode.Name, true);
+            if (SearchResult.Length > 0)
+            {
+                TreeView_Explorer.SelectedNode = SearchResult[0];
+                Tab_Explorer.SelectedTab = TabPage_Explorer;
             }
         }
     }

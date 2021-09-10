@@ -92,7 +92,8 @@ namespace ResourceTypes.M3.XBin
                     XBinData = new CitiesTable();
                     XBinData.ReadFromFile(reader);
                     break;
-                    case 0x8982CC5C78136253:
+                case 0x8982CC5C78136253: // Subtitles Table (Mafia III)
+                case 0x8982CC5C46848F6E: // Subtitles Table (Mafia I: DE)
                     XBinData = new SubtitleTable();
                     XBinData.ReadFromFile(reader);
                     break;

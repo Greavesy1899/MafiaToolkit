@@ -167,6 +167,11 @@
   <String ID="$QUESTION_FRADD">Napište jméno a typ framu.</String>
   <String ID="$FRADD_NAME_TABLE">Přidat Frame do Name Table?</String>
 
+  <!-- Scene Outliner Dock Strings-->
+  <String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
+  <String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
+  <String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+  
   <!-- Actor Editor -->
   <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
   <String ID="$ADD_ITEM">Add Item</String>
