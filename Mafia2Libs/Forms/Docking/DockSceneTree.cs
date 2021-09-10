@@ -16,6 +16,9 @@ namespace Forms.Docking
             set { TreeView_Explorer.SelectedNode = value; }
         }
 
+        // Cache the last searched string so we can check if it has changed before we search again.
+        private string LastSearchedString = String.Empty;
+
         public DockSceneTree()
         {
             InitializeComponent();
@@ -258,21 +261,29 @@ namespace Forms.Docking
             }
         }
 
-        private void Button_Search_OnClick(object sender, EventArgs e)
+        private void InternalSearchExplorer()
         {
             TreeView_Searcher.Nodes.Clear();
+
+            // Avoid searching if LastSearchedString and the search box is equal
+            if(LastSearchedString != string.Empty && LastSearchedString.Equals(TextBox_Search.Text))
+            {
+                return;
+            }
 
             // Search for the node. We expect nodes to be added and that the text box includes text.
             if (TreeView_Explorer.Nodes.Count > 0 && TextBox_Search.TextLength > 0)
             {
                 List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
                 List<TreeNode> FoundNodes = SearchNodes(TextBox_Search.Text, TreeView_Explorer.Nodes[0], ref CurrentNodeMatches);
-                foreach(TreeNode Tree in FoundNodes)
+                foreach (TreeNode Tree in FoundNodes)
                 {
                     TreeNode CloneNode = (TreeNode)Tree.Clone();
                     CloneNode.Nodes.Clear();
                     TreeView_Searcher.Nodes.Add(CloneNode);
                 }
+
+                LastSearchedString = TextBox_Search.Text;
             }
         }
 
@@ -294,11 +305,17 @@ namespace Forms.Docking
             return CurrentNodeMatches;
         }
 
-        private void TreeView_Searcher_OnDoubleClick(object sender, EventArgs e)
+        private void InternalGotoExplorerNode()
         {
+            if(TreeView_Searcher.SelectedNode == null)
+            {
+                // We don't have a selected node to goto.
+                return;
+            }
+
             // C# will throw an error if name is null.
             string NodeName = TreeView_Searcher.SelectedNode.Name;
-            if(string.IsNullOrEmpty(NodeName))
+            if (string.IsNullOrEmpty(NodeName))
             {
                 string ErrorMessage = string.Format("Selected Node: [{0}] had an invalid name, cannot search in explorer.", TreeView_Searcher.SelectedNode.Text);
                 MessageBox.Show(ErrorMessage, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -312,6 +329,32 @@ namespace Forms.Docking
             {
                 TreeView_Explorer.SelectedNode = SearchResult[0];
                 Tab_Explorer.SelectedTab = TabPage_Explorer;
+            }
+        }
+
+        private void TreeView_Searcher_OnDoubleClick(object sender, EventArgs e)
+        {
+            InternalGotoExplorerNode();
+        }
+
+        private void Button_Search_OnClick(object sender, EventArgs e)
+        {
+            InternalSearchExplorer();
+        }
+
+        private void TextBox_Search_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                InternalSearchExplorer();
+            }
+        }
+
+        private void TreeView_Searcher_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                InternalGotoExplorerNode();
             }
         }
     }

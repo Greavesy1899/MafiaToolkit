@@ -253,6 +253,7 @@ namespace Forms.Docking
             this.TextBox_Search.Name = "TextBox_Search";
             this.TextBox_Search.Size = new System.Drawing.Size(269, 23);
             this.TextBox_Search.TabIndex = 3;
+            this.TextBox_Search.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBox_Search_OnKeyUp);
             // 
             // Button_Search
             // 
@@ -280,6 +281,7 @@ namespace Forms.Docking
             this.TreeView_Searcher.Size = new System.Drawing.Size(316, 455);
             this.TreeView_Searcher.TabIndex = 0;
             this.TreeView_Searcher.DoubleClick += new System.EventHandler(this.TreeView_Searcher_OnDoubleClick);
+            this.TreeView_Searcher.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeView_Searcher_OnKeyUp);
             // 
             // DockSceneTree
             // 
