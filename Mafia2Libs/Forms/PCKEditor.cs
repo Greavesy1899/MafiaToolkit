@@ -1,14 +1,10 @@
-﻿using System.Diagnostics;
-using System;
+﻿using System;
 using System.IO;
+using System.Runtime;
 using System.Windows.Forms;
 using ResourceTypes.Wwise;
 using Utils.Language;
 using Utils.Settings;
-using Forms.EditorControls;
-using System.Collections.Generic;
-using System.Runtime;
-using System.Threading.Tasks;
 
 namespace Mafia2Tool
 {
