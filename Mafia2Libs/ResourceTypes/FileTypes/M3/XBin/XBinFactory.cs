@@ -33,9 +33,10 @@ namespace ResourceTypes.M3.XBin
                     XBinData = new CarInteriorColorsTable();
                     XBinData.ReadFromFile(reader);
                     break;
+                    // TODO: Broken for both games
                 case 0x44FA070D73C43CBD: // CarTrafficTuningTable for M1:DE
                 case 0x44FA070D55388F65: // CarTrafficTuningTable for M3
-                    XBinData = new CarTrafficTuningTable();
+                    XBinData = new CarTrafficTuningTable(); 
                     XBinData.ReadFromFile(reader);
                     break;
                 case 0x09B5140FA382AF8F: // CarTuningModificatorsTable

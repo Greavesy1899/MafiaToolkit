@@ -28,6 +28,14 @@ namespace Core.IO
             return false;
         }
 
+        public void TryDecompileBytecode()
+        {
+            if(IsBytecode())
+            {
+                LuaHelper.ReadFile(file);
+            }
+        }
+
         public override bool Open()
         {
             if(IsBytecode())

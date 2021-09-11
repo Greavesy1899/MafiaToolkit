@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.XPath;
 using Utils.Settings;
 using Utils.Lua;
+using Core.IO;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -213,9 +214,10 @@ namespace Gibbed.Mafia2.FileFormats
 
                 // If user requests, decompile the Lua file.
                 if (ToolkitSettings.DecompileLUA)
-                {
+                {                 
                     FileInfo Info = new FileInfo(ScriptPath);
-                    LuaHelper.ReadFile(Info);
+                    FileLua LuaFile = new FileLua(Info);
+                    LuaFile.TryDecompileBytecode();
                 }
 
                 resourceXML.WriteElementString("Name", ScriptItem.Name);

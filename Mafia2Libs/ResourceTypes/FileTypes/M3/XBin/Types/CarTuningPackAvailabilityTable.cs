@@ -8,6 +8,7 @@ namespace ResourceTypes.M3.XBin
 {
     public class CarTuningPackAvailabilityItem
     {
+        [PropertyForceAsAttribute]
         public int ID { get; set; }
         [Browsable(false), PropertyIgnoreByReflector]
         public uint OverrideTuningItemsOffset { get; set; }
@@ -16,9 +17,10 @@ namespace ResourceTypes.M3.XBin
         [Browsable(false), PropertyIgnoreByReflector]
         public int TuningItemsCount2 { get; set; }
         public int[] TuningItems { get; set; }
+        [PropertyForceAsAttribute]
         public int VehicleID { get; set; }
         public int Zero { get; set; }
-        public ulong PackageName { get; set; }
+        public XBinHashName PackageName { get; set; }
 
         public override string ToString()
         {
@@ -58,7 +60,7 @@ namespace ResourceTypes.M3.XBin
                 Item.TuningItemsCount2 = reader.ReadInt32();
                 Item.VehicleID = reader.ReadInt32();
                 Item.Zero = reader.ReadInt32();
-                Item.PackageName = reader.ReadUInt64();
+                Item.PackageName = XBinHashName.ConstructAndReadFromFile(reader);
 
                 availabilitys[i] = Item;
             }
@@ -94,8 +96,8 @@ namespace ResourceTypes.M3.XBin
                 writer.Write(Item.TuningItemsCount2);
                 writer.Write(Item.VehicleID);
                 writer.Write(Item.Zero);
-                writer.Write(Item.PackageName);
-                i++;
+                Item.PackageName.WriteToFile(writer);
+                 i++;
             }
 
             for (int j = 0; j < availabilitys.Length; j++)
