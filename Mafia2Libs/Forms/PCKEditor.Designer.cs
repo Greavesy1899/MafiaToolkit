@@ -248,6 +248,7 @@
             this.Name = "PCKEditor";
             this.Text = "$PCK_EDITOR_TITLE";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PckEditor_Closing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PckEditor_FormClosed);
             this.PckContext.ResumeLayout(false);
             this.ToolStrip_Pck.ResumeLayout(false);
             this.ToolStrip_Pck.PerformLayout();

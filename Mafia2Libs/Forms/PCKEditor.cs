@@ -7,6 +7,8 @@ using Utils.Language;
 using Utils.Settings;
 using Forms.EditorControls;
 using System.Collections.Generic;
+using System.Runtime;
+using System.Threading.Tasks;
 
 namespace Mafia2Tool
 {
@@ -330,6 +332,18 @@ namespace Mafia2Tool
                     e.Cancel = true;
                 }
             }
+        }
+
+        private void PckEditor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // unreference memory-intensive objects (WEM)
+            TreeView_Wems.Nodes.Clear();
+            WemGrid.SelectedObject = null;
+            TreeView_Wems.SelectedNode = null;
+            pck = null;
+            // trigger LOH compactification
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect();
         }
 
         private void Context_Opening(object sender, System.EventArgs e)
