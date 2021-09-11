@@ -56,6 +56,26 @@ namespace Utils.StringHelpers
             return Result.Trim('\0');
         }
 
+        public static string ReadUniNullTerminatedString(BinaryReader br)
+        {
+            List<byte> stringC = new List<byte>();
+            byte newByte = br.ReadByte();
+            byte newByteNull = br.ReadByte();
+            while (newByte != 0)
+            {
+                stringC.Add(newByte);
+                newByte = br.ReadByte();
+                newByteNull = br.ReadByte();
+            }
+            return Encoding.ASCII.GetString(stringC.ToArray());
+        }
+
+        public static void WriteUniNullTerminatedString(BinaryWriter bw, string str)
+        {
+            bw.Write(Encoding.Unicode.GetBytes(str.ToCharArray()));
+            bw.Write((short)0);
+        }
+
         public static void WriteStringBuffer(BinaryWriter writer, int size, string text, char trim = ' ', Encoding encoding = null)
         {
             bool addTrim = (trim == ' ' ? false : true);
