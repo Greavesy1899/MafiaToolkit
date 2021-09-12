@@ -346,13 +346,13 @@ namespace Mafia2Tool
         {
             if (pck.LoadedBNK == null)
             {
-                PckContext.Items[3].Visible = true;
-                PckContext.Items[2].Visible = false;
+                PckContext.Items[4].Visible = true;
+                PckContext.Items[3].Visible = false;
             }
             else
             {
-                PckContext.Items[2].Visible = true;
-                PckContext.Items[3].Visible = false;
+                PckContext.Items[3].Visible = true;
+                PckContext.Items[4].Visible = false;
             }
         }
 

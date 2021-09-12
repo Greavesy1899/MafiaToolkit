@@ -89,20 +89,20 @@
             this.ContextEditHIRC,
             this.ContextLoadHIRC});
             this.PckContext.Name = "SDSContext";
-            this.PckContext.Size = new System.Drawing.Size(162, 114);
+            this.PckContext.Size = new System.Drawing.Size(203, 114);
             this.PckContext.Opening += new System.ComponentModel.CancelEventHandler(this.Context_Opening);
             // 
             // ContextReplace
             // 
             this.ContextReplace.Name = "ContextReplace";
-            this.ContextReplace.Size = new System.Drawing.Size(161, 22);
+            this.ContextReplace.Size = new System.Drawing.Size(202, 22);
             this.ContextReplace.Text = "$REPLACE_WEM";
             this.ContextReplace.Click += new System.EventHandler(this.Button_ReplaceWem_Click);
             // 
             // ContextExport
             // 
             this.ContextExport.Name = "ContextExport";
-            this.ContextExport.Size = new System.Drawing.Size(161, 22);
+            this.ContextExport.Size = new System.Drawing.Size(202, 22);
             this.ContextExport.Text = "$EXPORT_WEM";
             this.ContextExport.Click += new System.EventHandler(this.Button_ExportWem_Click);
             // 
@@ -110,21 +110,21 @@
             // 
             this.ContextDelete.Name = "ContextDelete";
             this.ContextDelete.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.ContextDelete.Size = new System.Drawing.Size(161, 22);
-            this.ContextDelete.Text = "Delete";
+            this.ContextDelete.Size = new System.Drawing.Size(202, 22);
+            this.ContextDelete.Text = "$DELETE_WEM";
             this.ContextDelete.Click += new System.EventHandler(this.ContextDelete_Click);
             // 
             // ContextEditHIRC
             // 
             this.ContextEditHIRC.Name = "ContextEditHIRC";
-            this.ContextEditHIRC.Size = new System.Drawing.Size(161, 22);
+            this.ContextEditHIRC.Size = new System.Drawing.Size(202, 22);
             this.ContextEditHIRC.Text = "$EDIT_HIRC";
             this.ContextEditHIRC.Click += new System.EventHandler(this.Button_EditHIRC_Click);
             // 
             // ContextLoadHIRC
             // 
             this.ContextLoadHIRC.Name = "ContextLoadHIRC";
-            this.ContextLoadHIRC.Size = new System.Drawing.Size(161, 22);
+            this.ContextLoadHIRC.Size = new System.Drawing.Size(202, 22);
             this.ContextLoadHIRC.Text = "$LOAD_HIRC";
             this.ContextLoadHIRC.Click += new System.EventHandler(this.Button_LoadHIRC_Click);
             // 
@@ -194,14 +194,14 @@
             // Button_ReplaceWem
             // 
             this.Button_ReplaceWem.Name = "Button_ReplaceWem";
-            this.Button_ReplaceWem.Size = new System.Drawing.Size(185, 22);
+            this.Button_ReplaceWem.Size = new System.Drawing.Size(202, 22);
             this.Button_ReplaceWem.Text = "$REPLACE_WEM";
             this.Button_ReplaceWem.Click += new System.EventHandler(this.Button_ReplaceWem_Click);
             // 
             // Button_ImportWem
             // 
             this.Button_ImportWem.Name = "Button_ImportWem";
-            this.Button_ImportWem.Size = new System.Drawing.Size(185, 22);
+            this.Button_ImportWem.Size = new System.Drawing.Size(202, 22);
             this.Button_ImportWem.Text = "$IMPORT_WEM";
             this.Button_ImportWem.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.Button_ImportWem.Click += new System.EventHandler(this.Button_ImportWem_Click);
@@ -209,14 +209,15 @@
             // Button_ExportWem
             // 
             this.Button_ExportWem.Name = "Button_ExportWem";
-            this.Button_ExportWem.Size = new System.Drawing.Size(185, 22);
+            this.Button_ExportWem.Size = new System.Drawing.Size(202, 22);
             this.Button_ExportWem.Text = "$EXPORT_WEM";
             this.Button_ExportWem.Click += new System.EventHandler(this.Button_ExportWem_Click);
             // 
             // Button_DeleteWem
             // 
             this.Button_DeleteWem.Name = "Button_DeleteWem";
-            this.Button_DeleteWem.Size = new System.Drawing.Size(185, 22);
+            this.Button_DeleteWem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
+            this.Button_DeleteWem.Size = new System.Drawing.Size(202, 22);
             this.Button_DeleteWem.Text = "$DELETE_WEM";
             this.Button_DeleteWem.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.Button_DeleteWem.Click += new System.EventHandler(this.Button_DeleteWem_Click);
@@ -224,14 +225,14 @@
             // Button_ExportAll
             // 
             this.Button_ExportAll.Name = "Button_ExportAll";
-            this.Button_ExportAll.Size = new System.Drawing.Size(185, 22);
+            this.Button_ExportAll.Size = new System.Drawing.Size(202, 22);
             this.Button_ExportAll.Text = "$EXPORT_ALL_WEMS";
             this.Button_ExportAll.Click += new System.EventHandler(this.Button_ExportAll_Click);
             // 
             // Button_LoadHIRC
             // 
             this.Button_LoadHIRC.Name = "Button_LoadHIRC";
-            this.Button_LoadHIRC.Size = new System.Drawing.Size(185, 22);
+            this.Button_LoadHIRC.Size = new System.Drawing.Size(202, 22);
             this.Button_LoadHIRC.Text = "$LOAD_HIRC";
             this.Button_LoadHIRC.Click += new System.EventHandler(this.Button_LoadHIRC_Click);
             // 

@@ -259,4 +259,18 @@
   <String ID="$IMPORT_XBIN">Import from .xml</String>
   <String ID="$EXPORT_XBIN">Export to .xml</String>
 
+  <!-- Wwise Editor Strings -->
+  <String ID="$PCK_EDITOR_TITLE">Редактор PCK</String>
+  <String ID="$BNK_EDITOR_TITLE">Редактор BNK</String>
+  <String ID="$REPLACE_WEM">Заменить Wem</String>
+  <String ID="$IMPORT_WEM">Импорт Wem</String>
+  <String ID="$EXPORT_WEM">Экспорт Wem</String>
+  <String ID="$DELETE_WEM">Удалить Wem</String>
+  <String ID="$EXPORT_ALL_WEMS">Экспорт всех Wems</String>
+  <String ID="$LOAD_HIRC">Загрузить HIRC</String>
+  <String ID="$EDIT_HIRC">Изменить HIRC</String>
+  <String ID="$TRIM_WEMS">Trim Wems</String>
+  <String ID="$EXPORT_WEM_WITH_NAME">Экспорт с именем?</String>
+  <String ID="$WEM_EXIST_SKIP">Wem с таким идентификатором уже существует, он будет пропущен.</String>
+
 </Localisation>

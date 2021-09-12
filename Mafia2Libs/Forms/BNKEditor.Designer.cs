@@ -87,26 +87,26 @@
             this.ContextExport,
             this.ContextDelete});
             this.BnkContext.Name = "SDSContext";
-            this.BnkContext.Size = new System.Drawing.Size(162, 92);
+            this.BnkContext.Size = new System.Drawing.Size(203, 92);
             // 
             // ContextReplace
             // 
             this.ContextReplace.Name = "ContextReplace";
-            this.ContextReplace.Size = new System.Drawing.Size(161, 22);
+            this.ContextReplace.Size = new System.Drawing.Size(202, 22);
             this.ContextReplace.Text = "$REPLACE_WEM";
             this.ContextReplace.Click += new System.EventHandler(this.Button_ReplaceWem_Click);
             // 
             // ContextEdit
             // 
             this.ContextEdit.Name = "ContextEdit";
-            this.ContextEdit.Size = new System.Drawing.Size(161, 22);
+            this.ContextEdit.Size = new System.Drawing.Size(202, 22);
             this.ContextEdit.Text = "$EDIT_HIRC";
             this.ContextEdit.Click += new System.EventHandler(this.ContextEdit_Click);
             // 
             // ContextExport
             // 
             this.ContextExport.Name = "ContextExport";
-            this.ContextExport.Size = new System.Drawing.Size(161, 22);
+            this.ContextExport.Size = new System.Drawing.Size(202, 22);
             this.ContextExport.Text = "$EXPORT_WEM";
             this.ContextExport.Click += new System.EventHandler(this.Button_ExportWem_Click);
             // 
@@ -114,8 +114,8 @@
             // 
             this.ContextDelete.Name = "ContextDelete";
             this.ContextDelete.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.ContextDelete.Size = new System.Drawing.Size(161, 22);
-            this.ContextDelete.Text = "Delete";
+            this.ContextDelete.Size = new System.Drawing.Size(202, 22);
+            this.ContextDelete.Text = "$DELETE_WEM";
             this.ContextDelete.Click += new System.EventHandler(this.ContextDelete_Click);
             // 
             // Toolstrip_Bnk
@@ -221,7 +221,7 @@
             // Checkbox_Trim
             // 
             this.Checkbox_Trim.AutoSize = true;
-            this.Checkbox_Trim.Location = new System.Drawing.Point(112, 3);
+            this.Checkbox_Trim.Location = new System.Drawing.Point(131, 3);
             this.Checkbox_Trim.Name = "Checkbox_Trim";
             this.Checkbox_Trim.Size = new System.Drawing.Size(98, 19);
             this.Checkbox_Trim.TabIndex = 16;
@@ -240,7 +240,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "BNKEditor";
-            this.Text = "$PCK_EDITOR_TITLE";
+            this.Text = "$BNK_EDITOR_TITLE";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BnkEditor_Closing);
             this.BnkContext.ResumeLayout(false);
             this.Toolstrip_Bnk.ResumeLayout(false);

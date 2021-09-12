@@ -317,4 +317,18 @@
   <String ID="$IMPORT_XBIN">Import from .xml</String>
   <String ID="$EXPORT_XBIN">Export to .xml</String>
 
+  <!-- Wwise Editor Strings -->
+  <String ID="$PCK_EDITOR_TITLE">PCK Editor</String>
+  <String ID="$BNK_EDITOR_TITLE">BNK Editor</String>
+  <String ID="$REPLACE_WEM">Nahradiť Wem</String>
+  <String ID="$IMPORT_WEM">Importovať Wem</String>
+  <String ID="$EXPORT_WEM">Exportovať Wem</String>
+  <String ID="$DELETE_WEM">Vymazať Wem</String>
+  <String ID="$EXPORT_ALL_WEMS">Exportovať Všetky Wemy</String>
+  <String ID="$LOAD_HIRC">Načítať HIRC</String>
+  <String ID="$EDIT_HIRC">Upraviť HIRC</String>
+  <String ID="$TRIM_WEMS">Orezať Wemy</String>
+  <String ID="$EXPORT_WEM_WITH_NAME">Exportovať s názvom?</String>
+  <String ID="$WEM_EXIST_SKIP">Wem s týmto ID už existuje, bude preskočený.</String>
+
 </Localisation>

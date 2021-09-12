@@ -317,4 +317,18 @@
   <String ID="$IMPORT_XBIN">Import from .xml</String>
   <String ID="$EXPORT_XBIN">Export to .xml</String>
 
+  <!-- Wwise Editor Strings -->
+  <String ID="$PCK_EDITOR_TITLE">Edytor plików PCK</String>
+  <String ID="$BNK_EDITOR_TITLE">Edytor plików BNK</String>
+  <String ID="$REPLACE_WEM">Zamień plik audio Wem</String>
+  <String ID="$IMPORT_WEM">Importuj plik audio Wem</String>
+  <String ID="$EXPORT_WEM">Eksportuj plik audio Wem</String>
+  <String ID="$DELETE_WEM">Usuń plik audio Wem</String>
+  <String ID="$EXPORT_ALL_WEMS">Eksportuj wszystkie pliki audio Wem</String>
+  <String ID="$LOAD_HIRC">Wczytaj HIRC</String>
+  <String ID="$EDIT_HIRC">Edytuj HIRC</String>
+  <String ID="$TRIM_WEMS">Przytnij Wemy</String>
+  <String ID="$EXPORT_WEM_WITH_NAME">Eksportować razem z nazwą?</String>
+  <String ID="$WEM_EXIST_SKIP">Wem z takim ID już istnieje, zostanie pominięty.</String>
+
 </Localisation>
