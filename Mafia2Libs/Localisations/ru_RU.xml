@@ -260,6 +260,7 @@
   <String ID="$EXPORT_XBIN">Export to .xml</String>
 
   <!-- Wwise Editor Strings -->
+  <String ID="$HIRC_EDITOR_TITLE">Редактор HIRC</String>
   <String ID="$PCK_EDITOR_TITLE">Редактор PCK</String>
   <String ID="$BNK_EDITOR_TITLE">Редактор BNK</String>
   <String ID="$REPLACE_WEM">Заменить Wem</String>

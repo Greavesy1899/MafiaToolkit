@@ -324,6 +324,7 @@
   <String ID="$EXPORT_XBIN">Export to .xml</String>
 
   <!-- Wwise Editor Strings -->
+  <String ID="$HIRC_EDITOR_TITLE">HIRC Editor</String>
   <String ID="$PCK_EDITOR_TITLE">PCK Editor</String>
   <String ID="$BNK_EDITOR_TITLE">BNK Editor</String>
   <String ID="$REPLACE_WEM">Replace Wem</String>
