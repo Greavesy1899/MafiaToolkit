@@ -1,65 +1,216 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Animation2
 {
+    // Probably not the correct name, but saw it in mac
+    public class AnimQuantized
+    {
+        private ulong BoneID;
+        private byte Flags;
+
+        private byte DataFlags;
+        private ushort unk5;
+        private byte unk6;
+        private byte unk7;
+
+        // Could be compression? X Y Z?
+        private float unk8;
+        private float unk9;
+        private float unk10;
+
+        private byte[] AnimQuantizedData;
+
+        // Only if Flags & 2 is valid
+        private float unk11;
+        private byte[] AnimQuantizedData_Flag2; // When writing, do = [Array.Length / 12]
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            BoneID = reader.ReadUInt64();
+
+            // Seems like flags - used later too.
+            Flags = reader.ReadByte();
+            if ((Flags & 32) == 32)
+            {
+                byte bIsDataPresent = reader.ReadByte(); // Not sure if correct.
+                if (bIsDataPresent != 0)
+                {
+                    DataFlags = reader.ReadByte();
+                    unk5 = reader.ReadUInt16(); // 0x14061c302
+                    unk6 = reader.ReadByte(); // 0x14061c31d
+                    unk7 = reader.ReadByte(); // 0x14061c33f
+                    unk8 = reader.ReadSingle(); // compression x?
+                    unk9 = reader.ReadSingle(); // compression y?
+                    unk10 = reader.ReadSingle(); // compression z?
+
+                    // Somehow magically get the size from unk5, unk6 and unk7.
+                    int Size = GetSize();
+                    AnimQuantizedData = reader.ReadBytes(Size);
+
+                    // An extra bit of data which seems to include even more data.
+                    // I'm going to assume that this could be Vector3?
+                    if ((DataFlags & 2) == 2)
+                    {
+                        short NumEntries = reader.ReadInt16();
+                        unk11 = reader.ReadSingle(); //compression? Seems quite large though..
+                        AnimQuantizedData_Flag2 = reader.ReadBytes(12 * NumEntries);
+                    }
+                }
+            }
+        }
+
+        // See code in engine at sub_14061C260 (M2DE EXE)
+        // Might be 
+        private int GetSize()
+        {
+            int Var0 = unk5; // (v7 + 8); // 0x14061c302
+            int Var2 = unk6; // v25 // 0x14061c31d
+            int Var1 = unk7; // v26 // 0x14061c33f
+
+            int v7_10 = (0 ^ 32 * Var0) & 2016;
+            v7_10 ^= (v7_10 ^ Var1) & 31;
+            v7_10 = v7_10 ^ (v7_10 ^ ((3 * Var2 + Var1 + 2) << 11)) & 260096;
+
+            return 4 * (Var0 * ((v7_10 >> 11) & 0x7F) >> 5) + 4;
+
+            /**(v7 + 10) ^= (*(v7 + 10) ^ 32 * v25) & 2016;
+            v15 = *(v7 + 10) ^ (*(v7 + 10) ^ v26) & 31;
+            *(v7 + 10) = v15;
+            v16 = v15 ^ (v15 ^ ((3 * v25 + v26 + 2) << 11)) & 260096;
+            *(v7 + 10) = v16;
+            v17 = 4 * (*(v7 + 8) * ((v16 >> 11) & 0x7F) >> 5) + 4;
+            v18 = (*(*v4 + 8i64))(v4, v17, 1i64);
+            *v7 = v18;*/
+        }
+    }
+
     public class Animation2Loader
     {
+        private class UnknownEntry0
+        {
+            public uint Unk0;
+            public float Unk1;
+        }
+
         private int animSetID; //usually in the name. Different types. If not using skeleton, it's 0xFFFF
-        private byte version; //Potentially Version 2, Because why not, it is Animation2. :)
-        private int magic; //IDA says 0xFA5612BC
-        private short unk0;
-        private short unk1;
+        private ushort unk0;
+        private ushort unk1;
         private Vector4 unk2;
         private Vector3 unk3;
         private Vector3 unk4;
         private ulong hash;
         private byte unk5;
         private float unk6;
-        private short unk7;
+
+        private ushort unk7;
         private byte unk8;
-        private ulong boneID;
-        private byte unk9;
 
+        private UnknownEntry0[] UnknownEntries;
 
-        //private TransformMatrix matrix; //matrix of the root?
-        //private ulong hash; //hash of the animation?
-        //private byte unk0; //usually 0? right after hash.
-        //private Half[] bonePos = new Half[3]; //potential bone positionings.
-        //private byte unk1; //usually 3? right after the position.
-        //private long traceBone; //Detected trace (1000), or 0
-        //private byte unk2; //usually 1? after the traceBone, and before counts?
-        //private short unkS1; //usually 0xFF?
-        //private short unkS2; //count1? timeline count? (Number of frames?)
-        //private short unkS3; //count2? Bone count.
-        //private TransformMatrix boneMatrix; //matrix of the bone?
+        private ushort Unk13;
+        private ushort Unk14;
+        private ushort Unk15;
 
-        public void ReadFromFile(BinaryReader reader)
+        private ulong unk9_hash;
+        private AnimQuantized unk9_entry;
+
+        private AnimQuantized[] Entries;
+
+        private ushort[] TailData;
+
+        public bool ReadFromFile(BinaryReader reader)
         {
             animSetID = reader.ReadInt32();
-            version = reader.ReadByte();
-            magic = reader.ReadInt32();
-            //matrix = new TransformMatrix(reader);
-            //hash = reader.ReadUInt64();
-            //unk0 = reader.ReadByte();
-            //bonePos[0] = Half.ToHalf(reader.ReadBytes(2), 0);
-            //bonePos[1] = Half.ToHalf(reader.ReadBytes(2), 0);
-            //bonePos[2] = Half.ToHalf(reader.ReadBytes(2), 0);
-            //unk1 = reader.ReadByte(); //usually 3
-            //traceBone = reader.ReadInt64();
+            
+            // Make sure the header is valid (magic and version)
+            if(!ValidateHeader(reader))
+            {
+                // insert fail message
+                return false;
+            }
 
-            ////if (traceBone != 0 || traceBone != 1000)
-            ////    throw new FormatException("Error, traceBone isn't 0 or 1000");
+            unk0 = reader.ReadUInt16();
+            unk1 = reader.ReadUInt16();
+            unk2 = Vector4Extenders.ReadFromFile(reader); // Could be Quaternion
+            unk3 = Vector3Utils.ReadFromFile(reader); // Position or Scale?
+            unk4 = Vector3Utils.ReadFromFile(reader); // Position or Scale?
+            hash = reader.ReadUInt64();
+            unk5 = reader.ReadByte();
+            unk6 = reader.ReadSingle();
 
-            //unkS1 = reader.ReadInt16();
-            //reader.ReadBytes(3); //usually 1 0 0;
-            ////if unkS2 and unkS3 is 0, then thats EOF.
-            //unkS2 = reader.ReadInt16(); //must be counts
-            //unkS3 = reader.ReadInt16(); //must be counts
-            ////boneMatrix = new TransformMatrix(reader);
+            unk7 = reader.ReadUInt16(); // Could be same as unk15
+            unk8 = reader.ReadByte();
 
-            //long boneID = reader.ReadInt64();
+            unk9_hash = reader.ReadUInt64();
 
+            // IDA mentions if this is 0, then return false
+            byte bIsDataPresent = reader.ReadByte();
+            if(bIsDataPresent == 0)
+            {
+                // insert fail message
+                return false;
+            }
+
+            Debug.Assert(bIsDataPresent == 1, "Expected bIsDataPresent to be 1, got something else.");
+
+            // Only read if unk0 is more than 0. (In theory we don't need this best to stick it here)
+            if (unk0 > 0)
+            {
+                UnknownEntries = new UnknownEntry0[unk0];
+                for (int i = 0; i < unk0; i++)
+                {
+                    UnknownEntry0 NewEntry = new UnknownEntry0();
+                    NewEntry.Unk0 = reader.ReadUInt32();
+                    NewEntry.Unk1 = reader.ReadSingle();
+                    UnknownEntries[i] = NewEntry;
+                }
+            }
+
+            // This could actually be a loop based on the number stored in unk8. Best to keep an eye on it.
+            Unk13 = reader.ReadUInt16();
+            Unk14 = reader.ReadUInt16();
+            Unk15 = reader.ReadUInt16(); // Could be same as unk7
+            Debug.Assert(unk8 == 3, "These three could actually be a loop or a set.. IDA pseudo code references unk8.");
+
+            // This data only seems to be present if unk9_entry is set to something other than 0.
+            unk9_entry = new AnimQuantized();
+            if (unk9_hash != 0)
+            {
+                unk9_entry.ReadFromFile(reader);
+            }
+
+            // Iterate through all entries
+            Entries = new AnimQuantized[Unk15];
+            for (int i = 0; i < Unk15; i++)
+            {
+                AnimQuantized TestObject = new AnimQuantized();
+                TestObject.ReadFromFile(reader);
+                Entries[i] = TestObject;
+            }
+
+            // not sure.. But seems to work?
+            int Total = Unk14 + Unk15;
+            TailData = new ushort[Total];
+            for (int i = 0; i < Total; i++)
+            {
+                TailData[i] = reader.ReadUInt16();
+            }
+
+            Debug.Assert(reader.BaseStream.Position == reader.BaseStream.Length, "boo! didn't hit the end");
+
+            return true;
+        }
+
+        private bool ValidateHeader(BinaryReader reader)
+        {
+            byte version = reader.ReadByte();
+            uint magic = reader.ReadUInt32();
+
+            return version == 2 && magic == 0xFA5612BC;
         }
     }
 }
