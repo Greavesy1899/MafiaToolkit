@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
@@ -23,6 +24,7 @@ namespace ResourceTypes.Animation2
         private float unk10;
 
         private byte[] AnimQuantizedData;
+        private Quaternion[] AnimData;
 
         // Only if Flags & 2 is valid
         private float unk11;
@@ -50,6 +52,7 @@ namespace ResourceTypes.Animation2
                     // Somehow magically get the size from unk5, unk6 and unk7.
                     int Size = GetSize();
                     AnimQuantizedData = reader.ReadBytes(Size);
+                    Dequantize();
 
                     // An extra bit of data which seems to include even more data.
                     // I'm going to assume that this could be Vector3?
@@ -68,14 +71,20 @@ namespace ResourceTypes.Animation2
         private int GetSize()
         {
             int Var0 = unk5; // (v7 + 8); // 0x14061c302
-            int Var2 = unk6; // v25 // 0x14061c31d
-            int Var1 = unk7; // v26 // 0x14061c33f
+            int Var1 = unk6; // v25 // 0x14061c31d
+            int Var2 = unk7; // v26 // 0x14061c33f
 
-            int v7_10 = (0 ^ 32 * Var0) & 2016;
-            v7_10 ^= (v7_10 ^ Var1) & 31;
-            v7_10 = v7_10 ^ (v7_10 ^ ((3 * Var2 + Var1 + 2) << 11)) & 260096;
+            int v7_10 = (0 ^ 32 * Var1) & 2016; // 6 middle bits
+            var v15 = v7_10 ^ (v7_10 ^ Var2) & 31; // 5 lower bits
+            var v16 = v15 ^ (v15 ^ ((3 * Var1 + Var2 + 2) << 11)) & 260096; // 7 higher bits
 
-            return 4 * (Var0 * ((v7_10 >> 11) & 0x7F) >> 5) + 4;
+            // Speculation is that 'unk6' represents bits per coord, and 'unk7' represents bits per something else (w component?)
+            var sizeSimplified = 4 * (Var0 * ((3 * Var1 + Var2 + 2) & 0x7F) >> 5) + 4;
+            var size = 4 * (Var0 * ((v16 >> 11) & 0x7F) >> 5) + 4;
+
+            Debug.Assert(size == sizeSimplified);
+
+            return size;
 
             /**(v7 + 10) ^= (*(v7 + 10) ^ 32 * v25) & 2016;
             v15 = *(v7 + 10) ^ (*(v7 + 10) ^ v26) & 31;
@@ -85,6 +94,33 @@ namespace ResourceTypes.Animation2
             v17 = 4 * (*(v7 + 8) * ((v16 >> 11) & 0x7F) >> 5) + 4;
             v18 = (*(*v4 + 8i64))(v4, v17, 1i64);
             *v7 = v18;*/
+        }
+
+        private void Dequantize()
+        {
+            var data = new BigInteger(AnimQuantizedData);
+            var quats = new List<Quaternion>();
+            var chunkSize = 3 * unk6 + unk7 + 2;
+
+            for (var i = 0; i < unk5; i++)
+            {
+                var dataCurrent = data >> (i * chunkSize);
+
+                var w = (dataCurrent >> (unk7)) & ((1 << unk7) - 1);
+                var x = (dataCurrent >> (unk7 + unk6)) & ((1 << unk6) - 1);
+                var y = (dataCurrent >> (unk7 + unk6 * 2)) & ((1 << unk6) - 1);
+                var z = (dataCurrent >> (unk7 + unk6 * 3)) & ((1 << unk6) - 1);
+                var bits = (dataCurrent >> (unk7 + unk6 * 3 + 2)) & ((1 << 2) - 1);
+
+                var xNorm = (uint)x / (float)((1 << unk6) - 1);
+                var yNorm = (uint)y / (float)((1 << unk6) - 1);
+                var zNorm = (uint)z / (float)((1 << unk6) - 1);
+                var wNorm = (uint)w / (float)((1 << unk7) - 1);
+
+                quats.Add(new Quaternion(xNorm, yNorm, zNorm, wNorm));
+            }
+
+            AnimData = quats.ToArray();
         }
     }
 
