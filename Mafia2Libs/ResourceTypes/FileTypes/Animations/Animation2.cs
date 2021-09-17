@@ -14,21 +14,21 @@ namespace ResourceTypes.Animation2
         private byte Flags;
 
         private byte DataFlags;
-        private ushort unk5;
-        private byte unk6;
-        private byte unk7;
+        private ushort NumFrames;
+        private byte ComponentSize; // in bits
+        private byte TimeSize; // in bits
 
         // Could be compression? X Y Z?
         private float unk8;
         private float unk9;
-        private float unk10;
+        private float Duration;
 
-        private byte[] AnimQuantizedData;
+        private byte[] AnimQuantizedRotations;
         private Quaternion[] AnimData;
 
         // Only if Flags & 2 is valid
         private float unk11;
-        private byte[] AnimQuantizedData_Flag2; // When writing, do = [Array.Length / 12]
+        private byte[] AnimQuantizedPositions; // When writing, do = [Array.Length / 12]
 
         public void ReadFromFile(BinaryReader reader)
         {
@@ -42,16 +42,16 @@ namespace ResourceTypes.Animation2
                 if (bIsDataPresent != 0)
                 {
                     DataFlags = reader.ReadByte();
-                    unk5 = reader.ReadUInt16(); // 0x14061c302
-                    unk6 = reader.ReadByte(); // 0x14061c31d
-                    unk7 = reader.ReadByte(); // 0x14061c33f
-                    unk8 = reader.ReadSingle(); // compression x?
-                    unk9 = reader.ReadSingle(); // compression y?
-                    unk10 = reader.ReadSingle(); // compression z?
+                    NumFrames = reader.ReadUInt16(); // 0x14061c302
+                    ComponentSize = reader.ReadByte(); // 0x14061c31d
+                    TimeSize = reader.ReadByte(); // 0x14061c33f
+                    unk8 = reader.ReadSingle(); // not a float
+                    unk9 = reader.ReadSingle(); // relates to rotations
+                    Duration = reader.ReadSingle(); // anim duration
 
                     // Somehow magically get the size from unk5, unk6 and unk7.
                     int Size = GetSize();
-                    AnimQuantizedData = reader.ReadBytes(Size);
+                    AnimQuantizedRotations = reader.ReadBytes(Size);
                     Dequantize();
 
                     // An extra bit of data which seems to include even more data.
@@ -60,7 +60,7 @@ namespace ResourceTypes.Animation2
                     {
                         short NumEntries = reader.ReadInt16();
                         unk11 = reader.ReadSingle(); //compression? Seems quite large though..
-                        AnimQuantizedData_Flag2 = reader.ReadBytes(12 * NumEntries);
+                        AnimQuantizedPositions = reader.ReadBytes(12 * NumEntries);
                     }
                 }
             }
@@ -70,9 +70,9 @@ namespace ResourceTypes.Animation2
         // Might be 
         private int GetSize()
         {
-            int Var0 = unk5; // (v7 + 8); // 0x14061c302
-            int Var1 = unk6; // v25 // 0x14061c31d
-            int Var2 = unk7; // v26 // 0x14061c33f
+            int Var0 = NumFrames; // (v7 + 8); // 0x14061c302
+            int Var1 = ComponentSize; // v25 // 0x14061c31d
+            int Var2 = TimeSize; // v26 // 0x14061c33f
 
             int v7_10 = (0 ^ 32 * Var1) & 2016; // 6 middle bits
             var v15 = v7_10 ^ (v7_10 ^ Var2) & 31; // 5 lower bits
@@ -98,29 +98,73 @@ namespace ResourceTypes.Animation2
 
         private void Dequantize()
         {
-            var data = new BigInteger(AnimQuantizedData);
+            var data = new BigInteger(AnimQuantizedRotations);
             var quats = new List<Quaternion>();
-            var chunkSize = 3 * unk6 + unk7 + 2;
+            var chunkSize = 3 * ComponentSize + TimeSize + 2;
 
-            for (var i = 0; i < unk5; i++)
+            for (var i = 0; i < NumFrames; i++)
             {
                 var dataCurrent = data >> (i * chunkSize);
 
-                var w = (dataCurrent >> (unk7)) & ((1 << unk7) - 1);
-                var x = (dataCurrent >> (unk7 + unk6)) & ((1 << unk6) - 1);
-                var y = (dataCurrent >> (unk7 + unk6 * 2)) & ((1 << unk6) - 1);
-                var z = (dataCurrent >> (unk7 + unk6 * 3)) & ((1 << unk6) - 1);
-                var bits = (dataCurrent >> (unk7 + unk6 * 3 + 2)) & ((1 << 2) - 1);
+                var time = (dataCurrent) & ((1 << TimeSize) - 1);
+                var component1 = (dataCurrent >> (TimeSize)) & ((1 << ComponentSize) - 1);
+                var component2 = (dataCurrent >> (TimeSize + ComponentSize)) & ((1 << ComponentSize) - 1);
+                var component3 = (dataCurrent >> (TimeSize + ComponentSize * 2)) & ((1 << ComponentSize) - 1);
+                var omittedComponent = (dataCurrent >> (TimeSize + ComponentSize * 2 + 2)) & ((1 << 2) - 1);
 
-                var xNorm = (uint)x / (float)((1 << unk6) - 1);
-                var yNorm = (uint)y / (float)((1 << unk6) - 1);
-                var zNorm = (uint)z / (float)((1 << unk6) - 1);
-                var wNorm = (uint)w / (float)((1 << unk7) - 1);
+                float x;
+                float y;
+                float z;
+                float w;
+                switch ((int)omittedComponent)
+                {
+                    case 0: // x omitted
+                        y = Normalize((int)component1, ComponentSize);
+                        z = Normalize((int)component2, ComponentSize);
+                        w = Normalize((int)component3, ComponentSize);
+                        x = (float)Math.Sqrt(1 - y * y - z * z - w * w);
+                        break;
+                    case 1: // y omitted
+                        x = Normalize((int)component1, ComponentSize);
+                        z = Normalize((int)component2, ComponentSize);
+                        w = Normalize((int)component3, ComponentSize);
+                        y = (float)Math.Sqrt(1 - x * x - z * z - w * w);
+                        break;
+                    case 2: // z omitted
+                        x = Normalize((int)component1, ComponentSize);
+                        y = Normalize((int)component2, ComponentSize);
+                        w = Normalize((int)component3, ComponentSize);
+                        z = (float)Math.Sqrt(1 - x * x - y * y - w * w);
+                        break;
+                    case 3: // w omitted
+                        x = Normalize((int)component1, ComponentSize);
+                        y = Normalize((int)component2, ComponentSize);
+                        z = Normalize((int)component3, ComponentSize);
+                        w = (float)Math.Sqrt(1 - x * x - y * y - z * z);
+                        break;
+                    default:
+                        throw new Exception();
+                }
 
-                quats.Add(new Quaternion(xNorm, yNorm, zNorm, wNorm));
+                var quat = new Quaternion(x, y, z, w);
+                var euler = quat.ToEuler();
+
+                quats.Add(quat);
             }
 
             AnimData = quats.ToArray();
+        }
+
+        private static float Normalize(int value, int size)
+        {
+            var maxValue = (float)((1 << size) - 1);
+            return (value - maxValue / 2) / (maxValue);
+        }
+
+        private static float Normalize2(int value, int size)
+        {
+            var maxValue = (float)((1 << size - 1) - 1);
+            return ((((1 << size - 1) & value) > 0) ? -1 : 1) * (value & ((1 << size - 1) - 1)) / maxValue;
         }
     }
 
@@ -140,7 +184,7 @@ namespace ResourceTypes.Animation2
         private Vector3 unk4;
         private ulong hash;
         private byte unk5;
-        private float unk6;
+        private float Duration;
 
         private ushort unk7;
         private byte unk8;
@@ -176,7 +220,7 @@ namespace ResourceTypes.Animation2
             unk4 = Vector3Utils.ReadFromFile(reader); // Position or Scale?
             hash = reader.ReadUInt64();
             unk5 = reader.ReadByte();
-            unk6 = reader.ReadSingle();
+            Duration = reader.ReadSingle();
 
             unk7 = reader.ReadUInt16(); // Could be same as unk15
             unk8 = reader.ReadByte();
