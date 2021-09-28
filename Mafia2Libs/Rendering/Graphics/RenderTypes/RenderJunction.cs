@@ -114,7 +114,7 @@ namespace Rendering.Graphics
             {
                 Boundary.Select();
             }
-            isUpdatedNeeded = true;
+            bIsUpdatedNeeded = true;
         }
 
         public override void SetTransform(Matrix4x4 matrix)
@@ -144,7 +144,7 @@ namespace Rendering.Graphics
             {
                 Boundary.Unselect();
             }
-            isUpdatedNeeded = true;
+            bIsUpdatedNeeded = true;
         }
 
         public void UpdateVertices()
@@ -169,12 +169,12 @@ namespace Rendering.Graphics
             {
                 InitSplines();
             }
-            isUpdatedNeeded = true;
+            bIsUpdatedNeeded = true;
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
-            if(isUpdatedNeeded)
+            if(bIsUpdatedNeeded)
             {
                 if (Boundary != null)
                 {
@@ -188,7 +188,7 @@ namespace Rendering.Graphics
                         Splines[i].UpdateBuffers(device, deviceContext);
                     }
                 }
-                isUpdatedNeeded = false;
+                bIsUpdatedNeeded = false;
             }
         }
     }

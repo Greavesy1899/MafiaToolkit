@@ -44,7 +44,7 @@ namespace Rendering.Graphics
         public RenderModel()
         {
             DoRender = true;
-            isUpdatedNeeded = false;
+            bIsUpdatedNeeded = false;
             Transform = Matrix4x4.Identity;
             SelectionColour = Color.White;
         }
@@ -177,7 +177,7 @@ namespace Rendering.Graphics
                     LODs[i].ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(hash);
                 }
             }
-            isUpdatedNeeded = true;
+            bIsUpdatedNeeded = true;
         }
 
         private void SetupShaders()
@@ -288,11 +288,11 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
-            if(isUpdatedNeeded)
+            if(bIsUpdatedNeeded)
             {
                 SetupShaders();
                 InitTextures(device, deviceContext);
-                isUpdatedNeeded = false;
+                bIsUpdatedNeeded = false;
             }
         }
 

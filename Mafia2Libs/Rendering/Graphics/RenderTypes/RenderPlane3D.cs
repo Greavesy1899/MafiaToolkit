@@ -164,7 +164,7 @@ namespace Rendering.Graphics
             }
 
             InitBuffers(device, deviceContext);
-            isUpdatedNeeded = false;
+            bIsUpdatedNeeded = false;
         }
     }
 }

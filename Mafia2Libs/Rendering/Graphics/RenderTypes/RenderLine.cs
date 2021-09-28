@@ -8,15 +8,21 @@ namespace Rendering.Graphics
 {
     public class RenderLine : IRenderer
     {
-
-        private Vector3[] points;
-        public Vector3[] Points {
+        public Vector3[] Points
+        {
             get { return points; }
-            set {
+            set
+            {
                 points = value;
                 UpdateVertices();
             }
         }
+
+        public ushort[] GetStrippedIndices { get { return InternalGetStrippedIndices(); } }
+
+        public VertexLayouts.BasicLayout.Vertex[] GetVertices { get { return vertices; } }
+
+        private Vector3[] points;
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private Color SelectedColour;
         private Color UnselectedColour;
@@ -34,7 +40,7 @@ namespace Rendering.Graphics
 
         public void InitSwap(Vector3[] points)
         {
-            for(int i = 0; i < points.Length; i++)
+            for (int i = 0; i < points.Length; i++)
             {
                 Vector3 pos = points[i];
                 float y = pos.Y;
@@ -50,11 +56,11 @@ namespace Rendering.Graphics
             UpdateVertices();
         }
 
-        public void UpdateVertices(bool selected = false)
+        public void UpdateVertices(bool bSelected = false)
         {
             vertices = new VertexLayouts.BasicLayout.Vertex[points.Length];
 
-            var color = (selected ? SelectedColour : UnselectedColour).ToArgb();
+            var color = (bSelected ? SelectedColour : UnselectedColour).ToArgb();
 
             for (int i = 0; i != vertices.Length; i++)
             {
@@ -63,7 +69,7 @@ namespace Rendering.Graphics
                 vertex.Colour = color;
                 vertices[i] = vertex;
             }
-            isUpdatedNeeded = true;
+            bIsUpdatedNeeded = true;
         }
 
         public void SetSelectedColour(Color color)
@@ -98,6 +104,17 @@ namespace Rendering.Graphics
             shader.Render(deviceContext, PrimitiveTopology.LineStrip, vertices.Length, 0);
         }
 
+        public ushort[] InternalGetStrippedIndices()
+        {
+            ushort[] Indices = new ushort[points.Length];
+            for (ushort i = 0; i < points.Length; i++)
+            {
+                Indices[i] = i;
+            }
+
+            return Indices;
+        }
+
         public override void SetTransform(Matrix4x4 matrix)
         {
             this.Transform = matrix;
@@ -112,25 +129,25 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
-            if(vertexBuffer != null)
+            if (vertexBuffer != null)
             {
                 vertexBuffer.Dispose();
                 vertexBuffer = null;
             }
             InitBuffers(device, deviceContext);
-            isUpdatedNeeded = false;
+            bIsUpdatedNeeded = false;
         }
 
         public override void Select()
         {
             UpdateVertices(true);
-            isUpdatedNeeded = true;
+            bIsUpdatedNeeded = true;
         }
 
         public override void Unselect()
         {
             UpdateVertices();
-            isUpdatedNeeded = true;
+            bIsUpdatedNeeded = true;
         }
     }
 }
