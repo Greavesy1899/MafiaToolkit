@@ -31,8 +31,11 @@ namespace Mafia2Tool
             ToolkitAssemblyLoadContext.SetupLoadContext();
             ToolkitExceptionHandler.Initialise();
 
+            // Load INI
             CheckINIExists();
             ToolkitSettings.ReadINI();
+            CheckIfNewUpdate();
+
             GameStorage.Instance.InitStorage();
             Language.ReadLanguageXML();
             CheckLatestRelease();
@@ -114,6 +117,24 @@ namespace Mafia2Tool
             }
         }
 
+        private static void CheckIfNewUpdate()
+        {
+            if (ToolkitSettings.CurrentVersion != ToolkitSettings.Version)
+            {
+                string UpdateMessage = string.Format("Welcome to update {0}! \nPress 'Ok' to visit the changelist on the wiki. \nPress 'Cancel' to continue.", ToolkitSettings.Version);
+                if (MessageBox.Show(UpdateMessage, "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+                {
+                    ProcessStartInfo StartInfo = new ProcessStartInfo();
+                    StartInfo.UseShellExecute = true;
+                    StartInfo.FileName = "https://github.com/Greavesy1899/MafiaToolkit/wiki/Toolkit-Changelist";
+
+                    Process.Start(StartInfo);
+                }
+
+                ToolkitSettings.CurrentVersion = ToolkitSettings.Version;
+            }
+        }
+
         private static void CheckINIExists()
         {
             string PathToIni = Path.Combine(Application.ExecutablePath, "MafiaToolkit.ini");
@@ -121,6 +142,7 @@ namespace Mafia2Tool
             {
                 new IniFile();
             }
+
         }
     }
 
@@ -168,6 +190,7 @@ namespace Mafia2Tool
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+
         }
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
