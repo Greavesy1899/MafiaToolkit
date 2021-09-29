@@ -93,11 +93,6 @@ namespace ResourceTypes.EntityActivator
                 XElement Root = ReflectionHelpers.ConvertPropertyToXML<EntityActivator>(this);
                 Root.Save("EntityActivator.xml");
             }
-
-            using (BinaryWriter writer = new BinaryWriter(File.Open("test.bin", FileMode.Create)))
-            {
-                WriteToFile(writer);
-            }
         }
 
         public void WriteToFile(BinaryWriter writer)
