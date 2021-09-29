@@ -3,6 +3,7 @@ using ResourceTypes.Misc;
 using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;
 using ResourceTypes.Sound;
+using ResourceTypes.EntityActivator;
 using System.IO;
 
 namespace Core.IO
@@ -16,6 +17,7 @@ namespace Core.IO
         private const uint CityAreasMagic = 0x63746172;
         private const uint ShopMenu2Magic = 0x73686D32;
         private const uint CGameMagic = 0x676D7072;
+        private const uint EntityActivatorMagic = 0x656E7461;
 
         public FileBin(FileInfo info) : base(info)
         {
@@ -66,6 +68,13 @@ namespace Core.IO
             else if (CheckFileMagic(file, CGameMagic))
             {
                 CGameData data = new CGameData(file);
+                return true;
+            }
+            else if (CheckFileMagic(file, EntityActivatorMagic))
+            {
+                EntityActivator activator = new EntityActivator();
+                activator.ReadFromFile(file);
+
                 return true;
             }
             else

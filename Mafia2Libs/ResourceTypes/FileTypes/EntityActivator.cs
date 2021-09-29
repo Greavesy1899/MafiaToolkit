@@ -16,8 +16,20 @@ namespace ResourceTypes.EntityActivator
             [PropertyForceAsAttribute]
             public ulong EntityHash { get; set; }
             [PropertyForceAsAttribute]
-            public ulong Unk01 { get; set; }
+            public uint Unk01 { get; set; }
             public EntitySet1[] EntitySets { get; set; }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(EntityHash);
+                writer.Write(Unk01);
+                writer.Write(EntitySets.Length);
+
+                foreach (EntitySet1 Set in EntitySets)
+                {
+                    Set.WriteToFile(writer);
+                }
+            }
         }
 
         public class EntitySet1
@@ -25,19 +37,34 @@ namespace ResourceTypes.EntityActivator
             [PropertyForceAsAttribute]
             public ulong EntityHash { get; set; }
             public ulong[] OtherHashes { get; set; }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(EntityHash);
+                writer.Write(OtherHashes.Length);
+
+                foreach (ulong Hash in OtherHashes)
+                {
+                    writer.Write(Hash);
+                }
+            }
         }
 
+        private byte[] magic = { (byte)'a', (byte)'t', (byte)'n', (byte)'e' };
         public EntitySet0[] Sets { get; set; }
+        private int Unk1 { get; set; }
 
         public void ReadFromFile(FileInfo Info)
         {
             string FullName = Info.FullName;
             using(BinaryReader reader = new BinaryReader(File.Open(FullName, FileMode.Open)))
             {
-                reader.BaseStream.Seek(0xC, SeekOrigin.Begin);
+                reader.ReadInt32(); // Magic inverted - enta
+                Unk1 = reader.ReadInt32();
+                int Count = reader.ReadInt32();
 
-                Sets = new EntitySet0[17];
-                for (int y = 0; y < 17; y++)
+                Sets = new EntitySet0[Count];
+                for (int y = 0; y < Count; y++)
                 {
                     EntitySet0 NewSet = new EntitySet0();
                     NewSet.EntityHash = reader.ReadUInt64();
@@ -65,6 +92,23 @@ namespace ResourceTypes.EntityActivator
 
                 XElement Root = ReflectionHelpers.ConvertPropertyToXML<EntityActivator>(this);
                 Root.Save("EntityActivator.xml");
+            }
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open("test.bin", FileMode.Create)))
+            {
+                WriteToFile(writer);
+            }
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(magic);
+            writer.Write(Unk1);
+            writer.Write(Sets.Length);
+
+            foreach (EntitySet0 Set in Sets)
+            {
+                Set.WriteToFile(writer);
             }
         }
     }
