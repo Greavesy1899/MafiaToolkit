@@ -6,28 +6,27 @@ using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin.TableContainers
 {
-    public class HumanMaterialsTable : BaseTable
+    public class MaterialsPhysicsTable : BaseTable
     {
-        public class HumanMaterialsItem
+        public class MaterialsPhysicsItem
         {
             public uint ID { get; set; }
             public string MaterialName { get; set; }
-            public EHumanMaterialsTableItemFlags Flags { get; set; }
-            public XBinAkHashName SoundMaterialSwitch { get; set; }
-            public uint StepParticles { get; set; }
-
-            public HumanMaterialsItem()
-            {
-                SoundMaterialSwitch = new XBinAkHashName();
-            }
+            public XBinAkHashName SoundSwitch { get; set; }
+            public uint GUID_Part0 { get; set; }
+            public uint GUID_Part1 { get; set; }
+            public float StaticFriction { get; set; }
+            public float DynamicFriction { get; set; }
+            public float Restitution { get; set; }
+            public string Poznamka { get; set; }
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2}", ID, MaterialName, Flags);
+                return string.Format("{0} {1}", ID, MaterialName);
             }
         }
 
-        public HumanMaterialsItem[] Items { get; set; }
+        public MaterialsPhysicsItem[] Items { get; set; }
 
         private uint unk0;
 
@@ -37,15 +36,19 @@ namespace ResourceTypes.M3.XBin.TableContainers
             uint count1 = reader.ReadUInt32();
             uint count2 = reader.ReadUInt32();
 
-            Items = new HumanMaterialsItem[count1];
-            for(int i = 0; i < Items.Length; i++)
+            Items = new MaterialsPhysicsItem[count1];
+            for (int i = 0; i < Items.Length; i++)
             {
-                HumanMaterialsItem Item = new HumanMaterialsItem();
+                MaterialsPhysicsItem Item = new MaterialsPhysicsItem();
                 Item.ID = reader.ReadUInt32();
                 Item.MaterialName = StringHelpers.ReadStringBuffer(reader, 32);
-                Item.Flags = (EHumanMaterialsTableItemFlags)reader.ReadUInt32();
-                Item.SoundMaterialSwitch = XBinAkHashName.ConstructAndReadFromFile(reader);
-                Item.StepParticles = reader.ReadUInt32();
+                Item.SoundSwitch = XBinAkHashName.ConstructAndReadFromFile(reader);
+                Item.GUID_Part0 = reader.ReadUInt32();
+                Item.GUID_Part1 = reader.ReadUInt32();
+                Item.StaticFriction = reader.ReadSingle();
+                Item.DynamicFriction = reader.ReadSingle();
+                Item.Restitution = reader.ReadSingle();
+                Item.Poznamka = StringHelpers.ReadStringBuffer(reader, 64);
                 Items[i] = Item;
             }
         }
@@ -56,20 +59,24 @@ namespace ResourceTypes.M3.XBin.TableContainers
             writer.Write(Items.Length);
             writer.Write(Items.Length);
 
-            foreach(var Item in Items)
+            foreach (var Item in Items)
             {
                 writer.Write(Item.ID);
                 StringHelpers.WriteStringBuffer(writer, 32, Item.MaterialName);
-                writer.Write((uint)Item.Flags);
-                Item.SoundMaterialSwitch.WriteToFile(writer);
-                writer.Write(Item.StepParticles);
+                Item.SoundSwitch.WriteToFile(writer);
+                writer.Write(Item.GUID_Part0);
+                writer.Write(Item.GUID_Part1);
+                writer.Write(Item.StaticFriction);
+                writer.Write(Item.DynamicFriction);
+                writer.Write(Item.Restitution);
+                StringHelpers.WriteStringBuffer(writer, 64, Item.Poznamka);
             }
         }
 
         public void ReadFromXML(string file)
         {
             XElement Root = XElement.Load(file);
-            HumanMaterialsTable TableInformation = ReflectionHelpers.ConvertToPropertyFromXML<HumanMaterialsTable>(Root);
+            MaterialsPhysicsTable TableInformation = ReflectionHelpers.ConvertToPropertyFromXML<MaterialsPhysicsTable>(Root);
             this.Items = TableInformation.Items;
         }
 
@@ -82,7 +89,7 @@ namespace ResourceTypes.M3.XBin.TableContainers
         public TreeNode GetAsTreeNodes()
         {
             TreeNode Root = new TreeNode();
-            Root.Text = "HumanMaterials Table";
+            Root.Text = "MaterialsPhysics Table";
 
             foreach (var Item in Items)
             {
@@ -97,11 +104,11 @@ namespace ResourceTypes.M3.XBin.TableContainers
 
         public void SetFromTreeNodes(TreeNode Root)
         {
-            Items = new HumanMaterialsItem[Items.Length];
+            Items = new MaterialsPhysicsItem[Items.Length];
             for (int i = 0; i < Items.Length; i++)
             {
                 TreeNode ChildNode = Root.Nodes[i];
-                HumanMaterialsItem Entry = (HumanMaterialsItem)ChildNode.Tag;
+                MaterialsPhysicsItem Entry = (MaterialsPhysicsItem)ChildNode.Tag;
                 Items[i] = Entry;
             }
         }

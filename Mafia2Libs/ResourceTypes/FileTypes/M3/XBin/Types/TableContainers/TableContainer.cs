@@ -28,6 +28,8 @@ namespace ResourceTypes.M3.XBin.TableContainers
         public HumanWeaponImpactTable HumanWeaponImpacts { get; set; }
         public HumanDamageZonesTable HumanDamageZones { get; set; }
         public HumanMaterialsTable HumanMaterials { get; set; }
+        public MaterialsPhysicsTable MaterialPhysics { get; set; }
+        public MaterialsShotsTable MaterialShots { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
         {
@@ -102,6 +104,18 @@ namespace ResourceTypes.M3.XBin.TableContainers
             HumanMaterials = new HumanMaterialsTable();
             HumanMaterials.ReadFromFile(reader);
 
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            currentPosition = reader.BaseStream.Position + 4;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            MaterialPhysics = new MaterialsPhysicsTable();
+            MaterialPhysics.ReadFromFile(reader);
+
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            currentPosition = reader.BaseStream.Position + 4;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            MaterialShots = new MaterialsShotsTable();
+            MaterialShots.ReadFromFile(reader);
+
             // TODO: Everything in this function was always "temporary".
             // Maybe check the other table container files, see if they 
             // are good enough. Otherwise I need to create a new solution
@@ -133,6 +147,8 @@ namespace ResourceTypes.M3.XBin.TableContainers
             Root.Nodes.Add(CarTuningItems.GetAsTreeNodes());
             Root.Nodes.Add(HealthSystem.GetAsTreeNodes());
             Root.Nodes.Add(HumanMaterials.GetAsTreeNodes());
+            Root.Nodes.Add(MaterialPhysics.GetAsTreeNodes());
+            Root.Nodes.Add(MaterialShots.GetAsTreeNodes());
 
             return Root;
         }

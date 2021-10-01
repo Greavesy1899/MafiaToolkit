@@ -62,6 +62,7 @@ namespace Gibbed.Mafia2.FileFormats
             { "XML", ".xml" },
             { "Script", ".luapack" },
             { "SystemObjectDatabase", ".xbin" },
+            { "Cutscene", ".gcs" }
         };
 
         private KeyValuePair<ulong, string> GetFileName(ResourceEntry entry, string item)

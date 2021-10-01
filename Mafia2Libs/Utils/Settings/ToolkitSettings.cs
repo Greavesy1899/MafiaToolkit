@@ -89,7 +89,7 @@ namespace Utils.Settings
             int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);
             int.TryParse(ReadKey("VertexMemorySizePerBuffer", "SDS", "6000000 "), out VertexMemorySizePerBuffer);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
-            float.TryParse(ReadKey("CurrentVersion", "Update", "2.20"), out CurrentVersion);
+            float.TryParse(ReadKey("CurrentVersion", "Update", "2.22"), out CurrentVersion);
 
             Log.LoggingEnabled = LoggingEnabled;
 
