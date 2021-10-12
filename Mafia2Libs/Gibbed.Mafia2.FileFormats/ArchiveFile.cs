@@ -38,7 +38,7 @@ using Utils.Logging;
 using Utils.Settings;
 using Utils.Types;
 using System.Diagnostics;
-using Mafia2Tool.Utils;
+using MafiaToolkit.Utils;
 
 namespace Gibbed.Mafia2.FileFormats
 {

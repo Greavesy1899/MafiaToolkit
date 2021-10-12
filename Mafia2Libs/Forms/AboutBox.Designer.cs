@@ -1,5 +1,5 @@
 ﻿
-namespace Mafia2Tool.Forms
+namespace MafiaToolkit.Forms
 {
     partial class AboutBox
     {

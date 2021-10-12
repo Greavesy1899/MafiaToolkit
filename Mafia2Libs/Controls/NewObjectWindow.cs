@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using Utils.Language;
 
-namespace Mafia2Tool
+namespace MafiaToolkit
 {
     public partial class NewObjectForm : Form
     {

@@ -44,7 +44,7 @@
             this.Context_Menu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ToolStrip_Copy = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip_Paste = new System.Windows.Forms.ToolStripMenuItem();
-            this.TreeView_Tables = new Mafia2Tool.Controls.MTreeView();
+            this.TreeView_Tables = new MafiaToolkit.Controls.MTreeView();
             this.FileDialog_Open = new System.Windows.Forms.OpenFileDialog();
             this.FileDialog_Save = new System.Windows.Forms.SaveFileDialog();
             this.toolStrip1.SuspendLayout();
@@ -232,7 +232,7 @@
         #endregion
 
         private System.Windows.Forms.PropertyGrid PropertyGrid_Item;
-        private Mafia2Tool.Controls.MTreeView TreeView_Tables;
+        private MafiaToolkit.Controls.MTreeView TreeView_Tables;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton Button_File;
         private System.Windows.Forms.ToolStripMenuItem Button_Save;

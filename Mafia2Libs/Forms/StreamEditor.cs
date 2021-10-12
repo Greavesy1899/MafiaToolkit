@@ -9,7 +9,7 @@ using Utils.Language;
 using Utils.Settings;
 using static ResourceTypes.Misc.StreamMapLoader;
 
-namespace Mafia2Tool
+namespace MafiaToolkit
 { 
     public partial class StreamEditor : Form
     {

@@ -47,7 +47,7 @@
             this.Context_Copy = new System.Windows.Forms.ToolStripMenuItem();
             this.Context_Paste = new System.Windows.Forms.ToolStripMenuItem();
             this.Context_Delete = new System.Windows.Forms.ToolStripMenuItem();
-            this.TreeView_FxActors = new Mafia2Tool.Controls.MTreeView();
+            this.TreeView_FxActors = new MafiaToolkit.Controls.MTreeView();
             this.ToolStrip_Top.SuspendLayout();
             this.Context_Menu.SuspendLayout();
             this.SuspendLayout();
@@ -249,7 +249,7 @@
         private System.Windows.Forms.ToolStripMenuItem Button_Save;
         private System.Windows.Forms.ToolStripMenuItem Button_Reload;
         private System.Windows.Forms.ToolStripMenuItem Button_Exit;
-        private Mafia2Tool.Controls.MTreeView TreeView_FxActors;
+        private MafiaToolkit.Controls.MTreeView TreeView_FxActors;
         private System.Windows.Forms.ContextMenuStrip Context_Menu;
         private System.Windows.Forms.ToolStripMenuItem Context_Copy;
         private System.Windows.Forms.ToolStripMenuItem Context_Paste;

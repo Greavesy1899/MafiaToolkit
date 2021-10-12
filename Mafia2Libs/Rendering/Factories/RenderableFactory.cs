@@ -1,4 +1,4 @@
-﻿using Mafia2Tool;
+﻿using MafiaToolkit;
 using Rendering.Graphics;
 using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;

@@ -1,4 +1,4 @@
-﻿using Mafia2Tool;
+﻿using MafiaToolkit;
 using Rendering.Factories;
 using Rendering.Graphics;
 using ResourceTypes.ItemDesc;

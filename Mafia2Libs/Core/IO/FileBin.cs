@@ -1,4 +1,4 @@
-﻿using Mafia2Tool;
+﻿using MafiaToolkit;
 using ResourceTypes.Misc;
 using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;

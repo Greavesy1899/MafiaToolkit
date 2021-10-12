@@ -1,4 +1,4 @@
-﻿using Mafia2Tool;
+﻿using MafiaToolkit;
 using System.IO;
 
 namespace Core.IO

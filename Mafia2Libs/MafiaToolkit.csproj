@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Mafia2Tool</RootNamespace>
+    <RootNamespace>MafiaToolkit</RootNamespace>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -40,13 +40,13 @@
     <LangVersion>7.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Mafia2Tool.Program</StartupObject>
+    <StartupObject>MafiaToolkit.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>ECEBC1D26FFB2386CF2C12237C8B7067EEED7348</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Mafia2Toolkit_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>MafiaToolkitkit_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>false</GenerateManifests>

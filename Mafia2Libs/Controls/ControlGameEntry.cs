@@ -7,7 +7,7 @@ using Utils.Settings;
 using Utils.Language;
 using System.IO;
 
-namespace Mafia2Tool.Controls
+namespace MafiaToolkit.Controls
 {
     public partial class ControlGameEntry : UserControl
     {

@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool
+﻿namespace MafiaToolkit
 {
     partial class PrefabEditor
     {
@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PrefabEditor));
             this.Grid_Prefabs = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Prefabs = new Mafia2Tool.Controls.MTreeView();
+            this.TreeView_Prefabs = new MafiaToolkit.Controls.MTreeView();
             this.Context_Menu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.Context_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.Browser_ImportPRB = new System.Windows.Forms.OpenFileDialog();

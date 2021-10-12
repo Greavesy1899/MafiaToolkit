@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool
+﻿namespace MafiaToolkit
 {
     partial class SplashForm
     {

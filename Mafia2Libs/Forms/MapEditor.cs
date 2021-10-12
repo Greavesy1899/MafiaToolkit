@@ -30,7 +30,7 @@ using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
 using Collision = ResourceTypes.Collisions.Collision;
 
-namespace Mafia2Tool
+namespace MafiaToolkit
 {
     public partial class MapEditor : Form
     {

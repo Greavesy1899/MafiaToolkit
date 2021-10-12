@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Mafia2Tool.Utils
+namespace MafiaToolkit.Utils
 {
     public static class OodleDllResolver
     {

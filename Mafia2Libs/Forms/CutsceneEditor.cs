@@ -6,7 +6,7 @@ using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
 
-namespace Mafia2Tool.Forms
+namespace MafiaToolkit.Forms
 {
     public partial class CutsceneEditor : Form
     {

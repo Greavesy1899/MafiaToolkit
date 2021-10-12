@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool
+﻿namespace MafiaToolkit
 {
     partial class ActorEditor
     {
@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ActorEditor));
             this.ActorGrid = new System.Windows.Forms.PropertyGrid();
-            this.ActorTreeView = new Mafia2Tool.Controls.MTreeView();
+            this.ActorTreeView = new MafiaToolkit.Controls.MTreeView();
             this.ActorContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextCopy = new System.Windows.Forms.ToolStripMenuItem();

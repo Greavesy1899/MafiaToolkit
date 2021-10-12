@@ -1,4 +1,4 @@
-﻿using Mafia2Tool.Forms;
+﻿using MafiaToolkit.Forms;
 using ResourceTypes.Cutscene;
 using System;
 using System.IO;

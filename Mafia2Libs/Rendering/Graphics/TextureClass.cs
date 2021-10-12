@@ -1,5 +1,5 @@
 ﻿using Gibbed.Squish;
-using Mafia2Tool;
+using MafiaToolkit;
 using ResourceTypes.Materials;
 using System;
 using System.Diagnostics;

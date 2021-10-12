@@ -1,33 +1,24 @@
 ﻿using System;
 using System.IO;
-using System.Windows.Forms;
+using System.Windows;
 using Utils.Settings;
 using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using Mafia2Tool.Forms;
+using MafiaToolkit.Forms;
 using Core.IO;
 using System.Text;
 using System.Runtime.Loader;
 
-namespace Mafia2Tool
+namespace MafiaToolkit
 {
-    class Program
+    public partial class App : Application
     {
-        [STAThread]
-        static void Main(string[] args)
+        public App()
         {
-            if (args.Length > 0)
-            {
-                CheckINIExists();
-                ToolkitSettings.ReadINI();
-                ProcessCommandArguments(args);
-                return;
-            }
-
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
             ToolkitAssemblyLoadContext.SetupLoadContext();
             ToolkitExceptionHandler.Initialise();
 
@@ -48,31 +39,13 @@ namespace Mafia2Tool
             }
 
             GameSelector selector = new GameSelector();
-            if (selector.ShowDialog() == DialogResult.OK)
+            if (selector.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 selector.Dispose();
                 OpenGameExplorer();
             }
-        }
 
-        private static void ProcessCommandArguments(string[] Args)
-        {
-            Cursor.Current = Cursors.WaitCursor;
-            if(Args[0].Equals("-gt"))
-            {
-                GamesEnumerator GameType = (GamesEnumerator)Enum.Parse(typeof(GamesEnumerator), Args[1]);
-
-                if(Args[2].Equals("-SDSPack"))
-                {
-                    string SDSPath = Args[3];
-                    string ExportPath = Args[4];
-
-                    FileInfo SDSFileInfo = new FileInfo(SDSPath);
-                    FileSDS SDSFile = new FileSDS(SDSFileInfo);
-                    SDSFile.SaveSDSWithCustomFolder(GameType, ExportPath);
-                }
-            }
-            Cursor.Current = Cursors.Default;
+            FrameworkCompatibilityPreferences.KeepTextBoxDisplaySynchronizedWithTextProperty = false;
         }
 
         private static void OpenGameExplorer()
@@ -91,9 +64,9 @@ namespace Mafia2Tool
                     Octokit.GitHubClient client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("ToolkitUpdater", "1"));
                     GetLatest(client).Wait();
                 }
-                catch(Exception)
+                catch (Exception)
                 {
-                    MessageBox.Show(Language.GetString("$FAILED_UPDATE_CHECK"), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(Language.GetString("$FAILED_UPDATE_CHECK"), "Toolkit", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
         }
@@ -109,8 +82,8 @@ namespace Mafia2Tool
             if (ToolkitSettings.Version < value)
             {
                 string message = string.Format("{0}\n\n{1}\n{2}", Language.GetString("$UPDATE_MESSAGE1"), Language.GetString("$UPDATE_MESSAGE2"), Language.GetString("$UPDATE_MESSAGE3"));
-                var result = MessageBox.Show(message, "Toolkit update", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-                if (result == DialogResult.OK)
+                var result = MessageBox.Show(message, "Toolkit update", MessageBoxButton.OKCancel, MessageBoxImage.Information);
+                if (result == MessageBoxResult.OK)
                 {
                     Process.Start("https://github.com/Greavesy1899/MafiaToolkit/releases");
                 }
@@ -122,7 +95,7 @@ namespace Mafia2Tool
             if (ToolkitSettings.CurrentVersion != ToolkitSettings.Version)
             {
                 string UpdateMessage = string.Format("Welcome to update {0}! \nPress 'Ok' to visit the changelist on the wiki. \nPress 'Cancel' to continue.", ToolkitSettings.Version);
-                if (MessageBox.Show(UpdateMessage, "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK)
+                if (MessageBox.Show(UpdateMessage, "Toolkit", MessageBoxButton.OKCancel, MessageBoxImage.Information) == MessageBoxResult.OK)
                 {
                     ProcessStartInfo StartInfo = new ProcessStartInfo();
                     StartInfo.UseShellExecute = true;
@@ -137,7 +110,7 @@ namespace Mafia2Tool
 
         private static void CheckINIExists()
         {
-            string PathToIni = Path.Combine(Application.ExecutablePath, "MafiaToolkit.ini");
+            string PathToIni = Path.Combine(System.Windows.Forms.Application.ExecutablePath, "MafiaToolkit.ini");
             if (!File.Exists(PathToIni))
             {
                 new IniFile();
@@ -184,7 +157,7 @@ namespace Mafia2Tool
     {
         public static void Initialise()
         {
-            Application.ThreadException += Application_ThreadException;
+            System.Windows.Forms.Application.ThreadException += Application_ThreadException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 

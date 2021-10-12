@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool
+﻿namespace MafiaToolkit
 {
     partial class CityShopEditor
     {
@@ -47,7 +47,7 @@
             this.PopulateTranslokatorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteAreaButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteDataButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.TreeView_CityShop = new Mafia2Tool.Controls.MTreeView();
+            this.TreeView_CityShop = new MafiaToolkit.Controls.MTreeView();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.TabControl = new System.Windows.Forms.TabControl();
             this.PropertyGridTab = new System.Windows.Forms.TabPage();

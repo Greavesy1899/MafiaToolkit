@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Mafia2Tool.Controls
+namespace MafiaToolkit.Controls
 {
     public sealed class MTreeView : TreeView
     {

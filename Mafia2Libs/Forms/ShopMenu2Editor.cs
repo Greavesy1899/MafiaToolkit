@@ -4,7 +4,7 @@ using Utils.Helpers;
 using Utils.Language;
 using ResourceTypes.City;
 
-namespace Mafia2Tool
+namespace MafiaToolkit
 {
     public partial class ShopMenu2Editor : Form
     {

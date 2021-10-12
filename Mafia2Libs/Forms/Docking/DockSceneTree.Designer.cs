@@ -42,7 +42,7 @@ namespace Forms.Docking
             this.ExportFrameButton = new System.Windows.Forms.ToolStripMenuItem();
             this.LinkToActorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.TreeView_Explorer = new Mafia2Tool.Controls.MTreeView();
+            this.TreeView_Explorer = new MafiaToolkit.Controls.MTreeView();
             this.Tab_Explorer = new System.Windows.Forms.TabControl();
             this.TabPage_Explorer = new System.Windows.Forms.TabPage();
             this.TabPage_Searcher = new System.Windows.Forms.TabPage();
@@ -50,7 +50,7 @@ namespace Forms.Docking
             this.Split_Searcher_TextButton = new System.Windows.Forms.SplitContainer();
             this.TextBox_Search = new System.Windows.Forms.TextBox();
             this.Button_Search = new System.Windows.Forms.Button();
-            this.TreeView_Searcher = new Mafia2Tool.Controls.MTreeView();
+            this.TreeView_Searcher = new MafiaToolkit.Controls.MTreeView();
             this.EntryMenuStrip.SuspendLayout();
             this.Tab_Explorer.SuspendLayout();
             this.TabPage_Explorer.SuspendLayout();
@@ -319,7 +319,7 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
-        private Mafia2Tool.Controls.MTreeView TreeView_Explorer;
+        private MafiaToolkit.Controls.MTreeView TreeView_Explorer;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
         private System.Windows.Forms.ToolStripMenuItem FrameActions;
@@ -331,7 +331,7 @@ namespace Forms.Docking
         private System.Windows.Forms.SplitContainer Split_Searcher_Root;
         private System.Windows.Forms.TextBox TextBox_Search;
         private System.Windows.Forms.Button Button_Search;
-        private Mafia2Tool.Controls.MTreeView TreeView_Searcher;
+        private MafiaToolkit.Controls.MTreeView TreeView_Searcher;
         private System.Windows.Forms.SplitContainer Split_Searcher_TextButton;
     }
 }

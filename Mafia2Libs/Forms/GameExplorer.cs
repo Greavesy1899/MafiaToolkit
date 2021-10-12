@@ -1,5 +1,5 @@
 ﻿using Core.IO;
-using Mafia2Tool.Forms;
+using MafiaToolkit.Forms;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,7 +11,7 @@ using Utils.Extensions;
 using Utils.Language;
 using Utils.Settings;
 
-namespace Mafia2Tool
+namespace MafiaToolkit
 {
     public partial class GameExplorer : Form
     {
