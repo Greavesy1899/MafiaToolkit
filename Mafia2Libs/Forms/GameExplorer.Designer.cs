@@ -97,15 +97,12 @@ namespace Toolkit
             this.mainContainer.Panel2.SuspendLayout();
             this.mainContainer.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
-            this.toolStripContainer1.SuspendLayout();
             this.toolStrip2.SuspendLayout();
             this.GEContext.SuspendLayout();
             this.topContainer.ContentPanel.SuspendLayout();
-            this.topContainer.SuspendLayout();
             this.Toolstrip_ButtonContainer.SuspendLayout();
             this.tools.SuspendLayout();
             this.bottomContainer.ContentPanel.SuspendLayout();
-            this.bottomContainer.SuspendLayout();
             this.status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -152,22 +149,54 @@ namespace Toolkit
             // 
             // toolStripContainer1
             // 
+            // 
+            // 
+            // 
+            this.toolStripContainer1.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.BottomToolStripPanel.Name = "";
+            this.toolStripContainer1.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripContainer1.BottomToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.toolStripContainer1.BottomToolStripPanel.Visible = false;
             this.toolStripContainer1.BottomToolStripPanelVisible = false;
             // 
-            // toolStripContainer1.ContentPanel
+            // 
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.toolStrip2);
             this.toolStripContainer1.ContentPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(618, 33);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Top;
+            // 
+            // 
+            // 
+            this.toolStripContainer1.LeftToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.LeftToolStripPanel.Name = "";
+            this.toolStripContainer1.LeftToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripContainer1.LeftToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.toolStripContainer1.LeftToolStripPanel.Visible = false;
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.toolStripContainer1.Name = "toolStripContainer1";
+            // 
+            // 
+            // 
+            this.toolStripContainer1.RightToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.RightToolStripPanel.Name = "";
+            this.toolStripContainer1.RightToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripContainer1.RightToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.toolStripContainer1.RightToolStripPanel.Visible = false;
             this.toolStripContainer1.RightToolStripPanelVisible = false;
             this.toolStripContainer1.Size = new System.Drawing.Size(618, 33);
             this.toolStripContainer1.TabIndex = 1;
             this.toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // 
+            // 
+            this.toolStripContainer1.TopToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.TopToolStripPanel.Name = "";
+            this.toolStripContainer1.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripContainer1.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.toolStripContainer1.TopToolStripPanel.Visible = false;
             this.toolStripContainer1.TopToolStripPanelVisible = false;
             // 
             // toolStrip2
@@ -240,7 +269,7 @@ namespace Toolkit
             this.fileListView.Location = new System.Drawing.Point(4, 35);
             this.fileListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(617, 391);
+            this.fileListView.Size = new System.Drawing.Size(612, 391);
             this.fileListView.SmallImageList = this.imageBank;
             this.fileListView.TabIndex = 0;
             this.fileListView.UseCompatibleStateImageBehavior = false;
@@ -409,23 +438,55 @@ namespace Toolkit
             // 
             // topContainer
             // 
+            // 
+            // 
+            // 
+            this.topContainer.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.topContainer.BottomToolStripPanel.Name = "";
+            this.topContainer.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.topContainer.BottomToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.topContainer.BottomToolStripPanel.Visible = false;
             this.topContainer.BottomToolStripPanelVisible = false;
             // 
-            // topContainer.ContentPanel
+            // 
             // 
             this.topContainer.ContentPanel.Controls.Add(this.Toolstrip_ButtonContainer);
             this.topContainer.ContentPanel.Controls.Add(this.tools);
             this.topContainer.ContentPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.topContainer.ContentPanel.Size = new System.Drawing.Size(933, 63);
             this.topContainer.Dock = System.Windows.Forms.DockStyle.Top;
+            // 
+            // 
+            // 
+            this.topContainer.LeftToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.topContainer.LeftToolStripPanel.Name = "";
+            this.topContainer.LeftToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.topContainer.LeftToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.topContainer.LeftToolStripPanel.Visible = false;
             this.topContainer.LeftToolStripPanelVisible = false;
             this.topContainer.Location = new System.Drawing.Point(0, 0);
             this.topContainer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.topContainer.Name = "topContainer";
+            // 
+            // 
+            // 
+            this.topContainer.RightToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.topContainer.RightToolStripPanel.Name = "";
+            this.topContainer.RightToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.topContainer.RightToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.topContainer.RightToolStripPanel.Visible = false;
             this.topContainer.RightToolStripPanelVisible = false;
             this.topContainer.Size = new System.Drawing.Size(933, 63);
             this.topContainer.TabIndex = 1;
             this.topContainer.Text = "topContainer";
+            // 
+            // 
+            // 
+            this.topContainer.TopToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.topContainer.TopToolStripPanel.Name = "";
+            this.topContainer.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.topContainer.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.topContainer.TopToolStripPanel.Visible = false;
             this.topContainer.TopToolStripPanelVisible = false;
             // 
             // Toolstrip_ButtonContainer
@@ -514,7 +575,7 @@ namespace Toolkit
             // 
             this.OpenGameFolderButton.Image = ((System.Drawing.Image)(resources.GetObject("OpenGameFolderButton.Image")));
             this.OpenGameFolderButton.Name = "OpenGameFolderButton";
-            this.OpenGameFolderButton.Size = new System.Drawing.Size(180, 22);
+            this.OpenGameFolderButton.Size = new System.Drawing.Size(159, 22);
             this.OpenGameFolderButton.Text = "$BTN_OPEN_MII";
             this.OpenGameFolderButton.Click += new System.EventHandler(this.OpenMafiaIIClicked);
             // 
@@ -522,7 +583,7 @@ namespace Toolkit
             // 
             this.RunGameButton.Image = ((System.Drawing.Image)(resources.GetObject("RunGameButton.Image")));
             this.RunGameButton.Name = "RunGameButton";
-            this.RunGameButton.Size = new System.Drawing.Size(180, 22);
+            this.RunGameButton.Size = new System.Drawing.Size(159, 22);
             this.RunGameButton.Text = "$BTN_RUN_MII";
             this.RunGameButton.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
@@ -530,7 +591,7 @@ namespace Toolkit
             // 
             this.SelectGameButton.Image = ((System.Drawing.Image)(resources.GetObject("SelectGameButton.Image")));
             this.SelectGameButton.Name = "SelectGameButton";
-            this.SelectGameButton.Size = new System.Drawing.Size(180, 22);
+            this.SelectGameButton.Size = new System.Drawing.Size(159, 22);
             this.SelectGameButton.Text = "$SELECT_GAME";
             this.SelectGameButton.Click += new System.EventHandler(this.Button_SelectGame_OnClick);
             // 
@@ -538,7 +599,7 @@ namespace Toolkit
             // 
             this.ExitEditorButton.Image = ((System.Drawing.Image)(resources.GetObject("ExitEditorButton.Image")));
             this.ExitEditorButton.Name = "ExitEditorButton";
-            this.ExitEditorButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitEditorButton.Size = new System.Drawing.Size(159, 22);
             this.ExitEditorButton.Text = "$EXIT";
             this.ExitEditorButton.Click += new System.EventHandler(this.ExitToolkitClicked);
             // 
@@ -562,7 +623,7 @@ namespace Toolkit
             this.ViewStripMenuIcon.CheckOnClick = true;
             this.ViewStripMenuIcon.Image = ((System.Drawing.Image)(resources.GetObject("ViewStripMenuIcon.Image")));
             this.ViewStripMenuIcon.Name = "ViewStripMenuIcon";
-            this.ViewStripMenuIcon.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuIcon.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuIcon.Text = "$ICON";
             this.ViewStripMenuIcon.Click += new System.EventHandler(this.OnViewIconClicked);
             // 
@@ -570,7 +631,7 @@ namespace Toolkit
             // 
             this.ViewStripMenuDetails.CheckOnClick = true;
             this.ViewStripMenuDetails.Name = "ViewStripMenuDetails";
-            this.ViewStripMenuDetails.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuDetails.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuDetails.Text = "$DETAILS";
             this.ViewStripMenuDetails.Click += new System.EventHandler(this.OnViewDetailsClicked);
             // 
@@ -579,7 +640,7 @@ namespace Toolkit
             this.ViewStripMenuSmallIcon.CheckOnClick = true;
             this.ViewStripMenuSmallIcon.Image = ((System.Drawing.Image)(resources.GetObject("ViewStripMenuSmallIcon.Image")));
             this.ViewStripMenuSmallIcon.Name = "ViewStripMenuSmallIcon";
-            this.ViewStripMenuSmallIcon.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuSmallIcon.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuSmallIcon.Text = "$SMALL_ICON";
             this.ViewStripMenuSmallIcon.Click += new System.EventHandler(this.OnViewSmallIconClicked);
             // 
@@ -588,7 +649,7 @@ namespace Toolkit
             this.ViewStripMenuList.CheckOnClick = true;
             this.ViewStripMenuList.Image = ((System.Drawing.Image)(resources.GetObject("ViewStripMenuList.Image")));
             this.ViewStripMenuList.Name = "ViewStripMenuList";
-            this.ViewStripMenuList.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuList.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuList.Text = "$LIST";
             this.ViewStripMenuList.Click += new System.EventHandler(this.OnViewListClicked);
             // 
@@ -596,7 +657,7 @@ namespace Toolkit
             // 
             this.ViewStripMenuTile.CheckOnClick = true;
             this.ViewStripMenuTile.Name = "ViewStripMenuTile";
-            this.ViewStripMenuTile.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuTile.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuTile.Text = "$TILE";
             this.ViewStripMenuTile.Click += new System.EventHandler(this.OnViewTileClicked);
             // 
@@ -620,27 +681,27 @@ namespace Toolkit
             // 
             this.OptionsItem.Image = ((System.Drawing.Image)(resources.GetObject("OptionsItem.Image")));
             this.OptionsItem.Name = "OptionsItem";
-            this.OptionsItem.Size = new System.Drawing.Size(180, 22);
+            this.OptionsItem.Size = new System.Drawing.Size(179, 22);
             this.OptionsItem.Text = "$OPTIONS";
             this.OptionsItem.Click += new System.EventHandler(this.OnOptionsItem_Clicked);
             // 
             // M2FBXButton
             // 
             this.M2FBXButton.Name = "M2FBXButton";
-            this.M2FBXButton.Size = new System.Drawing.Size(180, 22);
+            this.M2FBXButton.Size = new System.Drawing.Size(179, 22);
             this.M2FBXButton.Text = "M2 FBX";
             this.M2FBXButton.Click += new System.EventHandler(this.M2FBXButtonClicked);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(176, 6);
             // 
             // PackCurrentSDSButton
             // 
             this.PackCurrentSDSButton.Image = ((System.Drawing.Image)(resources.GetObject("PackCurrentSDSButton.Image")));
             this.PackCurrentSDSButton.Name = "PackCurrentSDSButton";
-            this.PackCurrentSDSButton.Size = new System.Drawing.Size(180, 22);
+            this.PackCurrentSDSButton.Size = new System.Drawing.Size(179, 22);
             this.PackCurrentSDSButton.Text = "$PACK_CUR_SDS";
             this.PackCurrentSDSButton.Click += new System.EventHandler(this.ContextPackSelectedSDS_OnClick);
             // 
@@ -648,14 +709,14 @@ namespace Toolkit
             // 
             this.UnpackCurrentSDSButton.Image = ((System.Drawing.Image)(resources.GetObject("UnpackCurrentSDSButton.Image")));
             this.UnpackCurrentSDSButton.Name = "UnpackCurrentSDSButton";
-            this.UnpackCurrentSDSButton.Size = new System.Drawing.Size(180, 22);
+            this.UnpackCurrentSDSButton.Size = new System.Drawing.Size(179, 22);
             this.UnpackCurrentSDSButton.Text = "$UNPACK_CUR_SDS";
             this.UnpackCurrentSDSButton.Click += new System.EventHandler(this.ContextUnpackSelectedSDS_OnClick);
             // 
             // UnpackAllSDSButton
             // 
             this.UnpackAllSDSButton.Name = "UnpackAllSDSButton";
-            this.UnpackAllSDSButton.Size = new System.Drawing.Size(180, 22);
+            this.UnpackAllSDSButton.Size = new System.Drawing.Size(179, 22);
             this.UnpackAllSDSButton.Text = "$UNPACK_ALL_SDS";
             this.UnpackAllSDSButton.Click += new System.EventHandler(this.UnpackAllSDSButton_Click);
             // 
@@ -674,28 +735,60 @@ namespace Toolkit
             // 
             this.AboutButton.Image = ((System.Drawing.Image)(resources.GetObject("AboutButton.Image")));
             this.AboutButton.Name = "AboutButton";
-            this.AboutButton.Size = new System.Drawing.Size(180, 22);
+            this.AboutButton.Size = new System.Drawing.Size(118, 22);
             this.AboutButton.Text = "$ABOUT";
             this.AboutButton.Click += new System.EventHandler(this.OnCredits_Pressed);
             // 
             // bottomContainer
             // 
+            // 
+            // 
+            // 
+            this.bottomContainer.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.bottomContainer.BottomToolStripPanel.Name = "";
+            this.bottomContainer.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.bottomContainer.BottomToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.bottomContainer.BottomToolStripPanel.Visible = false;
             this.bottomContainer.BottomToolStripPanelVisible = false;
             // 
-            // bottomContainer.ContentPanel
+            // 
             // 
             this.bottomContainer.ContentPanel.Controls.Add(this.status);
             this.bottomContainer.ContentPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.bottomContainer.ContentPanel.Size = new System.Drawing.Size(933, 30);
             this.bottomContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            // 
+            // 
+            // 
+            this.bottomContainer.LeftToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.bottomContainer.LeftToolStripPanel.Name = "";
+            this.bottomContainer.LeftToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.bottomContainer.LeftToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.bottomContainer.LeftToolStripPanel.Visible = false;
             this.bottomContainer.LeftToolStripPanelVisible = false;
             this.bottomContainer.Location = new System.Drawing.Point(0, 489);
             this.bottomContainer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.bottomContainer.Name = "bottomContainer";
+            // 
+            // 
+            // 
+            this.bottomContainer.RightToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.bottomContainer.RightToolStripPanel.Name = "";
+            this.bottomContainer.RightToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.bottomContainer.RightToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.bottomContainer.RightToolStripPanel.Visible = false;
             this.bottomContainer.RightToolStripPanelVisible = false;
             this.bottomContainer.Size = new System.Drawing.Size(933, 30);
             this.bottomContainer.TabIndex = 1;
             this.bottomContainer.Text = "bottomContainer";
+            // 
+            // 
+            // 
+            this.bottomContainer.TopToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.bottomContainer.TopToolStripPanel.Name = "";
+            this.bottomContainer.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.bottomContainer.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.bottomContainer.TopToolStripPanel.Visible = false;
             this.bottomContainer.TopToolStripPanelVisible = false;
             // 
             // status
@@ -735,23 +828,17 @@ namespace Toolkit
             this.mainContainer.ResumeLayout(false);
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.ContentPanel.PerformLayout();
-            this.toolStripContainer1.ResumeLayout(false);
-            this.toolStripContainer1.PerformLayout();
             this.toolStrip2.ResumeLayout(false);
             this.toolStrip2.PerformLayout();
             this.GEContext.ResumeLayout(false);
             this.topContainer.ContentPanel.ResumeLayout(false);
             this.topContainer.ContentPanel.PerformLayout();
-            this.topContainer.ResumeLayout(false);
-            this.topContainer.PerformLayout();
             this.Toolstrip_ButtonContainer.ResumeLayout(false);
             this.Toolstrip_ButtonContainer.PerformLayout();
             this.tools.ResumeLayout(false);
             this.tools.PerformLayout();
             this.bottomContainer.ContentPanel.ResumeLayout(false);
             this.bottomContainer.ContentPanel.PerformLayout();
-            this.bottomContainer.ResumeLayout(false);
-            this.bottomContainer.PerformLayout();
             this.status.ResumeLayout(false);
             this.status.PerformLayout();
             this.ResumeLayout(false);

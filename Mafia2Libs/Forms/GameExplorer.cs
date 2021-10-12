@@ -701,11 +701,8 @@ namespace Toolkit
 
         private void OpenGameSelectorWindow()
         {
-            GameSelector selector = new GameSelector();
-            if (selector.ShowDialog() == DialogResult.OK)
-            {
-                InitExplorerSettings();
-            }
+            Xaml.GameSelector selector = new Xaml.GameSelector(this);
+            selector.Show();
         }
 
         private void UnpackSDSRecurse(DirectoryInfo info)

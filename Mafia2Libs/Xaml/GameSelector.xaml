@@ -28,7 +28,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="10"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox Name="CheckBox_SelectAsDefault" IsChecked="false" Content="Select as default" HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center" ToolTip="Skip this window in the future."/>
+                <CheckBox Name="CheckBox_SelectAsDefault" IsChecked="false" Content="Select as default" HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </Grid>
         </Grid>
         <Grid Grid.Row="1">
@@ -71,8 +71,8 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Button Grid.Row="3" Content="..." VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10,0,0,10" Height="22" Width="22" Click="Button_SelectFolder_OnClick">
-                                    
+                                <Button Grid.Row="3" Content="..." VerticalAlignment="Bottom" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="10,0,0,10" Height="22" Width="22" Click="Button_SelectFolder_OnClick" ToolTip="Select folder" ToolTipService.ShowOnDisabled="True">
+                                    <!--<Image Opacity="1" RenderOptions.BitmapScalingMode="HighQuality" Source="../../Resources/ToolbarIcons/open_file.png"/>-->
                                 </Button>
                             </Grid>
                         </Grid>

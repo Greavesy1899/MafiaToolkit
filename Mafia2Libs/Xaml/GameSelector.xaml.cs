@@ -17,10 +17,12 @@ namespace Toolkit.Xaml
     public partial class GameSelector : Window
     {
         private GamesViewModel ViewModel;
-        public GameSelector()
+        private GameExplorer Explorer;
+        public GameSelector(GameExplorer explorer)
         {
             InitializeComponent();
             Localise();
+            Explorer = explorer;
             ViewModel = new GamesViewModel();
             Listbox_Games.DataContext = ViewModel;
             Listbox_Games.ItemsSource = ViewModel.Controls;
@@ -53,7 +55,14 @@ namespace Toolkit.Xaml
         private void ListBox_Games_MouseDoubleClick(object sender, EventArgs e)
         {
             ControlGameEntry entry = Listbox_Games.SelectedItem as ControlGameEntry;
+
+            if (!entry.ValidatePath())
+            {
+                return;
+            }
+
             var game = entry.GetGame();
+
             GameStorage.Instance.SetSelectedGame(game);
             
             if(CheckBox_SelectAsDefault.IsChecked.Value)
@@ -61,8 +70,17 @@ namespace Toolkit.Xaml
                 var selectedIndex = Convert.ToInt32(Listbox_Games.SelectedIndex);
                 SaveDefaultGame(selectedIndex);
             }
+
             Close();
-            OpenGameExplorer();
+
+            if (Explorer == null)
+            {
+                OpenGameExplorer();
+            }
+            else
+            {
+                Explorer.InitExplorerSettings();
+            }
         }
 
         private void Button_SelectFolder_OnClick(object sender, EventArgs e)

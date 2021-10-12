@@ -27,17 +27,6 @@ namespace Toolkit.Controls
         public void InitialiseEntry(Game game)
         {
             this.game = game;
-            //Label_GameName.Text = game.Name;
-            //Label_GameDescription.Text = game.Description;
-            //Label_GameType.Text = game.GameType.ToString();
-            //
-            //if(File.Exists(game.Logo))
-            //{
-            //    Picture_GameIcon.Image = Image.FromFile(game.Logo);
-            //    Label_MissingImage.Visible = false;
-            //}
-            //
-            //TextBox_FolderPath.Text = game.Directory;
             ValidatePath();
         }
 
@@ -51,7 +40,7 @@ namespace Toolkit.Controls
             return null;
         }
 
-        private void ValidatePath(bool debug = false)
+        public bool ValidatePath(bool debug = false)
         {
             var executable = GameStorage.GetExecutableName(game.GameType);
             var path = game.Directory;
@@ -64,44 +53,18 @@ namespace Toolkit.Controls
                 isValid = file.Exists;
             }
 
-            if(isValid)
+            if(!isValid && debug)
             {
-                //TODO add tick here..
-                //Button_Start.Enabled = true;
-                //Picture_Status.Image = Image.FromFile("Resources/tick.png");
+                MessageBox.Show(string.Format("Failed to find correct executable: {0}!", executable), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else
-            {
-                //Button_Start.Enabled = false;
-                //Picture_Status.Image = Image.FromFile("Resources/cross.png");
-                //
-                //if (debug)
-                //{
-                //    MessageBox.Show(string.Format("Failed to find correct executable: {0}!", executable), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //}
-            }      
+
+            return isValid;    
         }
 
         public void SetFolderPath(string path, bool debug = false)
         {
             game.Directory = path;
-            //TextBox_FolderPath.Text = path;
             ValidatePath(debug);
-        }
-
-        private void Button_SelectFolder_OnClick(object sender, EventArgs e)
-        {
-            //if (FolderDialog_MafiaFolder.ShowDialog() == DialogResult.OK)
-            //{
-            //    var path = FolderDialog_MafiaFolder.SelectedPath;
-            //    SetFolderPath(path, true);
-            //}
-        }
-
-        private void TextBox_FolderPath_OnTextChanged(object sender, EventArgs e)
-        {
-            //var path = TextBox_FolderPath.Text;
-            //SetFolderPath(path, false);
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Toolkit
     {
         public App()
         {
+            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             FrameworkCompatibilityPreferences.KeepTextBoxDisplaySynchronizedWithTextProperty = false;
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             System.Windows.Forms.Application.EnableVisualStyles();
@@ -40,7 +41,7 @@ namespace Toolkit
             }
 
             //GameSelector selector = new GameSelector();
-            Xaml.GameSelector selector2 = new Xaml.GameSelector();
+            Xaml.GameSelector selector2 = new Xaml.GameSelector(null);
             selector2.Show();
             //if (selector.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             //{
