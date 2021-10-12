@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>MafiaToolkit</RootNamespace>
+    <RootNamespace>Toolkit</RootNamespace>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -77,6 +77,10 @@
     <LangVersion>7.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\GameImages\m2de_logo.jpg" />
+    <None Remove="Resources\GameImages\m2_logo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
     <Reference Include="Gibbed.IO, Version=1.1.6802.1783, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -103,9 +107,7 @@
     <Compile Update="Controls\ActorItemAddOption.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Controls\ControlGameEntry.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="Controls\ControlGameEntry.cs" />
     <Compile Update="Controls\MListView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -198,6 +200,12 @@
     <Content Include="Localisations\sk_SK.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\GameImages\m2de_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GameImages\m2_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Update="libs\M2PhysX.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -214,12 +222,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\hashes.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\GameImages\m2de_logo.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\GameImages\m2_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\MissingMaterial.dds">

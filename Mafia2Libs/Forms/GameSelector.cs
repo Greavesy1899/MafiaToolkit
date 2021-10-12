@@ -33,9 +33,9 @@ namespace Toolkit.Forms
             for(int i = 0; i < games.Count; i++)
             {
                 ControlGameEntry entry = new ControlGameEntry();
-                entry.Tag = i;
+                //entry.Tag = i;
                 entry.InitialiseEntry(games[i]);
-                FlowPanel_GamesList.Controls.Add(entry);
+                //FlowPanel_GamesList.Controls.Add(entry);
                 entry.GetStartButton().Click += StartToolkit_OnClicked;
             }
 
@@ -47,19 +47,19 @@ namespace Toolkit.Forms
 
         private void StartToolkit_OnClicked(object sender, EventArgs e)
         {
-            Button button = (sender as Button);
-            ControlGameEntry entry = (button.Parent as ControlGameEntry);
-            var game = entry.GetGame();
-            GameStorage.Instance.SetSelectedGame(game);
-
-            if(CheckBox_SelectAsDefault.Checked)
-            {
-                var selectedIndex = Convert.ToInt32(entry.Tag);
-                SaveDefaultGame(selectedIndex);
-            }
-
-            DialogResult = DialogResult.OK;
-            Close();
+            //Button button = (sender as Button);
+            //ControlGameEntry entry = (button.Parent as ControlGameEntry);
+            //var game = entry.GetGame();
+            //GameStorage.Instance.SetSelectedGame(game);
+            //
+            //if(CheckBox_SelectAsDefault.Checked)
+            //{
+            //    var selectedIndex = Convert.ToInt32(entry.Tag);
+            //    SaveDefaultGame(selectedIndex);
+            //}
+            //
+            //DialogResult = DialogResult.OK;
+            //Close();
         }
 
         private void CheckBox_SelectAsDefault_OnChecked(object sender, EventArgs e)
@@ -72,6 +72,11 @@ namespace Toolkit.Forms
         {
             ToolkitSettings.DefaultGame = index;
             ToolkitSettings.WriteKey("DefaultGame", "Misc", ToolkitSettings.DefaultGame.ToString());
+        }
+
+        private void FlowPanel_GamesList_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

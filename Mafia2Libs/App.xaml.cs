@@ -16,6 +16,7 @@ namespace Toolkit
     {
         public App()
         {
+            FrameworkCompatibilityPreferences.KeepTextBoxDisplaySynchronizedWithTextProperty = false;
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
@@ -38,14 +39,14 @@ namespace Toolkit
                 return;
             }
 
-            GameSelector selector = new GameSelector();
-            if (selector.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                selector.Dispose();
-                OpenGameExplorer();
-            }
-
-            FrameworkCompatibilityPreferences.KeepTextBoxDisplaySynchronizedWithTextProperty = false;
+            //GameSelector selector = new GameSelector();
+            Xaml.GameSelector selector2 = new Xaml.GameSelector();
+            selector2.Show();
+            //if (selector.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //{
+            //    selector.Dispose();
+            //    OpenGameExplorer();
+            //}
         }
 
         private static void OpenGameExplorer()
