@@ -1,7 +1,7 @@
 ﻿using System;
 using Utils.Extensions;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     partial class MapEditor
     {

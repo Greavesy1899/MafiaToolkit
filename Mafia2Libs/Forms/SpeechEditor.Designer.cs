@@ -1,4 +1,4 @@
-﻿namespace MafiaToolkit
+﻿namespace Toolkit
 {
     partial class SpeechEditor
     {
@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpeechEditor));
             this.Grid_Speech = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Speech = new MafiaToolkit.Controls.MTreeView();
+            this.TreeView_Speech = new Toolkit.Controls.MTreeView();
             this.openM2T = new System.Windows.Forms.OpenFileDialog();
             this.Tool_Strip = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();

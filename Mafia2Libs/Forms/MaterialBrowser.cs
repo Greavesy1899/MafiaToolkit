@@ -5,7 +5,7 @@ using System.Linq;
 using System.Diagnostics;
 using Utils.Language;
 
-namespace MafiaToolkit.Forms
+namespace Toolkit.Forms
 {
     public partial class MaterialBrowser : Form
     {

@@ -6,7 +6,7 @@ using Utils.Language;
 using Utils.Settings;
 using Forms.EditorControls;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class ActorEditor : Form
     {

@@ -21,7 +21,7 @@ using Utils.Types;
 using System.Diagnostics;
 using Utils.Models;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public static class SceneData
     {

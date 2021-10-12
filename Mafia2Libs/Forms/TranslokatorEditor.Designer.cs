@@ -1,4 +1,4 @@
-﻿namespace MafiaToolkit.Forms
+﻿namespace Toolkit.Forms
 {
     partial class TranslokatorEditor
     {
@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TranslokatorEditor));
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.TranslokatorTree = new MafiaToolkit.Controls.MTreeView();
+            this.TranslokatorTree = new Toolkit.Controls.MTreeView();
             this.TranslokatorContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AddInstance = new System.Windows.Forms.ToolStripMenuItem();
             this.AddObject = new System.Windows.Forms.ToolStripMenuItem();

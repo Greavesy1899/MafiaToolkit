@@ -5,12 +5,12 @@ using Utils.Settings;
 using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using MafiaToolkit.Forms;
+using Toolkit.Forms;
 using Core.IO;
 using System.Text;
 using System.Runtime.Loader;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class App : Application
     {
@@ -99,7 +99,7 @@ namespace MafiaToolkit
                 {
                     ProcessStartInfo StartInfo = new ProcessStartInfo();
                     StartInfo.UseShellExecute = true;
-                    StartInfo.FileName = "https://github.com/Greavesy1899/MafiaToolkit/wiki/Toolkit-Changelist";
+                    StartInfo.FileName = "https://github.com/Greavesy1899/Toolkit/wiki/Toolkit-Changelist";
 
                     Process.Start(StartInfo);
                 }
@@ -110,7 +110,7 @@ namespace MafiaToolkit
 
         private static void CheckINIExists()
         {
-            string PathToIni = Path.Combine(System.Windows.Forms.Application.ExecutablePath, "MafiaToolkit.ini");
+            string PathToIni = Path.Combine(System.Windows.Forms.Application.ExecutablePath, "Toolkit.ini");
             if (!File.Exists(PathToIni))
             {
                 new IniFile();

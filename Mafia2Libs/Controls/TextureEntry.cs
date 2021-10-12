@@ -4,7 +4,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class TextureEntry : UserControl
     {

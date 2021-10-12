@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using Utils.Extensions;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     partial class GameExplorer
     {
@@ -34,7 +34,7 @@ namespace MafiaToolkit
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameExplorer));
             this.mainContainer = new System.Windows.Forms.SplitContainer();
-            this.folderView = new MafiaToolkit.Controls.MTreeView();
+            this.folderView = new Toolkit.Controls.MTreeView();
             this.imageBank = new System.Windows.Forms.ImageList(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
@@ -42,7 +42,7 @@ namespace MafiaToolkit
             this.FolderPath = new System.Windows.Forms.ToolStripTextBox();
             this.FolderRefreshButton = new System.Windows.Forms.ToolStripButton();
             this.SearchEntryText = new System.Windows.Forms.ToolStripTextBox();
-            this.fileListView = new MafiaToolkit.Controls.MListView();
+            this.fileListView = new Toolkit.Controls.MListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnType = new System.Windows.Forms.ColumnHeader();
             this.columnSize = new System.Windows.Forms.ColumnHeader();

@@ -7,7 +7,7 @@ using Utils.Extensions;
 using System.Collections.Generic;
 using Gibbed.Illusion.FileFormats.Hashing;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class TableEditor : Form
     {

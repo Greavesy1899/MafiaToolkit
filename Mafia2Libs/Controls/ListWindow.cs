@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Utils.Language;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class ListWindow : Form
     {

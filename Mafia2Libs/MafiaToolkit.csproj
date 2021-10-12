@@ -40,7 +40,7 @@
     <LangVersion>7.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>MafiaToolkit.App</StartupObject>
+    <StartupObject>Toolkit.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>ECEBC1D26FFB2386CF2C12237C8B7067EEED7348</ManifestCertificateThumbprint>

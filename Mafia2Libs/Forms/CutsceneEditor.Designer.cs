@@ -1,4 +1,4 @@
-﻿namespace MafiaToolkit.Forms
+﻿namespace Toolkit.Forms
 {
     partial class CutsceneEditor
     {
@@ -38,7 +38,7 @@
             this.AddItemButton = new System.Windows.Forms.ToolStripMenuItem();
             this.AddDefinitionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.PropertyGrid_Cutscene = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Cutscene = new MafiaToolkit.Controls.MTreeView();
+            this.TreeView_Cutscene = new Toolkit.Controls.MTreeView();
             this.Tool_Strip.SuspendLayout();
             this.SuspendLayout();
             // 

@@ -1,5 +1,5 @@
 ﻿
-namespace MafiaToolkit.Forms
+namespace Toolkit.Forms
 {
     partial class AboutBox
     {
@@ -97,7 +97,7 @@ namespace MafiaToolkit.Forms
             this.ProjectLink.Size = new System.Drawing.Size(232, 13);
             this.ProjectLink.TabIndex = 4;
             this.ProjectLink.TabStop = true;
-            this.ProjectLink.Text = "https://github.com/Greavesy1899/MafiaToolkit";
+            this.ProjectLink.Text = "https://github.com/Greavesy1899/Toolkit";
             this.ProjectLink.VisitedLinkColor = System.Drawing.Color.Blue;
             this.ProjectLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ProjectLink_LinkClicked);
             // 

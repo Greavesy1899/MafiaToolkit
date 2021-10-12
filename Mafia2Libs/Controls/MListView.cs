@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MafiaToolkit.Controls
+namespace Toolkit.Controls
 {
     class MListView : ListView
     {

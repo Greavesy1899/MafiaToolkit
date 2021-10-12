@@ -5,7 +5,7 @@ using Utils.Settings;
 using Utils.Language;
 using Utils.Logging;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class SplashForm : Form
     {
@@ -40,7 +40,7 @@ namespace MafiaToolkit
 
         private static void CheckINIExists()
         {
-            if (File.Exists("MafiaToolkit.ini"))
+            if (File.Exists("Toolkit.ini"))
                 return;
             else
                 new IniFile();

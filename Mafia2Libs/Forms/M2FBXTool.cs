@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using Utils.Language;
 using System.IO;
 
-namespace MafiaToolkit.Forms
+namespace Toolkit.Forms
 {
     public partial class M2FBXTool : Form
     {

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using Utils.Language;
 using Utils.Settings;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class OptionsForm : Form
     {

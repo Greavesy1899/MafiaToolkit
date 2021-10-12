@@ -8,7 +8,7 @@ using Utils.Helpers;
 using Utils.Language;
 using Utils.StringHelpers;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class PrefabEditor : Form
     {

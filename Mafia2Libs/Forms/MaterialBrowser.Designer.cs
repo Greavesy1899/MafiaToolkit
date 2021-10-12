@@ -1,4 +1,4 @@
-﻿namespace MafiaToolkit.Forms
+﻿namespace Toolkit.Forms
 {
     partial class MaterialBrowser
     {

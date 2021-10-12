@@ -6,7 +6,7 @@ using ResourceTypes.Wwise;
 using Utils.Language;
 using Utils.Settings;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class PCKEditor : Form
     {

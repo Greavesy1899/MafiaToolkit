@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using Utils.Settings;
 
-namespace MafiaToolkit.Forms
+namespace Toolkit.Forms
 {
     public partial class AboutBox : Form
     {

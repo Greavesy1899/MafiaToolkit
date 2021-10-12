@@ -1,4 +1,4 @@
-﻿namespace MafiaToolkit
+﻿namespace Toolkit
 {
     partial class ShopMenu2Editor
     {
@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShopMenu2Editor));
             this.PropertyGrid_ShopMenu2 = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_ShopMenu2 = new MafiaToolkit.Controls.MTreeView();
+            this.TreeView_ShopMenu2 = new Toolkit.Controls.MTreeView();
             this.Context_Menu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.Context_AddType = new System.Windows.Forms.ToolStripMenuItem();
             this.Context_AddMetaInfo = new System.Windows.Forms.ToolStripMenuItem();

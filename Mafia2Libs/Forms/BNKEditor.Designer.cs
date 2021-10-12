@@ -1,4 +1,4 @@
-﻿namespace MafiaToolkit
+﻿namespace Toolkit
 {
     partial class BNKEditor
     {
@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BNKEditor));
             this.WemGrid = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Wems = new MafiaToolkit.Controls.MTreeView();
+            this.TreeView_Wems = new Toolkit.Controls.MTreeView();
             this.BnkContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextReplace = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextEdit = new System.Windows.Forms.ToolStripMenuItem();

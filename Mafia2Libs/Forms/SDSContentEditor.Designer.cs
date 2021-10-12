@@ -1,4 +1,4 @@
-﻿namespace MafiaToolkit
+﻿namespace Toolkit
 {
     partial class SDSContentEditor
     {
@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SDSContentEditor));
-            this.ResourceTreeView = new MafiaToolkit.Controls.MTreeView();
+            this.ResourceTreeView = new Toolkit.Controls.MTreeView();
             this.Context_Menu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.Context_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.Tool_Strip = new System.Windows.Forms.ToolStrip();

@@ -5,7 +5,7 @@ using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class SpeechEditor : Form
     {

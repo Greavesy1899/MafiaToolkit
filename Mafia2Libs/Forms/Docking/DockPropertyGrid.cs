@@ -1,5 +1,5 @@
-﻿using MafiaToolkit;
-using MafiaToolkit.Forms;
+﻿using Toolkit;
+using Toolkit.Forms;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using System;

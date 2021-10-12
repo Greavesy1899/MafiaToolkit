@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MafiaToolkit.Controls
+namespace Toolkit.Controls
 {
     partial class ControlGameEntry
     {

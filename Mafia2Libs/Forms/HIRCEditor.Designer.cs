@@ -1,4 +1,4 @@
-﻿namespace MafiaToolkit
+﻿namespace Toolkit
 {
     partial class HIRCEditor
     {

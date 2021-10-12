@@ -5,7 +5,7 @@ using ResourceTypes.City;
 using Utils.Language;
 using Utils.Settings;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class CityAreaEditor : Form
     {

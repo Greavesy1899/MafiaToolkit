@@ -1,4 +1,4 @@
-﻿using MafiaToolkit;
+﻿using Toolkit;
 using System.Diagnostics;
 using System.IO;
 using Utils.Settings;

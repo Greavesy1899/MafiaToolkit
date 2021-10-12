@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using Utils.Language;
 using Utils.Helpers;
 
-namespace MafiaToolkit.Forms
+namespace Toolkit.Forms
 {
     public partial class TranslokatorEditor : Form
     {

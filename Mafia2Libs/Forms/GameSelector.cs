@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Text;
 using System.Windows.Forms;
-using MafiaToolkit.Controls;
+using Toolkit.Controls;
 using Utils.Language;
 using Utils.Settings;
 
-namespace MafiaToolkit.Forms
+namespace Toolkit.Forms
 {
     public partial class GameSelector : Form
     {

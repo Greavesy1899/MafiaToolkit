@@ -5,7 +5,7 @@ using ResourceTypes.M3.XBin;
 using Utils.Helpers;
 using Utils.Language;
 
-namespace MafiaToolkit
+namespace Toolkit
 {
     public partial class XBinEditor : Form
     {
