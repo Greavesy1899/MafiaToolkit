@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Toolkit.Xaml"
         mc:Ignorable="d"
         Title="GameSelector" Height="450" Width="800" ResizeMode="CanMinimize" WindowStyle="SingleBorderWindow">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.075*"/>
@@ -32,12 +33,7 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="1">
-            <ListBox Name="Listbox_Games" Margin="10,0,0,10" BorderBrush="Transparent" BorderThickness="0" ScrollViewer.CanContentScroll="False">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                        <EventSetter Event="MouseDoubleClick" Handler="ListBox_Games_MouseDoubleClick"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
+            <ListBox Name="Listbox_Games" Margin="10,0,0,10" BorderBrush="Transparent" BorderThickness="0" ScrollViewer.CanContentScroll="False" MouseDoubleClick="ListBox_Games_MouseDoubleClick" ToolTip="{Binding SelectGame}" ToolTipService.InitialShowDelay="2000" ToolTipService.BetweenShowDelay="5000" ToolTipService.ShowDuration="3000">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid HorizontalAlignment="Left">
@@ -58,11 +54,18 @@
                             </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.2*"/>
                                     <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="0.5*"/>
                                 </Grid.RowDefinitions>
-                                <Label Grid.Row="1" Foreground="#1F1F1F" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,7,0,0" FontSize="12" Content="{Binding game.Description}"/>
-                                <TextBox BorderBrush="#1F1F1F" Grid.Row="1" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="470" Name="TextBox_GamePath" Background="#FFFFFF" Foreground="#1F1F1F" Margin="0,0,0,10" Text="{Binding game.Directory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Label Grid.Row="1" Foreground="#1F1F1F" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-5,10,0,0" MaxWidth="480" FontSize="12">
+                                    <Label.Content>
+                                        <AccessText TextWrapping="Wrap" Text="{Binding game.Description}"/>
+                                    </Label.Content>
+                                </Label>
+                                <Label Grid.Row="2" Foreground="#1F1F1F" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-5,0,0,0" FontSize="12" Content="{Binding RelativeSource={RelativeSource AncestorType=ListBox},Path=DataContext.FolderPathLabel}"/>
+                                <TextBox BorderBrush="#1F1F1F" Grid.Row="3" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="470" Name="TextBox_GamePath" Background="#FFFFFF" Foreground="#1F1F1F" Margin="0,0,0,10" TextChanged="TextBox_GamePath_Changed" Text="{Binding game.Directory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                             <Grid Grid.Column="2">
                                 <Grid.RowDefinitions>
@@ -71,8 +74,8 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Button Grid.Row="3" Content="..." VerticalAlignment="Bottom" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="10,0,0,10" Height="22" Width="22" Click="Button_SelectFolder_OnClick" ToolTip="Select folder" ToolTipService.ShowOnDisabled="True">
-                                    <!--<Image Opacity="1" RenderOptions.BitmapScalingMode="HighQuality" Source="../../Resources/ToolbarIcons/open_file.png"/>-->
+                                <Button Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="10,0,0,10" Height="22" Width="22" Click="Button_SelectFolder_OnClick" ToolTip="{Binding RelativeSource={RelativeSource AncestorType=ListBox},Path=DataContext.SelectFolder}" ToolTipService.ShowOnDisabled="True">
+                                    <Image Opacity="1" RenderOptions.BitmapScalingMode="HighQuality" Source="../Resources/ToolbarIcons/open_file.png"/>
                                 </Button>
                             </Grid>
                         </Grid>

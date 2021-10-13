@@ -79,6 +79,7 @@
   <ItemGroup>
     <None Remove="Resources\GameImages\m2de_logo.jpg" />
     <None Remove="Resources\GameImages\m2_logo.jpg" />
+    <None Remove="Resources\ToolbarIcons\open_file.png" />
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
@@ -206,6 +207,7 @@
     <Content Include="Resources\GameImages\m2_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\ToolbarIcons\open_file.png" />
     <None Update="libs\M2PhysX.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

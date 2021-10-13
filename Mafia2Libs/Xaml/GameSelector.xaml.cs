@@ -21,18 +21,21 @@ namespace Toolkit.Xaml
         public GameSelector(GameExplorer explorer)
         {
             InitializeComponent();
-            Localise();
             Explorer = explorer;
             ViewModel = new GamesViewModel();
             Listbox_Games.DataContext = ViewModel;
             Listbox_Games.ItemsSource = ViewModel.Controls;
             CheckBox_SelectAsDefault.IsChecked = ToolkitSettings.SkipGameSelector;
+            Localise();
             UpdateListbox();
         }
 
         public void Localise()
         {
             CheckBox_SelectAsDefault.Content = Lang.Language.GetString("$SELECT_AS_DEFAULT");
+            ViewModel.SelectGame = Lang.Language.GetString("$SELECT_GAME");
+            ViewModel.SelectFolder = Lang.Language.GetString("$SELECT_FOLDER");
+            ViewModel.FolderPathLabel = Lang.Language.GetString("$FOLDER_PATH_LABEL");
 
             StringBuilder builder = new StringBuilder("Toolkit v");
             builder.Append(ToolkitSettings.Version);
@@ -97,6 +100,13 @@ namespace Toolkit.Xaml
             }
         }
 
+        private void TextBox_GamePath_Changed(object sender, EventArgs e)
+        {
+            TextBox TextBox_GamePath = sender as TextBox;
+            ControlGameEntry entry = TextBox_GamePath.DataContext as ControlGameEntry;
+            entry.SetFolderPath(TextBox_GamePath.Text, false);
+        }
+
         private void SaveDefaultGame(int index)
         {
             ToolkitSettings.DefaultGame = index;
@@ -113,6 +123,9 @@ namespace Toolkit.Xaml
 
     public class GamesViewModel
     {
+        public string SelectGame { get; set; }
+        public string SelectFolder { get; set; }
+        public string FolderPathLabel { get; set; }
         public ObservableCollection<ControlGameEntry> Controls;
 
         public GamesViewModel(List<ControlGameEntry> ctrl)

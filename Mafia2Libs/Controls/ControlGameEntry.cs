@@ -12,17 +12,8 @@ namespace Toolkit.Controls
     public class ControlGameEntry
     {
         public Game game { get; set; }
-        public string FolderPath { get; set; }
 
-        public ControlGameEntry()
-        {
-            LocaliseEntry();
-        }
-
-        public void LocaliseEntry()
-        {
-            FolderPath = Language.GetString("$FOLDER_PATH_LABEL");
-        }
+        public ControlGameEntry() { }
 
         public void InitialiseEntry(Game game)
         {
