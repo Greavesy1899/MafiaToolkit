@@ -100,10 +100,9 @@
   <String ID="$SELECT_ALL">Vybrat vše</String>
   
   <!-- SDS Options -->
-  <String ID="$SDS_COMPRESSION_TYPE">Typ komprese</String>
-  <String ID="$SDS_UNCOMPRESSED">Bez komprese</String>
-  <String ID="$SDS_COMPRESSED">Komprese</String>
-  <String ID="$SDS_ONEBLOCK">Jeden blok</String>
+  <String ID="$SDS_COMPRESSION_RATIO">Poměr Komprese</String>
+  <String ID="$SDS_TOOLTIP_COMPRESSION_RATIO">0.0 se rovná žádné kompresi, 1.0 se rovná plné kompresi. 0.9 je základní komprese.</String>
+  <String ID="$SDS_TOOLTIP_USE_OODLE">Pokud komprimujete archivy hry Mafia: Definitive Edition, použijte komprimaci Oodle.</String>
   <String ID="$ADD_TIME_DATE_BACKUP">Přidání času a data k zálohám.</String>
   <String ID="$DECOMPILE_LUA_UNPACK">Rozšifrovat lua při extrahování</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Použít SDS Tool GUI Formát při extrahování.</String>

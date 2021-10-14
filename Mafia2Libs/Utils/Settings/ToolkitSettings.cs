@@ -39,6 +39,7 @@ namespace Utils.Settings
         public static int Language;
         public static int SerializeSDSOption;
         public static bool bUseOodleCompression;
+        public static float CompressionRatio;
         public static bool DecompileLUA;
         public static bool bBackupEnabled;
         public static bool AddTimeDataBackup;
@@ -68,6 +69,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("DetailsEnabled", "Discord", "True"), out DiscordDetailsEnabled);
             int.TryParse(ReadKey("SerializeOption", "SDS", "0"), out SerializeSDSOption);
             bool.TryParse(ReadKey("UseOodleCompression", "SDS", "1"), out bUseOodleCompression);
+            float.TryParse(ReadKey("CompressionRatio", "SDS", "0.9"), out CompressionRatio);
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
             bool.TryParse(ReadKey("UseMIPS", "ModelViewer", "True"), out UseMIPS);
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);

@@ -135,7 +135,10 @@ namespace Gibbed.Mafia2.FileFormats
         #region Functions
         public void Serialize(Stream output, ArchiveSerializeOptions options)
         {
+            // If ratio isn't 0.0f, we'll try to compress.
+            // If the user sets it to 0.0f, then we should skip any attempt to compress.
             var compress = (options & ArchiveSerializeOptions.Compress) > 0;
+            compress &= ToolkitSettings.CompressionRatio != 0.0f;
 
             var basePosition = output.Position;
             var endian = this._Endian;

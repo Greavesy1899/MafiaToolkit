@@ -101,10 +101,9 @@
   <String ID="$SEARCH">Szukaj</String>
   
   <!-- SDS Options -->
-  <String ID="$SDS_COMPRESSION_TYPE">Typ kompresji archiwum</String>
-  <String ID="$SDS_UNCOMPRESSED">Nieskompresowane</String>
-  <String ID="$SDS_COMPRESSED">Z kompresją</String>
-  <String ID="$SDS_ONEBLOCK">Jeden blok</String>
+  <String ID="$SDS_COMPRESSION_RATIO">Współczynnik kompresji</String>
+  <String ID="$SDS_TOOLTIP_COMPRESSION_RATIO">0.0 oznacza brak kompresji, 1.0 oznacza pełną kompresję. 0.9 jest domyślnym współczynnikiem kompresji (bezpieczna wartość).</String>
+  <String ID="$SDS_TOOLTIP_USE_OODLE">Jeżeli kompresujesz archiwa z gry Mafia: Definitive Edition użyj kompresji Oodle.</String>
   <String ID="$ADD_TIME_DATE_BACKUP">Dodaj godzinę i datę do nazw kopii zapasowych</String>
   <String ID="$DECOMPILE_LUA_UNPACK">Dekompiluj skrypty lua podczas rozpakowywania.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Podczas rozpakowywania używaj formatu narzędzia SDS Tool Gui (stare)</String>
