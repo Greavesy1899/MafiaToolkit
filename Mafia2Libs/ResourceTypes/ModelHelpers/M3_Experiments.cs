@@ -7,7 +7,7 @@ using static ResourceTypes.FrameResource.FrameLOD;
 using System.Numerics;
 using Vortice.Mathematics;
 
-namespace Mafia2Tool.MafiaLib.ModelHelpers
+namespace Toolkit.MafiaLib.ModelHelpers
 {
     public class M3_ExperimentalTests
     {

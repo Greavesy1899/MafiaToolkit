@@ -5,7 +5,7 @@ using Utils.Helpers;
 using Utils.Types;
 using Utils.Language;
 
-namespace Mafia2Tool
+namespace Toolkit
 {
     public partial class SDSContentEditor : Form
     {

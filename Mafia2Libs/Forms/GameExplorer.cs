@@ -1,5 +1,5 @@
 ﻿using Core.IO;
-using Mafia2Tool.Forms;
+using Toolkit.Forms;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,7 +11,7 @@ using Utils.Extensions;
 using Utils.Language;
 using Utils.Settings;
 
-namespace Mafia2Tool
+namespace Toolkit
 {
     public partial class GameExplorer : Form
     {
@@ -701,11 +701,8 @@ namespace Mafia2Tool
 
         private void OpenGameSelectorWindow()
         {
-            GameSelector selector = new GameSelector();
-            if (selector.ShowDialog() == DialogResult.OK)
-            {
-                InitExplorerSettings();
-            }
+            Xaml.GameSelector selector = new Xaml.GameSelector(this);
+            selector.Show();
         }
 
         private void UnpackSDSRecurse(DirectoryInfo info)

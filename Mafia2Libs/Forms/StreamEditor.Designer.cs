@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Mafia2Tool
+namespace Toolkit
 {
     partial class StreamEditor
     {
@@ -50,9 +50,9 @@ namespace Mafia2Tool
             this.tabControl = new System.Windows.Forms.TabControl();
             this.StreamLinesPage = new System.Windows.Forms.TabPage();
             this.StreamGroupPage = new System.Windows.Forms.TabPage();
-            this.groupTree = new Mafia2Tool.Controls.MTreeView();
+            this.groupTree = new Toolkit.Controls.MTreeView();
             this.StreamBlocksPage = new System.Windows.Forms.TabPage();
-            this.blockView = new Mafia2Tool.Controls.MTreeView();
+            this.blockView = new Toolkit.Controls.MTreeView();
             this.SearchBox = new System.Windows.Forms.TextBox();
             this.LineContextStrip.SuspendLayout();
             this.ToolStrip.SuspendLayout();
@@ -321,8 +321,8 @@ namespace Mafia2Tool
         private TabPage StreamLinesPage;
         private TabPage StreamGroupPage;
         private TabPage StreamBlocksPage;
-        private Mafia2Tool.Controls.MTreeView groupTree;
-        private Mafia2Tool.Controls.MTreeView blockView;
+        private Toolkit.Controls.MTreeView groupTree;
+        private Toolkit.Controls.MTreeView blockView;
         private ContextMenuStrip LineContextStrip;
         private ToolStripMenuItem AddLineButton;
         private ToolStripMenuItem DeleteLineButton;

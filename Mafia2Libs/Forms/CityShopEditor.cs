@@ -7,7 +7,7 @@ using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
 
-namespace Mafia2Tool
+namespace Toolkit
 {
     public partial class CityShopEditor : Form
     {

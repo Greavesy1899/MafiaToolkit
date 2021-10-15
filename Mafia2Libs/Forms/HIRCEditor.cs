@@ -7,7 +7,7 @@ using Utils.Settings;
 using Forms.EditorControls;
 using System.Collections.Generic;
 
-namespace Mafia2Tool
+namespace Toolkit
 {
     public partial class HIRCEditor : Form
     {

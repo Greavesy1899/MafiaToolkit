@@ -1,0 +1,87 @@
+﻿<Window x:Class="Toolkit.Xaml.GameSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Toolkit.Xaml"
+        mc:Ignorable="d"
+        Title="GameSelector" Height="450" Width="800" ResizeMode="CanMinimize" WindowStyle="SingleBorderWindow">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.075*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="1" Name="Label_ToolkitVersion" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Left" Content="Toolkit v"/>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Name="CheckBox_SelectAsDefault" IsChecked="false" Content="Select as default" HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1">
+            <ListBox Name="Listbox_Games" Margin="10,0,0,10" BorderBrush="Transparent" BorderThickness="0" ScrollViewer.CanContentScroll="False" MouseDoubleClick="ListBox_Games_MouseDoubleClick" ToolTip="{Binding SelectGame}" ToolTipService.InitialShowDelay="2000" ToolTipService.BetweenShowDelay="5000" ToolTipService.ShowDuration="3000">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="0.2*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Foreground="#1F1F1F" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0" FontSize="14" Content="{Binding game.Name}"/>
+                                <Border Grid.Row="1" BorderThickness="1" BorderBrush="#1F1F1F" Margin="10,0,10,10" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Image Source="{Binding game.Logo}" MaxHeight="100" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Border>
+                            </Grid>
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.2*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="0.5*"/>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="1" Foreground="#1F1F1F" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-5,10,0,0" MaxWidth="480" FontSize="12">
+                                    <Label.Content>
+                                        <AccessText TextWrapping="Wrap" Text="{Binding game.Description}"/>
+                                    </Label.Content>
+                                </Label>
+                                <Label Grid.Row="2" Foreground="#1F1F1F" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-5,0,0,0" FontSize="12" Content="{Binding RelativeSource={RelativeSource AncestorType=ListBox},Path=DataContext.FolderPathLabel}"/>
+                                <TextBox BorderBrush="#1F1F1F" Grid.Row="3" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Width="470" Name="TextBox_GamePath" Background="#FFFFFF" Foreground="#1F1F1F" Margin="0,0,0,10" TextChanged="TextBox_GamePath_Changed" Text="{Binding game.Directory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Button Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="10,0,0,10" Height="22" Width="22" Click="Button_SelectFolder_OnClick" ToolTip="{Binding RelativeSource={RelativeSource AncestorType=ListBox},Path=DataContext.SelectFolder}" ToolTipService.ShowOnDisabled="True">
+                                    <Image Opacity="1" RenderOptions.BitmapScalingMode="HighQuality" Source="../Resources/ToolbarIcons/open_file.png"/>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</Window>

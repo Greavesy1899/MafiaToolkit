@@ -49,7 +49,7 @@ namespace Utils.Settings
         {
             this.name = name;
             this.description = description;
-            this.logo = logo;
+            this.logo = "../" + logo;
             this.directoryKey = directoryKey;
             this.materialKey = materialKey;
             this.gameType = type;

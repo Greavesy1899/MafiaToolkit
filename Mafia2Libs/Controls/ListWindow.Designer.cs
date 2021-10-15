@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool
+﻿namespace Toolkit
 {
     partial class ListWindow
     {

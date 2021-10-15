@@ -70,7 +70,7 @@ move_dll("M2PhysX.dll")
 #move_dll("oo2core_8_win64.dll");
 
 # remove files
-remove_file("MafiaToolkit.pdb")
+remove_file("Toolkit.pdb")
 remove_file("OodleSharp.pdb")
 
 move_from_libs("Gibbed.IO.dll")

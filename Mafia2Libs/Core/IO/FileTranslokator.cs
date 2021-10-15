@@ -1,4 +1,4 @@
-﻿using Mafia2Tool.Forms;
+﻿using Toolkit.Forms;
 using System.IO;
 
 namespace Core.IO

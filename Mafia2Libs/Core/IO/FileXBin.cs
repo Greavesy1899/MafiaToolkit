@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Mafia2Tool;
+using Toolkit;
 
 namespace Core.IO
 {

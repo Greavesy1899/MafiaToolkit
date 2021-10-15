@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool.Forms
+﻿namespace Toolkit.Forms
 {
     partial class M2FBXTool
     {

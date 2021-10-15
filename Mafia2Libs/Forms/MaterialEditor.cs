@@ -10,7 +10,7 @@ using Utils.Settings;
 using System.Linq;
 using Utils.Extensions;
 
-namespace Mafia2Tool
+namespace Toolkit
 {
     public partial class MaterialEditor : Form
     {
