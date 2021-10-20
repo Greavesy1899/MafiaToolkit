@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Utils.Extensions;
 using Utils.Language;
 using Utils.Settings;
+using Vortice.Mathematics;
 
 namespace Mafia2Tool
 {
@@ -45,9 +46,13 @@ namespace Mafia2Tool
             InitFileWatcher();
             FileListViewTypeController(1);
             infoText.Text = "Ready..";
+
+            // Add Attributes to System.Numerics and Vortice.Mathematics types so we can edit them in the PropertyGrid.
             TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
             TypeDescriptor.AddAttributes(typeof(Vector4), new TypeConverterAttribute(typeof(Vector4Converter)));
             TypeDescriptor.AddAttributes(typeof(Quaternion), new TypeConverterAttribute(typeof(QuaternionConverter)));
+            TypeDescriptor.AddAttributes(typeof(Matrix4x4), new TypeConverterAttribute(typeof(ExpandableObjectConverter)));
+            TypeDescriptor.AddAttributes(typeof(BoundingBox), new TypeConverterAttribute(typeof(ExpandableObjectConverter)));
         }
 
         private void Localise()
