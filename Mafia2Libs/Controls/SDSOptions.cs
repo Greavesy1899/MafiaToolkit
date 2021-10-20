@@ -17,9 +17,7 @@ namespace Forms.OptionControls
 
         private void Localise()
         {
-            M2Label.Text = Language.GetString("$SDS_COMPRESSION_TYPE");
-            CompressionDropdownBox.Items[0] = Language.GetString("$SDS_UNCOMPRESSED");
-            CompressionDropdownBox.Items[1] = Language.GetString("$SDS_COMPRESSED");
+            M2Label.Text = Language.GetString("$SDS_COMPRESSION_RATIO");
             AddTimeDateBackupsBox.Text = Language.GetString("$ADD_TIME_DATE_BACKUP");
             UnpackLUABox.Text = Language.GetString("$DECOMPILE_LUA_UNPACK");
             SDSToolFormat.Text = Language.GetString("$USE_SDS_TOOL_FORMAT");
@@ -27,11 +25,13 @@ namespace Forms.OptionControls
             CheckBox_BackupSDS.Text = Language.GetString("$BACKUP_SDS_LABEL");
             Label_IndexBufferSize.Text = Language.GetString("$INDEX_BUFFER_SIZE_LABEL");
             Label_VertexBufferSize.Text = Language.GetString("$VERTEX_BUFFER_SIZE_LABEL");
+
+            ToolTips.SetToolTip(NumericUpDown_Ratio, Language.GetString("$SDS_TOOLTIP_COMPRESSION_RATIO"));
+            ToolTips.SetToolTip(CheckBox_UseOodle, Language.GetString("$SDS_TOOLTIP_USE_OODLE"));
         }
 
         private void LoadSettings()
         {
-            CompressionDropdownBox.SelectedIndex = ToolkitSettings.SerializeSDSOption;
             AddTimeDateBackupsBox.Checked = ToolkitSettings.AddTimeDataBackup;
             UnpackLUABox.Checked = ToolkitSettings.DecompileLUA;
             SDSToolFormat.Checked = ToolkitSettings.UseSDSToolFormat;
@@ -45,12 +45,7 @@ namespace Forms.OptionControls
             Label_VBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.VertexMemorySizePerBuffer);
             NumericBox_IBSize.Value = ToolkitSettings.IndexMemorySizePerBuffer;
             NumericBox_VBSize.Value = ToolkitSettings.VertexMemorySizePerBuffer;
-        }
-
-        private void SDSCompress_IndexChanged(object sender, EventArgs e)
-        {
-            ToolkitSettings.SerializeSDSOption = CompressionDropdownBox.SelectedIndex;
-            ToolkitSettings.WriteKey("SerializeOption", "SDS", CompressionDropdownBox.SelectedIndex.ToString());
+            NumericUpDown_Ratio.Value = (decimal)ToolkitSettings.CompressionRatio;
         }
 
         private void AddTimeDateBackupsBox_CheckedChanged(object sender, EventArgs e)
@@ -103,6 +98,13 @@ namespace Forms.OptionControls
             ToolkitSettings.VertexMemorySizePerBuffer = Convert.ToInt32(NumericBox_VBSize.Value);
             ToolkitSettings.WriteKey("VertexMemorySizePerBuffer", "SDS", ToolkitSettings.VertexMemorySizePerBuffer.ToString());
             Label_VBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.VertexMemorySizePerBuffer);
+        }
+
+        private void NumericUpDown_Ratio_ValueChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.CompressionRatio = Convert.ToSingle(NumericUpDown_Ratio.Value);
+            ToolkitSettings.WriteKey("CompressionRatio", "SDS", ToolkitSettings.CompressionRatio.ToString());
+            NumericUpDown_Ratio.Text = ToolkitSettings.CompressionRatio.ToString();
         }
     }
 }

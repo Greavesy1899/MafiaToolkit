@@ -24,6 +24,11 @@ namespace ResourceTypes.M3.XBin.TableContainers
             public float DamageToStun { get; set; }
             [PropertyForceAsAttribute]
             public float DamageTimeWindow { get; set; }
+
+            public StunGroup()
+            {
+                BodyPartList = new EBodyPartType[0];
+            }
         }
 
         public class HumanDamageZoneItem
@@ -62,6 +67,12 @@ namespace ResourceTypes.M3.XBin.TableContainers
             public float EachHitStunHealthLevelThreshold { get; set; }
             public float SingleHitStunHealthThreshold { get; set; }
             public XBinHashName WeaponImpactGroupName { get; set; }
+
+            public HumanDamageZoneItem()
+            {
+                StunGroups = new StunGroup[0];
+                WeaponImpactGroupName = new XBinHashName();
+            }
         }
 
         private int unk0;

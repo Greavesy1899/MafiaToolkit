@@ -14,7 +14,6 @@ namespace Gibbed.Mafia2.FileFormats
 {
     public partial class ArchiveFile
     {
-        private bool bDumpFileNames = false;
         private Dictionary<ulong, string> FileNamesAndHash;
 
         private string ConstructPath(string root, string file)
@@ -63,24 +62,14 @@ namespace Gibbed.Mafia2.FileFormats
                     continue;
                 }
 
-                // DEBUG ONLY - Get entry name and guid to store in dictionary.
-                if (Debugger.IsAttached && bDumpFileNames)
-                {
-                    var pair = GetFileName(entry, itemNames[i]);
-                    if (pair.Key != 0 && pair.Value != "" && !pair.Value.Contains("File_"))
-                    {
-                        if (!FileNamesAndHash.ContainsKey(pair.Key))
-                        {
-                            FileNamesAndHash.Add(pair.Key, pair.Value);
-                        }
-                    }
-                }
-
                 string FileName = HasFilename(FileNamesAndHash, entry);
                 if (!string.IsNullOrEmpty(FileName))
                 {
-                    //Console.WriteLine(string.Format("{0}", FileName));
+                    Console.WriteLine(string.Format("{0}", FileName));
                     itemNames[i] = FileName;
+                }
+                else
+                {
                 }
 
                 resourceXML.WriteStartElement("ResourceEntry");
@@ -150,11 +139,6 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.Close();
             resourceXML.Flush();
             resourceXML.Dispose();
-
-            if (Debugger.IsAttached && bDumpFileNames)
-            {
-                WriteFileNameDB("Resources/ResourceNameDatabase.txt", FileNamesAndHash);
-            }
         }
 
         public bool BuildResourcesVersion20(XmlDocument document, XmlDocument xmlDoc, XmlNode rootNode, string sdsFolder)
@@ -344,7 +328,7 @@ namespace Gibbed.Mafia2.FileFormats
             using(MemoryStream stream = new MemoryStream(entry.Data))
             {
                 resource.Deserialize(entry.Version, stream, Endian);
-                name = resource.DetermineName(name);
+                name = resource.DetermineName(entry, name);
             }
 
             // Construct the path and attempt to save the data.
@@ -382,7 +366,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             int extensionStart = resource.DebugName.IndexOf(".");
             string filename = resource.DebugName.Remove(extensionStart);
-            descNode.InnerText = filename;
+            descNode.InnerText = "not available";
 
             return entry;
         }
@@ -488,7 +472,7 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Version = version;
             }
 
-            descNode.InnerText = name;
+            descNode.InnerText = "not available";
 
             return entry;
         }
@@ -503,9 +487,12 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = resource.Data;
             }
 
+            // If not correctly named - See if its toolkit standard 'File_'.
+            // If yes, see if we can grab the name from our DB and apply hkx extension.
             if(FileNamesAndHash.ContainsKey(resource.FileHash) && name.Contains("File_"))
             {
                 name = FileNamesAndHash[resource.FileHash];
+                name += ".hkx";
             }
 
             resourceXML.WriteElementString("File", name);

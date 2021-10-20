@@ -179,6 +179,10 @@ namespace ResourceTypes.Cutscene
                         VehicleData.WriteToFile(Writer);
                     }
                 }
+                else
+                {
+                    Writer.Write(0);
+                }
             }
 
             public class GCSData

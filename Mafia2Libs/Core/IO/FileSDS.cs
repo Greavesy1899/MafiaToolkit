@@ -106,7 +106,7 @@ namespace Core.IO
 
             using (var output = File.Create(file.FullName))
             {
-                archiveFile.Serialize(output, ToolkitSettings.SerializeSDSOption == 0 ? ArchiveSerializeOptions.OneBlock : ArchiveSerializeOptions.Compress);
+                archiveFile.Serialize(output, ArchiveSerializeOptions.Compress);
             }
 
             archiveFile = null;

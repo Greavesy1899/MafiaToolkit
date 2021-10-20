@@ -19,6 +19,14 @@ namespace ResourceTypes.M3.XBin.TableContainers
             public float ShotDiameter { get; set; }
             public float ShotHardness { get; set; }
             public float ShotStrength { get; set; }
+
+            public ParticleNamesItem()
+            {
+                InitialShot = new XBinHashName();
+                Headshot = new XBinHashName();
+                GrazingShot = new XBinHashName();
+                KillShot = new XBinHashName();
+            }
         }
 
         private int unk0;

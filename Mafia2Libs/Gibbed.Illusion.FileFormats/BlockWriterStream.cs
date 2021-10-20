@@ -161,6 +161,13 @@ namespace Gibbed.Illusion.FileFormats
             var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level9);
             zlib.Write(this._BlockBytes, 0, blockLength);
             zlib.Flush();
+
+            // If it doesn't fit within the range of ratio, store as uncompressed.
+            if (!IsWithinCompressionRatio((int)zlib.TotalOut, blockLength))
+            {
+                return false;
+            }
+
             var compressedLength = (int)data.Length;
             if (data.Length < blockLength)
             {
@@ -190,6 +197,12 @@ namespace Gibbed.Illusion.FileFormats
             Debug.Assert(compressed.Length != 0, "Compressed Block should not be empty");
             data.WriteBytes(compressed);
 
+            // If it doesn't fit within the range of ratio, store as uncompressed.
+            if(!IsWithinCompressionRatio(compressed.Length, blockLength))
+            {
+                return false;
+            }
+
             var compressedLength = (int)data.Length;
             if(data.Length < blockLength)
             {
@@ -211,6 +224,17 @@ namespace Gibbed.Illusion.FileFormats
             }
 
             return false;
+        }
+
+        private bool IsWithinCompressionRatio(int CompressedSize, int BlockLength)
+        {
+            float Ratio = ToolkitSettings.CompressionRatio * BlockLength;
+            if (CompressedSize >= Ratio)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public void Finish()
