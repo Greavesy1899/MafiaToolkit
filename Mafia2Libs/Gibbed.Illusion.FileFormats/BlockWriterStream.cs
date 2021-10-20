@@ -198,7 +198,7 @@ namespace Gibbed.Illusion.FileFormats
             data.WriteBytes(compressed);
 
             // If it doesn't fit within the range of ratio, store as uncompressed.
-            if(!IsWithinCompressionRatio(compressed.Length, blockLength))
+            if (!IsWithinCompressionRatio(compressed.Length, blockLength))
             {
                 return false;
             }

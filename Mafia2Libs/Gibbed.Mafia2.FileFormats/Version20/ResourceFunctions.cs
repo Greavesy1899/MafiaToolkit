@@ -232,6 +232,7 @@ namespace Gibbed.Mafia2.FileFormats
 
                 this.SlotVramRequired += resourceEntry.SlotVramRequired;
                 this.SlotRamRequired += resourceEntry.SlotRamRequired;
+                this.OtherRamRequired += resourceEntry.OtherRamRequired;
                 
                 resourceEntry.TypeId = (int)ResourceTypes.Find(s => s.Name.Equals(resourceType)).Id;
                 entries[resourceType].Add(resourceEntry);

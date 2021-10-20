@@ -256,12 +256,13 @@ namespace Gibbed.Mafia2.FileFormats
             {
                 resource.Serialize(version, stream, Endian.Little);
                 entry.Data = stream.ToArray();
-                entry.OtherRamRequired = (uint)resource.GetRawBytes();
+
+                entry.SlotRamRequired = resource.GetRawBytes();
             }
 
             // Set the entry version and setup the data for the meta info.
             entry.Version = version;        
-            descNode.InnerText = path;
+            descNode.InnerText = "not available";
             return entry;
         }
         public string ReadXMLEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string xmlDir)

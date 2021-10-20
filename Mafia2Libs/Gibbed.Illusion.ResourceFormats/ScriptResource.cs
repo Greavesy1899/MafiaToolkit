@@ -59,13 +59,13 @@ namespace Gibbed.Mafia2.ResourceFormats
         }
 
         // Util function to get size of bytes of all scripts
-        public int GetRawBytes()
+        public uint GetRawBytes()
         {
-            int TotalSize = 0;
+            uint TotalSize = 0;
 
-            foreach(var script in Scripts)
+            foreach(ScriptData script in Scripts)
             {
-                TotalSize += script.Data.Length;
+                TotalSize += (uint)script.Data.Length;
             }
 
             Console.WriteLine("Total size of Lua Data: " + TotalSize);
