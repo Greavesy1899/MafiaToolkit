@@ -4,6 +4,8 @@ using Gibbed.Illusion.FileFormats;
 using System.Collections.Generic;
 using System.Windows;
 using System;
+using Gibbed.Mafia2.FileFormats.Archive;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {
@@ -139,7 +141,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             return magic;
         }
 
-        public string DetermineName(string name)
+        public string DetermineName(ResourceEntry entry, string name)
         {
             bool bGotDebugName = false;
 
@@ -148,6 +150,13 @@ namespace Gibbed.Mafia2.ResourceFormats
             {
                 name = DebugName;
                 bGotDebugName = true;
+            }
+
+            // We found the name already
+            if(FNV64.Hash(name) == entry.FileHash)
+            {
+                name = ReplaceCurrentExtension(name);
+                return name;
             }
 
             // Our database tool has figured out this file name.
@@ -205,6 +214,21 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             int extensionStart = FileName.IndexOf(".");
             return FileName.Substring(extensionStart);
+        }
+
+        private string ReplaceCurrentExtension(string FileName)
+        {
+            string DetectedExtension = TypeExtensionMagic[GenericType];
+            string extension = GetFullExtensionUtil(FileName);
+            int IndexOfEx = FileName.IndexOf(extension);
+            if(IndexOfEx != -1)
+            {
+                string NewName = FileName.Remove(IndexOfEx);
+                NewName += DetectedExtension;
+                return NewName;
+            }
+
+            return FileName;
         }
     }
 }

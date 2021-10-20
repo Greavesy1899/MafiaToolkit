@@ -62,7 +62,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             {
                 // TODO: Why does OmniLight and SpotLight have different array sizes?
                 AeLightType0 LightType0 = new AeLightType0();
-                LightType0.SetNumFloats(12);
+                LightType0.SetNumFloats(10);
                 LightType0.ReadFromFile(stream, isBigEndian);
                 LightInfo = LightType0;
             }
