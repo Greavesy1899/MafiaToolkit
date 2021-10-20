@@ -20,6 +20,11 @@ namespace Mafia2Tool.Forms
                 "- Fireboyd for developing UnluacNET\r\n" +
                 "- Hurikejnis and Zeuvera for Slovenčina localization\r\n" +
                 "\r\n" +
+                "Thanks to fellow contributors:\r\n" +
+                " - ModdingCode\r\n" +
+                " - RoadTrain\r\n" +
+                " - Kamzik123\r\n" +
+                "\r\n" +
                 "Also, a very special thanks to PayPal donators:\r\n" +
                 "- Inlife\r\n" +
                 "- T3mas1\r\n" +

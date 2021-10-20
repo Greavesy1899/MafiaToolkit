@@ -1,9 +1,8 @@
-﻿using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
 using Color = System.Drawing.Color;
-using Buffer = SharpDX.Direct3D11.Buffer;
-using Utils.Extensions;
 
 namespace Rendering.Graphics
 {
@@ -26,7 +25,7 @@ namespace Rendering.Graphics
         {
             DoRender = true;
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
-            Transform = Matrix.Identity;
+            Transform = Matrix4x4.Identity;
             SelectedColour = Color.Blue;
             UnselectedColour = Color.Red;
             points = new Vector3[0];
@@ -76,27 +75,30 @@ namespace Rendering.Graphics
             UnselectedColour = color;
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext context)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
             if (vertices.Length != 0)
             {
-                vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+                vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
+            {
                 return;
+            }
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineStrip;
+            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
+            deviceContext.IASetVertexBuffers(0, VertexBufferView);
+            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineStrip);
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
             shader.Render(deviceContext, PrimitiveTopology.LineStrip, vertices.Length, 0);
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             this.Transform = matrix;
         }
@@ -108,7 +110,7 @@ namespace Rendering.Graphics
             vertexBuffer = null;
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             if(vertexBuffer != null)
             {

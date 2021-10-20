@@ -2,18 +2,27 @@
 using Rendering.Graphics;
 using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
-using SharpDX;
+using System.Numerics;
+using Vortice.Mathematics;
 
 namespace Rendering.Factories
 {
     public static class RenderableFactory
     {
-        public static RenderBoundingBox BuildBoundingBox(BoundingBox BBox, Matrix WorldTransform)
+        public static RenderBoundingBox BuildBoundingBox(BoundingBox BBox, Matrix4x4 WorldTransform)
         {
             RenderBoundingBox RenderBox = new RenderBoundingBox();
             RenderBox.Init(BBox);
             RenderBox.SetTransform(WorldTransform);
             return RenderBox;
+        }
+
+        public static RenderPlane3D BuildPlane3D(Vector4[] Planes, Matrix4x4 WorldTransform)
+        {
+            RenderPlane3D Plane3D = new RenderPlane3D();
+            Plane3D.InitPlanes(Planes, WorldTransform);
+            Plane3D.SetTransform(WorldTransform);
+            return Plane3D;
         }
 
         public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh)

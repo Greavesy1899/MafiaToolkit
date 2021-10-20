@@ -4,11 +4,13 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
+using Utils.Types;
 
 namespace ResourceTypes.M3.XBin
 {
     public class CarTrafficTuningItem
     {
+        [PropertyForceAsAttribute]
         public int ID { get; set; }
         [Browsable(false), PropertyIgnoreByReflector]
         public int CollectionOffset { get; set; }
@@ -17,13 +19,14 @@ namespace ResourceTypes.M3.XBin
         [Browsable(false), PropertyIgnoreByReflector]
         public int CollectionCount2 { get; set; }
         public int[] TuningItems { get; set; }
+        [PropertyForceAsAttribute]
         public int VehicleID { get; set; }
-        public ETrafficVehicleFlags VehicleFlags { get; set; } //E_TrafficVehicleFlags
+        public ETrafficVehicleFlags_M3 VehicleFlags { get; set; } //E_TrafficVehicleFlags
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public ETrafficVehicleLookFlags VehicleLookFlags { get; set; } //E_TrafficVehicleLookFlags
+        public ETrafficVehicleLookFlags_M3 VehicleLookFlags { get; set; } //E_TrafficVehicleLookFlags
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public float Weight { get; set; }
-        public ulong NameHash { get; set; }
+        public XBinHashName Name { get; set; }
 
         public override string ToString()
         {
@@ -34,16 +37,16 @@ namespace ResourceTypes.M3.XBin
     public class CarTrafficTuningTable : BaseTable
     {
         private uint unk0;
-        private CarTrafficTuningItem[] traffic_tunings;
+        private CarTrafficTuningItem[] Items;
 
         public CarTrafficTuningItem[] TrafficTuning {
-            get { return traffic_tunings; }
-            set { traffic_tunings = value; }
+            get { return Items; }
+            set { Items = value; }
         }
 
         public CarTrafficTuningTable()
         {
-            traffic_tunings = new CarTrafficTuningItem[0];
+            Items = new CarTrafficTuningItem[0];
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -51,7 +54,8 @@ namespace ResourceTypes.M3.XBin
             unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
-            traffic_tunings = new CarTrafficTuningItem[count0];
+            uint padding = reader.ReadUInt32();
+            Items = new CarTrafficTuningItem[count0];
 
             for (int i = 0; i < count1; i++)
             {
@@ -61,37 +65,38 @@ namespace ResourceTypes.M3.XBin
                 item.CollectionCount1 = reader.ReadInt32();
                 item.CollectionCount2 = reader.ReadInt32();
                 item.VehicleID = reader.ReadInt32();
-                item.VehicleFlags = (ETrafficVehicleFlags)reader.ReadInt32();
-                item.VehicleLookFlags = (ETrafficVehicleLookFlags)reader.ReadInt32();
+                item.VehicleFlags = (ETrafficVehicleFlags_M3)reader.ReadUInt32();
+                item.VehicleLookFlags = (ETrafficVehicleLookFlags_M3)reader.ReadUInt32();
                 item.Weight = reader.ReadSingle();
-                item.NameHash = reader.ReadUInt64();
+                item.Name = XBinHashName.ConstructAndReadFromFile(reader);
 
-                traffic_tunings[i] = item;
+                Items[i] = item;
             }
 
             for (int i = 0; i < count1; i++)
             {
-                var item = traffic_tunings[i];
+                var item = Items[i];
                 item.TuningItems = new int[item.CollectionCount1];
                 for (int z = 0; z < item.CollectionCount1; z++)
                 {
                     item.TuningItems[z] = reader.ReadInt32();
                 }
-                traffic_tunings[i] = item;
+                Items[i] = item;
             }
         }
 
         public void WriteToFile(XBinWriter writer)
         {
             writer.Write(unk0);
-            writer.Write(traffic_tunings.Length);
-            writer.Write(traffic_tunings.Length);
+            writer.Write(Items.Length);
+            writer.Write(Items.Length);
+            writer.Write(0); // padding
 
             int i = 0;
-            long[] offsets = new long[traffic_tunings.Length];
-            foreach (var tuning in traffic_tunings)
+            long[] offsets = new long[Items.Length];
+            foreach (var tuning in Items)
             {
-                CarTrafficTuningItem Item = traffic_tunings[i];
+                CarTrafficTuningItem Item = Items[i];
                 Item.CollectionCount1 = Item.TuningItems.Length;
                 Item.CollectionCount2 = Item.TuningItems.Length;
                 writer.Write(Item.ID);
@@ -103,13 +108,13 @@ namespace ResourceTypes.M3.XBin
                 writer.Write((int)Item.VehicleFlags);
                 writer.Write((int)Item.VehicleLookFlags);
                 writer.Write(Item.Weight);
-                writer.Write(Item.NameHash);
+                Item.Name.WriteToFile(writer);
                 i++;
             }
 
-            for (int j = 0; j < traffic_tunings.Length; j++)
+            for (int j = 0; j < Items.Length; j++)
             {
-                CarTrafficTuningItem Item = traffic_tunings[j];
+                CarTrafficTuningItem Item = Items[j];
                 uint thisPosition = (uint)(writer.BaseStream.Position);
 
                 for (int z = 0; z < Item.CollectionCount1; z++)
@@ -130,7 +135,7 @@ namespace ResourceTypes.M3.XBin
         {
             XElement Root = XElement.Load(file);
             CarTrafficTuningTable TableInformation = ReflectionHelpers.ConvertToPropertyFromXML<CarTrafficTuningTable>(Root);
-            this.traffic_tunings = TableInformation.traffic_tunings;
+            this.Items = TableInformation.Items;
         }
 
         public void WriteToXML(string file)

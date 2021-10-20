@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ResourceTypes.Navigation;
+using System;
 using System.Collections.Generic;
-using SharpDX;
-using SharpDX.Direct3D11;
-using ResourceTypes.Navigation;
+using System.Numerics;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -62,7 +62,7 @@ namespace Rendering.Graphics
                 }
             }
         }
-        public override void InitBuffers(Device d3d, DeviceContext deviceContext)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
             if(boundingBoxes != null)
             {
@@ -81,7 +81,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if(DoRender)
             {
@@ -108,7 +108,7 @@ namespace Rendering.Graphics
             throw new NotImplementedException();
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
         }
@@ -142,7 +142,7 @@ namespace Rendering.Graphics
             throw new NotImplementedException();
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             if (boundingBoxes != null)
             {

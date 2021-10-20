@@ -1,11 +1,12 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
 using Utils.Types;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Actors
 {
@@ -99,8 +100,8 @@ namespace ResourceTypes.Actors
             Unk24 = reader.ReadUInt32(isBigEndian);
             reader.Seek(212, SeekOrigin.Begin);
             POType = reader.ReadInt32(isBigEndian);
-            POPos = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            POSize = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            POPos = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            POSize = Vector3Utils.ReadFromFile(reader, isBigEndian);
             reader.Seek(44, SeekOrigin.Begin);
             HitInfo = new HitData[3];
 
@@ -153,8 +154,8 @@ namespace ResourceTypes.Actors
             writer.Write(Unk24, isBigEndian);
             writer.Seek(212, SeekOrigin.Begin);
             writer.Write(POType, isBigEndian);
-            Vector3Extenders.WriteToFile(POPos, writer, isBigEndian);
-            Vector3Extenders.WriteToFile(POSize, writer, isBigEndian);
+            Vector3Utils.WriteToFile(POPos, writer, isBigEndian);
+            Vector3Utils.WriteToFile(POSize, writer, isBigEndian);
             writer.Seek(44, SeekOrigin.Begin);
             for (int i = 0; i < 3; i++) writer.Write(HitInfo[i].SpeedMax, isBigEndian);
             for (int i = 0; i < 3; i++) writer.Write(HitInfo[i].SpeedVolMax, isBigEndian);
@@ -275,14 +276,14 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             Radius = stream.ReadSingle(isBigEndian);
-            BBoxSize = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            BBoxSize = Vector3Utils.ReadFromFile(stream, isBigEndian);
             flags = (ActorCleanEntityFlags)stream.ReadInt32(isBigEndian);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(Radius, isBigEndian);
-            Vector3Extenders.WriteToFile(BBoxSize, writer, isBigEndian);
+            Vector3Utils.WriteToFile(BBoxSize, writer, isBigEndian);
             writer.Write((int)flags, isBigEndian);
         }
     }
@@ -408,8 +409,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Utils.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -434,8 +435,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
-            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
+            Vector3Utils.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Utils.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);
@@ -509,8 +510,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Utils.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -527,8 +528,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
-            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
+            Vector3Utils.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Utils.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);
@@ -591,8 +592,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Utils.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -607,8 +608,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
-            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
+            Vector3Utils.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Utils.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);
@@ -687,7 +688,7 @@ namespace ResourceTypes.Actors
         byte[] padding;
         int unk01;
         byte unk02;
-        Matrix uMatrix0;
+        Matrix4x4 uMatrix0;
         int unk07;
         int unk08;
         int unk09;
@@ -710,7 +711,7 @@ namespace ResourceTypes.Actors
         HashName[] names = new HashName[4];
         BoundingBox boundingBox;
         byte unk_byte3;
-        Matrix uMatrix1;
+        Matrix4x4 uMatrix1;
         int instanced;
         int type;
 
@@ -730,20 +731,20 @@ namespace ResourceTypes.Actors
             set { unk02 = value; }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public Matrix UnkMatrix0 {
+        public Matrix4x4 UnkMatrix0 {
             get { return uMatrix0; }
         }
         public Vector3 UnkMatrix0Translation {
-            get { return uMatrix0.TranslationVector; }
-            set { uMatrix0.TranslationVector = value; }
+            get { return uMatrix0.Translation; }
+            set { uMatrix0.Translation = value; }
         }
         public Quaternion UnkMatrix0Quaternion {
             get { return uMatrix0Quat; }
             set {
                 uMatrix0Quat = value;
-                var translation = uMatrix0.TranslationVector;
-                uMatrix0 = Matrix.RotationQuaternion(uMatrix0Quat);
-                uMatrix0.TranslationVector = translation;
+                var translation = uMatrix0.Translation;
+                uMatrix0 = Matrix4x4.CreateFromQuaternion(uMatrix0Quat);
+                uMatrix0.Translation = translation;
             }
         }
         public int Unk07 {
@@ -757,10 +758,6 @@ namespace ResourceTypes.Actors
         public int Unk09 {
             get { return unk09; }
             set { unk09 = value; }
-        }
-        public byte Count {
-            get { return count; }
-            set { count = value; }
         }
         public int Unk10 {
             get { return unk10; }
@@ -825,32 +822,32 @@ namespace ResourceTypes.Actors
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMinimum {
             get { return boundingBox.Minimum; }
-            set { boundingBox.Minimum = value; }
+            set { boundingBox.SetMinimum(value); }
         }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMaximum {
             get { return boundingBox.Maximum; }
-            set { boundingBox.Maximum = value; }
+            set { boundingBox.SetMaximum(value); }
         }
         public byte UnkByte3 {
             get { return unk_byte3; }
             set { unk_byte3 = value; }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public Matrix UnkMatrix1 {
+        public Matrix4x4 UnkMatrix1 {
             get { return uMatrix1; }
         }
         public Vector3 UnkMatrix1Translation {
-            get { return uMatrix1.TranslationVector; }
-            set { uMatrix1.TranslationVector = value; }
+            get { return uMatrix1.Translation; }
+            set { uMatrix1.Translation = value; }
         }
         public Quaternion UnkMatrix1Quaternion {
             get { return uMatrix1Quat; }
             set {
                 uMatrix1Quat = value;
-                var translation = uMatrix1.TranslationVector;
-                uMatrix1 = Matrix.RotationQuaternion(uMatrix1Quat);
-                uMatrix1.TranslationVector = translation;
+                var translation = uMatrix0.Translation;
+                uMatrix1 = Matrix4x4.CreateFromQuaternion(uMatrix1Quat);
+                uMatrix1.Translation = translation;
             }
         }
         public int Instanced {
@@ -869,9 +866,8 @@ namespace ResourceTypes.Actors
         public ActorLight()
         {
             padding = new byte[10];
-            uMatrix0 = Matrix.Identity;
-            uMatrix1 = Matrix.Identity;
-            count = 0;
+            uMatrix0 = Matrix4x4.Identity;
+            uMatrix1 = Matrix4x4.Identity;
             frameLinks = new HashName[0];
             sceneLinks = new HashName[0];
             frameIdxLinks = new int[0];
@@ -887,8 +883,8 @@ namespace ResourceTypes.Actors
             }
 
             nameLight = new HashName();
-            uMatrix0Quat = Quaternion.RotationMatrix(uMatrix0);
-            uMatrix1Quat = Quaternion.RotationMatrix(uMatrix1);
+            uMatrix0Quat = Quaternion.CreateFromRotationMatrix(uMatrix0);
+            uMatrix1Quat = Quaternion.CreateFromRotationMatrix(uMatrix1);
         }
 
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -898,11 +894,11 @@ namespace ResourceTypes.Actors
             {
                 padding = stream.ReadBytes(10);
                 unk01 = stream.ReadInt32(isBigEndian);
-                uMatrix0 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                uMatrix0 = MatrixUtils.ReadFromFile(stream, isBigEndian);
                 unk07 = stream.ReadInt32(isBigEndian);
                 unk08 = stream.ReadInt32(isBigEndian);
                 unk09 = stream.ReadInt32(isBigEndian);
-                count = stream.ReadByte8();
+                uint count = stream.ReadByte8();
                 unk10 = stream.ReadInt32(isBigEndian);
 
                 frameLinks = new HashName[count];
@@ -945,19 +941,23 @@ namespace ResourceTypes.Actors
 
                 boundingBox = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
                 unk_byte3 = stream.ReadByte8();
-                uMatrix1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                uMatrix1 = MatrixUtils.ReadFromFile(stream, isBigEndian);
             }
             stream.Seek(2308, SeekOrigin.Begin);
             instanced = stream.ReadInt32(isBigEndian);
             type = stream.ReadInt32(isBigEndian);
 
             //PREP 
-            uMatrix0Quat = Quaternion.RotationMatrix(uMatrix0);
-            uMatrix1Quat = Quaternion.RotationMatrix(uMatrix1);
+            uMatrix0Quat = Quaternion.CreateFromRotationMatrix(uMatrix0);
+            uMatrix1Quat = Quaternion.CreateFromRotationMatrix(uMatrix1);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
+            // Sanity check whether the user has got it right
+            int Length = sceneLinks.Length;
+            Debug.Assert(frameLinks.Length == Length && frameIdxLinks.Length == Length, "SceneLinks, FrameLinks and FrameIDXLinks should be all equal. Fix this problem and resave");
+
             writer.Write(new byte[2316]);
             writer.Seek(0, SeekOrigin.Begin);
             size = CalculateSize();
@@ -972,7 +972,7 @@ namespace ResourceTypes.Actors
             writer.WriteByte((byte)sceneLinks.Length);
             writer.Write(unk10, isBigEndian);
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < sceneLinks.Length; i++)
             {
                 sceneLinks[i].WriteToFile(writer, isBigEndian);
                 frameLinks[i].WriteToFile(writer, isBigEndian);
@@ -1827,8 +1827,8 @@ namespace ResourceTypes.Actors
 
             testPrimitive = reader.ReadInt32(isBigEndian);
             range = reader.ReadSingle(isBigEndian);
-            unk1 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            unk2 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unk1 = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            unk2 = Vector3Utils.ReadFromFile(reader, isBigEndian);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
@@ -1872,8 +1872,8 @@ namespace ResourceTypes.Actors
 
             writer.Write(testPrimitive, isBigEndian);
             writer.Write(range, isBigEndian);
-            Vector3Extenders.WriteToFile(unk1, writer, isBigEndian);
-            Vector3Extenders.WriteToFile(unk2, writer, isBigEndian);
+            Vector3Utils.WriteToFile(unk1, writer, isBigEndian);
+            Vector3Utils.WriteToFile(unk2, writer, isBigEndian);
         }
     }
 
@@ -2291,7 +2291,7 @@ namespace ResourceTypes.Actors
             WalkRange = stream.ReadSingle(isBigEndian);
             SensorType = stream.ReadInt32(isBigEndian);
             Radius = stream.ReadSingle(isBigEndian);
-            BBox = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            BBox = Vector3Utils.ReadFromFile(stream, isBigEndian);
             ScriptEntity = stream.ReadStringBuffer(128);
             Data = stream.ReadBytes(2048);
 
@@ -2314,7 +2314,7 @@ namespace ResourceTypes.Actors
             writer.Write(WalkRange, isBigEndian);
             writer.Write(SensorType, isBigEndian);
             writer.Write(Radius, isBigEndian);
-            Vector3Extenders.WriteToFile(BBox, writer, isBigEndian);
+            Vector3Utils.WriteToFile(BBox, writer, isBigEndian);
             writer.WriteStringBuffer(128, ScriptEntity);
             writer.Write(Data);
             writer.Write(Type, isBigEndian);
@@ -2351,14 +2351,14 @@ namespace ResourceTypes.Actors
             DoorName = stream.ReadStringBuffer(31);
             RestrictedCars = stream.ReadByte8();
             Unk01 = stream.ReadInt32(isBigEndian);
-            CameraPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
-            CameraTarget = Vector3Extenders.ReadFromFile(stream, isBigEndian);
-            StagePos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
-            SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
-            Human1SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
-            Human2SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
-            Human3SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
-            Human4SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            CameraPos = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            CameraTarget = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            StagePos = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            SpawnPos = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            Human1SpawnPos = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            Human2SpawnPos = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            Human3SpawnPos = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            Human4SpawnPos = Vector3Utils.ReadFromFile(stream, isBigEndian);
 
             Debug.Assert(RestrictedCars == 0, "Restricted Cars is not 0. Please inform Greavesy.");
         }
@@ -2406,7 +2406,7 @@ namespace ResourceTypes.Actors
             BlockHuman = stream.ReadBoolean();
             BlockVehicle = stream.ReadBoolean();
             stream.ReadBoolean(); // Padding?
-            BBox = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            BBox = Vector3Utils.ReadFromFile(stream, isBigEndian);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)

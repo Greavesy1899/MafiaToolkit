@@ -35,7 +35,6 @@ namespace Utils.Settings
         //Misc vars;
         private static long ElapsedTime;
         private static DiscordController controller;
-        public const string DiscordLibLocation = "libs/discord-rpc";
         public static bool LoggingEnabled;
         public static int Language;
         public static int SerializeSDSOption;
@@ -50,7 +49,11 @@ namespace Utils.Settings
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.14f;
+
+        // Update vars
+        public static float CurrentVersion = 1.0f;
+
+        public static readonly float Version = 2.22f;
 
         public static void ReadINI()
         {
@@ -86,6 +89,7 @@ namespace Utils.Settings
             int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);
             int.TryParse(ReadKey("VertexMemorySizePerBuffer", "SDS", "6000000 "), out VertexMemorySizePerBuffer);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
+            float.TryParse(ReadKey("CurrentVersion", "Update", "2.20"), out CurrentVersion);
 
             Log.LoggingEnabled = LoggingEnabled;
 
@@ -130,7 +134,7 @@ namespace Utils.Settings
                 largeImageText = "",
                 startTimestamp = ElapsedTime
             };
-            UpdateRichPresence("Using the Game Explorer");
+            UpdateRichPresence("Using the Game Explorer.");
         }
 
         public static void UpdateRichPresence(string details = null)

@@ -14,26 +14,18 @@ namespace Mafia2Tool
 {
     public partial class MaterialEditor : Form
     {
+        private FileInfo MaterialFile;
         private MaterialLibrary mtl;
         private int currentSearchType;
+
+        private bool bIsFileEdited = false;
 
         public MaterialEditor(FileInfo file)
         {
             InitializeComponent();
+            MaterialFile = file;
+            BuildData();
             Localise();
-
-            // We try and grab the library from our storage.
-            mtl = MaterialsManager.MaterialLibraries.TryGet(file.FullName);
-
-            // If it doesn't exist, then we should try and read it as a fallback.
-            if(mtl == null)
-            {
-                // Version will be replaced when reading file
-                mtl = new MaterialLibrary(VersionsEnumerator.V_57);
-                mtl.ReadMatFile(file.FullName);
-            }
-
-            FetchMaterials();
             Show();
             Panel_Main.Visible = true;
             MergePanel.Visible = false;
@@ -43,17 +35,17 @@ namespace Mafia2Tool
 
         private void Localise()
         {
-            contextFileButton.Text = Language.GetString("$FILE");
-            contextOpenButton.Text = Language.GetString("$OPEN");
-            contextSaveButton.Text = Language.GetString("$SAVE");
-            contextExitButton.Text = Language.GetString("$EXIT");
+            Button_File.Text = Language.GetString("$FILE");
+            Button_Open.Text = Language.GetString("$OPEN");
+            Button_Save.Text = Language.GetString("$SAVE");
+            Button_Exit.Text = Language.GetString("$EXIT");
             toolButton.Text = Language.GetString("$TOOLS");
-            addMaterialToolStripMenuItem.Text = Language.GetString("$MATERIAL_ADD");
+            Button_AddMaterial.Text = Language.GetString("$MATERIAL_ADD");
             Text = Language.GetString("$MATERIAL_EDITOR_TITLE");
-            DeleteSelectedMaterialButton.Text = Language.GetString("$MATERIAL_DELETE");
+            Button_Delete.Text = Language.GetString("$MATERIAL_DELETE");
             CancelButton.Text = Language.GetString("$CANCEL");
             MergeButton.Text = Language.GetString("$MERGE");
-            MergeMTLButton.Text = Language.GetString("$MERGE_MTL");
+            Button_MergeMTL.Text = Language.GetString("$MERGE_MTL");
             OverWriteLabel.Text = Language.GetString("$CONFLICTING_MATS");
             NewMaterialLabel.Text = Language.GetString("$NEW_MATS");
             SelectAllNewButton.Text = SelectAllOverwriteButton.Text = Language.GetString("$SELECT_ALL");
@@ -69,35 +61,57 @@ namespace Mafia2Tool
             }
         }
 
+        public void BuildData()
+        {
+            // We try and grab the library from our storage.
+            mtl = MaterialsManager.MaterialLibraries.TryGet(MaterialFile.FullName);
+
+            // If it doesn't exist, then we should try and read it as a fallback.
+            if (mtl == null)
+            {
+                // Version will be replaced when reading file
+                mtl = new MaterialLibrary(VersionsEnumerator.V_57);
+                mtl.ReadMatFile(MaterialFile.FullName);
+            }
+
+            FetchMaterials();
+        }
+
         public void FetchMaterials()
         {
-            dataGridView1.Rows.Clear();
+            GirdView_Materials.Rows.Clear();
 
             foreach(var Pair in mtl.Materials)
             {
-                dataGridView1.Rows.Add(BuildRowData(Pair.Value));
+                GirdView_Materials.Rows.Add(BuildRowData(Pair.Value));
             }
         }
 
         private void SearchForMaterials(string text = null)
         {
-            dataGridView1.Rows.Clear();
+            GirdView_Materials.Rows.Clear();
 
             IMaterial[] Filtered = mtl.SelectSearchTypeAndProceedSearch(text, currentSearchType);
 
             foreach (IMaterial Mat in Filtered)
             {
-                dataGridView1.Rows.Add(BuildRowData(Mat));
+                GirdView_Materials.Rows.Add(BuildRowData(Mat));
             }
         }
 
-        private void ExitButton_Click(object sender, EventArgs e)
+        private void FileIsEdited()
         {
-            MaterialData.Load();
-            Dispose();
+            Text = Language.GetString("$MATERIAL_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
-        private void SaveButton_Click(object sender, EventArgs e)
+        private void FileIsNotEdited()
+        {
+            Text = Language.GetString("$MATERIAL_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
+        private void Save()
         {
             if (!Panel_Main.Visible)
             {
@@ -106,9 +120,40 @@ namespace Mafia2Tool
             }
 
             mtl.WriteMatFile(mtl.Name);
+
+            FileIsNotEdited();
         }
 
-        private void AddMaterial(object sender, EventArgs e)
+        private void Reload()
+        {
+            if (!Panel_Main.Visible)
+            {
+                return;
+            }
+
+            GirdView_Materials.ClearSelection();
+            MaterialGrid.SelectedObject = null;
+
+            BuildData();
+
+            FileIsNotEdited();
+        }
+
+        private void Delete()
+        {
+            if (GirdView_Materials.SelectedCells[0] == null || !Panel_Main.Visible)
+            {
+                return;
+            }
+
+            int index = GirdView_Materials.SelectedCells[0].RowIndex;
+            mtl.Materials.Remove((GirdView_Materials.Rows[index].Tag as IMaterial).GetMaterialHash());
+            GirdView_Materials.Rows.RemoveAt(index);
+
+            FileIsEdited();
+        }
+
+        private void AddMaterial()
         {
             if (!Panel_Main.Visible)
             {
@@ -119,8 +164,8 @@ namespace Mafia2Tool
             NewObjectForm form = new NewObjectForm(true);
             form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
             form.LoadOption(new MaterialAddOption());
-            
-            if(form.ShowDialog() == DialogResult.OK)
+
+            if (form.ShowDialog() == DialogResult.OK)
             {
                 if (mtl.Materials.ContainsKey(FNV64.Hash(form.GetInputText())))
                 {
@@ -133,53 +178,40 @@ namespace Mafia2Tool
                 mat.SetName(form.GetInputText());
 
                 mtl.Materials.Add(mat.GetMaterialHash(), mat);
-                dataGridView1.Rows.Add(BuildRowData(mat));
+                GirdView_Materials.Rows.Add(BuildRowData(mat));
             }
 
             // Cleanup and reload.
             form.Dispose();
-        }
 
-        private void DeleteMaterial(object sender, EventArgs e)
-        {
-            if (dataGridView1.SelectedCells[0] == null || !Panel_Main.Visible)
-            {
-                return;
-            }
-
-            int index = dataGridView1.SelectedCells[0].RowIndex;
-            mtl.Materials.Remove((dataGridView1.Rows[index].Tag as IMaterial).GetMaterialHash());
-            dataGridView1.Rows.RemoveAt(index);
-        }
-
-        private void UpdateList(object sender, EventArgs e)
-        {
-            if (!Panel_Main.Visible)
-            {
-                return;
-            }
-
-            FetchMaterials();
-        }
-
-        private void OnMaterialSelected(object sender, DataGridViewCellEventArgs e)
-        {
-            if ((e.RowIndex > -1) && (e.ColumnIndex > -1))
-            {
-                MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
-                IMaterial mat = (dataGridView1.Rows[e.RowIndex].Tag as IMaterial);
-            }
+            FileIsEdited();
         }
 
         private DataGridViewRow BuildRowData(IMaterial mat)
         {
             DataGridViewRow row = new DataGridViewRow();
             row.Tag = mat;
-            row.CreateCells(dataGridView1, new object[] { mat.MaterialName, mat.GetMaterialHash() });
+            row.CreateCells(GirdView_Materials, new object[] { mat.MaterialName, mat.GetMaterialHash() });
             return row;
         }
 
-        private void MergeMTLButton_Click(object sender, EventArgs e)
+        private void OnMaterialSelected(object sender, DataGridViewCellEventArgs e)
+        {
+            if ((e.RowIndex > -1) && (e.ColumnIndex > -1))
+            {
+                MaterialGrid.SelectedObject = GirdView_Materials.Rows[e.RowIndex].Tag;
+                IMaterial mat = (GirdView_Materials.Rows[e.RowIndex].Tag as IMaterial);
+            }
+        }
+
+        private void MaterialGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            MaterialGrid.Refresh();
+
+            FileIsEdited();
+        }
+
+        private void Button_MergeMTL_Click(object sender, EventArgs e)
         {
             if (!Panel_Main.Visible)
             {
@@ -227,9 +259,11 @@ namespace Mafia2Tool
                     NewMatListBox.Items.Add(mat);
                 }
             }
+
+            FileIsEdited();
         }
 
-        private void CancelButton_Click(object sender, EventArgs e)
+        private void Button_Cancel_Click(object sender, EventArgs e)
         {
             if(MergePanel.Visible)
             {
@@ -240,7 +274,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void MergeButton_Click(object sender, EventArgs e)
+        private void Button_Merge_Click(object sender, EventArgs e)
         {
             if(MergePanel.Visible)
             {
@@ -298,11 +332,11 @@ namespace Mafia2Tool
             currentSearchType = ComboBox_SearchType.SelectedIndex;
         }
 
-        private void Button_ExportedSelected_Clicked(object sender, EventArgs e)
+        private void Button_ExportedSelected_Click(object sender, EventArgs e)
         {
             MaterialLibrary library = new MaterialLibrary(mtl.Version);
 
-            foreach(DataGridViewCell cell in dataGridView1.SelectedCells)
+            foreach(DataGridViewCell cell in GirdView_Materials.SelectedCells)
             {
                 if(cell.ColumnIndex == 0)
                 {
@@ -333,11 +367,6 @@ namespace Mafia2Tool
             {
                 FetchMaterials();
             }
-        }
-
-        private void MaterialGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
-        {
-            MaterialGrid.Refresh();
         }
 
         private void Button_DumpTextures_Click(object sender, EventArgs e)
@@ -375,6 +404,74 @@ namespace Mafia2Tool
             if (e.KeyCode == Keys.Enter)
             {
                 Button_Search.PerformClick();
+            }
+        }
+
+        private void MaterialEditor_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S)
+            {
+                Save();
+            }
+            else if (e.Control && e.KeyCode == Keys.R)
+            {
+                Reload();
+            }
+            else if (e.Control && e.KeyCode == Keys.D)
+            {
+                GirdView_Materials.ClearSelection();
+                MaterialGrid.SelectedObject = null;
+            }
+            else if (e.Control && e.KeyCode == Keys.F)
+            {
+                MaterialSearch.Focus();
+            }
+        }
+
+        private void Button_Exit_Click(object sender, EventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                    MaterialData.Load();
+                    Dispose();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.No)
+                {
+                    MaterialData.Load();
+                    Dispose();
+                }
+            }
+            else
+            {
+                MaterialData.Load();
+                Dispose();
+            }
+        }
+
+        private void Button_Save_Click(object sender, EventArgs e) => Save();
+        private void Button_AddMaterial_Click(object sender, EventArgs e) => AddMaterial();
+        private void Button_Delete_Click(object sender, EventArgs e) => Delete();
+        private void Button_Reload_Click(object sender, EventArgs e) => Reload();
+
+        private void MaterialEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
             }
         }
     }

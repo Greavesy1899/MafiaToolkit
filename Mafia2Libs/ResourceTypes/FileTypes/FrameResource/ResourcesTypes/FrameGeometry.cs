@@ -1,7 +1,7 @@
-﻿using SharpDX;
-using System.IO;
+﻿using System.IO;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.FrameResource
 {
@@ -60,7 +60,7 @@ namespace ResourceTypes.FrameResource
             numLods = reader.ReadByte8();
             unk01 = reader.ReadInt16(isBigEndian);
 
-            decompressionOffset = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            decompressionOffset = Vector3Utils.ReadFromFile(reader, isBigEndian);
             decompressionFactor = reader.ReadSingle(isBigEndian);
 
             LOD = new FrameLOD[numLods];

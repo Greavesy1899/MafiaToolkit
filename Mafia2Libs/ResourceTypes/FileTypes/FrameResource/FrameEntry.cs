@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Toolkit.Core;
 using Utils.Extensions;
 using Utils.StringHelpers;
 
@@ -35,12 +36,12 @@ namespace ResourceTypes.FrameResource
 
         public FrameEntry()
         {
-            refID = StringHelpers.GetNewRefID();
+            refID = RefManager.GetNewRefID();
         }
 
         public FrameEntry(FrameEntry entry)
         {
-            refID = StringHelpers.GetNewRefID();
+            refID = RefManager.GetNewRefID();
             refs = new Dictionary<FrameEntryRefTypes, int>();
 
             for(int i = 0; i < entry.refs.Count; i++)

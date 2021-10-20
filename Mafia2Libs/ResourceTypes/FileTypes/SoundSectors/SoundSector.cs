@@ -1,7 +1,7 @@
-﻿using SharpDX;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using Utils.SharpDXExtensions;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Sound
 {

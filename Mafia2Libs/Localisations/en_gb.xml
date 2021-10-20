@@ -45,7 +45,7 @@
   <String ID="$REFRESH">Refresh</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Folder Path</String>
   <String ID="$UP_TOOLTIP">Up</String>
-  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder is located.</String>
+  <String ID="$M1DE_OODLEERROR">Could not find Oodle DLL which is required for compression/decompression. Please make sure 'oo2core_8_win64.dll' exists in game directory.</String>
   
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Start Toolkit</String>
@@ -76,6 +76,7 @@
   <String ID="$LANGUAGE_OPTION">Interface Language</String>
   <String ID="$DISCORD_STATE_CUSTOM">Use a custom discord state.</String>
   <String ID="$CHECK_FOR_UPDATES">Check for Updates.</String>
+  <String ID="$SAVE_PROMPT">Save before closing?</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Export Path:</String>
@@ -166,7 +167,12 @@
   <String ID="$FRADD_TYPE">Frame Type</String>
   <String ID="$FRADD_NAME_TABLE">Add Frame To Name Table?</String>
   <String ID="$QUESTION_FRADD">Enter the name and type of the frame.</String>
-
+  
+  <!-- Scene Outliner Dock Strings-->
+  <String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
+  <String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
+  <String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+  
   <!-- Actor Editor -->
   <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
   <String ID="$ADD_ITEM">Add Item</String>
@@ -174,6 +180,33 @@
   
   <!-- EntityDataStorage Editor -->
   <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
+  <String ID="$SAVE_TITLE">Save File</String>
+  <String ID="$OPEN_TITLE">Open File</String>
+  <String ID="$EXPORT_XML">Export To XML</String>
+  <String ID="$IMPORT_XML">Import From XML</String>
+  <String ID="$PHYSICS_RB">Physics/Rigidbody</String>
+  <String ID="$MOTOR_TORQUE">Motor/Torque</String>
+  <String ID="$FUEL">Fuel</String>
+  <String ID="$GEARBOX">Gearbox</String>
+  <String ID="$STEERING">Steering</String>
+  <String ID="$DIFFERENTIAL">Differential</String>
+  <String ID="$BRAKES">Brakes</String>
+  <String ID="$AERODYNAMICS">Aerodynamics</String>
+  <String ID="$EFFECTS">Effects</String>
+  <String ID="$ENGINE">Engine</String>
+  <String ID="$ENVIRONMENT">Environment</String>
+  <String ID="$AIR_PUMP">Air Pump</String>
+  <String ID="$DOORS">Doors</String>
+  <String ID="$BONNET_TRUNK">Bonnet/Trunk</String>
+  <String ID="$WHEELS">Wheels</String>
+  <String ID="$HORN_SIREN">Horn/Siren</String>
+  <String ID="$GLASS_BREAK">Glass Effects</String>
+  <String ID="$EXPLOSION">Explosion Effects</String>
+  <String ID="$FIRE">Fire Effects</String>
+  <String ID="$RAIN_CONTACT">Rain Effects</String>
+  <String ID="$HEDGE_CONTACT">Hedge Collision Effects</String>
+  <String ID="$SKIDDING_SLIDING">Powersliding/Skidding</String>
+  <String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Input Name</String>

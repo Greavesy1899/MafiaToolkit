@@ -1,7 +1,5 @@
-﻿using SharpDX;
-using System;
-using System.IO;
-using Utils.Types;
+﻿using System.IO;
+using System.Numerics;
 
 namespace ResourceTypes.Animation2
 {

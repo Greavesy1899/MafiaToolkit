@@ -1,13 +1,14 @@
-﻿using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using ResourceTypes.Collisions;
-using Buffer = SharpDX.Direct3D11.Buffer;
-using Color = System.Drawing.Color;
+﻿using ResourceTypes.Collisions;
+using ResourceTypes.Collisions.Opcode;
 using System.Collections.Generic;
 using System.Linq;
-using ResourceTypes.Collisions.Opcode;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using Utils.Extensions;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
+using Vortice.Mathematics;
+using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -21,14 +22,14 @@ namespace Rendering.Graphics
         public RenderStaticCollision()
         {
             DoRender = true;
-            Transform = Matrix.Identity;
+            Transform = Matrix4x4.Identity;
             SelectionColour = Color.White;
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext context)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, Vertices);
-            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, Indices);
+            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[2];
         }
 
@@ -139,25 +140,30 @@ namespace Rendering.Graphics
 
             for (int i = 0; i < Vertices.Length; i++)
             {
-                normals[i].Normalize();
+                normals[i] = Vector3.Normalize(normals[i]);
                 Vertices[i].Normal = normals[i];
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
+            {
                 return;
+            }
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
-            deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0);
+            deviceContext.IASetVertexBuffers(0, VertexBufferView);
+            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+
             Shader.SetSceneVariables(deviceContext, Transform, camera);
             Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(null, SelectionColour.Normalize()));
+
             Shader.Render(deviceContext, PrimitiveTopology.TriangleList, Indices.Length, 0);
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
         }
@@ -173,7 +179,7 @@ namespace Rendering.Graphics
             indexBuffer = null;
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             if(isUpdatedNeeded)
             {

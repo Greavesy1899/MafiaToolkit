@@ -1,17 +1,15 @@
-﻿using System;
+﻿using Core.IO;
+using Mafia2Tool.Forms;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
 using Utils.Extensions;
-using System.Drawing;
 using Utils.Language;
 using Utils.Settings;
-using ResourceTypes.Misc;
-using Mafia2Tool.Forms;
-using SharpDX;
-using Core.IO;
-using Utils.Helpers;
 
 namespace Mafia2Tool
 {
@@ -22,6 +20,8 @@ namespace Mafia2Tool
         private DirectoryInfo pcDirectory;
         private FileInfo launcher;
         private Game game;
+
+        private FileSystemWatcher DirectoryWatcher;
 
         public GameExplorer()
         {
@@ -42,6 +42,7 @@ namespace Mafia2Tool
             Localise();
             infoText.Text = "Loading..";
             InitExplorerSettings();
+            InitFileWatcher();
             FileListViewTypeController(1);
             infoText.Text = "Ready..";
             TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
@@ -142,6 +143,27 @@ namespace Mafia2Tool
             folderView.Nodes.Add(rootTreeNode);
             infoText.Text = "Done building folders..";
             OpenDirectory(rootDirectory);
+        }
+
+        private void InitFileWatcher()
+        {
+            DirectoryWatcher = new FileSystemWatcher(rootDirectory.FullName);
+            DirectoryWatcher.SynchronizingObject = this;
+            DirectoryWatcher.IncludeSubdirectories = true;
+            DirectoryWatcher.EnableRaisingEvents = false;
+            DirectoryWatcher.Changed += DirectoryWatcher_OnAnyChange;
+            DirectoryWatcher.Created += DirectoryWatcher_OnAnyChange;
+            DirectoryWatcher.Created += DirectoryWatcher_OnAnyChange;
+            DirectoryWatcher.Renamed += DirectoryWatcher_OnAnyChange;
+            DirectoryWatcher.Deleted += DirectoryWatcher_OnAnyChange;
+        }
+
+        private void DirectoryWatcher_OnAnyChange(object sender, FileSystemEventArgs e)
+        {
+            if (e.FullPath.Contains(currentDirectory.FullName))
+            {
+                this.BeginInvoke((MethodInvoker)(() => OpenDirectory(currentDirectory)));
+            }
         }
 
         private void GetSubdirectories(DirectoryInfo directory, TreeNode rootTreeNode)
@@ -334,13 +356,14 @@ namespace Mafia2Tool
             }
 
             if (asset is FileSDS)
-            {
+            {           
                 OpenSDSDirectory(asset.GetUnderlyingFileInfo());
             }
             else
             {
                 OpenDirectory(currentDirectory);
             }
+
             return true;
         }
 
@@ -450,7 +473,11 @@ namespace Mafia2Tool
 
         private void ContextOpenFolder_Click(object sender, EventArgs e)
         {
-            Process.Start(currentDirectory.FullName);
+            ProcessStartInfo StartInfo = new ProcessStartInfo();
+            StartInfo.UseShellExecute = true;
+            StartInfo.FileName = currentDirectory.FullName;
+
+            Process.Start(StartInfo);
         }
 
         private void OnOpening(object sender, CancelEventArgs e)

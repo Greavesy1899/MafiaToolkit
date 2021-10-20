@@ -1,8 +1,8 @@
 ﻿using ResourceTypes.Navigation;
 using System.ComponentModel;
-using SharpDX;
-using SharpDX.Direct3D11;
-using Utils.Types;
+using System.Numerics;
+using Vortice.Direct3D11;
+using Vortice.Mathematics;
 
 namespace Rendering.Graphics
 {
@@ -28,7 +28,7 @@ namespace Rendering.Graphics
         public RenderRoad()
         {
             DoRender = true;
-            Transform = Matrix.Identity;
+            Transform = Matrix4x4.Identity;
             towardLanes = new Render2DPlane[0];
             backwardLanes = new Render2DPlane[0];
             Spline = new RenderLine();
@@ -72,11 +72,11 @@ namespace Rendering.Graphics
                 HasBackward = data.HasBackward;
             }
 
-            BBox = BoundingBox.FromPoints(editPoints);
+            BBox = BoundingBox.CreateFromPoints(editPoints);
             IndexOffset = data.IndexOffset;
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext context)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
             Spline.InitBuffers(d3d, context);
 
@@ -87,7 +87,7 @@ namespace Rendering.Graphics
                 plane.InitBuffers(d3d, context);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
@@ -101,7 +101,7 @@ namespace Rendering.Graphics
                 plane.Render(device, deviceContext, camera);
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             this.Transform = matrix;
         }
@@ -117,7 +117,7 @@ namespace Rendering.Graphics
                 plane.Shutdown();
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             Spline.UpdateBuffers(device, deviceContext);
 

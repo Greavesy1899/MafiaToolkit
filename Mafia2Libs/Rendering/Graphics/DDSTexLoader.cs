@@ -19,15 +19,14 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
+using SharpGen.Runtime;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Device = SharpDX.Direct3D11.Device;
-using Resource = SharpDX.Direct3D11.Resource;
+using Vortice;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
+using Vortice.DXGI;
 
 namespace Rendering.Graphics
 {
@@ -188,7 +187,7 @@ namespace Rendering.Graphics
                 case Format.D24_UNorm_S8_UInt:
                 case Format.R24_UNorm_X8_Typeless:
                 case Format.X24_Typeless_G8_UInt:
-                case Format.R9G9B9E5_Sharedexp:
+                case Format.R9G9B9E5_SharedExp:
                 case Format.R8G8_B8G8_UNorm:
                 case Format.G8R8_G8B8_UNorm:
                 case Format.B8G8R8A8_UNorm:
@@ -599,7 +598,7 @@ namespace Rendering.Graphics
             out int theight,
             out int tdepth,
             out int skipMip,
-            DataBox[] initData)
+            SubresourceData[] initData)
         {
             if (bitData == null)
                 throw new ArgumentNullException("bitData");
@@ -643,9 +642,7 @@ namespace Rendering.Graphics
                         }
 
                         System.Diagnostics.Debug.Assert(index < mipCount * arraySize);
-                        initData[index].DataPointer = pSrcBits;
-                        initData[index].RowPitch = RowBytes;
-                        initData[index].SlicePitch = NumBytes;
+                        initData[index] = new SubresourceData(pSrcBits, RowBytes, NumBytes);
                         ++index;
                     }
                     else if (j == 0)
@@ -714,7 +711,7 @@ namespace Rendering.Graphics
         }
 
         //--------------------------------------------------------------------------------------
-        static SharpDX.Result CreateD3DResources(SharpDX.Direct3D11.Device d3dDevice,
+        static Result CreateD3DResources(ID3D11Device d3dDevice,
             ResourceDimension resDim,
             int width,
             int height,
@@ -729,14 +726,14 @@ namespace Rendering.Graphics
             ResourceOptionFlags miscFlags,
             bool forceSRGB,
             bool isCubeMap,
-            DataBox[] initData,
-             out Resource texture,
-             out ShaderResourceView textureView)
+            SubresourceData[] initData,
+             out ID3D11Resource texture,
+             out ID3D11ShaderResourceView textureView)
         {
             if (d3dDevice == null)
                 throw new ArgumentNullException("d3dDevice");
 
-            SharpDX.Result result = Result.Fail;
+            Result result = Result.Fail;
             texture = null;
             textureView = null;
 
@@ -762,23 +759,23 @@ namespace Rendering.Graphics
                         desc.CpuAccessFlags = CpuAccessFlags;
                         desc.OptionFlags = miscFlags & ~ResourceOptionFlags.TextureCube;
 
-                        Texture1D tex = null;
-                        tex = new Texture1D(d3dDevice, desc, initData);
+                        ID3D11Texture1D tex = null;
+                        tex = d3dDevice.CreateTexture1D(desc, initData);
 
                         if (tex != null)
                         {
                             if (arraySize > 1)
                             {
-                                SRVDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture1DArray;
+                                SRVDesc.ViewDimension = ShaderResourceViewDimension.Texture1DArray;
                                 SRVDesc.Texture1DArray.MipLevels = (mipCount == 0) ? -1 : desc.MipLevels;
                                 SRVDesc.Texture1DArray.ArraySize = arraySize;
                             }
                             else
                             {
-                                SRVDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture1D;
+                                SRVDesc.ViewDimension = ShaderResourceViewDimension.Texture1D;
                                 SRVDesc.Texture1D.MipLevels = (mipCount == 0) ? -1 : desc.MipLevels;
                             }
-                            textureView = new ShaderResourceView(d3dDevice, tex, SRVDesc);
+                            textureView = d3dDevice.CreateShaderResourceView(tex, SRVDesc);
 
                             if (textureView == null)
                             {
@@ -817,7 +814,7 @@ namespace Rendering.Graphics
                             desc.OptionFlags = miscFlags & ResourceOptionFlags.TextureCube;
                         }
 
-                        Texture2D tex = new Texture2D(d3dDevice, desc, initData);
+                        ID3D11Texture2D tex = d3dDevice.CreateTexture2D(desc, initData);
                         if (tex != null)
                         {
 
@@ -826,31 +823,31 @@ namespace Rendering.Graphics
                             {
                                 if (arraySize > 6)
                                 {
-                                    SRVDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
+                                    SRVDesc.ViewDimension = ShaderResourceViewDimension.TextureCubeArray;
                                     SRVDesc.TextureCubeArray.MipLevels = (mipCount == 0) ? -1 : desc.MipLevels;
 
                                     // Earlier we set arraySize to (NumCubes * 6)
-                                    SRVDesc.TextureCubeArray.CubeCount = arraySize / 6;
+                                    SRVDesc.TextureCubeArray.NumCubes = arraySize / 6;
                                 }
                                 else
                                 {
-                                    SRVDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube;
+                                    SRVDesc.ViewDimension = ShaderResourceViewDimension.TextureCube;
                                     SRVDesc.TextureCube.MipLevels = (mipCount == 0) ? -1 : desc.MipLevels;
                                 }
                             }
                             else if (arraySize > 1)
                             {
-                                SRVDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DArray;
+                                SRVDesc.ViewDimension = ShaderResourceViewDimension.Texture2DArray;
                                 SRVDesc.Texture2DArray.MipLevels = (mipCount == 0) ? -1 : desc.MipLevels;
                                 SRVDesc.Texture2DArray.ArraySize = arraySize;
                             }
                             else
                             {
-                                SRVDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2D;
+                                SRVDesc.ViewDimension = ShaderResourceViewDimension.Texture2D;
                                 SRVDesc.Texture2D.MipLevels = (mipCount == 0) ? -1 : desc.MipLevels;
                             }
 
-                            textureView = new ShaderResourceView(d3dDevice, tex, SRVDesc);
+                            textureView = d3dDevice.CreateShaderResourceView(tex, SRVDesc);
                             if (textureView == null)
                             {
                                 tex.Dispose();
@@ -878,15 +875,15 @@ namespace Rendering.Graphics
                         desc.BindFlags = bindFlags;
                         desc.CpuAccessFlags = CpuAccessFlags;
                         desc.OptionFlags = miscFlags & ~ResourceOptionFlags.TextureCube;
-                        Texture3D tex = new Texture3D(d3dDevice, desc, initData);
 
+                        ID3D11Texture3D tex = d3dDevice.CreateTexture3D(desc, initData);
                         if (tex != null)
                         {
 
 
-                            SRVDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture3D;
+                            SRVDesc.ViewDimension = ShaderResourceViewDimension.Texture3D;
                             SRVDesc.Texture3D.MipLevels = (mipCount == 0) ? -1 : desc.MipLevels;
-                            textureView = new ShaderResourceView(d3dDevice, tex, SRVDesc);
+                            textureView = d3dDevice.CreateShaderResourceView(tex, SRVDesc);
                             if (textureView == null)
                             {
                                 tex.Dispose();
@@ -904,8 +901,8 @@ namespace Rendering.Graphics
         }
 
         //--------------------------------------------------------------------------------------
-        static Result CreateTextureFromDDS(SharpDX.Direct3D11.Device d3dDevice,
-            DeviceContext d3dContext,
+        static Result CreateTextureFromDDS(ID3D11Device d3dDevice,
+            ID3D11DeviceContext d3dContext,
             DDS_HEADER header,
             DDS_HEADER_DXT10? header10,
             IntPtr bitData,
@@ -916,8 +913,8 @@ namespace Rendering.Graphics
             CpuAccessFlags CpuAccessFlags,
             ResourceOptionFlags miscFlags,
             bool forceSRGB,
-            out Resource texture,
-            out ShaderResourceView textureView)
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView)
         {
             Result hr = Result.Ok;
             texture = null;
@@ -1041,7 +1038,7 @@ namespace Rendering.Graphics
             }
 
             // Bound sizes (for security purposes we don't trust DDS file metadata larger than the Direct3D hardware requirements)
-            if (mipCount > Resource.MaximumMipLevels)
+            if (mipCount > ID3D11Resource.MaximumMipLevels)
             {
                 throw new ArgumentException();
             }
@@ -1049,8 +1046,8 @@ namespace Rendering.Graphics
             switch (resDim)
             {
                 case ResourceDimension.Texture1D:// D3D11_RESOURCE_DIMENSION_TEXTURE1D:
-                    if ((arraySize > Resource.MaximumTexture1DArraySize) ||
-                        (width > Resource.MaximumTexture1DSize))
+                    if ((arraySize > ID3D11Resource.MaximumTexture1DArraySize) ||
+                        (width > ID3D11Resource.MaximumTexture1DSize))
                     {
                         throw new ArgumentException();
                     }
@@ -1060,16 +1057,16 @@ namespace Rendering.Graphics
                     if (isCubeMap)
                     {
                         // This is the right bound because we set arraySize to (NumCubes*6) above
-                        if ((arraySize > Resource.MaximumTexture2DArraySize) ||
-                            (width > Resource.MaximumTextureCubeSize) ||
-                            (height > Resource.MaximumTextureCubeSize))
+                        if ((arraySize > ID3D11Resource.MaximumTexture2DArraySize) ||
+                            (width > ID3D11Resource.MaximumTextureCubeSize) ||
+                            (height > ID3D11Resource.MaximumTextureCubeSize))
                         {
                             throw new ArgumentException();
                         }
                     }
-                    else if ((arraySize > Resource.MaximumTexture2DArraySize) ||
-                        (width > Resource.MaximumTexture2DSize) ||
-                        (height > Resource.MaximumTexture2DSize))
+                    else if ((arraySize > ID3D11Resource.MaximumTexture2DArraySize) ||
+                        (width > ID3D11Resource.MaximumTexture2DSize) ||
+                        (height > ID3D11Resource.MaximumTexture2DSize))
                     {
                         throw new ArgumentException();
                     }
@@ -1077,9 +1074,9 @@ namespace Rendering.Graphics
 
                 case ResourceDimension.Texture3D:
                     if ((arraySize > 1) ||
-                        (width > Resource.MaximumTexture3DSize) ||
-                        (height > Resource.MaximumTexture3DSize) ||
-                        (depth > Resource.MaximumTexture3DSize))
+                        (width > ID3D11Resource.MaximumTexture3DSize) ||
+                        (height > ID3D11Resource.MaximumTexture3DSize) ||
+                        (depth > ID3D11Resource.MaximumTexture3DSize))
                     {
                         throw new ArgumentException();
                     }
@@ -1100,7 +1097,7 @@ namespace Rendering.Graphics
                 {
                     // 10level9 feature levels do not support auto-gen mipgen for volume textures
                     if ((resDim != ResourceDimension.Texture3D)
-                        || (d3dDevice.FeatureLevel >= SharpDX.Direct3D.FeatureLevel.Level_10_0))
+                        || (d3dDevice.FeatureLevel >= FeatureLevel.Level_10_0))
                     {
                         autogen = true;
                     }
@@ -1110,13 +1107,13 @@ namespace Rendering.Graphics
             if (autogen)
             {
                 // Create texture with auto-generated mipmaps
-                Resource tex;
+                ID3D11Resource tex;
 
                 hr = CreateD3DResources(d3dDevice, resDim, width, height, depth, 0, arraySize,
                     format, usage,
                     bindFlags | BindFlags.RenderTarget,
                     CpuAccessFlags,
-                    miscFlags | ResourceOptionFlags.GenerateMipMaps, forceSRGB,
+                    miscFlags | ResourceOptionFlags.GenerateMips, forceSRGB,
                     isCubeMap, null, out tex, out textureView);
                 if (hr == Result.Ok)
                 {
@@ -1138,7 +1135,7 @@ namespace Rendering.Graphics
 
                     int mipLevels = 1;
 
-                    switch (desc.Dimension)
+                    switch (desc.ViewDimension)
                     {
                         case ShaderResourceViewDimension.Texture1D: mipLevels = desc.Texture1D.MipLevels; break;
                         case ShaderResourceViewDimension.Texture1DArray: mipLevels = desc.Texture1DArray.MipLevels; break;
@@ -1167,7 +1164,7 @@ namespace Rendering.Graphics
                                 tex.Dispose();
                                 throw new System.IO.EndOfStreamException();
                             }
-                            int res = Resource.CalculateSubResourceIndex(0, item, mipLevels);
+                            int res = ID3D11Resource.CalculateSubResourceIndex(0, item, mipLevels);
                             d3dContext.UpdateSubresource(tex, res, null, pSrcBits, rowBytes, numBytes);
                             pSrcBits += numBytes;
                         }
@@ -1184,8 +1181,7 @@ namespace Rendering.Graphics
             else
             {
                 // Create the texture
-                DataBox[] initData = new DataBox[mipCount * arraySize];
-
+                SubresourceData[] initData = new SubresourceData[mipCount * arraySize];
 
                 int skipMip = 0;
                 int twidth = 0;
@@ -1247,11 +1243,11 @@ namespace Rendering.Graphics
 
 
         //--------------------------------------------------------------------------------------
-        public static void CreateDDSTextureFromMemory(Device d3dDevice,
+        public static void CreateDDSTextureFromMemory(ID3D11Device d3dDevice,
             IntPtr ddsData,
             int ddsDataSize,
-            out Resource texture,
-            out ShaderResourceView textureView,
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView,
             int maxsize,
             out DDS_ALPHA_MODE alphaMode)
         {
@@ -1260,12 +1256,12 @@ namespace Rendering.Graphics
                 out texture, out textureView, out alphaMode);
         }
 
-        public static void CreateDDSTextureFromMemory(Device d3dDevice,
-            DeviceContext d3dContext,
+        public static void CreateDDSTextureFromMemory(ID3D11Device d3dDevice,
+            ID3D11DeviceContext d3dContext,
             IntPtr ddsData,
             int ddsDataSize,
-            out Resource texture,
-            out ShaderResourceView textureView,
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView,
             int maxsize,
             out DDS_ALPHA_MODE alphaMode)
         {
@@ -1275,7 +1271,7 @@ namespace Rendering.Graphics
         }
 
 
-        public static void CreateDDSTextureFromMemoryEx(Device d3dDevice,
+        public static void CreateDDSTextureFromMemoryEx(ID3D11Device d3dDevice,
             IntPtr ddsData,
             int ddsDataSize,
             int maxsize,
@@ -1284,8 +1280,8 @@ namespace Rendering.Graphics
             CpuAccessFlags CpuAccessFlags,
             ResourceOptionFlags miscFlags,
             bool forceSRGB,
-            out Resource texture,
-            out ShaderResourceView textureView,
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView,
             out DDS_ALPHA_MODE alphaMode)
         {
             texture = null;
@@ -1355,8 +1351,8 @@ namespace Rendering.Graphics
                 alphaMode = GetAlphaMode(header, ddsData + sizeofDDS_MAGIC);
             }
         }
-        public static void CreateDDSTextureFromMemoryEx(Device d3dDevice,
-            DeviceContext d3dContext,
+        public static void CreateDDSTextureFromMemoryEx(ID3D11Device d3dDevice,
+            ID3D11DeviceContext d3dContext,
     IntPtr ddsData,
             int ddsDataSize,
             int maxsize,
@@ -1365,8 +1361,8 @@ namespace Rendering.Graphics
             CpuAccessFlags CpuAccessFlags,
             ResourceOptionFlags miscFlags,
             bool forceSRGB,
-            out Resource texture,
-            out ShaderResourceView textureView,
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView,
             out DDS_ALPHA_MODE alphaMode)
         {
             texture = null;
@@ -1441,10 +1437,10 @@ namespace Rendering.Graphics
         }
 
         //--------------------------------------------------------------------------------------
-        public static void CreateDDSTextureFromFile(Device d3dDevice,
+        public static void CreateDDSTextureFromFile(ID3D11Device d3dDevice,
             string fileName,
-            out Resource texture,
-            out ShaderResourceView textureView,
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView,
             int maxsize,
             out DDS_ALPHA_MODE alphaMode)
         {
@@ -1453,11 +1449,11 @@ namespace Rendering.Graphics
                 out texture, out textureView, out alphaMode);
         }
 
-        public static void CreateDDSTextureFromFile(Device d3dDevice,
-            DeviceContext d3dContext,
+        public static void CreateDDSTextureFromFile(ID3D11Device d3dDevice,
+            ID3D11DeviceContext d3dContext,
     string fileName,
-            out Resource texture,
-            out ShaderResourceView textureView,
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView,
             int maxsize,
             out DDS_ALPHA_MODE alphaMode)
         {
@@ -1466,7 +1462,7 @@ namespace Rendering.Graphics
                 out texture, out textureView, out alphaMode);
         }
 
-        public static void CreateDDSTextureFromFileEx(Device d3dDevice,
+        public static void CreateDDSTextureFromFileEx(ID3D11Device d3dDevice,
             string fileName,
             int maxsize,
             ResourceUsage usage,
@@ -1474,8 +1470,8 @@ namespace Rendering.Graphics
             CpuAccessFlags cpuAccessFlags,
             ResourceOptionFlags miscFlags,
             bool forceSRGB,
-            out Resource texture,
-            out ShaderResourceView textureView,
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView,
             out DDS_ALPHA_MODE alphaMode)
         {
             texture = null;
@@ -1516,8 +1512,8 @@ namespace Rendering.Graphics
 
         }
 
-        public static void CreateDDSTextureFromFileEx(Device d3dDevice,
-            DeviceContext d3dContext,
+        public static void CreateDDSTextureFromFileEx(ID3D11Device d3dDevice,
+            ID3D11DeviceContext d3dContext,
             string fileName,
             int maxsize,
             ResourceUsage usage,
@@ -1525,8 +1521,8 @@ namespace Rendering.Graphics
             CpuAccessFlags CpuAccessFlags,
             ResourceOptionFlags miscFlags,
             bool forceSRGB,
-            out Resource texture,
-            out ShaderResourceView textureView,
+            out ID3D11Resource texture,
+            out ID3D11ShaderResourceView textureView,
             out DDS_ALPHA_MODE alphaMode)
         {
             texture = null;

@@ -12,6 +12,8 @@ namespace Mafia2Tool
         private FileInfo xbinfile;
         private XBin xbin;
 
+        private bool bIsFileEdited = false;
+
         public XBinEditor(FileInfo file)
         {
             InitializeComponent();
@@ -59,6 +61,18 @@ namespace Mafia2Tool
             Grid_XBin.SelectedObject = e.Node.Tag;
         }
 
+        private void Save()
+        {
+            xbin.TableInformation.SetFromTreeNodes(TreeView_XBin.Nodes[0]);
+
+            // Create backup, set our new xbins, and then save.
+            File.Copy(xbinfile.FullName, xbinfile.FullName + "_old", true);
+            xbin.WriteToFile(xbinfile);
+
+            Text = Language.GetString("$XBIN_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
         private void Button_Export_Click(object sender, EventArgs e)
         {
             Cursor.Current = Cursors.WaitCursor;
@@ -84,6 +98,9 @@ namespace Mafia2Tool
             xbin.TableInformation.ReadFromXML(XMLFileName);
             Initialise();
             Cursor.Current = Cursors.Default;
+
+            Text = Language.GetString("$XBIN_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void Button_Delete_Click(object sender, EventArgs e)
@@ -93,21 +110,51 @@ namespace Mafia2Tool
             if(SelectedNode != null)
             {
                 SelectedNode.Remove();
+
+                Text = Language.GetString("$XBIN_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
             }
         }
 
-        private void Button_Save_Click(object sender, EventArgs e)
-        {
-            xbin.TableInformation.SetFromTreeNodes(TreeView_XBin.Nodes[0]);
+        private void Button_Save_Click(object sender, EventArgs e) => Save();
 
-            // Create backup, set our new xbins, and then save.
-            File.Copy(xbinfile.FullName, xbinfile.FullName + "_old", true);
-            xbin.WriteToFile(xbinfile);
+        private void Button_Reload_Click(object sender, EventArgs e)
+        {
+            TreeView_XBin.SelectedNode = null;
+            Grid_XBin.SelectedObject = null;
+
+            Text = Language.GetString("$XBIN_EDITOR_TITLE");
+            bIsFileEdited = false;
+
+            ReadFromFile();
+            Initialise();
         }
+
+        private void Button_Exit_Click(object sender, EventArgs e) => Close();
 
         private void OnPropertyValidChanged(object s, PropertyValueChangedEventArgs e)
         {
             Grid_XBin.Refresh();
+
+            Text = Language.GetString("$XBIN_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
+        private void XbinEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }
