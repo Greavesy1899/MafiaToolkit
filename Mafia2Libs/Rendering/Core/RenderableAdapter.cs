@@ -1,4 +1,5 @@
 ﻿using Rendering.Graphics;
+using System;
 
 namespace Rendering.Core
 {
@@ -11,6 +12,11 @@ namespace Rendering.Core
         {
             ParentObject = InTag;
             RenderItem = InRenderItem;
+        }
+
+        public T GetRenderItem<T>() where T : IRenderer
+        {
+            return (T)Convert.ChangeType(RenderItem, typeof(T));
         }
 
         public IRenderer GetRenderItem()

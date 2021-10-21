@@ -2,6 +2,7 @@
 using Rendering.Graphics;
 using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
+using ResourceTypes.Navigation;
 using System.Numerics;
 using Vortice.Mathematics;
 
@@ -51,6 +52,13 @@ namespace Rendering.Factories
             RenderModel model = new RenderModel();
             model.ConvertFrameToRenderModel(Mesh, geom, mat, indexBuffers, vertexBuffers);
             return model;
+        }
+
+        public static RenderAIWorld BuildAIWorld(GraphicsClass InGraphics, AIWorld InWorldInfo)
+        {
+            RenderAIWorld OurAIWorld = new RenderAIWorld(InGraphics);
+            OurAIWorld.Init(InWorldInfo);
+            return OurAIWorld;
         }
 
         // TODO: Rubbish, redo. Old code.

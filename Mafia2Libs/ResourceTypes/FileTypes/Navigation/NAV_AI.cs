@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Utils.StringHelpers;
 
@@ -40,12 +41,22 @@ namespace ResourceTypes.Navigation
             {
                 ReadFromFile(reader);
             }
+
+            if(Debugger.IsAttached)
+            {
+                WriteToFile();
+            }
         }
 
-        public void WriteToFile()
+        public void WriteToFile(bool bIsTest = true)
         {
-            var backup = file.FullName.Insert(file.FullName.Length - 4, "_test");
-            using (BinaryWriter writer = new BinaryWriter(File.Open(backup, FileMode.Create)))
+            string OutputName = file.FullName;
+            if (bIsTest)
+            {
+                OutputName = OutputName.Insert(OutputName.Length - 4, "_test");
+            }
+
+            using (NavigationWriter writer = new NavigationWriter(File.Open(OutputName, FileMode.Create)))
             {
                 WriteToFile(writer);
             }
@@ -87,7 +98,7 @@ namespace ResourceTypes.Navigation
             }
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(NavigationWriter writer)
         {
             writer.Write(-1); //file size
             writer.Write(unk01_flags);
@@ -109,6 +120,10 @@ namespace ResourceTypes.Navigation
                     writer.Write((uint)(writer.BaseStream.Length - 12));
                     return;
                 }
+            }
+            else if(unk01_flags == 1005)
+            {
+                (data as AIWorld).WriteToFile(writer);
             }
 
             writer.BaseStream.Position = 0;

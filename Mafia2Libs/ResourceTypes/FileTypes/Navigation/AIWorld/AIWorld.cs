@@ -1,219 +1,195 @@
-﻿using System;
+﻿using Rendering.Core;
+using Rendering.Factories;
+using Rendering.Graphics;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Numerics;
+using System.Windows.Forms;
 using Utils.StringHelpers;
-using Utils.VorticeUtils;
 
 namespace ResourceTypes.Navigation
 {
     public class AIWorld
     {
-        int unk02;
-        int unk03;
-        short unk04; //might always == 2
-        string preFileName; //this comes before the actual filename.
-        int unk05;
-        string unkString1; //these both seem to be for their Kynapse.
-        string unkString2; //sometimes it can be 1, or 2.
-        string typeName; //always AIWORLDPART.
-        long unk06; //between the AIWorldPart and the struct.
-        AIChunk[] points;
-        string originFile;
-        byte[] trailingBytes;
+        public int Unk03 { get; set; }
+        public int Unk05 { get; set; } // same as Unk3
+
+        public string PartName { get; set; }
+        public string KynogonString { get; set; }
+        public List<IType> AIPoints { get; private set; }
+        public string OriginStream { get; set; }
+
+        [Browsable(false)]
+        public RenderableAdapter RenderObject { get; private set; }
+
+        // Always the same
+        private int Unk02; // 1005
+        private short Unk04; //might always == 2 (NB: This could actually "Type2")
+
+        private string Unk01; // Usually empty?
+        private string ConstAIWorldPart; // always AIWORLDPART.
+        private byte Unk06;
+        private uint Unk8; // NB: Do we have to assert if this isn't the usual value?
+        private uint Unk9;
+        private uint Unk10;
 
         public AIWorld(BinaryReader reader)
         {
+            AIPoints = new List<IType>();
+
             ReadFromFile(reader);
         }
 
         public void ReadFromFile(BinaryReader reader)
         {
-            unk02 = reader.ReadInt32();
-            unk03 = reader.ReadInt32();
-            unk04 = reader.ReadInt16();
-            int nameSize = reader.ReadInt16();
-            preFileName = new string(reader.ReadChars(nameSize));
-            unk05 = reader.ReadInt32();
-            nameSize = reader.ReadInt16();
-            unkString1 = new string(reader.ReadChars(nameSize));
-            nameSize = reader.ReadInt16();
-            unkString2 = new string(reader.ReadChars(nameSize));
-            nameSize = reader.ReadInt16();
-            typeName = new string(reader.ReadChars(nameSize));
+            Unk02 = reader.ReadInt32();
+            Unk03 = reader.ReadInt32(); 
+            Unk04 = reader.ReadInt16(); // NB: This could actually "Type2".
+            PartName = StringHelpers.ReadString16(reader);
+            Unk05 = reader.ReadInt32();
+            KynogonString = StringHelpers.ReadString16(reader);
+            Unk01 = StringHelpers.ReadString16(reader);
+            ConstAIWorldPart = StringHelpers.ReadString16(reader);
 
-            unk06 = reader.ReadByte();
-
-            if (unk06 != 1)
+            // TODO: This could just be a bool such as - 'if not empty'
+            Unk06 = reader.ReadByte();
+            if (Unk06 != 1)
+            {
                 throw new Exception("unk06 was not 1");
+            }
 
+            // Read AIPoints
             int unkCount = reader.ReadInt32();
-            points = new AIChunk[unkCount];
-            for (int i = 0; i != unkCount; i++)
-                points[i] = new AIChunk(reader);
+            for (int i = 0; i < unkCount; i++)
+            {
+                ushort TypeID = reader.ReadUInt16();
+                IType Point = AIWorld_Factory.ConstructByTypeID(this, TypeID);
+                Point.Read(reader);
 
-            originFile = StringHelpers.ReadString(reader);
-            trailingBytes = reader.ReadBytes(8);
+                AIPoints.Add(Point);
+            }
+
+            // Read footer data
+            OriginStream = StringHelpers.ReadString(reader);
+            uint originFileSize = reader.ReadUInt32();
+            Unk8 = reader.ReadUInt32();
+            Unk9 = reader.ReadUInt32();
+            Unk10 = reader.ReadUInt32();
+
+            DebugWriteToFile();
         }
 
-        private class AIChunk
+        public void WriteToFile(BinaryWriter Writer)
         {
-            private short type;
-            private Type1 type1Data;
-            private Type4 type4Data;
-            private Type7 type7Data;
-            private Type8 type8Data;
-            private int type8Int;
-            private Type11 type11Data;
+            Writer.Write(Unk02);
+            Writer.Write(Unk03);
+            Writer.Write(Unk04);
+            StringHelpers.WriteString16(Writer, PartName);
+            Writer.Write(Unk05);
+            StringHelpers.WriteString16(Writer, KynogonString); 
+            StringHelpers.WriteString16(Writer, Unk01);
+            StringHelpers.WriteString16(Writer, ConstAIWorldPart);
+            Writer.Write(Unk06);
 
-            public AIChunk(BinaryReader reader)
+            // Write AI Points
+            Writer.Write(AIPoints.Count);
+            foreach(IType AIPoint in AIPoints)
             {
-                type = reader.ReadInt16();
+                ushort TypeID = AIWorld_Factory.GetIDByType(AIPoint);
+                Writer.Write(TypeID);
+                AIPoint.Write(Writer);
+            }
 
-                switch (type)
+            // Write footer data
+            StringHelpers.WriteString(Writer, OriginStream);
+            Writer.Write(OriginStream.Length + 1);
+            Writer.Write(Unk8);
+            Writer.Write(Unk9);
+            Writer.Write(Unk10);
+        }
+
+        public void DebugWriteToFile()
+        {
+            using(StreamWriter Writer = new StreamWriter(PartName + ".txt"))
+            {
+                Writer.WriteLine("Unk01: {0}", Unk01);
+                Writer.WriteLine("Unk02: {0}", Unk02);
+                Writer.WriteLine("Unk03: {0}", Unk03);
+                Writer.WriteLine("Unk04: {0}", Unk04);
+                Writer.WriteLine("PartName: {0}", PartName);
+                Writer.WriteLine("Unk05: {0}", Unk05);
+                Writer.WriteLine("KynogonString: {0}", KynogonString);
+                Writer.WriteLine("ConstAIWorldPart: {0}", ConstAIWorldPart);
+                Writer.WriteLine("Unk06: {0}", Unk06);
+
+                foreach (IType AIPoint in AIPoints)
                 {
-                    case 1:
-                        type1Data = new Type1();
-                        type1Data.ReadFromFile(reader);
-                        break;
-                    case 4:
-                        type4Data = new Type4();
-                        type4Data.ReadFromFile(reader);
-                        break;
-                    case 7:
-                        type7Data = new Type7();
-                        type7Data.ReadFromFile(reader);
-                        break;
-                    case 8:
-                        type8Data = new Type8();
-                        type8Data.ReadFromFile(reader);
-                        type8Int = reader.ReadInt32();
-                        break;
-                    case 9:
-                        type8Data = new Type8();
-                        type8Data.ReadFromFile(reader);
-                        break;
-                    case 11:
-                        type11Data = new Type11();
-                        type11Data.ReadFromFile(reader);
-                        break;
-                    default:
-                        throw new Exception("Unknown type");
+                    AIPoint.DebugWrite(Writer);
+                    Writer.WriteLine("");
+                }
+
+                Writer.WriteLine("OriginStream: {0}", OriginStream);
+                Writer.WriteLine("Unk8: {0}", Unk8);
+                Writer.WriteLine("Unk9: {0}", Unk9);
+                Writer.WriteLine("Unk10: {0}", Unk10);
+            }
+        }
+
+        public void DeletePoint(IType AIPointToRemove)
+        {
+            AIPoints.Remove(AIPointToRemove);
+
+            RequestPrimitiveBatchUpdate();
+        }
+
+        public void PopulatePrimitiveBatch(PrimitiveBatch BBoxBatch)
+        {
+            foreach (IType AIPoint in AIPoints)
+            {
+                if (AIPoint.bIsVisible)
+                {
+                    AIPoint.ConstructRenderable(BBoxBatch);
                 }
             }
+        }
 
-            private struct Type1
+        public void ConstructRenderable(GraphicsClass InGraphicsClass)
+        {
+            RenderObject = new RenderableAdapter();
+            RenderObject.InitAdaptor(RenderableFactory.BuildAIWorld(InGraphicsClass, this), this);
+        }
+
+        public void RequestPrimitiveBatchUpdate()
+        {
+            RenderObject.GetRenderItem<RenderAIWorld>().RequestUpdate();
+        }
+
+        public TreeNode PopulateTreeNode()
+        {
+            TreeNode Parent = new TreeNode();
+            Parent.Text = PartName;
+            Parent.Name = PartName;
+            Parent.Tag = this;
+
+            foreach (IType AIPoint in AIPoints)
             {
-                byte unk06;
-                AIChunk[] points;
-
-                public void ReadFromFile(BinaryReader reader)
-                {
-                    unk06 = reader.ReadByte();
-                    int unkCount = reader.ReadInt32();
-                    points = new AIChunk[unkCount];
-                    for (int i = 0; i != unkCount; i++)
-                        points[i] = new AIChunk(reader);
-                }
+                Parent.Nodes.Add(AIPoint.PopulateTreeNode());
             }
+            
+            return Parent;
+        }
 
-            private struct Type4
-            {
-                private byte unk0;
-                private Vector3 position;
-                private Vector3 rotation;
-                private int unk1;
-                private int unk2;
-                private int unk3;
-                private Vector3 unk4;
-                private int unk5;
-                private byte unk6;
-                private byte unk7;
-                private int[] unk8;
-                private int unk9;
+        public TreeNode AddType<T>() where T : IType
+        {
+            T NewObject = (T)Activator.CreateInstance(typeof(T), this);
+            AIPoints.Add(NewObject);
 
-                public void ReadFromFile(BinaryReader reader)
-                {
-                    unk0 = reader.ReadByte();
-                    position = Vector3Utils.ReadFromFile(reader);
-                    rotation = Vector3Utils.ReadFromFile(reader);
-                    unk1 = reader.ReadInt32();
-                    unk2 = reader.ReadInt32();
-                    unk3 = reader.ReadInt32();
-                    unk4 = Vector3Utils.ReadFromFile(reader);
-                    unk5 = reader.ReadInt32();
-                    unk6 = reader.ReadByte();
-                    unk7 = reader.ReadByte();
-                    short count = reader.ReadInt16();
-                    unk8 = new int[count];
-                    for (int i = 0; i != count; i++)
-                        unk8[i] = reader.ReadInt32();
-                    unk9 = reader.ReadInt32();
-                }
-            }
+            TreeNode NewNode = NewObject.PopulateTreeNode();
 
-            private struct Type7
-            {
-                private short unk0;
-                private Vector3 position;
-                private Vector3 rotation;
-                private Vector3 unk1;
-                private int unk2;
+            RequestPrimitiveBatchUpdate();
 
-                public void ReadFromFile(BinaryReader reader)
-                {
-                    unk0 = reader.ReadInt16();
-                    position = Vector3Utils.ReadFromFile(reader);
-                    rotation = Vector3Utils.ReadFromFile(reader);
-                    unk1 = Vector3Utils.ReadFromFile(reader);
-                    unk2 = reader.ReadInt32();
-                }
-            }
-
-            private struct Type8
-            {
-                private byte unk0;
-                private int unk1;
-                private Vector3 unk2;
-                private float unk3;
-                private float unk4;
-                private int[] unk5;
-
-                public void ReadFromFile(BinaryReader reader)
-                {
-                    unk0 = reader.ReadByte();
-                    unk1 = reader.ReadInt32();
-                    unk2 = Vector3Utils.ReadFromFile(reader);
-                    unk3 = reader.ReadSingle();
-                    unk4 = reader.ReadSingle();
-                    short count = reader.ReadInt16();
-                    unk5 = new int[count];
-                    for (int i = 0; i != count; i++)
-                        unk5[i] = reader.ReadInt32();
-                }
-            }
-
-            private struct Type11
-            {
-                private byte unk0;
-                private Vector3 unk1;
-                private Vector3 unk2;
-                private Vector3 unk3;
-                private float unk4;
-
-                public void ReadFromFile(BinaryReader reader)
-                {
-                    unk0 = reader.ReadByte();
-                    unk1 = Vector3Utils.ReadFromFile(reader);
-                    unk2 = Vector3Utils.ReadFromFile(reader);
-                    unk3 = Vector3Utils.ReadFromFile(reader);
-                    unk4 = reader.ReadSingle();
-                }
-            }
-
-            public override string ToString()
-            {
-                return string.Format("Chunk: {0}", type);
-            }
+            return NewNode;
         }
     }
 }

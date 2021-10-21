@@ -137,7 +137,7 @@ namespace Rendering.Graphics
 
         public TreeNode SetTranslokatorGrid(TranslokatorLoader translokator)
         {
-            translokatorGrid = new SpatialGrid(translokator);
+            translokatorGrid = new SpatialGrid(this, translokator);
             translokatorGrid.Initialise(D3D.Device, D3D.DeviceContext);
             return translokatorGrid.GetTreeNodes();
         }
@@ -149,7 +149,7 @@ namespace Rendering.Graphics
 
             for(int i = 0; i < navigationGrids.Length; i++)
             {
-                navigationGrids[i] = new SpatialGrid(data[i].runtimeMesh);
+                navigationGrids[i] = new SpatialGrid(this, data[i].runtimeMesh);
                 navigationGrids[i].Initialise(D3D.Device, D3D.DeviceContext);
                 Grids[i] = navigationGrids[i].GetTreeNodes();
                 Grids[i].Text = string.Format("Grid: {0}", i);

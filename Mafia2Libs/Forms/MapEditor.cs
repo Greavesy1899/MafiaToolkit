@@ -53,6 +53,8 @@ namespace Mafia2Tool
         private TreeNode junctionRoot;
         private TreeNode animalTrafficRoot;
         private TreeNode actorRoot;
+        private TreeNode AIWorldRoot;
+        private TreeNode OBJDataRoot;
 
         private bool bSelectMode = false;
         private float selectTimer = 0.0f;
@@ -708,49 +710,63 @@ namespace Mafia2Tool
                 }
                 dSceneTree.AddToTree(navNode);
             }
-            if (SceneData.OBJData != null)
+            if (SceneData.OBJData != null && SceneData.OBJData.Length > 0)
             {
+                OBJDataRoot = new TreeNode();
+                OBJDataRoot.Tag = "Folder";
+                OBJDataRoot.Name = OBJDataRoot.Text = "Navigation: OBJDATA";
+
                 var data = new OBJData[SceneData.OBJData.Length];
                 for (int i = 0; i < SceneData.OBJData.Length; i++)
                 {
                     data[i] = (OBJData)SceneData.OBJData[i].data;
                 }
+
                 TreeNode Grids = Graphics.SetNavigationGrid(data);
-                dSceneTree.AddToTree(Grids);
-                //for (int i = 0; i < SceneData.OBJData.Length; i++)
-                //{
-                //    int generatedID = StringHelpers.GetNewRefID();
-                //    TreeNode navNode = new TreeNode();
-                //    navNode.Text = string.Format("NAV: {0}", i);
-                //    navNode.Name = generatedID.ToString();
-                //    var obj = (SceneData.OBJData[i].data as OBJData);
+                OBJDataRoot.Nodes.Add(Grids);
 
-                //    for (int x = 0; x < obj.vertices.Length; x++)
-                //    {
-                //        var childID = StringHelpers.GetNewRefID();
-                //        RenderNav navigationPoints = new RenderNav();
-                //        navigationPoints.Init(obj, x);
-                //        assets.Add(childID, navigationPoints);
+                for (int i = 0; i < SceneData.OBJData.Length; i++)
+                {
+                    var obj = (SceneData.OBJData[i].data as OBJData);
+                    RenderNav navigationPoints = new RenderNav(Graphics);
+                    navigationPoints.Init(obj);
 
-                //        TreeNode childNode = new TreeNode();
-                //        childNode.Text = string.Format("NAVNode: {0}", x);
-                //        childNode.Name = childID.ToString();
-                //        childNode.Tag = navigationPoints;
-                //        navNode.Nodes.Add(childNode);
-                //    }
+                    TreeNode navNode = new TreeNode();
+                    navNode.Text = string.Format("NAV: {0}", i);
+                    navNode.Name = "NAV_OBJ_DATA";
+                    navNode.Tag = navigationPoints;
 
-                //    for (int y = 0; y < obj.connections.Length; y++)
-                //    {
-                //        RenderLine navigationLine = new RenderLine();
-                //        navigationLine.SetUnselectedColour(System.Drawing.Color.AliceBlue);
-                //        navigationLine.Init(new Vector3[2] { obj.vertices[obj.connections[y].NodeID].Position, obj.vertices[obj.connections[y].ConnectedNodeID].Position });
-                //        navigationLine.SetSelectedColour(System.Drawing.Color.AliceBlue);
-                //        navigationLine.SetUnselectedColour(System.Drawing.Color.AliceBlue);
-                //        assets.Add(StringHelpers.GetNewRefID(), navigationLine);
-                //    }
+                    for (int x = 0; x < obj.vertices.Length; x++)
+                    {
+                        TreeNode childNode = new TreeNode();
+                        childNode.Text = string.Format("NAVNode: {0}", obj.vertices[x].Unk7);
+                        childNode.Name = "NAV_INDEXED_NODE";
+                        childNode.Tag = obj.vertices[x];
+                        navNode.Nodes.Add(childNode);
+                    }
 
-                //    dSceneTree.AddToTree(navNode);
-                //}
+                    OBJDataRoot.Nodes.Add(navNode);
+                }
+
+                dSceneTree.AddToTree(OBJDataRoot);
+            }
+            if (SceneData.AIWorlds != null && SceneData.AIWorlds.Length > 0)
+            {
+                AIWorldRoot = new TreeNode();
+                AIWorldRoot.Tag = "Folder";
+                AIWorldRoot.Name = AIWorldRoot.Text = "Navigation: AIWORLD";
+
+                var data = new AIWorld[SceneData.AIWorlds.Length];
+                for (int i = 0; i < SceneData.AIWorlds.Length; i++)
+                {
+                    data[i] = (AIWorld)SceneData.AIWorlds[i].data;
+                    data[i].ConstructRenderable(Graphics);
+
+                    TreeNode AIWorldNode = data[i].PopulateTreeNode();
+                    AIWorldRoot.Nodes.Add(AIWorldNode);
+                }
+
+                dSceneTree.AddToTree(AIWorldRoot);
             }
             if (SceneData.Collisions != null)
             {

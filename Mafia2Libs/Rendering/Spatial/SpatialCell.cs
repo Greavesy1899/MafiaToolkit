@@ -8,27 +8,31 @@ using Vortice.Mathematics;
 
 namespace Rendering.Core
 {
+    public class SpatialCell_InitParams
+    {
+        public BoundingBox CellExtents { get; set; }
+        public GraphicsClass OwnGraphics { get; set; }
+    }
+
     public class SpatialCell
     {
-        Dictionary<int, IRenderer> assets;
-        private BoundingBox boundingBox;
+        protected Dictionary<int, IRenderer> assets;
+        protected BoundingBox boundingBox;
+        protected GraphicsClass OwnGraphicsClass;
+        protected int RefID;
 
         public BoundingBox BoundingBox {
             get { return boundingBox; }
         }
-        public SpatialCell(BoundingBox extents)
-        {
-            assets = new Dictionary<int, IRenderer>();
-            boundingBox = extents;
-        }
 
-        public SpatialCell(KynogonRuntimeMesh.Cell cellData, BoundingBox extents)
+        public SpatialCell(SpatialCell_InitParams InitParams)
         {
+            OwnGraphicsClass = InitParams.OwnGraphics;
+            boundingBox = InitParams.CellExtents;
+
             assets = new Dictionary<int, IRenderer>();
-            RenderNavCell cell = new RenderNavCell();
-            cell.Init(cellData);
-            assets.Add(RefManager.GetNewRefID(), cell);
-            boundingBox = extents;
+
+            RefID = RefManager.GetNewRefID();
         }
 
         public void AddAsset(IRenderer asset, int key)
@@ -36,6 +40,7 @@ namespace Rendering.Core
             assets.Add(key, asset);
         }
 
+        public virtual void PreInitialise() { }
         public void Initialise(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             foreach (KeyValuePair<int, IRenderer> entry in assets)
@@ -46,12 +51,14 @@ namespace Rendering.Core
 
         public void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
-            foreach (KeyValuePair<int, IRenderer> entry in assets)
+            /*foreach (KeyValuePair<int, IRenderer> entry in assets)
             {
                 entry.Value.UpdateBuffers(device, deviceContext);
                 entry.Value.Render(device, deviceContext, camera);
-            }
+            }*/
         }
+
+        public virtual void SetVisibility(bool bNewVisiblity) { }
 
         public void Shutdown()
         {
@@ -59,6 +66,11 @@ namespace Rendering.Core
             {
                 entry.Value.Shutdown();
             }
+        }
+
+        public int GetRefID()
+        {
+            return RefID;
         }
 
         public override string ToString()
