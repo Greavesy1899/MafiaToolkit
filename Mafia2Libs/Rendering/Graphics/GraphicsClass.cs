@@ -454,9 +454,15 @@ namespace Rendering.Graphics
         {
             if(selectedID == Args.RefID)
             {
-                IRenderer RenderAsset = Assets[Args.RefID];
+                IRenderer RenderAsset = GetAsset(Args.RefID);
                 selectionBox.SetTransform(RenderAsset.Transform);
                 selectionBox.Update(RenderAsset.BoundingBox);
+
+                // TODO: Improve this. We're not actually selecting an entry.
+                // Gizmo should be scrapped and re-attempted.
+                Matrix4x4 TempTransform = Matrix4x4.Identity;
+                TempTransform.Translation = selectionBox.Transform.Translation;
+                TranslationGizmo.OnSelectEntry(TempTransform, true);
             }
         }
 
