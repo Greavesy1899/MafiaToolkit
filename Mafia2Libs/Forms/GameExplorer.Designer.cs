@@ -82,7 +82,6 @@ namespace Mafia2Tool
             this.ViewStripMenuTile = new System.Windows.Forms.ToolStripMenuItem();
             this.dropdownTools = new System.Windows.Forms.ToolStripDropDownButton();
             this.OptionsItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.M2FBXButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.PackCurrentSDSButton = new System.Windows.Forms.ToolStripMenuItem();
             this.UnpackCurrentSDSButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -240,7 +239,7 @@ namespace Mafia2Tool
             this.fileListView.Location = new System.Drawing.Point(4, 35);
             this.fileListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(617, 391);
+            this.fileListView.Size = new System.Drawing.Size(616, 391);
             this.fileListView.SmallImageList = this.imageBank;
             this.fileListView.TabIndex = 0;
             this.fileListView.UseCompatibleStateImageBehavior = false;
@@ -514,7 +513,7 @@ namespace Mafia2Tool
             // 
             this.OpenGameFolderButton.Image = ((System.Drawing.Image)(resources.GetObject("OpenGameFolderButton.Image")));
             this.OpenGameFolderButton.Name = "OpenGameFolderButton";
-            this.OpenGameFolderButton.Size = new System.Drawing.Size(180, 22);
+            this.OpenGameFolderButton.Size = new System.Drawing.Size(159, 22);
             this.OpenGameFolderButton.Text = "$BTN_OPEN_MII";
             this.OpenGameFolderButton.Click += new System.EventHandler(this.OpenMafiaIIClicked);
             // 
@@ -522,7 +521,7 @@ namespace Mafia2Tool
             // 
             this.RunGameButton.Image = ((System.Drawing.Image)(resources.GetObject("RunGameButton.Image")));
             this.RunGameButton.Name = "RunGameButton";
-            this.RunGameButton.Size = new System.Drawing.Size(180, 22);
+            this.RunGameButton.Size = new System.Drawing.Size(159, 22);
             this.RunGameButton.Text = "$BTN_RUN_MII";
             this.RunGameButton.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
@@ -530,7 +529,7 @@ namespace Mafia2Tool
             // 
             this.SelectGameButton.Image = ((System.Drawing.Image)(resources.GetObject("SelectGameButton.Image")));
             this.SelectGameButton.Name = "SelectGameButton";
-            this.SelectGameButton.Size = new System.Drawing.Size(180, 22);
+            this.SelectGameButton.Size = new System.Drawing.Size(159, 22);
             this.SelectGameButton.Text = "$SELECT_GAME";
             this.SelectGameButton.Click += new System.EventHandler(this.Button_SelectGame_OnClick);
             // 
@@ -538,7 +537,7 @@ namespace Mafia2Tool
             // 
             this.ExitEditorButton.Image = ((System.Drawing.Image)(resources.GetObject("ExitEditorButton.Image")));
             this.ExitEditorButton.Name = "ExitEditorButton";
-            this.ExitEditorButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitEditorButton.Size = new System.Drawing.Size(159, 22);
             this.ExitEditorButton.Text = "$EXIT";
             this.ExitEditorButton.Click += new System.EventHandler(this.ExitToolkitClicked);
             // 
@@ -562,7 +561,7 @@ namespace Mafia2Tool
             this.ViewStripMenuIcon.CheckOnClick = true;
             this.ViewStripMenuIcon.Image = ((System.Drawing.Image)(resources.GetObject("ViewStripMenuIcon.Image")));
             this.ViewStripMenuIcon.Name = "ViewStripMenuIcon";
-            this.ViewStripMenuIcon.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuIcon.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuIcon.Text = "$ICON";
             this.ViewStripMenuIcon.Click += new System.EventHandler(this.OnViewIconClicked);
             // 
@@ -570,7 +569,7 @@ namespace Mafia2Tool
             // 
             this.ViewStripMenuDetails.CheckOnClick = true;
             this.ViewStripMenuDetails.Name = "ViewStripMenuDetails";
-            this.ViewStripMenuDetails.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuDetails.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuDetails.Text = "$DETAILS";
             this.ViewStripMenuDetails.Click += new System.EventHandler(this.OnViewDetailsClicked);
             // 
@@ -579,7 +578,7 @@ namespace Mafia2Tool
             this.ViewStripMenuSmallIcon.CheckOnClick = true;
             this.ViewStripMenuSmallIcon.Image = ((System.Drawing.Image)(resources.GetObject("ViewStripMenuSmallIcon.Image")));
             this.ViewStripMenuSmallIcon.Name = "ViewStripMenuSmallIcon";
-            this.ViewStripMenuSmallIcon.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuSmallIcon.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuSmallIcon.Text = "$SMALL_ICON";
             this.ViewStripMenuSmallIcon.Click += new System.EventHandler(this.OnViewSmallIconClicked);
             // 
@@ -588,7 +587,7 @@ namespace Mafia2Tool
             this.ViewStripMenuList.CheckOnClick = true;
             this.ViewStripMenuList.Image = ((System.Drawing.Image)(resources.GetObject("ViewStripMenuList.Image")));
             this.ViewStripMenuList.Name = "ViewStripMenuList";
-            this.ViewStripMenuList.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuList.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuList.Text = "$LIST";
             this.ViewStripMenuList.Click += new System.EventHandler(this.OnViewListClicked);
             // 
@@ -596,7 +595,7 @@ namespace Mafia2Tool
             // 
             this.ViewStripMenuTile.CheckOnClick = true;
             this.ViewStripMenuTile.Name = "ViewStripMenuTile";
-            this.ViewStripMenuTile.Size = new System.Drawing.Size(180, 22);
+            this.ViewStripMenuTile.Size = new System.Drawing.Size(151, 22);
             this.ViewStripMenuTile.Text = "$TILE";
             this.ViewStripMenuTile.Click += new System.EventHandler(this.OnViewTileClicked);
             // 
@@ -605,7 +604,6 @@ namespace Mafia2Tool
             this.dropdownTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.dropdownTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OptionsItem,
-            this.M2FBXButton,
             this.toolStripSeparator1,
             this.PackCurrentSDSButton,
             this.UnpackCurrentSDSButton,
@@ -623,13 +621,6 @@ namespace Mafia2Tool
             this.OptionsItem.Size = new System.Drawing.Size(180, 22);
             this.OptionsItem.Text = "$OPTIONS";
             this.OptionsItem.Click += new System.EventHandler(this.OnOptionsItem_Clicked);
-            // 
-            // M2FBXButton
-            // 
-            this.M2FBXButton.Name = "M2FBXButton";
-            this.M2FBXButton.Size = new System.Drawing.Size(180, 22);
-            this.M2FBXButton.Text = "M2 FBX";
-            this.M2FBXButton.Click += new System.EventHandler(this.M2FBXButtonClicked);
             // 
             // toolStripSeparator1
             // 
@@ -674,7 +665,7 @@ namespace Mafia2Tool
             // 
             this.AboutButton.Image = ((System.Drawing.Image)(resources.GetObject("AboutButton.Image")));
             this.AboutButton.Name = "AboutButton";
-            this.AboutButton.Size = new System.Drawing.Size(180, 22);
+            this.AboutButton.Size = new System.Drawing.Size(118, 22);
             this.AboutButton.Text = "$ABOUT";
             this.AboutButton.Click += new System.EventHandler(this.OnCredits_Pressed);
             // 
@@ -800,7 +791,6 @@ namespace Mafia2Tool
         private ToolStripMenuItem ViewStripMenuSmallIcon;
         private ToolStripMenuItem ViewStripMenuList;
         private ToolStripMenuItem ViewStripMenuTile;
-        private ToolStripMenuItem M2FBXButton;
         private ToolStripMenuItem UnpackAllSDSButton;
         private ToolStripMenuItem ContextForceBigEndian;
         private ToolStripMenuItem SelectGameButton;

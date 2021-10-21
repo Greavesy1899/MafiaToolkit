@@ -687,11 +687,6 @@ namespace Mafia2Tool
             }
         }
 
-        private void M2FBXButtonClicked(object sender, EventArgs e)
-        {
-            M2FBXTool tool = new M2FBXTool();
-        }
-
         private void CheckValidSDS(FileInfo info)
         {
             var file = FileFactory.ConstructFromFileInfo(info);

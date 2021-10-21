@@ -138,19 +138,21 @@ namespace Mafia2Tool
                 Collisions = new Collision(name);
             }
 
+            //~ENABLE THIS SECTION AT YOUR OWN RISK
             //AnimalTrafficPaths
-            if (!isBigEndian && sdsContent.HasResource("AnimalTrafficPaths"))
-            {
-                var name = sdsContent.GetResourceFiles("AnimalTrafficPaths", true)[0];
-                try
-                {
-                    ATLoader = new AnimalTrafficLoader(new FileInfo(name));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
-                }
-            }
+            //if (!isBigEndian && sdsContent.HasResource("AnimalTrafficPaths"))
+            //{
+            //    var name = sdsContent.GetResourceFiles("AnimalTrafficPaths", true)[0];
+            //    try
+            //    {
+            //        ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
+            //    }
+            //}
+            //~ENABLE THIS SECTION AT YOUR OWN RISK
 
             if (!isBigEndian && sdsContent.HasResource("PREFAB"))
             {
@@ -172,12 +174,14 @@ namespace Mafia2Tool
                 }
             }
 
+            //~ENABLE THIS SECTION AT YOUR OWN RISK
             //Translokator
             //if (!isBigEndian && sdsContent.HasResource("Translokator"))
             //{
             //    var name = sdsContent.GetResourceFiles("Translokator", true)[0];
             //    Translokator = new TranslokatorLoader(new FileInfo(name));
             //}
+            //~ENABLE THIS SECTION AT YOUR OWN RISK
 
             //~ENABLE THIS SECTION AT YOUR OWN RISK
             /* Kynapse OBJ_DATA
