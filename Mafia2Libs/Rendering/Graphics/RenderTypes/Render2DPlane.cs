@@ -151,7 +151,7 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
-            if(isUpdatedNeeded)
+            if(bIsUpdatedNeeded)
             {
                 for (int i = 0; i < vertices.Length; i++)
                 {

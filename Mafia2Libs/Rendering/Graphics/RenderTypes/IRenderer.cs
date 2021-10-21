@@ -7,7 +7,7 @@ namespace Rendering.Graphics
     public abstract class IRenderer
     {
         protected BaseShader shader;
-        protected bool isUpdatedNeeded;
+        protected bool bIsUpdatedNeeded;
         protected ID3D11Buffer indexBuffer;
         protected ID3D11Buffer vertexBuffer;
 
