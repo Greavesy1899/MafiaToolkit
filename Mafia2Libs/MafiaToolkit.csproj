@@ -31,6 +31,8 @@
     </DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>6</LangVersion>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -38,6 +40,8 @@
     </DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.0</LangVersion>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Mafia2Tool.Program</StartupObject>

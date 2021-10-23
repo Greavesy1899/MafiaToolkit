@@ -316,4 +316,9 @@
   <String ID="$IMPORT_XBIN">Import from .xml</String>
   <String ID="$EXPORT_XBIN">Export to .xml</String>
 
+  <!-- Exception Form-->
+  <String ID="$EXCEPTION_LABEL">Wystąpił nieobsługiwany wyjątek w składniku aplikacji. Jeśli klikniesz kontynuuj [ENTER], aplikacja zignoruje błąd i podejmie próbę kontynuacji. Jeśli klikniesz wyjście [ESC], aplikacja zostanie zamknięta.</String>
+  <String ID="$EXCEPTION_CONTINUE">Kontyntynuj</String>
+  <String ID="$EXCEPTION_QUIT">Zrezygnować</String>
+  
 </Localisation>

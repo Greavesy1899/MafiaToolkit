@@ -259,4 +259,9 @@
   <String ID="$IMPORT_XBIN">Import from .xml</String>
   <String ID="$EXPORT_XBIN">Export to .xml</String>
 
+  <!-- Exception Form-->
+  <String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>
+  <String ID="$EXCEPTION_CONTINUE">Continue</String>
+  <String ID="$EXCEPTION_QUIT">Quit</String>
+  
 </Localisation>

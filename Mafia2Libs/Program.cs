@@ -1,14 +1,15 @@
-﻿using System;
-using System.IO;
-using System.Windows.Forms;
-using Utils.Settings;
-using Utils.Language;
-using System.Threading.Tasks;
-using System.Diagnostics;
+﻿using Core.IO;
 using Mafia2Tool.Forms;
-using Core.IO;
-using System.Text;
+using System;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.Loader;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Toolkit.Forms;
+using Utils.Language;
+using Utils.Settings;
 
 namespace Mafia2Tool
 {
@@ -190,11 +191,30 @@ namespace Mafia2Tool
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-
+            //if (!Debugger.IsAttached)
+            //{
+                ToolkitExceptionHandler.ShowExceptionForm((Exception)e.ExceptionObject);
+            //}
         }
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
+           // if(!Debugger.IsAttached)
+            //{
+                ToolkitExceptionHandler.ShowExceptionForm(e.Exception);
+            //}
+        }
+
+        private static void ShowExceptionForm(Exception InException)
+        {
+            ExceptionForm Form = new ExceptionForm();
+            Form.ShowException(InException);
+
+            DialogResult Result = Form.ShowDialog();
+            if (Result == DialogResult.No)
+            {
+                Application.Exit();
+            }
         }
     }
 }
