@@ -122,6 +122,11 @@ namespace Utils.Settings
             return selectedGame;
         }
 
+        public static bool IsGameType(GamesEnumerator InGameType)
+        {
+            return Instance.selectedGame.GameType == InGameType;
+        }
+
         public static string GetExecutableName(GamesEnumerator type)
         {
             if (type == GamesEnumerator.MafiaII)
