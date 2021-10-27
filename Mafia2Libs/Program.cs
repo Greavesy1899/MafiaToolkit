@@ -18,6 +18,9 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
+            ToolkitAssemblyLoadContext.SetupLoadContext();
+            ToolkitExceptionHandler.Initialise();
+
             if (args.Length > 0)
             {
                 CheckINIExists();
@@ -29,8 +32,6 @@ namespace Mafia2Tool
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            ToolkitAssemblyLoadContext.SetupLoadContext();
-            ToolkitExceptionHandler.Initialise();
 
             // Load INI
             CheckINIExists();

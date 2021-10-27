@@ -264,5 +264,6 @@ __pycache__/
 *.pyc
 
 M2FBX/M2FBX/vendors/
+M2FBX/M2FBX_v2/vendors/
 M2FBX/M2PhysX/vendors/
 

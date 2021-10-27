@@ -28,7 +28,7 @@ namespace Toolkit.Forms
 
         public void ShowException(Exception InException)
         {
-            string RichTextMessage = string.Format("Message: \n\n{0} \nTarget Site: \n\n{1} \nCallstack: \n\n{2}", InException.Message, InException.TargetSite.ToString(), InException.StackTrace);
+            string RichTextMessage = string.Format("Message: \n{0} \n\nTarget Site: \n{1} \n\nCallstack: \n{2}", InException.Message, InException.TargetSite.ToString(), InException.StackTrace);
             RichTextBox_StackTrace.Text = RichTextMessage;
         }
 
