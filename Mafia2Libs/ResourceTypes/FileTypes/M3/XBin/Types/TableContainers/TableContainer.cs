@@ -30,6 +30,9 @@ namespace ResourceTypes.M3.XBin.TableContainers
         public HumanMaterialsTable HumanMaterials { get; set; }
         public MaterialsPhysicsTable MaterialPhysics { get; set; }
         public MaterialsShotsTable MaterialShots { get; set; }
+        public ParticleKeysTable ParticleKeys { get; set; }
+        public PhoneBookTable PhoneBook { get; set; }
+        public PoliceOffencesTables PoliceOffences { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
         {
@@ -116,6 +119,38 @@ namespace ResourceTypes.M3.XBin.TableContainers
             MaterialShots = new MaterialsShotsTable();
             MaterialShots.ReadFromFile(reader);
 
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            uint PhoneCombinationsTableMPPtr = reader.ReadUInt32();
+
+            currentPosition = reader.BaseStream.Position + 4;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            ParticleKeys = new ParticleKeysTable();
+            ParticleKeys.ReadFromFile(reader);
+
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            currentPosition = reader.BaseStream.Position + 4;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            PhoneBook = new PhoneBookTable();
+            PhoneBook.ReadFromFile(reader);
+
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            uint PinupsGalleriesTablePtr = reader.ReadUInt32();
+            uint PinupsTablePtr = reader.ReadUInt32();
+            uint PlayerSuitsTablePtr = reader.ReadUInt32();
+            currentPosition = reader.BaseStream.Position;
+
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            currentPosition = reader.BaseStream.Position + 12;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            PoliceOffences = new PoliceOffencesTables();
+            PoliceOffences.ReadFromFile(reader);
+
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            currentPosition = reader.BaseStream.Position + 4;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            PoliceSettingsTable PoliceSettings = new PoliceSettingsTable();
+            PoliceSettings.ReadFromFile(reader);
+
             // TODO: Everything in this function was always "temporary".
             // Maybe check the other table container files, see if they 
             // are good enough. Otherwise I need to create a new solution
@@ -149,6 +184,9 @@ namespace ResourceTypes.M3.XBin.TableContainers
             Root.Nodes.Add(HumanMaterials.GetAsTreeNodes());
             Root.Nodes.Add(MaterialPhysics.GetAsTreeNodes());
             Root.Nodes.Add(MaterialShots.GetAsTreeNodes());
+            Root.Nodes.Add(ParticleKeys.GetAsTreeNodes());
+            Root.Nodes.Add(PhoneBook.GetAsTreeNodes());
+            Root.Nodes.Add(PoliceOffences.GetAsTreeNodes());
 
             return Root;
         }

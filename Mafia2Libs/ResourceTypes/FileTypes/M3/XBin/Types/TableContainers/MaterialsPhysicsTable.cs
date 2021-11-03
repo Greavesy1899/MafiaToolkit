@@ -20,6 +20,13 @@ namespace ResourceTypes.M3.XBin.TableContainers
             public float Restitution { get; set; }
             public string Poznamka { get; set; }
 
+            public MaterialsPhysicsItem()
+            {
+                MaterialName = "";
+                SoundSwitch = new XBinAkHashName();
+                Poznamka = "";
+            }
+
             public override string ToString()
             {
                 return string.Format("{0} {1}", ID, MaterialName);

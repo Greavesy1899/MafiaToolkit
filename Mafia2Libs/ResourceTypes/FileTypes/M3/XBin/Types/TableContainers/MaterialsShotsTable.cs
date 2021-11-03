@@ -20,6 +20,12 @@ namespace ResourceTypes.M3.XBin.TableContainers
             public uint Decal { get; set; }
             public uint DecalCold { get; set; }
 
+            public MaterialsShotsItem()
+            {
+                MaterialName = "";
+                SoundSwitch = new XBinAkHashName();
+            }
+
             public override string ToString()
             {
                 return string.Format("{0} {1}", ID, MaterialName);
