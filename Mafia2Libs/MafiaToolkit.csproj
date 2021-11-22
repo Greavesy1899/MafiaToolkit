@@ -313,7 +313,7 @@
 cd $(TargetDir)
 del *.py
 del *.cmd</PostBuildEvent>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 </Project>
