@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
-using Utils.Types;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.ItemDesc
 {
@@ -93,7 +92,7 @@ namespace ResourceTypes.ItemDesc
 
             vertices = new Vector3[numVertices];
             for(int i = 0; i != numVertices; i++)
-                vertices[i] = Vector3Extenders.ReadFromFile(reader);
+                vertices[i] = Vector3Utils.ReadFromFile(reader);
 
             indices = new uint[numIndices * 3];
             uint maxIndex = reader.ReadUInt32();
@@ -130,7 +129,7 @@ namespace ResourceTypes.ItemDesc
 
             }
 
-            hullCentre = Vector3Extenders.ReadFromFile(reader);
+            hullCentre = Vector3Utils.ReadFromFile(reader);
             polygonData = reader.ReadBytes(numPolygons * polyDataSize);
 
             if(convHullVersion >= 3)
@@ -169,7 +168,7 @@ namespace ResourceTypes.ItemDesc
             {
                 edgeNormal = new Vector3[numEdges];
                 for (int i = 0; i < numEdges; i++)
-                    edgeNormal[i] = Vector3Extenders.ReadFromFile(reader);
+                    edgeNormal[i] = Vector3Utils.ReadFromFile(reader);
             }
 
             maxIDX0 = reader.ReadInt32();

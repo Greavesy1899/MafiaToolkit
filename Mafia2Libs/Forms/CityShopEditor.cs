@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.City;
+using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
 
@@ -13,6 +14,8 @@ namespace Mafia2Tool
         private FileInfo cityShopsFile;
         private CityShops shopsData;
         private CityShops.AreaData currentData;
+
+        private bool bIsFileEdited = false;
 
         public CityShopEditor(FileInfo file)
         {
@@ -45,7 +48,7 @@ namespace Mafia2Tool
 
         private void BuildData()
         {
-            treeView1.Nodes.Clear();
+            TreeView_CityShop.Nodes.Clear();
             propertyGrid1.SelectedObject = null;
             shopsData = new CityShops(cityShopsFile.FullName);
             TreeNode areaNode = new TreeNode("Areas");
@@ -65,8 +68,8 @@ namespace Mafia2Tool
                 areaNode.Nodes.Add(node);
             }
 
-            treeView1.Nodes.Add(areaNode);
-            treeView1.Nodes.Add(dataNode);
+            TreeView_CityShop.Nodes.Add(areaNode);
+            TreeView_CityShop.Nodes.Add(dataNode);
         }
 
         private void Save()
@@ -74,12 +77,12 @@ namespace Mafia2Tool
             shopsData.Areas.Clear();
             shopsData.AreaDatas.Clear();
 
-            foreach (TreeNode node in treeView1.Nodes[0].Nodes)
+            foreach (TreeNode node in TreeView_CityShop.Nodes[0].Nodes)
             {
                 shopsData.Areas.Add((CityShops.Area)node.Tag);
             }
 
-            foreach (TreeNode node in treeView1.Nodes[1].Nodes)
+            foreach (TreeNode node in TreeView_CityShop.Nodes[1].Nodes)
             {
                 shopsData.AreaDatas.Add((CityShops.AreaData)node.Tag);
             }
@@ -88,6 +91,20 @@ namespace Mafia2Tool
             {
                 shopsData.WriteToFile(writer);
             }
+
+            FileIsNotEdited();
+        }
+
+        private void FileIsEdited()
+        {
+            Text = Language.GetString("$CITY_SHOP_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
+        private void FileIsNotEdited()
+        {
+            Text = Language.GetString("$CITY_SHOP_EDITOR_TITLE");
+            bIsFileEdited = false;
         }
 
         private void AddAreaButton_Click(object sender, EventArgs e)
@@ -96,9 +113,11 @@ namespace Mafia2Tool
             shopsData.Areas.Add(area);
             TreeNode node = new TreeNode("New Area");
             node.Tag = area;
-            treeView1.Nodes[0].Nodes.Add(node);
+            TreeView_CityShop.Nodes[0].Nodes.Add(node);
             shopsData.PopulateTranslokatorEntities();
-            treeView1.SelectedNode = node;
+            TreeView_CityShop.SelectedNode = node;
+
+            FileIsEdited();
         }
 
         private void SaveButtonDLC_Click(object sender, EventArgs e)
@@ -119,12 +138,14 @@ namespace Mafia2Tool
                 shopsData.ReadFromFile(reader);
 
             BuildData();
+
+            TreeView_CityShop.SelectedNode = null;
+            propertyGrid1.SelectedObject = null;
+
+            FileIsNotEdited();
         }
 
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+        private void ExitButton_Click(object sender, EventArgs e) => Close();
 
         private void OnAfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -217,6 +238,8 @@ namespace Mafia2Tool
         {
             shopsData.PopulateTranslokatorEntities();
             MessageBox.Show("All translokators were checked for errors.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            FileIsEdited();
         }
 
         private void AddDataButton_Click(object sender, EventArgs e)
@@ -225,25 +248,29 @@ namespace Mafia2Tool
             shopsData.AreaDatas.Add(areaData);
             TreeNode node = new TreeNode("New Area Data");
             node.Tag = areaData;
-            treeView1.Nodes[1].Nodes.Add(node);
+            TreeView_CityShop.Nodes[1].Nodes.Add(node);
             shopsData.PopulateTranslokatorEntities();
-            treeView1.SelectedNode = node;
+            TreeView_CityShop.SelectedNode = node;
+
+            FileIsEdited();
         }
 
         private void OnPropertyChanged(object s, PropertyValueChangedEventArgs e)
         {
             if(e.ChangedItem.Label == "Name")
-                treeView1.SelectedNode.Text = e.ChangedItem.Value.ToString();
+                TreeView_CityShop.SelectedNode.Text = e.ChangedItem.Value.ToString();
+
+            FileIsEdited();
         }
 
         private void OnTabSelected(object sender, TabControlEventArgs e)
         {
             if(e.TabPage == DataGridTab)
             {
-                if (treeView1.SelectedNode.Tag != null)
+                if (TreeView_CityShop.SelectedNode.Tag != null)
                 {
-                    if (treeView1.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
-                        UpdateDataGrid((CityShops.AreaData)treeView1.SelectedNode.Tag);
+                    if (TreeView_CityShop.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
+                        UpdateDataGrid((CityShops.AreaData)TreeView_CityShop.SelectedNode.Tag);
                 }
             }
             else if(e.TabPage == PropertyGridTab)
@@ -255,41 +282,64 @@ namespace Mafia2Tool
 
         private void DuplicateData_OnClick(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode.Tag != null)
+            if (TreeView_CityShop.SelectedNode.Tag != null)
             {
-                if (treeView1.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
+                if (TreeView_CityShop.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
                 {
-                    CityShops.AreaData data = new CityShops.AreaData((CityShops.AreaData)treeView1.SelectedNode.Tag);
+                    CityShops.AreaData data = new CityShops.AreaData((CityShops.AreaData)TreeView_CityShop.SelectedNode.Tag);
                     shopsData.AreaDatas.Add(data);
                     data.Name += "_dupe";
                     TreeNode node = new TreeNode(data.Name);
                     node.Tag = data;
-                    treeView1.Nodes[1].Nodes.Add(node);
-                    treeView1.SelectedNode = node;
+                    TreeView_CityShop.Nodes[1].Nodes.Add(node);
+                    TreeView_CityShop.SelectedNode = node;
                 }
+
+                FileIsEdited();
             }
         }
 
         private void DeleteArea_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode.Tag != null)
+            if (TreeView_CityShop.SelectedNode.Tag != null)
             {
-                if (treeView1.SelectedNode.Tag.GetType() == typeof(CityShops.Area))
+                if (TreeView_CityShop.SelectedNode.Tag.GetType() == typeof(CityShops.Area))
                 {
-                    treeView1.Nodes.Remove(treeView1.SelectedNode);
-                    shopsData.Areas.Remove((CityShops.Area)treeView1.SelectedNode.Tag);
+                    TreeView_CityShop.Nodes.Remove(TreeView_CityShop.SelectedNode);
+                    shopsData.Areas.Remove((CityShops.Area)TreeView_CityShop.SelectedNode.Tag);
                 }
+
+                FileIsEdited();
             }
         }
 
         private void DeleteData_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode.Tag != null)
+            if (TreeView_CityShop.SelectedNode.Tag != null)
             {
-                if (treeView1.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
+                if (TreeView_CityShop.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
                 {
-                    treeView1.Nodes.Remove(treeView1.SelectedNode);
-                    shopsData.AreaDatas.Remove((CityShops.AreaData)treeView1.SelectedNode.Tag);
+                    TreeView_CityShop.Nodes.Remove(TreeView_CityShop.SelectedNode);
+                    shopsData.AreaDatas.Remove((CityShops.AreaData)TreeView_CityShop.SelectedNode.Tag);
+                }
+
+                FileIsEdited();
+            }
+        }
+
+        private void CityShopEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
                 }
             }
         }

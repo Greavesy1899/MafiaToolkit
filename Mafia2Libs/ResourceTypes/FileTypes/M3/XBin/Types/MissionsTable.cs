@@ -2,17 +2,16 @@
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using Utils.Extensions;
 using Utils.Helpers.Reflection;
-using Utils.StringHelpers;
+using Utils.Settings;
 
 namespace ResourceTypes.M3.XBin
 {
     public class MissionItem
     {
-        public ulong ID { get; set; }
-        public ulong TextID { get; set; }
-        public ulong DescriptionID { get; set; }
+        public XBinHashName ID { get; set; }
+        public XBinHashName TextID { get; set; }
+        public XBinHashName DescriptionID { get; set; }
         public uint IconID { get; set; }
         public uint CityID { get; set; }
         public EMissionType Type { get; set; }
@@ -20,14 +19,17 @@ namespace ResourceTypes.M3.XBin
         public uint DescOffset1 { get; set; }
         [Browsable(false), PropertyIgnoreByReflector]
         public uint DescOffset2 { get; set; }
-        [Browsable(false), PropertyIgnoreByReflector]
-        public uint Unknown { get; set; } // 0
-
         public string MissionID { get; set; }
+        [Description("Only used in Mafia: Definitive Edition")]
         public string CheckPointFile { get; set; }
+        [Browsable(false), PropertyIgnoreByReflector]
+        public uint Unknown { get; set; }
 
         public MissionItem()
         {
+            ID = new XBinHashName();
+            TextID = new XBinHashName();
+            DescriptionID = new XBinHashName();
             MissionID = "";
             CheckPointFile = "";
         }
@@ -42,6 +44,9 @@ namespace ResourceTypes.M3.XBin
     {
         private uint unk0;
         private MissionItem[] missions;
+        private uint unk1;
+
+        private GamesEnumerator gameVersion;
 
         public MissionItem[] Missions {
             get { return missions; }
@@ -51,6 +56,7 @@ namespace ResourceTypes.M3.XBin
         public MissionsTable()
         {
             missions = new MissionItem[0];
+            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -58,20 +64,28 @@ namespace ResourceTypes.M3.XBin
             unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
+            unk1 = reader.ReadUInt32();
+
             missions = new MissionItem[count0];
 
             for (int i = 0; i < count1; i++)
             {
                 MissionItem item = new MissionItem();
-                item.ID = reader.ReadUInt64();
-                item.TextID = reader.ReadUInt64();
-                item.DescriptionID = reader.ReadUInt64();
+                item.ID.ReadFromFile(reader);
+                item.TextID.ReadFromFile(reader);
+                item.DescriptionID.ReadFromFile(reader);
                 item.IconID = reader.ReadUInt32();
                 item.CityID = reader.ReadUInt32();
                 item.Type = (EMissionType)reader.ReadUInt32();
-                item.Unknown = reader.ReadUInt32();
                 item.MissionID = XBinCoreUtils.ReadStringPtrWithOffset(reader);
-                item.CheckPointFile = XBinCoreUtils.ReadStringPtrWithOffset(reader);
+
+                // Only read checkpoint file if we are running M1: DE...
+                if (gameVersion == GamesEnumerator.MafiaI_DE)
+                {
+                    item.CheckPointFile = XBinCoreUtils.ReadStringPtrWithOffset(reader);
+                    item.Unknown = reader.ReadUInt32();
+                }
+
                 missions[i] = item;
             }
         }
@@ -81,19 +95,24 @@ namespace ResourceTypes.M3.XBin
             writer.Write(unk0);
             writer.Write(missions.Length);
             writer.Write(missions.Length);
+            writer.Write(unk1);
 
             foreach (var slot in missions)
             {
                 MissionItem Item = slot;
-                writer.Write(Item.ID);
-                writer.Write(Item.TextID);
-                writer.Write(Item.DescriptionID);
+                Item.ID.WriteToFile(writer);
+                Item.TextID.WriteToFile(writer);
+                Item.DescriptionID.WriteToFile(writer);
                 writer.Write(Item.IconID);
                 writer.Write(Item.CityID);
                 writer.Write((int)Item.Type);
-                writer.Write(Item.Unknown);
                 writer.PushStringPtr(Item.MissionID);
-                writer.PushStringPtr(Item.CheckPointFile);
+
+                if (gameVersion == GamesEnumerator.MafiaI_DE)
+                {
+                    writer.PushStringPtr(Item.CheckPointFile);
+                    writer.Write(Item.Unknown);
+                }
             }
 
             writer.Write(0); // padding?

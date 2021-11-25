@@ -1,7 +1,8 @@
-﻿using Mafia2Tool;
-using SharpDX;
-using System;
+﻿using System;
+using System.Numerics;
 using Utils.Settings;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace Rendering.Graphics
 {
@@ -9,8 +10,10 @@ namespace Rendering.Graphics
     {
         public Vector3 Position = new Vector3(0);
         public Vector3 Rotation = new Vector3(0);
-        public Matrix ViewMatrix { get; private set; }
-        public Matrix ProjectionMatrix { get; private set; }
+        public Matrix4x4 ViewMatrix { get; private set; }
+        public Matrix4x4 ProjectionMatrix { get; private set; }
+        public Matrix4x4 ViewMatrixTransposed { get; private set; }
+        public Matrix4x4 ProjectionMatrixTransposed { get;  private set; }
 
         private Vector3 Look { get; set; }
         private Vector3 Right { get; set; }
@@ -23,8 +26,11 @@ namespace Rendering.Graphics
             Right = new Vector3(1, 0, 0);
             Up = new Vector3(0, 1, 0);
             Look = new Vector3(0, 0, 1);
-            ViewMatrix = Matrix.Identity;
-            ProjectionMatrix = Matrix.Identity;
+
+            ViewMatrix = Matrix4x4.Identity;
+            ProjectionMatrix = Matrix4x4.Identity;
+            ViewMatrixTransposed = Matrix4x4.Identity;
+            ProjectionMatrixTransposed = Matrix4x4.Identity;
         }
 
         public void UpdateViewMatrix()
@@ -42,17 +48,21 @@ namespace Rendering.Graphics
             Right = r;
             Up = u;
             Look = l;
-            var v = new Matrix();
-            v.Column1 = new Vector4(Right, x);
-            v.Column2 = new Vector4(Up, y);
-            v.Column3 = new Vector4(Look, z);
-            v.Column4 = new Vector4(0, 0, 0, 1);
+            var v = new Matrix4x4();
+            v.SetColumn(0, new Vector4(Right, x));
+            v.SetColumn(1, new Vector4(Up, y));
+            v.SetColumn(2, new Vector4(Look, z));
+            v.SetColumn(3, new Vector4(0, 0, 0, 1));
             ViewMatrix = v;
+
+            // Transose ViewMatrix
+            ViewMatrixTransposed = Matrix4x4.Transpose(ViewMatrix);
         }
 
         public void ContructFrustum(bool bNormalise = false)
         {
-            Matrix inverse = Matrix.Invert(ViewMatrix);
+            Matrix4x4 inverse = Matrix4x4.Identity;
+            Matrix4x4.Invert(ViewMatrix, out inverse);
 
             // Left clipping plane
             Plane LeftPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M11, ViewMatrix.M24 + ViewMatrix.M21, ViewMatrix.M34 + ViewMatrix.M31, ViewMatrix.M44 + ViewMatrix.M41);
@@ -144,19 +154,23 @@ namespace Rendering.Graphics
             width = (width == 0 ? 1024 : width);
             height = (height == 0 ? 768 : height);
             float aspectRatio = (float)width / (float)height;
-            ProjectionMatrix = Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(ToolkitSettings.FieldOfView), aspectRatio, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
+            ProjectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.ToRadians(ToolkitSettings.FieldOfView), aspectRatio, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
+
+            // Transpose Projection Matrix
+            ProjectionMatrixTransposed = Matrix4x4.Transpose(ProjectionMatrix);
         }
 
         public Ray GetPickingRay(Vector2 pos, Vector2 screenDims)
         {
-            var invViewProj = Matrix.Invert(ViewMatrix * ProjectionMatrix);
-            var farPoint = Vector3.TransformCoordinate(
+            Matrix4x4 InvertedViewProj = Matrix4x4.Identity;
+            Matrix4x4.Invert(ViewMatrix * ProjectionMatrix, out InvertedViewProj);
+            var farPoint = Vector3Utils.TransformCoordinate(
                 new Vector3(2.0f * pos.X / screenDims.X - 1.0f, -2.0f * pos.Y / screenDims.Y + 1.0f, 1f),
-                invViewProj
+                InvertedViewProj
             );
-            var direction = farPoint - Position;
-            direction.Normalize();
-            var ray = new Ray(Position, direction);
+
+            Vector3 NormalisedDir = Vector3.Normalize(farPoint - Position);
+            var ray = new Ray(Position, NormalisedDir);
             return ray;
         }
 
@@ -177,18 +191,18 @@ namespace Rendering.Graphics
 
         public void Pitch(float angle)
         {
-            angle = MathUtil.DegreesToRadians(angle);
+            angle = MathHelper.ToRadians(angle);
             Rotation.X = angle;
-            var r = Matrix.RotationAxis(Right, angle);
+            var r = Matrix4x4.CreateFromAxisAngle(Right, angle);
             Up = Vector3.TransformNormal(Up, r);
             Look = Vector3.TransformNormal(Look, r);
         }
 
         public void Yaw(float angle)
         {
-            angle = MathUtil.DegreesToRadians(angle);
+            angle = MathHelper.ToRadians(angle);
             Rotation.Y = angle;
-            var r = Matrix.RotationZ(angle);
+            var r = Matrix4x4.CreateRotationZ(angle);
             Right = Vector3.TransformNormal(Right, r);
             Up = Vector3.TransformNormal(Up, r);
             Look = Vector3.TransformNormal(Look, r);

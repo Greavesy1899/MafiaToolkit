@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using SharpDX;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -46,7 +46,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public byte Unk14 { get; set; }
         public ulong Hash6 { get; set; }
         public ulong Hash7 { get; set; }
-        public Matrix Transform1 { get; set; }
+        public Matrix4x4 Transform1 { get; set; }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -57,11 +57,11 @@ namespace ResourceTypes.Cutscene.AnimEntities
             if (Hash6 != 0)
             {
                 Hash7 = stream.ReadUInt64(isBigEndian);
-                Transform1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                Transform1 = MatrixUtils.ReadFromFile(stream, isBigEndian);
             }
             else
             {
-                Transform1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                Transform1 = MatrixUtils.ReadFromFile(stream, isBigEndian);
                 Hash7 = stream.ReadUInt64(isBigEndian);
             }
         }

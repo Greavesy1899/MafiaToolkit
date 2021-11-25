@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Speech;
+using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
 
@@ -10,6 +11,8 @@ namespace Mafia2Tool
     {
         private FileInfo speechFile;
         private SpeechLoader speechData;
+
+        private bool bIsFileEdited = false;
 
         public SpeechEditor(FileInfo file)
         {
@@ -24,10 +27,10 @@ namespace Mafia2Tool
         private void Localise()
         {
             Text = Language.GetString("$SPEECH_EDITOR_TITLE");
-            fileToolButton.Text = Language.GetString("$FILE");
-            saveToolStripMenuItem.Text = Language.GetString("$SAVE");
-            reloadToolStripMenuItem.Text = Language.GetString("$RELOAD");
-            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
+            Button_File.Text = Language.GetString("$FILE");
+            Button_Save.Text = Language.GetString("$SAVE");
+            Button_Reload.Text = Language.GetString("$RELOAD");
+            Button_Exit.Text = Language.GetString("$EXIT");
         }
 
         private void BuildData()
@@ -58,28 +61,66 @@ namespace Mafia2Tool
                         num = 0;
                     }
                 }
-                treeView1.Nodes.Add(node);
+                TreeView_Speech.Nodes.Add(node);
             }
+        }
+
+        private void Save()
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(speechFile.FullName, FileMode.Create)))
+            {
+                speechData.WriteToFile(writer);
+            }
+
+            Text = Language.GetString("$SPEECH_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
+        private void Reload()
+        {
+            TreeView_Speech.SelectedNode = null;
+            Grid_Speech.SelectedObject = null;
+
+            TreeView_Speech.Nodes.Clear();
+            BuildData();
+
+            Text = Language.GetString("$SPEECH_EDITOR_TITLE");
+            bIsFileEdited = false;
         }
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
-            FrameResourceGrid.SelectedObject = e.Node.Tag;
+            Grid_Speech.SelectedObject = e.Node.Tag;
         }
 
-        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void Grid_Speech_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
         {
-            Close();
+            if (e.ChangedItem.Label == "Name")
+                TreeView_Speech.SelectedNode.Text = e.ChangedItem.Value.ToString();
+
+            Text = Language.GetString("$SPEECH_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
-        private void reloadToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void SpeechEditor_Closing(object sender, FormClosingEventArgs e)
         {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
 
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
 
-        private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
-        {
-
-        }
+        private void Button_Save_Click(object sender, System.EventArgs e) => Save();
+        private void Button_Reload_Click(object sender, System.EventArgs e) => Reload();
+        private void Button_Exit_Click(object sender, System.EventArgs e) => Close();
     }
 }

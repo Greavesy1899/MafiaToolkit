@@ -5,6 +5,7 @@ using System.IO;
 using Utils.Extensions;
 using Utils.StringHelpers;
 using Utils.Models;
+using System;
 
 namespace Utils.Types
 {
@@ -71,6 +72,21 @@ namespace Utils.Types
         {
             stream.Write(hash, isBigEndian);
             stream.WriteString16(name, isBigEndian);
+        }
+
+        public string ConstructGUID()
+        {
+            byte[] GuidBytes = BitConverter.GetBytes(hash);
+            byte[] LeftHand = new byte[4];
+            Array.Copy(GuidBytes, LeftHand, 4);
+
+            byte[] RightHand = new byte[4];
+            Array.Copy(GuidBytes, 4, RightHand, 0, 4);
+
+            string SLeftHand = BitConverter.ToString(LeftHand).Replace("-", "");
+            string SRightHand = BitConverter.ToString(RightHand).Replace("-", "");
+            string FormattedGUID = string.Format("0x{0:x8}, 0x{1:x8}", SLeftHand, SRightHand);
+            return FormattedGUID;
         }
 
         public void Set(string value)

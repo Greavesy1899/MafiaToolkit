@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.XPath;
 using Utils.Settings;
 using Utils.Lua;
+using Core.IO;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -36,8 +37,7 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("File", name);
 
             // We lack the file hash in M3 and M1: DE. So we have to add it to the file.
-            var game = GameStorage.Instance.GetSelectedGame();
-            if(game.GameType == GamesEnumerator.MafiaI_DE || game.GameType == GamesEnumerator.MafiaIII)
+            if(IsGameType(GamesEnumerator.MafiaI_DE) || IsGameType(GamesEnumerator.MafiaIII))
             {
                 resourceXML.WriteElementString("FileHash", resource.NameHash.ToString());
             }
@@ -50,8 +50,7 @@ namespace Gibbed.Mafia2.FileFormats
         {
             // We lack the file hash in M3 and M1: DE. So we have to get it from the file.
             bool bIsMaf3 = false;
-            var game = GameStorage.Instance.GetSelectedGame();
-            if (game.GameType == GamesEnumerator.MafiaI_DE || game.GameType == GamesEnumerator.MafiaIII)
+            if (IsGameType(GamesEnumerator.MafiaI_DE) || IsGameType(GamesEnumerator.MafiaIII))
             {
                 bIsMaf3 = true;
             }
@@ -96,7 +95,7 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = stream.ToArray();
 
                 // Configure VRAM information for the SDS.
-                if (game.GameType == GamesEnumerator.MafiaII_DE || game.GameType == GamesEnumerator.MafiaII)
+                if (IsGameType(GamesEnumerator.MafiaII_DE) || IsGameType(GamesEnumerator.MafiaII))
                 {
                     entry.SlotVramRequired = (uint)(texData.Length - 128);
                     //if (hasMIP == 1)
@@ -106,10 +105,10 @@ namespace Gibbed.Mafia2.FileFormats
                     //}
                 }
 
-                if (game.GameType == GamesEnumerator.MafiaI_DE)
+                if (IsGameType(GamesEnumerator.MafiaI_DE))
                 {
                     var size = (resource.bIsDX10 ? 157 : 137);
-                    entry.OtherVramRequired = (uint)(stream.Length - size);
+                    entry.SlotVramRequired = (uint)(stream.Length - size);
                 }
             }
             return entry;
@@ -215,9 +214,10 @@ namespace Gibbed.Mafia2.FileFormats
 
                 // If user requests, decompile the Lua file.
                 if (ToolkitSettings.DecompileLUA)
-                {
+                {                 
                     FileInfo Info = new FileInfo(ScriptPath);
-                    LuaHelper.ReadFile(Info);
+                    FileLua LuaFile = new FileLua(Info);
+                    LuaFile.TryDecompileBytecode();
                 }
 
                 resourceXML.WriteElementString("Name", ScriptItem.Name);
@@ -256,12 +256,13 @@ namespace Gibbed.Mafia2.FileFormats
             {
                 resource.Serialize(version, stream, Endian.Little);
                 entry.Data = stream.ToArray();
-                entry.OtherRamRequired = (uint)resource.GetRawBytes();
+
+                entry.SlotRamRequired = resource.GetRawBytes();
             }
 
             // Set the entry version and setup the data for the meta info.
             entry.Version = version;        
-            descNode.InnerText = path;
+            descNode.InnerText = "not available";
             return entry;
         }
         public string ReadXMLEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string xmlDir)
@@ -485,19 +486,10 @@ namespace Gibbed.Mafia2.FileFormats
                 Unk1 = 1,
                 Unk2_V4 = unk2
             };
-            resource.Data = File.ReadAllBytes(sdsFolder + "/" + file);
 
-            if(entry.Version == 4)
-            {
-                if(resource.Unk2_V4 == 4)
-                {
-                    entry.OtherRamRequired = (uint)resource.Data.Length;
-                }
-            }
-            else
-            {
-                entry.SlotRamRequired = (uint)resource.Data.Length;
-            }
+            // Read all the data, then allocate memory required
+            resource.Data = File.ReadAllBytes(sdsFolder + "/" + file);
+            entry.SlotRamRequired = (uint)resource.Data.Length;
 
             //serialize.
             using (MemoryStream stream = new MemoryStream())
@@ -615,8 +607,11 @@ namespace Gibbed.Mafia2.FileFormats
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
-            //finish
+
+            // Read File contents
+            string FileToRead = Path.Combine(sdsFolder, file);
+            entry.Data = File.ReadAllBytes(FileToRead);
+
             descNode.InnerText = file.Remove(file.Length - 4, 4);
             return entry;
         }

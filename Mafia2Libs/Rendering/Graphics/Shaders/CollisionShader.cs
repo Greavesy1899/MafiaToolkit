@@ -1,25 +1,20 @@
-﻿using SharpDX.Direct3D11;
+﻿using Rendering.Core;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
     public class CollisionShader : BaseShader
     {
-        public CollisionShader(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
+        public CollisionShader(ID3D11Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
+
+        public override void InitCBuffersFrame(ID3D11DeviceContext context, Camera camera, WorldSettings settings)
         {
-            if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
-            {
-                throw new System.Exception("Failed to load Shader!");
-            }
+            //throw new System.NotImplementedException();
         }
 
-        public override bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
+        public override void SetShaderParameters(ID3D11Device device, ID3D11DeviceContext context, MaterialParameters material)
         {
-            if (!base.Init(device, elements, vsFileName, psFileName, vsEntryPoint, psEntryPoint))
-            {
-                return false;
-            }
-
-            return true;
-        }
+            base.SetShaderParameters(device, context, material);
+        }      
     }
 }

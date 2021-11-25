@@ -1,8 +1,5 @@
 ﻿using ResourceTypes.M3.XBin;
-using SharpDX;
-using System;
 using System.IO;
-using Utils.SharpDXExtensions;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {
@@ -15,6 +12,12 @@ namespace FileTypes.XBin.StreamMap.Commands
         public string QuotaID { get; set; }
         public uint LoadFlags { get; set; }
 
+        public Command_LoadSDS()
+        {
+            SDSName = "";
+            QuotaID = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             SlotType = (ESlotType)reader.ReadUInt32();
@@ -23,11 +26,11 @@ namespace FileTypes.XBin.StreamMap.Commands
             LoadFlags = reader.ReadUInt32();
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             writer.Write((uint)SlotType);
-            writer.Write(-1); // SDSName
-            writer.Write(-1); // QuotaID
+            writer.PushStringPtr(SDSName);
+            writer.PushStringPtr(QuotaID);
             writer.Write(LoadFlags);
         }
 

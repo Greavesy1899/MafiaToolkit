@@ -4,6 +4,7 @@ namespace ResourceTypes.Materials
 {
     public enum VersionsEnumerator
     {
+        Nill = -1,
         V_57 = 57,
         V_58 = 58,
         V_63 = 63,

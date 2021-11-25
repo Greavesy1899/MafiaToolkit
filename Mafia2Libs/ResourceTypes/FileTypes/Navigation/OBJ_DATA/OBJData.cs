@@ -1,12 +1,7 @@
-﻿using SharpDX;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Navigation
 {
@@ -31,7 +26,7 @@ namespace ResourceTypes.Navigation
                 set { connectedNodeID = value; }
             }
         }
-        public struct VertexStruct
+        public class VertexStruct
         {
             uint unk7;
             Vector3 position;
@@ -80,6 +75,14 @@ namespace ResourceTypes.Navigation
                 set { unk6 = value; }
             }
 
+            public List<VertexStruct> IncomingConnections { get; set; }
+            public List<VertexStruct> OutgoingConnections { get; set; }
+
+            public VertexStruct()
+            {
+                IncomingConnections = new List<VertexStruct>();
+                OutgoingConnections = new List<VertexStruct>();
+            }
 
             public override string ToString()
             {
@@ -96,13 +99,77 @@ namespace ResourceTypes.Navigation
         public VertexStruct[] vertices;
         public ConnectionStruct[] connections;
         public KynogonRuntimeMesh runtimeMesh;
+        byte[] Footer;
 
         public OBJData(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void ReadFromFile(BinaryReader reader)
+        {
+            unk0 = reader.ReadInt32();
+            fileIDHPD = reader.ReadInt32();
+            unk3HPD = reader.ReadInt32();
+            bitFlagsHPD = reader.ReadInt32();
+            
+            vertSize = reader.ReadInt32();
+            triSize = reader.ReadInt32();
+
+            List<Vector3> Points = new List<Vector3>();
+
+            vertices = new VertexStruct[vertSize];
+            for (int i = 0; i < vertSize; i++)
+            {
+                VertexStruct vertex = new VertexStruct();
+                vertex.Unk7 = reader.ReadUInt32(); // ^ 0x80000000
+                vertex.Position = Vector3Utils.ReadFromFile(reader);  // TODO: Construct KynogonUtils to accomodate this
+                Vector3 pos = vertex.Position;
+                float y = pos.Y;
+                pos.Y = -pos.Z;
+                pos.Z = y;
+                vertex.Position = pos;
+                vertex.Unk0 = reader.ReadSingle();
+                vertex.Unk1 = reader.ReadSingle();
+                vertex.Unk2 = reader.ReadInt32();
+                vertex.Unk3 = reader.ReadInt16();
+                vertex.Unk4 = reader.ReadInt16();
+                vertex.Unk5 = reader.ReadInt32();
+                vertex.Unk6 = reader.ReadInt32();
+                vertices[i] = vertex;
+
+                Points.Add(vertex.Position);
+            }
+
+            connections = new ConnectionStruct[triSize];
+            for (int i = 0; i < triSize; i++)
+            {
+                ConnectionStruct connection = new ConnectionStruct();
+                connection.Flags = reader.ReadUInt32() ^ 0x80000000;
+                connection.NodeID = reader.ReadUInt32();
+                connection.ConnectedNodeID = reader.ReadUInt32();
+                connections[i] = connection;
+            }
+
+            //Read KynogonRuntimeMesh
+            runtimeMesh = new KynogonRuntimeMesh();
+            runtimeMesh.ReadFromFile(reader);
+
+            // read footer
+            /*if (!runtimeMesh.bDEBUG_HASEXTRADATA)
+            {
+                Name = StringHelpers.ReadString(reader);
+                uint SizeofName = reader.ReadUInt32();
+                uint Header = reader.ReadUInt32();
+            }*/
+
+            Footer = reader.ReadBytes((int)(reader.BaseStream.Length - reader.BaseStream.Position));
+
+            GenerateConnections();
+            DumpToASCII("NAV_OBJ_DATA_"+fileIDHPD+".txt");
+        }
+
+        public void WriteToFile(NavigationWriter writer)
         {
             writer.Write(unk0);
             writer.Write(fileIDHPD);
@@ -114,14 +181,13 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i < vertices.Length; i++)
             {
                 var vertex = vertices[i];
-                writer.Write(vertex.Unk7);
+                writer.Write(vertex.Unk7); // | 0x80000000
 
                 Vector3 pos = vertex.Position;
-                float z = pos.Z;
+                float z = pos.Z; // TODO: Construct KynogonUtils to accomodate this
                 pos.Z = -pos.Y;
                 pos.Y = z;
-                vertex.Position = pos;
-                Vector3Extenders.WriteToFile(vertex.Position, writer);
+                Vector3Utils.WriteToFile(pos, writer); // NB: DO NOT SET vertex.Position as pos!!
                 writer.Write(vertex.Unk0);
                 writer.Write(vertex.Unk1);
                 writer.Write(vertex.Unk2);
@@ -134,67 +200,93 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i < connections.Length; i++)
             {
                 var connection = connections[i];
-                writer.Write(connection.Flags);
+                writer.Write(connection.Flags | 0x80000000);
                 writer.Write(connection.NodeID);
                 writer.Write(connection.ConnectedNodeID);
             }
 
             runtimeMesh.WriteToFile(writer);
+
+            writer.Write(Footer);
+
+            // write footer
+            /* if (!runtimeMesh.bDEBUG_HASEXTRADATA)
+             {
+                 writer.Write(Padding);
+                 StringHelpers.WriteString(writer, Name);
+                 writer.Write(Name.Length + 1); // extra 1 is the padding
+                 writer.Write(303296513);
+             }*/
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void GenerateConnections()
         {
-            unk0 = reader.ReadInt32();
-            fileIDHPD = reader.ReadInt32();
-            unk3HPD = reader.ReadInt32();
-            bitFlagsHPD = reader.ReadInt32();
-            
-            vertSize = reader.ReadInt32();
-            triSize = reader.ReadInt32();
-            //writer.WriteLine(string.Format("{0}, )
-
-            StreamWriter writer = File.CreateText("NAV_AI_OBJ_DATA_" + fileIDHPD + ".txt");
-            writer.WriteLine(string.Format("{0} {1} {2} {3}", unk0, fileIDHPD, unk3HPD, bitFlagsHPD));
-
-            //List<string> data = new List<string>();
-            vertices = new VertexStruct[vertSize];
             for (int i = 0; i < vertSize; i++)
             {
-                VertexStruct vertex = new VertexStruct();
-                vertex.Unk7 = reader.ReadUInt32() & 0x7FFFFFFF;
-                vertex.Position = Vector3Extenders.ReadFromFile(reader);
-                Vector3 pos = vertex.Position;
-                float y = pos.Y;
-                pos.Y = -pos.Z;
-                pos.Z = y;
-                vertex.Position = pos;
-                //writer.WriteLine(vertex.Position);
-                vertex.Unk0 = reader.ReadSingle();
-                vertex.Unk1 = reader.ReadSingle();
-                vertex.Unk2 = reader.ReadInt32();
-                vertex.Unk3 = reader.ReadInt16();
-                vertex.Unk4 = reader.ReadInt16();
-                vertex.Unk5 = reader.ReadInt32();
-                vertex.Unk6 = reader.ReadInt32();
-                vertices[i] = vertex;
-            }
-            writer.WriteLine("");
-            //data.Add("");
-            //data.Add("g mesh");
-            connections = new ConnectionStruct[triSize];
-            for (int i = 0; i < triSize; i++)
-            {
-                ConnectionStruct connection = new ConnectionStruct();
-                connection.Flags = reader.ReadUInt32() & 0x7FFFFFFF;
-                connection.NodeID = reader.ReadUInt32() & 0x7FFFFFFF;
-                connection.ConnectedNodeID = reader.ReadUInt32() & 0x7FFFFFFF;
-                connections[i] = connection;
-                //writer.WriteLine(string.Format("{0} {1} {2}", connection.Flags, connection.NodeID, connection.ConnectedNodeID));
-            }
+                VertexStruct vertex = vertices[i];
 
-            //Read KynogonRuntimeMesh
-            runtimeMesh = new KynogonRuntimeMesh();
-            runtimeMesh.ReadFromFile(reader, writer);
+                int ConnectionOffset = vertex.Unk2 - 1;
+                if (ConnectionOffset != -1)
+                {
+                    bool bEndOfArray = false;
+                    ConnectionStruct CurConnection = connections[ConnectionOffset];
+                    while(CurConnection.NodeID == i && !bEndOfArray)
+                    {
+                        VertexStruct ConnectedVertex = vertices[CurConnection.ConnectedNodeID];
+                        vertex.OutgoingConnections.Add(ConnectedVertex);
+                        ConnectedVertex.IncomingConnections.Add(vertex);
+
+                        ConnectionOffset++;
+                        if (ConnectionOffset >= connections.Length)
+                        {
+                            bEndOfArray = true;
+                        }
+                        else
+                        {
+                            CurConnection = connections[ConnectionOffset];
+                        }
+                    }
+                }
+            }
+        }
+
+        public void DumpToASCII(string name)
+        {
+            using (StreamWriter writer = new StreamWriter(name + ".txt"))
+            {
+                writer.WriteLine("HEADER -------------");
+                writer.WriteLine("Unk0: {0}", unk0);
+                writer.WriteLine("FileID_HPD: {0}", fileIDHPD);
+                writer.WriteLine("Unk3_HPD: {0}", unk3HPD);
+                writer.WriteLine("BitFlags_HPD: {0}", bitFlagsHPD);
+                writer.WriteLine("Vertex Size: {0}", vertSize);
+                writer.WriteLine("Connection Size: {0}", triSize);
+                writer.WriteLine("");
+
+                writer.WriteLine("NODES---------------");
+                int Index = 0;
+                foreach (var vertex in vertices)
+                {
+                    writer.WriteLine("Idx: {9} - \tUnk0: {0} \tUnk1: {1} \tUnk2: {2} \tUnk3: {3} \tUnk4: {4} \tUnk5: {5} \tUnk6: {6} \tUnk7: {7} \tPosition: {8}",
+                        vertex.Unk0, vertex.Unk1, vertex.Unk2, vertex.Unk3, vertex.Unk4, vertex.Unk5, vertex.Unk6, vertex.Unk7, vertex.Position, Index);
+
+                    Index++;
+                }
+
+                Index = 0;
+                writer.WriteLine("CONNECTIONS------------------");
+                foreach (var Connection in connections)
+                {
+                    writer.WriteLine("Idx: {3} - \tFlags: \t{0} NodeID: \t{1} ConnectedNodeID: \t{2}",
+                        Connection.Flags, Connection.NodeID, Connection.ConnectedNodeID, Index);
+
+                    Index++;
+                }
+
+                runtimeMesh.DumpToASCII(writer);
+
+                writer.Close();
+            }
         }
     }
 }

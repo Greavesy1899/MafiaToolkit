@@ -1,36 +1,16 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 namespace Utils.Extensions
 {
-    public sealed class MTreeView : TreeView
-    {
-
-        //fix from: (gotta love stack overflow!)
-        //https://stackoverflow.com/questions/14647216/c-sharp-treeview-ignore-double-click-only-at-checkbox
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == 0x0203 && CheckBoxes)
-            {
-                var localPos = this.PointToClient(Cursor.Position);
-                var hitTestInfo = this.HitTest(localPos);
-                if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
-                {
-                    m.Msg = 0x0201;
-                }
-            }
-            base.WndProc(ref m);
-        }
-    }
-
     public class MTableColumn : DataGridViewColumn
     {
         private byte unk2;
@@ -53,6 +33,15 @@ namespace Utils.Extensions
         public uint NameHash {
             get { return hash; }
             set { hash = value; }
+        }
+    }
+
+    public class MToolStripStatusLabel : ToolStripStatusLabel
+    {
+        public void SetTextWithTimeStamp(string InText)
+        {
+            string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), InText);
+            Text = Message;
         }
     }
 
@@ -104,7 +93,7 @@ namespace Utils.Extensions
             if (!string.IsNullOrEmpty(stringValue))
             {
                 float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 2);
-                result = new Vector2(values);
+                result = new Vector2(values[0], values[1]);
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
@@ -117,7 +106,7 @@ namespace Utils.Extensions
 
             if (destinationType == typeof(string))
             {
-                result = vector2.ToString();
+                result = string.Format("X:{0} Y:{1}", vector2.X, vector2.Y);
             }
 
             return result ?? base.ConvertTo(context, culture, value, destinationType);
@@ -144,7 +133,7 @@ namespace Utils.Extensions
             if (!string.IsNullOrEmpty(stringValue))
             {
                 float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 3);
-                result = new Vector3(values);
+                result = new Vector3(values[0], values[1], values[2]);
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
@@ -157,7 +146,7 @@ namespace Utils.Extensions
 
             if (destinationType == typeof(string))
             {
-                result = vector3.ToString();
+                result = string.Format("X:{0} Y:{1} Z:{2}", vector3.X, vector3.Y, vector3.Z);
             }
 
             return result ?? base.ConvertTo(context, culture, value, destinationType);
@@ -184,7 +173,7 @@ namespace Utils.Extensions
             if (!string.IsNullOrEmpty(stringValue))
             {
                 float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 4);
-                result = new Vector4(values);
+                result = new Vector4(values[0], values[1], values[2], values[3]);
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
@@ -197,7 +186,7 @@ namespace Utils.Extensions
 
             if (destinationType == typeof(string))
             {
-                result = vector4.ToString();
+                result = string.Format("X:{0} Y:{1} Z:{2} W:{3}", vector4.X, vector4.Y, vector4.Z, vector4.W);
             }
 
             return result ?? base.ConvertTo(context, culture, value, destinationType);
@@ -224,7 +213,7 @@ namespace Utils.Extensions
             if (!string.IsNullOrEmpty(stringValue))
             {
                 float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 4);
-                result = new Quaternion(values);
+                result = new Quaternion(values[0], values[1], values[2], values[3]);
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
@@ -237,7 +226,7 @@ namespace Utils.Extensions
 
             if (destinationType == typeof(string))
             {
-                result = quaternion.ToString();
+                result = string.Format("X:{0} Y:{1} Z:{2} W:{3}", quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
             }
 
             return result ?? base.ConvertTo(context, culture, value, destinationType);
@@ -656,6 +645,18 @@ namespace Utils.Extensions
                     index++;
             }
             return -1;
+        }
+
+        public static bool AddRange<TKey, TValue>(this Dictionary<TKey, TValue> Dic, Dictionary<TKey, TValue> OtherDic)
+        {
+            bool bResult = true;
+
+            foreach(var Pair in OtherDic)
+            {
+                bResult = Dic.TryAdd(Pair.Key, Pair.Value);
+            }
+
+            return bResult;
         }
 
         public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value)

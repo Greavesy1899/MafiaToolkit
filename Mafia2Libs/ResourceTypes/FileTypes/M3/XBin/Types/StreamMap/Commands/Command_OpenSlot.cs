@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using ResourceTypes.M3.XBin;
+using System.IO;
 
 namespace FileTypes.XBin.StreamMap.Commands
 { 
@@ -15,7 +16,7 @@ namespace FileTypes.XBin.StreamMap.Commands
             SlotID = reader.ReadUInt32();
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             writer.Write(TypeID);
             writer.Write(SlotID);

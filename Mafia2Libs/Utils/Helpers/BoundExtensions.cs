@@ -1,25 +1,53 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
+using Vortice.Mathematics;
 using Utils.Models;
-using SharpDX;
 
-namespace Utils.SharpDXExtensions
+namespace Utils.VorticeUtils
 {
     public static class BoundingBoxExtenders
     {
+        public static float GetWidth(this BoundingBox BBox)
+        {
+            return (BBox.Maximum.X - BBox.Minimum.X);
+        }
+
+        public static float GetHeight(this BoundingBox BBox)
+        {
+            return (BBox.Maximum.Y - BBox.Minimum.Y);
+        }
+
+        public static float GetDepth(this BoundingBox BBox)
+        {
+            return (BBox.Maximum.Z - BBox.Minimum.Z);
+        }
+
+        public static void SetMinimum(ref this BoundingBox BBox, Vector3 min)
+        {
+            BBox = new BoundingBox(min, BBox.Maximum);
+        }
+
+        public static void SetMaximum(ref this BoundingBox BBox, Vector3 max)
+        {
+            BBox = new BoundingBox(BBox.Minimum, max);
+        }
+
         public static BoundingBox ReadFromFile(BinaryReader reader)
         {
-            BoundingBox bbox = new BoundingBox();
-            bbox.Minimum = Vector3Extenders.ReadFromFile(reader);
-            bbox.Maximum = Vector3Extenders.ReadFromFile(reader);
+            Vector3 Min = Vector3Utils.ReadFromFile(reader);
+            Vector3 Max = Vector3Utils.ReadFromFile(reader);
+            BoundingBox bbox = new BoundingBox(Min, Max);
+
             return bbox;
         }
 
         public static BoundingBox ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            BoundingBox bbox = new BoundingBox();
-            bbox.Minimum = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            bbox.Maximum = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            Vector3 Min = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            Vector3 Max = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            BoundingBox bbox = new BoundingBox(Min, Max);
+
             return bbox;
         }
 
@@ -37,18 +65,14 @@ namespace Utils.SharpDXExtensions
 
         public static BoundingBox Swap(this BoundingBox box)
         {
-            box.Minimum = Vector3Extenders.Swap(box.Minimum);
-            box.Maximum = Vector3Extenders.Swap(box.Maximum);
+            box = new BoundingBox(Vector3Utils.Swap(box.Minimum), Vector3Utils.Swap(box.Maximum));
             return box;
         }
 
         public static BoundingBox CalculateBounds(List<Vertex[]> data)
         {
-            BoundingBox bbox = new BoundingBox
-            {
-                Minimum = new Vector3(0),
-                Maximum = new Vector3(0)
-            };
+            Vector3 Min = Vector3.Zero;
+            Vector3 Max = Vector3.Zero;
 
             for (int p = 0; p != data.Count; p++)
             {
@@ -56,56 +80,40 @@ namespace Utils.SharpDXExtensions
                 {
                     Vector3 pos = data[p][i].Position;
 
-                    if (pos.X < bbox.Minimum.X)
-                        bbox.Minimum.X = pos.X;
+                    if (pos.X < Min.X)
+                    {
+                        Min.X = pos.X;
+                    }
 
-                    if (pos.X > bbox.Maximum.X)
-                        bbox.Maximum.X = pos.X;
+                    if (pos.X > Max.X)
+                    {
+                        Max.X = pos.X;
+                    }
 
-                    if (pos.Y < bbox.Minimum.Y)
-                        bbox.Minimum.Y = pos.Y;
+                    if (pos.Y < Min.Y)
+                    {
+                        Min.Y = pos.Y;
+                    }
 
-                    if (pos.Y > bbox.Maximum.Y)
-                        bbox.Maximum.Y = pos.Y;
+                    if (pos.Y > Max.Y)
+                    {
+                        Max.Y = pos.Y;
+                    }
 
-                    if (pos.Z < bbox.Minimum.Z)
-                        bbox.Minimum.Z = pos.Z;
+                    if (pos.Z < Min.Z)
+                    {
+                        Min.Z = pos.Z;
+                    }
 
-                    if (pos.Z > bbox.Maximum.Z)
-                        bbox.Maximum.Z = pos.Z;
+                    if (pos.Z > Max.Z)
+                    {
+                        Max.Z = pos.Z;
+                    }
                 }
             }
+
+            BoundingBox bbox = new BoundingBox(Min, Max);
             return bbox;
         }
     }
-
-    public static class BoundingSphereExtenders
-    {
-        public static BoundingSphere ReadFromFile(BinaryReader reader)
-        {
-            BoundingSphere bSphere = new BoundingSphere
-            {
-                Center = Vector3Extenders.ReadFromFile(reader),
-                Radius = reader.ReadSingle()
-            };
-            return bSphere;
-        }
-
-        public static void WriteToFile(this BoundingSphere bSphere, BinaryWriter writer)
-        {
-            bSphere.Center.WriteToFile(writer);
-            writer.Write(bSphere.Radius);
-        }
-
-        public static BoundingSphere CalculateFromBBox(BoundingBox bBox)
-        {
-            BoundingSphere bSphere = new BoundingSphere();
-            bSphere.Center = new Vector3((bBox.Minimum.X + bBox.Maximum.X) / 2.0f, (bBox.Minimum.Y + bBox.Maximum.Y) / 2.0f, (bBox.Minimum.Z + bBox.Maximum.Z) / 2.0f);
-            float m_Radius = 0.0f;
-            Vector3.Distance(ref bSphere.Center, ref bBox.Maximum, out m_Radius);
-            bSphere.Radius = m_Radius;
-            return bSphere;
-        }
-    }
 }
-

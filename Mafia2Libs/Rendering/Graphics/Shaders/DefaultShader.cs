@@ -1,8 +1,8 @@
-﻿using SharpDX.Direct3D11;
-using Rendering.Core;
+﻿using System.Numerics;
 using System.Runtime.InteropServices;
-using SharpDX;
 using Utils.Types;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -16,33 +16,27 @@ namespace Rendering.Graphics
         }
 
         private ExtraParameterBuffer extraParams;
-        protected Buffer ConstantExtraParameterBuffer { get; set; }
+        protected ID3D11Buffer ConstantExtraParameterBuffer { get; set; }
         protected int previousRenderType;
 
-        public DefaultShader(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
-        {
-            if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
-            {
-                throw new System.Exception("Failed to load Shader!");
-            }
-        }
+        public DefaultShader(ID3D11Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
 
-        public override bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
+        public override bool Init(ID3D11Device Dx11Device, ShaderInitParams InitParams)
         {
-            if(!base.Init(device, elements, vsFileName, psFileName, vsEntryPoint, psEntryPoint))
+            if(!base.Init(Dx11Device, InitParams))
             {
                 return false;
             }
 
-            ConstantExtraParameterBuffer = ConstantBufferFactory.ConstructBuffer<ExtraParameterBuffer>(device, "ExtraBuffer");
+            ConstantExtraParameterBuffer = ConstantBufferFactory.ConstructBuffer<ExtraParameterBuffer>(Dx11Device, "ExtraBuffer");
 
             return true;
         }
-        public override void Render(DeviceContext context, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
+        public override void Render(ID3D11DeviceContext context, PrimitiveTopology type, int size, uint offset)
         {
             base.Render(context, type, size, offset);
         }
-        public override void SetShaderParameters(Device device, DeviceContext context, MaterialParameters matParams)
+        public override void SetShaderParameters(ID3D11Device device, ID3D11DeviceContext context, MaterialParameters matParams)
         {           
             base.SetShaderParameters(device, context, matParams);
 
@@ -51,37 +45,35 @@ namespace Rendering.Graphics
             var material = matParams.MaterialData;
             if (material == null)
             {
-                ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
-                context.PixelShader.SetShaderResource(0, texture);
+                ID3D11ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
+                context.PSSetShaderResource(0, texture);
             }
             else
-            {
-                
+            {     
                 HashName TextureFile = material.GetTextureByID("S000");
-                ShaderResourceView texture = null;
+                ID3D11ShaderResourceView[] ShaderTextures = new ID3D11ShaderResourceView[2];
                 if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
+                    ShaderTextures[0] = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                 }
                 else
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[0];
+                    ShaderTextures[0] = RenderStorageSingleton.Instance.TextureCache[0];
                 }
-
-                context.PixelShader.SetShaderResource(0, texture);
 
                 TextureFile = material.GetTextureByID("S001");
                 if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
+                    ShaderTextures[1] = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                     extraParams.hasTangentSpace = 1;
                 }
                 else
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[1];
+                    ShaderTextures[1] = RenderStorageSingleton.Instance.TextureCache[1];
                     extraParams.hasTangentSpace = 0;
                 }
-                context.PixelShader.SetShaderResource(1, texture);
+
+                context.PSSetShaderResources(0, ShaderTextures);
             }
 
             if(previousRenderType != extraParams.hasTangentSpace)

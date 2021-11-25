@@ -1,11 +1,12 @@
-﻿using System.ComponentModel;
+﻿using Rendering.Factories;
+using Rendering.Graphics;
+using System.ComponentModel;
 using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
 using Utils.Extensions;
 using Utils.Types;
-using Rendering.Factories;
-using Rendering.Graphics;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -103,7 +104,7 @@ namespace ResourceTypes.FrameResource
             unk14 = 255;
             meshIndex = 0;
             materialIndex = 0;
-            localTransform = new Matrix();
+            localTransform = new Matrix4x4();
             omTextureHash = new HashName();
             unk18_1 = 0;
             unk18_2 = 0;
@@ -136,6 +137,34 @@ namespace ResourceTypes.FrameResource
             writer.Write(unk18_1);
             writer.Write(unk18_2);
             writer.Write(unk18_3);
+        }
+
+        protected override void SanitizeOnSave()
+        {
+            base.SanitizeOnSave();
+
+            /* Start check regarding OM Flag */
+
+            // Check if OM Texture is valid
+            bool bIsOMTextureValid = (omTextureHash.Hash != 0);
+
+            // Cache-Off flag
+            bool bHasOMFlag = flags.HasFlag(SingleMeshFlags.OM_Flag);
+
+            // If we have the flag but we it isn't valid
+            if (bHasOMFlag && !bIsOMTextureValid)
+            {
+                // Remove flag
+                flags &= ~SingleMeshFlags.OM_Flag;
+            }
+
+            // If we have a valid hash but don't have the flag.
+            if(bIsOMTextureValid && !bHasOMFlag)
+            {
+                // Add flag
+                flags |= SingleMeshFlags.OM_Flag;
+            }
+            /* End check regarding OM Flag */
         }
 
         public override string ToString()

@@ -26,6 +26,7 @@ namespace ResourceTypes.Actors
         FrameWrapper = 55,
         C_ActorDetector = 56,
         Blocker = 63,
+        C_StaticWeapon = 64,
         C_StaticParticle = 66,
         FireTarget = 70,
         LightEntity = 71,

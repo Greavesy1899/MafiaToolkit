@@ -1,32 +1,37 @@
 ﻿using ResourceTypes.M3.XBin;
-using SharpDX;
-using System;
+using ResourceTypes.XBin.Types;
 using System.Diagnostics;
 using System.IO;
-using Utils.SharpDXExtensions;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {
     public class VehicleInstance
     {
-        public Vector3 Position { get; set; }
-        public Vector3 Direction { get; set; }
+        public XBinVector3 Position { get; set; }
+        public XBinVector3 Direction { get; set; }
         public string EntityName { get; set; }
         public uint LoadFlags { get; set; }
 
+        public VehicleInstance()
+        {
+            Position = new XBinVector3();
+            Direction = new XBinVector3();
+            EntityName = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
-            Position = Vector3Extenders.ReadFromFile(reader);
-            Direction = Vector3Extenders.ReadFromFile(reader);
+            Position.ReadFromFile(reader);
+            Direction.ReadFromFile(reader);
             EntityName = XBinCoreUtils.ReadStringPtrWithOffset(reader);
             LoadFlags = reader.ReadUInt32();
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             Position.WriteToFile(writer);
             Direction.WriteToFile(writer);
-            writer.Write(-1); // EntityName
+            writer.PushStringPtr(EntityName);
             writer.Write(LoadFlags);
         }
 
@@ -46,6 +51,13 @@ namespace FileTypes.XBin.StreamMap.Commands
         public string QuotaID { get; set; }
         public uint GUID { get; set; }
         public uint SlotID { get; set; }
+
+        public Command_LoadVehicle()
+        {
+            Instances = new VehicleInstance[0];
+            SDSName = "";
+            QuotaID = "";
+        }
 
         public void ReadFromFile(BinaryReader reader)
         {
@@ -69,18 +81,19 @@ namespace FileTypes.XBin.StreamMap.Commands
             }
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
-            writer.Write(-1); // VehicleOffset
+            writer.PushObjectPtr("Command_VehicleOffset");
             writer.Write(Instances.Length); // Two because its an array
             writer.Write(Instances.Length); // Two because its an array
             writer.Write((uint)SlotType);
-            writer.Write(-1); // SDSName
-            writer.Write(-1); // QuotaID
+            writer.PushStringPtr(SDSName);
+            writer.PushStringPtr(QuotaID);
             writer.Write(GUID);
             writer.Write(SlotID);
 
-            foreach(var Instance in Instances)
+            writer.FixUpObjectPtr("Command_VehicleOffset");
+            foreach (var Instance in Instances)
             {
                 Instance.WriteToFile(writer);
             }

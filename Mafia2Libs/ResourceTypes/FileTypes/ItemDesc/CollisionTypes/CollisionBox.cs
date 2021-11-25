@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.ItemDesc
 {
     public class CollisionBox
     {
-        Vector3 vector;
+        private Vector3 vector;
 
         public CollisionBox(BinaryReader reader)
         {
@@ -15,7 +15,7 @@ namespace ResourceTypes.ItemDesc
 
         public void ReadFromFile(BinaryReader reader)
         {
-            vector = Vector3Extenders.ReadFromFile(reader);
+            vector = Vector3Utils.ReadFromFile(reader);
         }
 
         public void WriteToFile(BinaryWriter writer)

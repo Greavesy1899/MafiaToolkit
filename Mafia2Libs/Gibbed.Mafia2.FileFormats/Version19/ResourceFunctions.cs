@@ -271,14 +271,15 @@ namespace Gibbed.Mafia2.FileFormats
                 SlotVramRequired += resourceEntry.SlotVramRequired;
                 OtherRamRequired += resourceEntry.OtherRamRequired;
                 OtherVramRequired += resourceEntry.OtherVramRequired;
+
+                // Find TypeId then add to the big list of resources
                 resourceEntry.TypeId = (int)ResourceTypes.Find(s => s.Name.Equals(resourceType)).Id;
-                entries[resourceType].Add(resourceEntry);
+                _ResourceEntries.Add(resourceEntry);
             }
-            foreach (var pair in entries)
-            {
-                _ResourceEntries.AddRange(pair.Value);
-            }
+
+            // Update Meta-Info or 'Outer-XML'
             ResourceInfoXml = xmlDoc.OuterXml;
+
             return true;
         }
     }

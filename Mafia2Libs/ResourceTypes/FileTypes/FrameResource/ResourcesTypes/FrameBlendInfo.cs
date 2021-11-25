@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using SharpDX;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
-using Utils.Types;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -164,11 +164,11 @@ namespace ResourceTypes.FrameResource
 
         public struct BoneTransform
         {
-            Matrix transform;
+            Matrix4x4 transform;
             BoundingBox bounds;
             byte isValid;
 
-            public Matrix Transform {
+            public Matrix4x4 Transform {
                 get { return transform; }
                 set { transform = value; }
             }
@@ -183,7 +183,7 @@ namespace ResourceTypes.FrameResource
 
             public void ReadFromFile(MemoryStream stream, bool isBigEndian)
             {
-                transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                transform = MatrixUtils.ReadFromFile(stream, isBigEndian);
                 bounds = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
                 isValid = stream.ReadByte8();
             }

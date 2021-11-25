@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
@@ -75,6 +76,9 @@ namespace ResourceTypes.Actors
 
         private void Sanitize()
         {
+            var ordered = definitions.OrderBy(d => d.FrameNameHash);
+            definitions = ordered.ToList();
+
             Dictionary<ushort, ushort> reorganisedKeys = new Dictionary<ushort, ushort>();
             extraData.Clear();
             for (int i = 0; i < items.Count; i++)

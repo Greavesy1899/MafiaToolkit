@@ -1,6 +1,6 @@
-﻿using SharpDX;
+﻿using ResourceTypes.M3.XBin;
+using ResourceTypes.XBin.Types;
 using System.IO;
-using Utils.SharpDXExtensions;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {
@@ -8,16 +8,22 @@ namespace FileTypes.XBin.StreamMap.Commands
     {
         private readonly uint Magic = 0x72386E2B;
 
-        public Vector3 Position { get; set; }
-        public Vector3 Direction { get; set; }
+        public XBinVector3 Position { get; set; }
+        public XBinVector3 Direction { get; set; }
+
+        public Command_SetPosDirPlayer()
+        {
+            Position = new XBinVector3();
+            Direction = new XBinVector3();
+        }
 
         public void ReadFromFile(BinaryReader reader)
         {
-            Position = Vector3Extenders.ReadFromFile(reader);
-            Direction = Vector3Extenders.ReadFromFile(reader);
+            Position.ReadFromFile(reader);
+            Direction.ReadFromFile(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             Position.WriteToFile(writer);
             Direction.WriteToFile(writer);

@@ -29,63 +29,65 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CutsceneEditor));
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.Tool_Strip = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
-            this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Reload = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_Edit = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddItemButton = new System.Windows.Forms.ToolStripMenuItem();
             this.AddDefinitionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.PropertyGrid_Cutscene = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Cutscene = new System.Windows.Forms.TreeView();
-            this.toolStrip1.SuspendLayout();
+            this.TreeView_Cutscene = new Mafia2Tool.Controls.MTreeView();
+            this.Tool_Strip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // toolStrip1
+            // Tool_Strip
             // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Tool_Strip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Button_File,
             this.Button_Edit});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(800, 25);
-            this.toolStrip1.TabIndex = 18;
-            this.toolStrip1.Text = "ToolStrip_Main";
+            this.Tool_Strip.Location = new System.Drawing.Point(0, 0);
+            this.Tool_Strip.Name = "Tool_Strip";
+            this.Tool_Strip.Size = new System.Drawing.Size(933, 25);
+            this.Tool_Strip.TabIndex = 18;
+            this.Tool_Strip.Text = "ToolStrip_Main";
             // 
             // Button_File
             // 
             this.Button_File.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.Button_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SaveButton,
-            this.ReloadButton,
-            this.ExitButton});
+            this.Button_Save,
+            this.Button_Reload,
+            this.Button_Exit});
             this.Button_File.Image = ((System.Drawing.Image)(resources.GetObject("Button_File.Image")));
             this.Button_File.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Button_File.Name = "Button_File";
             this.Button_File.Size = new System.Drawing.Size(47, 22);
             this.Button_File.Text = "$FILE";
             // 
-            // SaveButton
+            // Button_Save
             // 
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(180, 22);
-            this.SaveButton.Text = "$SAVE";
-            this.SaveButton.Click += new System.EventHandler(this.SaveButton_OnClick);
+            this.Button_Save.Name = "Button_Save";
+            this.Button_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.Button_Save.Size = new System.Drawing.Size(165, 22);
+            this.Button_Save.Text = "$SAVE";
+            this.Button_Save.Click += new System.EventHandler(this.Button_Save_OnClick);
             // 
-            // ReloadButton
+            // Button_Reload
             // 
-            this.ReloadButton.Name = "ReloadButton";
-            this.ReloadButton.Size = new System.Drawing.Size(180, 22);
-            this.ReloadButton.Text = "$RELOAD";
-            this.ReloadButton.Click += new System.EventHandler(this.Reload_OnClick);
+            this.Button_Reload.Name = "Button_Reload";
+            this.Button_Reload.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.Button_Reload.Size = new System.Drawing.Size(165, 22);
+            this.Button_Reload.Text = "$RELOAD";
+            this.Button_Reload.Click += new System.EventHandler(this.Button_Reload_OnClick);
             // 
-            // ExitButton
+            // Button_Exit
             // 
-            this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
-            this.ExitButton.Text = "$EXIT";
-            this.ExitButton.Click += new System.EventHandler(this.ExitButton_OnClick);
+            this.Button_Exit.Name = "Button_Exit";
+            this.Button_Exit.Size = new System.Drawing.Size(165, 22);
+            this.Button_Exit.Text = "$EXIT";
+            this.Button_Exit.Click += new System.EventHandler(this.Button_Exit_OnClick);
             // 
             // Button_Edit
             // 
@@ -119,34 +121,41 @@
             this.PropertyGrid_Cutscene.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.PropertyGrid_Cutscene.Location = new System.Drawing.Point(402, 34);
+            this.PropertyGrid_Cutscene.Location = new System.Drawing.Point(469, 39);
+            this.PropertyGrid_Cutscene.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.PropertyGrid_Cutscene.Name = "PropertyGrid_Cutscene";
             this.PropertyGrid_Cutscene.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.PropertyGrid_Cutscene.Size = new System.Drawing.Size(386, 410);
+            this.PropertyGrid_Cutscene.Size = new System.Drawing.Size(450, 473);
             this.PropertyGrid_Cutscene.TabIndex = 16;
+            this.PropertyGrid_Cutscene.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_Cutscene_PropertyChanged);
             // 
             // TreeView_Cutscene
             // 
             this.TreeView_Cutscene.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.TreeView_Cutscene.Location = new System.Drawing.Point(12, 34);
+            this.TreeView_Cutscene.Location = new System.Drawing.Point(14, 39);
+            this.TreeView_Cutscene.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.TreeView_Cutscene.Name = "TreeView_Cutscene";
-            this.TreeView_Cutscene.Size = new System.Drawing.Size(368, 410);
+            this.TreeView_Cutscene.Size = new System.Drawing.Size(429, 472);
             this.TreeView_Cutscene.TabIndex = 17;
             this.TreeView_Cutscene.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_Cutscene_AfterSelect);
             // 
             // CutsceneEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.toolStrip1);
+            this.ClientSize = new System.Drawing.Size(933, 519);
+            this.Controls.Add(this.Tool_Strip);
             this.Controls.Add(this.PropertyGrid_Cutscene);
             this.Controls.Add(this.TreeView_Cutscene);
+            this.KeyPreview = true;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "CutsceneEditor";
-            this.Text = "CutsceneEditor";
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.Text = "$CUTSCENE_EDITOR";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CutsceneEditor_Closing);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CutsceneEditor_OnKeyUp);
+            this.Tool_Strip.ResumeLayout(false);
+            this.Tool_Strip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -154,15 +163,17 @@
 
         #endregion
 
-        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStrip Tool_Strip;
         private System.Windows.Forms.ToolStripDropDownButton Button_File;
-        private System.Windows.Forms.ToolStripMenuItem SaveButton;
+        private System.Windows.Forms.ToolStripMenuItem Button_Save;
         private System.Windows.Forms.ToolStripMenuItem ReloadButton;
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
         private System.Windows.Forms.ToolStripDropDownButton Button_Edit;
         private System.Windows.Forms.ToolStripMenuItem AddItemButton;
         private System.Windows.Forms.ToolStripMenuItem AddDefinitionButton;
         private System.Windows.Forms.PropertyGrid PropertyGrid_Cutscene;
-        private System.Windows.Forms.TreeView TreeView_Cutscene;
+        private Controls.MTreeView TreeView_Cutscene;
+        private System.Windows.Forms.ToolStripMenuItem Button_Reload;
+        private System.Windows.Forms.ToolStripMenuItem Button_Exit;
     }
 }

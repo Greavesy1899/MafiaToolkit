@@ -13,7 +13,8 @@
   <String ID="$FAILED_UPDATE_CHECK">Nie można sprawdzić aktualizacji!</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Specjalne podziękowania</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Specjalne podziękowania</String>
   <String ID="$VIEW">Widok</String>
   <String ID="$FILE">Plik</String>
   <String ID="$TOOLS">Narzędzia</String>
@@ -29,6 +30,9 @@
   <String ID="$TILE">Widok kafelkowy</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Eksplorator plików gry</String>
   <String ID="$UNPACK_ALL_SDS">Wypakuj wszystkie archiwa gry</String>
+  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
+  <String ID="$UNPACK_SELECTED_SDS">Unpack Selected SDS's</String>
+  <String ID="$PACK_SELECTED_SDS">Pack Selected SDS's</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Otwórz folder w eskploratorze Windows</String>
   <String ID="$PACK">Zapakuj archiwum</String>
   <String ID="$UNPACK">Wypakuj archiwum</String>
@@ -41,9 +45,16 @@
   <String ID="$REFRESH">Odśwież</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Ścieżka do folderu</String>
   <String ID="$UP_TOOLTIP">Widok w górę</String>
-  <String ID="$M1DE_OODLEERROR">Oodle DLL nie jest darmową biblioteką stworzoną przez RAD Game Tools i nie została ona umieszczona razem z Toolkitem. Skopiuj plik oo2core_8_win64.dll z folderu gry Folder instalacyjny Mafia: Definitive Edition do folderu gdzie znajduje się folder Libs programu Toolkit.</String>
-  
-  <!-- Main Options Strings-->
+  <String ID="$M1DE_OODLEERROR">Could not find Oodle DLL which is required for compression/decompression. Please make sure 'oo2core_8_win64.dll' exists in game directory.</String>
+
+  <!-- Game Selector -->
+  <String ID="$START_TOOLKIT">Start Toolkit</String>
+  <String ID="$FOLDER_PATH_LABEL">Game Directory:</String>
+  <String ID="$SELECT_AS_DEFAULT">Skip This Window In The Future</String>
+  <String ID="$SELECT_FOLDER">Select Folder</String>
+  <String ID="$SELECT_GAME">Select Game</String>
+
+	<!-- Main Options Strings-->
   <String ID="$GENERAL">Główne ustawienia</String>
   <String ID="$SDS_OPTIONS">Ustawienia dot. plików SDS</String>
   <String ID="$MODEL_EXPORTING">Modele i ich eksportowanie</String>
@@ -65,6 +76,7 @@
   <String ID="$LANGUAGE_OPTION">Język intefejsu</String>
   <String ID="$DISCORD_STATE_CUSTOM">Użycie specjalnego opisu na Discordzie</String>
   <String ID="$CHECK_FOR_UPDATES">Sprawdź, czy są aktualizacje</String>
+  <String ID="$SAVE_PROMPT">Zapisać przed zamknięciem?</String>
 
   <!-- Map Editor -->
   <String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>
@@ -89,10 +101,9 @@
   <String ID="$SEARCH">Szukaj</String>
   
   <!-- SDS Options -->
-  <String ID="$SDS_COMPRESSION_TYPE">Typ kompresji archiwum</String>
-  <String ID="$SDS_UNCOMPRESSED">Nieskompresowane</String>
-  <String ID="$SDS_COMPRESSED">Z kompresją</String>
-  <String ID="$SDS_ONEBLOCK">Jeden blok</String>
+  <String ID="$SDS_COMPRESSION_RATIO">Współczynnik kompresji</String>
+  <String ID="$SDS_TOOLTIP_COMPRESSION_RATIO">0.0 oznacza brak kompresji, 1.0 oznacza pełną kompresję. 0.9 jest domyślnym współczynnikiem kompresji (bezpieczna wartość).</String>
+  <String ID="$SDS_TOOLTIP_USE_OODLE">Jeżeli kompresujesz archiwa z gry Mafia: Definitive Edition użyj kompresji Oodle.</String>
   <String ID="$ADD_TIME_DATE_BACKUP">Dodaj godzinę i datę do nazw kopii zapasowych</String>
   <String ID="$DECOMPILE_LUA_UNPACK">Dekompiluj skrypty lua podczas rozpakowywania.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Podczas rozpakowywania używaj formatu narzędzia SDS Tool Gui (stare)</String>
@@ -153,6 +164,46 @@
   <String ID="$FRAME_EDITOR_TITLE">Edytor FrameResource</String>
   <String ID="$FRADD_TYPE">Typ Frame</String>
   <String ID="$QUESTION_FRADD">Wpisz nazwę i typ frame.</String>
+
+  <!-- Scene Outliner Dock Strings-->
+  <String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
+  <String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
+  <String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+  
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
+  <String ID="$SAVE_TITLE">Save File</String>
+  <String ID="$OPEN_TITLE">Open File</String>
+  <String ID="$EXPORT_XML">Export To XML</String>
+  <String ID="$IMPORT_XML">Import From XML</String>
+  <String ID="$PHYSICS_RB">Physics/Rigidbody</String>
+  <String ID="$MOTOR_TORQUE">Motor/Torque</String>
+  <String ID="$FUEL">Fuel</String>
+  <String ID="$GEARBOX">Gearbox</String>
+  <String ID="$STEERING">Steering</String>
+  <String ID="$DIFFERENTIAL">Differential</String>
+  <String ID="$BRAKES">Brakes</String>
+  <String ID="$AERODYNAMICS">Aerodynamics</String>
+  <String ID="$EFFECTS">Effects</String>
+  <String ID="$ENGINE">Engine</String>
+  <String ID="$ENVIRONMENT">Environment</String>
+  <String ID="$AIR_PUMP">Air Pump</String>
+  <String ID="$DOORS">Doors</String>
+  <String ID="$BONNET_TRUNK">Bonnet/Trunk</String>
+  <String ID="$WHEELS">Wheels</String>
+  <String ID="$HORN_SIREN">Horn/Siren</String>
+  <String ID="$GLASS_BREAK">Glass Effects</String>
+  <String ID="$EXPLOSION">Explosion Effects</String>
+  <String ID="$FIRE">Fire Effects</String>
+  <String ID="$RAIN_CONTACT">Rain Effects</String>
+  <String ID="$HEDGE_CONTACT">Hedge Collision Effects</String>
+  <String ID="$SKIDDING_SLIDING">Powersliding/Skidding</String>
+  <String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Nazwa wejściowa</String>
@@ -256,4 +307,18 @@
   <String ID="$DELETE_OBJECT">Usuń obiekt</String>
   <String ID="$DELETE_INSTANCE">Usuń zaznaczone wystąpienie</String>
   <String ID="$VIEW_NUM_INST">Wyświetl liczbę wystąpień</String>
+  
+  <!-- Property Descriptions Strings-->
+  <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+
+  <!-- XBIN Editor Strings-->
+  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+  <String ID="$IMPORT_XBIN">Import from .xml</String>
+  <String ID="$EXPORT_XBIN">Export to .xml</String>
+
+  <!-- Exception Form-->
+  <String ID="$EXCEPTION_LABEL">Wystąpił nieobsługiwany wyjątek w składniku aplikacji. Jeśli klikniesz kontynuuj [ENTER], aplikacja zignoruje błąd i podejmie próbę kontynuacji. Jeśli klikniesz wyjście [ESC], aplikacja zostanie zamknięta.</String>
+  <String ID="$EXCEPTION_CONTINUE">Kontyntynuj</String>
+  <String ID="$EXCEPTION_QUIT">Zrezygnować</String>
+  
 </Localisation>

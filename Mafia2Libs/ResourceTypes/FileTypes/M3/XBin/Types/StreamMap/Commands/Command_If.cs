@@ -12,6 +12,12 @@ namespace FileTypes.XBin.StreamMap.Commands
         public ECommandIfOperator Operator { get; set; }
         public string Value { get; set; }
 
+        public Command_If()
+        {
+            Variable = "";
+            Value = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             Variable = XBinCoreUtils.ReadStringPtrWithOffset(reader);
@@ -19,11 +25,11 @@ namespace FileTypes.XBin.StreamMap.Commands
             Value = XBinCoreUtils.ReadStringPtrWithOffset(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
-            writer.Write(-1); // Variable
+            writer.PushStringPtr(Variable);
             writer.Write((uint)Operator);
-            writer.Write(-1); // Value
+            writer.PushStringPtr(Value);
         }
         public int GetSize()
         {

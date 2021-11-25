@@ -7,7 +7,8 @@
   <String ID="$ENTRY_NAME">Наименование записи</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Особая благодарность</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Особая благодарность</String>
   <String ID="$VIEW">Вид</String>
   <String ID="$FILE">Файл</String>
   <String ID="$TOOLS">Инструменты</String>
@@ -23,6 +24,9 @@
   <String ID="$TILE">Плитка</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: проводник по игровым файлам</String>
   <String ID="$UNPACK_ALL_SDS">Распаковать все SDS</String>
+  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
+  <String ID="$UNPACK_SELECTED_SDS">Unpack Selected SDS's</String>
+  <String ID="$PACK_SELECTED_SDS">Pack Selected SDS's</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Открыть папку в Проводнике</String>
   <String ID="$PACK">Запаковать</String>
   <String ID="$UNPACK">Распаковать</String>
@@ -35,7 +39,7 @@
   <String ID="$REFRESH">Обновить</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Путь к папке </String>
   <String ID="$UP_TOOLTIP">Вверх</String>
-  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder is located.</String>
+  <String ID="$M1DE_OODLEERROR">Не удалось найти библиотеку Oodle, необходимую для сжатия/распаковки архивов. Пожалуйста, убедитесь, что файл 'oo2core_8_win64.dll' присутствует в игровой директории.</String>
   
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Запуск Toolkit</String>
@@ -69,6 +73,7 @@
   <String ID="$LANGUAGE_POLISH">Polish</String>
   <String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
   <String ID="$LANGUAGE_OPTION">Язык</String>
+  <String ID="$SAVE_PROMPT">Сохранить перед закрытием?</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Путь</String>
@@ -147,6 +152,46 @@
   <String ID="$FRADD_TYPE">Тип кадра</String>
   <String ID="$FRADD_NAME_TABLE">Добавить кадр/рамку для имени таблиц ?</String>
   <String ID="$QUESTION_FRADD">Введите имя и тип кадра.</String>
+
+  <!-- Scene Outliner Dock Strings-->
+  <String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
+  <String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
+  <String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+  
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
+  <String ID="$SAVE_TITLE">Save File</String>
+  <String ID="$OPEN_TITLE">Open File</String>
+  <String ID="$EXPORT_XML">Export To XML</String>
+  <String ID="$IMPORT_XML">Import From XML</String>
+  <String ID="$PHYSICS_RB">Physics/Rigidbody</String>
+  <String ID="$MOTOR_TORQUE">Motor/Torque</String>
+  <String ID="$FUEL">Fuel</String>
+  <String ID="$GEARBOX">Gearbox</String>
+  <String ID="$STEERING">Steering</String>
+  <String ID="$DIFFERENTIAL">Differential</String>
+  <String ID="$BRAKES">Brakes</String>
+  <String ID="$AERODYNAMICS">Aerodynamics</String>
+  <String ID="$EFFECTS">Effects</String>
+  <String ID="$ENGINE">Engine</String>
+  <String ID="$ENVIRONMENT">Environment</String>
+  <String ID="$AIR_PUMP">Air Pump</String>
+  <String ID="$DOORS">Doors</String>
+  <String ID="$BONNET_TRUNK">Bonnet/Trunk</String>
+  <String ID="$WHEELS">Wheels</String>
+  <String ID="$HORN_SIREN">Horn/Siren</String>
+  <String ID="$GLASS_BREAK">Glass Effects</String>
+  <String ID="$EXPLOSION">Explosion Effects</String>
+  <String ID="$FIRE">Fire Effects</String>
+  <String ID="$RAIN_CONTACT">Rain Effects</String>
+  <String ID="$HEDGE_CONTACT">Hedge Collision Effects</String>
+  <String ID="$SKIDDING_SLIDING">Powersliding/Skidding</String>
+  <String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Ввод имени</String>
@@ -205,4 +250,18 @@
   <String ID="$ROTATION_X">Вращение X</String>
   <String ID="$ROTATION_Y">Вращение Y</String>
   <String ID="$ROTATION_Z">Вращение Z</String>
+
+  <!-- Property Descriptions Strings-->
+  <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+
+  <!-- XBIN Editor Strings-->
+  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+  <String ID="$IMPORT_XBIN">Import from .xml</String>
+  <String ID="$EXPORT_XBIN">Export to .xml</String>
+
+  <!-- Exception Form-->
+  <String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>
+  <String ID="$EXCEPTION_CONTINUE">Continue</String>
+  <String ID="$EXCEPTION_QUIT">Quit</String>
+  
 </Localisation>

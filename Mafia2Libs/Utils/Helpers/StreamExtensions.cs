@@ -32,9 +32,17 @@ namespace Utils.Extensions
             stream.Position--;
             return c;
         }
-        public static string ReadStringBuffer(this Stream stream, int size)
+        public static string ReadStringBuffer(this Stream stream, int size, bool bTrim = false)
         {
-            return new string(stream.ReadChars(size));
+            string ReadBuffer = new string(stream.ReadChars(size));
+            ReadBuffer = ReadBuffer.TrimEnd('\0');
+
+            return ReadBuffer;
+        }
+        public static string ReadString8(this Stream stream, bool bIsBigEndian)
+        {
+            byte size = stream.ReadByte8();
+            return ReadStringBuffer(stream, size);
         }
         public static string ReadString16(this Stream stream, bool isBigEndian)
         {
@@ -134,7 +142,11 @@ namespace Utils.Extensions
         {
             stream.Write(BitConverter.GetBytes(value), 0, 1);
         }
-
+        public static void WriteString8(this Stream OutStream, string Text, bool bIsBigEndian)
+        {
+            OutStream.WriteByte((byte)Text.Length);
+            OutStream.Write(Text.ToCharArray());
+        }
         public static void WriteString16(this Stream stream, string text, bool bigEndian)
         {
             stream.Write((short)text.Length, bigEndian);

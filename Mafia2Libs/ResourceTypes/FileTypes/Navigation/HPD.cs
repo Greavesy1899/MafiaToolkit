@@ -1,7 +1,7 @@
-﻿using SharpDX;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Numerics;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
@@ -18,9 +18,10 @@ namespace ResourceTypes.Navigation
 
         public class unkStruct
         {
+            /* Unk00 and Unk01 is Nodes bounding box */
             public int fileID;
-            public Vector3 unk0;
-            public Vector3 unk1;
+            public Vector3 unk0; // Calculated from OBJ_DATA Nodes
+            public Vector3 unk1; // Calculated from OBJ_DATA Nodes
             public int unk2; // 0
             public int fileSize;
             public int accumulatingSize;
@@ -119,10 +120,10 @@ namespace ResourceTypes.Navigation
                 // And then serialize it as usual; X X -Y -Y Z Z
                 writer.Write(min.X);
                 writer.Write(max.X);
-                writer.Write(min.Y);
-                writer.Write(max.Y);
-                writer.Write(-min.Z);
-                writer.Write(-max.Z);
+                writer.Write(-min.Y);
+                writer.Write(-max.Y);
+                writer.Write(min.Z);
+                writer.Write(max.Z);
 
                 writer.Write(data.unk2);
                 writer.Write(data.fileSize);
@@ -171,7 +172,7 @@ namespace ResourceTypes.Navigation
             writer.WriteLine(unk2);
             writer.WriteLine(unk3);
             writer.WriteLine(unk4);
-            writer.WriteLine(unkFooter);
+            //writer.WriteLine(unkFooter);
             writer.Close();
         }
     }

@@ -2,18 +2,28 @@
 using Rendering.Graphics;
 using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
-using SharpDX;
+using ResourceTypes.Navigation;
+using System.Numerics;
+using Vortice.Mathematics;
 
 namespace Rendering.Factories
 {
     public static class RenderableFactory
     {
-        public static RenderBoundingBox BuildBoundingBox(BoundingBox BBox, Matrix WorldTransform)
+        public static RenderBoundingBox BuildBoundingBox(BoundingBox BBox, Matrix4x4 WorldTransform)
         {
             RenderBoundingBox RenderBox = new RenderBoundingBox();
             RenderBox.Init(BBox);
             RenderBox.SetTransform(WorldTransform);
             return RenderBox;
+        }
+
+        public static RenderPlane3D BuildPlane3D(Vector4[] Planes, Matrix4x4 WorldTransform)
+        {
+            RenderPlane3D Plane3D = new RenderPlane3D();
+            Plane3D.InitPlanes(Planes, WorldTransform);
+            Plane3D.SetTransform(WorldTransform);
+            return Plane3D;
         }
 
         public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh)
@@ -23,8 +33,8 @@ namespace Rendering.Factories
                 return null;
             }
 
-            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[Mesh.Refs[FrameEntry.GeometryRef]];
-            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[Mesh.Refs[FrameEntry.MaterialRef]];
+            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[Mesh.Refs[FrameEntryRefTypes.Geometry]];
+            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[Mesh.Refs[FrameEntryRefTypes.Material]];
             IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
             VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
@@ -42,6 +52,13 @@ namespace Rendering.Factories
             RenderModel model = new RenderModel();
             model.ConvertFrameToRenderModel(Mesh, geom, mat, indexBuffers, vertexBuffers);
             return model;
+        }
+
+        public static RenderAIWorld BuildAIWorld(GraphicsClass InGraphics, AIWorld InWorldInfo)
+        {
+            RenderAIWorld OurAIWorld = new RenderAIWorld(InGraphics);
+            OurAIWorld.Init(InWorldInfo);
+            return OurAIWorld;
         }
 
         // TODO: Rubbish, redo. Old code.

@@ -42,7 +42,7 @@ namespace Gibbed.Illusion.FileFormats
         private readonly bool _IsCompressing;
         private readonly bool _bUseOodle;
 
-        private BlockWriterStream(Stream baseStream, uint alignment, Endian endian, bool compress)
+        private BlockWriterStream(Stream baseStream, uint alignment, Endian endian, bool compress, bool bUseOodle)
         {
             if (baseStream == null)
             {
@@ -56,9 +56,7 @@ namespace Gibbed.Illusion.FileFormats
             this._BlockOffset = 0;
             this._IsCompressing = compress;
             this._Alignment = alignment;
-
-            var game = GameStorage.Instance.GetSelectedGame();
-            if (game.GameType == GamesEnumerator.MafiaI_DE)
+            if (bUseOodle)
             {
                 this._bUseOodle = ToolkitSettings.bUseOodleCompression;
             }
@@ -163,6 +161,13 @@ namespace Gibbed.Illusion.FileFormats
             var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level9);
             zlib.Write(this._BlockBytes, 0, blockLength);
             zlib.Flush();
+
+            // If it doesn't fit within the range of ratio, store as uncompressed.
+            if (!IsWithinCompressionRatio((int)zlib.TotalOut, blockLength))
+            {
+                return false;
+            }
+
             var compressedLength = (int)data.Length;
             if (data.Length < blockLength)
             {
@@ -192,6 +197,12 @@ namespace Gibbed.Illusion.FileFormats
             Debug.Assert(compressed.Length != 0, "Compressed Block should not be empty");
             data.WriteBytes(compressed);
 
+            // If it doesn't fit within the range of ratio, store as uncompressed.
+            if (!IsWithinCompressionRatio(compressed.Length, blockLength))
+            {
+                return false;
+            }
+
             var compressedLength = (int)data.Length;
             if(data.Length < blockLength)
             {
@@ -215,6 +226,17 @@ namespace Gibbed.Illusion.FileFormats
             return false;
         }
 
+        private bool IsWithinCompressionRatio(int CompressedSize, int BlockLength)
+        {
+            float Ratio = ToolkitSettings.CompressionRatio * BlockLength;
+            if (CompressedSize >= Ratio)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public void Finish()
         {
             this._BaseStream.WriteValueS32(0, this._Endian);
@@ -222,9 +244,9 @@ namespace Gibbed.Illusion.FileFormats
         }
         #endregion
 
-        public static BlockWriterStream ToStream(Stream baseStream, uint alignment, Endian endian, bool compress)
+        public static BlockWriterStream ToStream(Stream baseStream, uint alignment, Endian endian, bool compress, bool bUseOodle)
         {
-            var instance = new BlockWriterStream(baseStream, alignment, endian, compress);
+            var instance = new BlockWriterStream(baseStream, alignment, endian, compress, bUseOodle);
             baseStream.WriteValueU32(Signature, endian);          
             var headerAlignment = (instance._bUseOodle && compress ? (alignment | 0x1000000) : alignment);
             baseStream.WriteValueU32(headerAlignment, endian);

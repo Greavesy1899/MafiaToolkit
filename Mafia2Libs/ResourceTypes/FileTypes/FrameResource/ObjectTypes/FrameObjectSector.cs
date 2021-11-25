@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Rendering.Factories;
+using Rendering.Graphics;
+using System;
 using System.ComponentModel;
 using System.IO;
-using Rendering.Factories;
-using Rendering.Graphics;
-using SharpDX;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
 using Utils.Types;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -38,6 +39,18 @@ namespace ResourceTypes.FrameResource
             get { return bounds ; }
             set { bounds = value; }
         }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 BoundaryBoxMinimum
+        {
+            get { return bounds.Minimum; }
+            set { bounds.SetMinimum(value); }
+        }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 BoundaryBoxMaximum
+        {
+            get { return bounds.Maximum; }
+            set { bounds.SetMaximum(value); }
+        }
         public Vector3 Unk13 {
             get { return unk_13_vector3; }
             set { unk_13_vector3 = value; }
@@ -49,31 +62,6 @@ namespace ResourceTypes.FrameResource
         public HashName SectorName {
             get { return sectorName; }
             set { sectorName = value; }
-        }
-
-        public float BoundsMinimumX {
-            get { return bounds.Minimum.X; }
-            set { bounds.Minimum.X = value; }
-        }
-        public float BoundsMinimumY {
-            get { return bounds.Minimum.Y; }
-            set { bounds.Minimum.Y = value; }
-        }
-        public float BoundsMinimumZ {
-            get { return bounds.Minimum.Z; }
-            set { bounds.Minimum.Z = value; }
-        }
-        public float BoundsMaximumX {
-            get { return bounds.Maximum.X; }
-            set { bounds.Maximum.X = value; }
-        }
-        public float BoundsMaximumY {
-            get { return bounds.Maximum.Y; }
-            set { bounds.Maximum.Y = value; }
-        }
-        public float BoundsMaximumZ {
-            get { return bounds.Maximum.Z; }
-            set { bounds.Maximum.Z = value; }
         }
 
         public FrameObjectSector() : base()
@@ -117,8 +105,8 @@ namespace ResourceTypes.FrameResource
             }
 
             bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
-            unk_13_vector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            unk_14_vector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unk_13_vector3 = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            unk_14_vector3 = Vector3Utils.ReadFromFile(reader, isBigEndian);
             sectorName = new HashName(reader, isBigEndian);
 
         }

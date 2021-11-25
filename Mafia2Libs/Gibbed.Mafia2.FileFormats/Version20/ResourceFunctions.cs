@@ -14,7 +14,6 @@ namespace Gibbed.Mafia2.FileFormats
 {
     public partial class ArchiveFile
     {
-        private bool bDumpFileNames = false;
         private Dictionary<ulong, string> FileNamesAndHash;
 
         private string ConstructPath(string root, string file)
@@ -63,33 +62,22 @@ namespace Gibbed.Mafia2.FileFormats
                     continue;
                 }
 
-                // DEBUG ONLY - Get entry name and guid to store in dictionary.
-                if (Debugger.IsAttached && bDumpFileNames)
-                {
-                    var pair = GetFileName(entry, itemNames[i]);
-                    if (pair.Key != 0 && pair.Value != "" && !pair.Value.Contains("File_"))
-                    {
-                        if (!FileNamesAndHash.ContainsKey(pair.Key))
-                        {
-                            FileNamesAndHash.Add(pair.Key, pair.Value);
-                        }
-                    }
-                }
-
                 string FileName = HasFilename(FileNamesAndHash, entry);
                 if (!string.IsNullOrEmpty(FileName))
                 {
                     Console.WriteLine(string.Format("{0}", FileName));
                     itemNames[i] = FileName;
                 }
+                else
+                {
+                }
 
                 resourceXML.WriteStartElement("ResourceEntry");
-                resourceXML.WriteAttributeString("SlotVram", entry.SlotVramRequired.ToString());
-                resourceXML.WriteAttributeString("SlotRam", entry.SlotRamRequired.ToString());
+                resourceXML.WriteAttributeString("FileGUID", entry.FileHash.ToString());
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 string NameToPass = "";
-                Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
+                //Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
                 switch (ResourceTypes[entry.TypeId].Name)
                 {
                     case "Texture":
@@ -132,6 +120,9 @@ namespace Gibbed.Mafia2.FileFormats
                     case "Script":
                         ReadScriptEntry(entry, resourceXML, finalPath);
                         continue;
+                    case "Cutscene":
+                        ReadCutsceneEntry(entry, resourceXML, finalPath);
+                        continue;
                     default:
                         string TypeName = ResourceTypes[entry.TypeId].Name;
                         string FormatError = string.Format("Found Unknown Type: {0}\nClicking continue will proceed with unpacking the SDS.", TypeName);
@@ -145,13 +136,9 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             resourceXML.WriteEndElement();
+            resourceXML.Close();
             resourceXML.Flush();
             resourceXML.Dispose();
-
-            if (Debugger.IsAttached && bDumpFileNames)
-            {
-                WriteFileNameDB("Resources/ResourceNameDatabase.txt", FileNamesAndHash);
-            }
         }
 
         public bool BuildResourcesVersion20(XmlDocument document, XmlDocument xmlDoc, XmlNode rootNode, string sdsFolder)
@@ -159,17 +146,18 @@ namespace Gibbed.Mafia2.FileFormats
             XPathNavigator nav = document.CreateNavigator();
             var nodes = nav.Select("/SDSResource/ResourceEntry");
             Dictionary<string, List<ResourceEntry>> entries = new Dictionary<string, List<ResourceEntry>>();
-            int index = 0;
             while (nodes.MoveNext() == true)
             {
+                // Get file guid
                 nodes.Current.MoveToFirstAttribute();
-                uint SlotVramRequired = uint.Parse(nodes.Current.Value);
-                nodes.Current.MoveToNextAttribute();
-                uint SlotRamRequired = uint.Parse(nodes.Current.Value);
+                ulong InFileHash = ulong.Parse(nodes.Current.Value);
+
+                // move to the child nodes of this element
                 nodes.Current.MoveToParent();
                 nodes.Current.MoveToFirstChild();
                 string resourceType = nodes.Current.Value;
 
+                // see if we need to create new type
                 if (!entries.ContainsKey(resourceType))
                 {
                     ResourceType resource = new ResourceType();
@@ -183,20 +171,15 @@ namespace Gibbed.Mafia2.FileFormats
                     ResourceTypes.Add(resource);
                     entries.Add(resourceType, new List<ResourceEntry>());
                 }
+
+                // begin creating xml for saving
                 XmlNode resourceNode = xmlDoc.CreateElement("ResourceInfo");
                 XmlNode typeNameNode = xmlDoc.CreateElement("TypeName");
                 typeNameNode.InnerText = resourceType;
                 XmlNode sddescNode = xmlDoc.CreateElement("SourceDataDescription");
 
-                ResourceEntry resourceEntry = new ResourceEntry() {
-                    SlotRamRequired = SlotRamRequired,
-                    SlotVramRequired = SlotVramRequired,
-                };
-
-                if (index == 36)
-                {
-                    Console.WriteLine("");
-                }
+                ResourceEntry resourceEntry = new ResourceEntry();
+                resourceEntry.FileHash = InFileHash;
 
                 switch (resourceType)
                 {
@@ -208,15 +191,14 @@ namespace Gibbed.Mafia2.FileFormats
                         break;
                     case "Generic":
                         resourceEntry = WriteGenericEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        resourceEntry.SlotRamRequired = SlotRamRequired;
-                        resourceEntry.SlotVramRequired = SlotVramRequired;
+                        resourceEntry.FileHash = InFileHash;
                         break;
                     case "NAV_PATH_DATA":
                     case "NAV_AIWORLD_DATA":
                     case "RoadMap":
                     case "EnlightenResource":
                         resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        resourceEntry.OtherRamRequired += (uint)(resourceEntry.Data.Length);
+                        resourceEntry.SlotRamRequired += (uint)(resourceEntry.Data.Length);
                         break;
                     case "MemFile":
                         resourceEntry = WriteMemFileEntry(resourceEntry, nodes, sdsFolder, sddescNode);
@@ -233,6 +215,9 @@ namespace Gibbed.Mafia2.FileFormats
                     case "Flash":
                         resourceEntry = WriteFlashEntry(resourceEntry, nodes, sdsFolder, sddescNode);
                         break;
+                    case "Cutscene":
+                        resourceEntry = WriteCutsceneEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
                     default:
                         MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         break;
@@ -245,13 +230,14 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
                 rootNode.AppendChild(resourceNode);
 
-                this.SlotVramRequired += resourceEntry.OtherVramRequired;
-                this.SlotRamRequired += resourceEntry.OtherRamRequired;
+                this.SlotVramRequired += resourceEntry.SlotVramRequired;
+                this.SlotRamRequired += resourceEntry.SlotRamRequired;
+                this.OtherRamRequired += resourceEntry.OtherRamRequired;
+                
                 resourceEntry.TypeId = (int)ResourceTypes.Find(s => s.Name.Equals(resourceType)).Id;
                 entries[resourceType].Add(resourceEntry);
-
-                index++;
             }
+
             _ResourceTypes.Reverse();
 
             for (int i = 0; i < _ResourceTypes.Count; i++)
@@ -343,7 +329,7 @@ namespace Gibbed.Mafia2.FileFormats
             using(MemoryStream stream = new MemoryStream(entry.Data))
             {
                 resource.Deserialize(entry.Version, stream, Endian);
-                name = resource.DetermineName(name);
+                name = resource.DetermineName(entry, name);
             }
 
             // Construct the path and attempt to save the data.
@@ -379,13 +365,9 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = stream.ToArray();
             }
 
-            // Fill out the entry and XML entry.
-            entry.OtherRamRequired = 0;
-            entry.OtherVramRequired = 0;
-
             int extensionStart = resource.DebugName.IndexOf(".");
             string filename = resource.DebugName.Remove(extensionStart);
-            descNode.InnerText = filename;
+            descNode.InnerText = "not available";
 
             return entry;
         }
@@ -414,7 +396,9 @@ namespace Gibbed.Mafia2.FileFormats
             resource.Data = File.ReadAllBytes(sdsFolder + "/" + resource.Name);
             resource.Size = resource.Data.Length;
             descNode.InnerText = resource.Name;
-            entry.OtherRamRequired = (uint)(resource.Size);
+
+            // Allocate size of XBin to resource header
+            entry.SlotRamRequired = (uint)(resource.Size);
             
             using(var stream = new MemoryStream())
             {
@@ -489,6 +473,8 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Version = version;
             }
 
+            descNode.InnerText = "not available";
+
             return entry;
         }
 
@@ -502,9 +488,12 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = resource.Data;
             }
 
+            // If not correctly named - See if its toolkit standard 'File_'.
+            // If yes, see if we can grab the name from our DB and apply hkx extension.
             if(FileNamesAndHash.ContainsKey(resource.FileHash) && name.Contains("File_"))
             {
                 name = FileNamesAndHash[resource.FileHash];
+                name += ".hkx";
             }
 
             resourceXML.WriteElementString("File", name);
@@ -512,6 +501,67 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("FileHash", resource.FileHash.ToString());
             resourceXML.WriteElementString("Unk02", resource.Unk02.ToString());
             return name;
+        }
+
+        private ResourceEntry WriteCutsceneEntry(ResourceEntry entry, XPathNodeIterator nodes, string SDSFolder, XmlNode descNode)
+        {
+            // Read contents from SDSContent.xml
+            nodes.Current.MoveToNext();
+            int NumGCRs = nodes.Current.ValueAsInt;
+            nodes.Current.MoveToNext();
+
+            // construct new resource
+            CutsceneResource Resource = new CutsceneResource();
+            Resource.GCREntityRecords = new CutsceneResource.GCRResource[NumGCRs];
+
+            for(int i = 0; i < NumGCRs; i++)
+            {
+                string Name = nodes.Current.Value;
+                CutsceneResource.GCRResource Record = new CutsceneResource.GCRResource();
+
+                string CombinedPath = Path.Combine(SDSFolder, Name);
+                Record.Name = Name;
+                Record.Content = File.ReadAllBytes(CombinedPath);
+
+                nodes.Current.MoveToNext();
+
+                Resource.GCREntityRecords[i] = Record;
+            }
+
+            ushort version = ushort.Parse(nodes.Current.Value);
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                Resource.Serialize(entry.Version, stream, _Endian);
+                entry.Data = stream.ToArray();
+            }
+
+            entry.Version = version;
+
+            return entry;
+        }
+
+        private string ReadCutsceneEntry(ResourceEntry entry, XmlWriter writer, string SDSFolder)
+        {
+            CutsceneResource Resource = new CutsceneResource();
+
+            using (MemoryStream stream = new MemoryStream(entry.Data))
+            {
+                Resource.Deserialize(entry.Version, stream, _Endian);
+            }
+
+            // Write all EntityRecords to individual files
+            writer.WriteElementString("GCRNum", Resource.GCREntityRecords.Length.ToString());
+            foreach(var Record in Resource.GCREntityRecords)
+            {
+                File.WriteAllBytes(Path.Combine(SDSFolder, Record.Name), Record.Content);
+                writer.WriteElementString("Name", Record.Name);
+            }
+
+            writer.WriteElementString("Version", entry.Version.ToString());
+            writer.WriteEndElement();
+
+            return SDSFolder;
         }
     }
 }

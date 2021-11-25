@@ -1,8 +1,8 @@
-﻿using SharpDX;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {

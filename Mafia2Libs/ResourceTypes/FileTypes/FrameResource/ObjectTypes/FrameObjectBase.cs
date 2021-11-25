@@ -1,15 +1,14 @@
-﻿using System.IO;
-using System.ComponentModel;
+﻿using Rendering.Core;
+using Rendering.Graphics;
 using ResourceTypes.FrameNameTable;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Numerics;
 using Utils.Extensions;
 using Utils.Types;
-using SharpDX;
-using Utils.SharpDXExtensions;
-using System.Collections.Generic;
-using System.Diagnostics;
-using Mafia2Tool;
-using Rendering.Core;
-using Rendering.Graphics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.FrameResource
 {
@@ -23,10 +22,9 @@ namespace ResourceTypes.FrameResource
         protected short unk6;
         protected bool isOnTable;
         protected NameTableFlags nameTableFlags;
-        protected string[] extraData;
 
-        protected Matrix worldTransform = Matrix.Identity;
-        protected Matrix localTransform = Matrix.Identity;
+        protected Matrix4x4 worldTransform = Matrix4x4.Identity;
+        protected Matrix4x4 localTransform = Matrix4x4.Identity;
 
         FrameObjectBase parent;
         FrameObjectBase root;
@@ -56,11 +54,11 @@ namespace ResourceTypes.FrameResource
             set { secondaryFlags = value; }
         }
         //[Browsable(false)]
-        public Matrix LocalTransform {
+        public Matrix4x4 LocalTransform {
             get { return localTransform; }
             set { localTransform = value; SetWorldTransform(); }
         }
-        public Matrix WorldTransform {
+        public Matrix4x4 WorldTransform {
             get { SetWorldTransform(); return worldTransform; }
             set { worldTransform = value; }
         }
@@ -82,12 +80,6 @@ namespace ResourceTypes.FrameResource
             get { return unk6; }
             set { unk6 = value; }
         }
-        [Category("Frame Properties"), Description("Data stored in FrameProps.bin"), Browsable(false)]
-        public string[] ExtraData {
-            get { return extraData; }
-            set { extraData = value; }
-        }
-
         [Description("Only use this if the object is going to be saved in the FrameNameTable"), Category("FrameNameTable Data"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public NameTableFlags FrameNameTableFlags {
             get { return nameTableFlags; }
@@ -108,8 +100,8 @@ namespace ResourceTypes.FrameResource
             //do example name.
             name = new HashName("NewObject");
             secondaryFlags = 1;
-            localTransform = Matrix.Identity;
-            worldTransform = Matrix.Identity;
+            localTransform = Matrix4x4.Identity;
+            worldTransform = Matrix4x4.Identity;
             unk3 = -1;
             parentIndex1 = new ParentStruct(-1);
             parentIndex2 = new ParentStruct(-1);
@@ -134,31 +126,27 @@ namespace ResourceTypes.FrameResource
         {
             name = new HashName(stream, isBigEndian);
             secondaryFlags = stream.ReadInt32(isBigEndian);
-            localTransform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            localTransform = MatrixUtils.ReadFromFile(stream, isBigEndian);
             unk3 = stream.ReadInt16(isBigEndian);
             parentIndex1 = new ParentStruct(stream.ReadInt32(isBigEndian));
             parentIndex2 = new ParentStruct(stream.ReadInt32(isBigEndian));
             unk6 = stream.ReadInt16(isBigEndian);
-
-            if (SceneData.FrameProperties != null)
-            {
-                if (SceneData.FrameProperties.FrameExtraData.ContainsKey(name.Hash))
-                {
-                    extraData = SceneData.FrameProperties.FrameExtraData[name.Hash].Data;
-                }
-            }
         }
 
         public virtual void WriteToFile(BinaryWriter writer)
         {
+            SanitizeOnSave();
+
             name.WriteToFile(writer);
             writer.Write(secondaryFlags);
-            MatrixExtensions.WriteToFile(localTransform, writer);
+            MatrixUtils.WriteToFile(localTransform, writer);
             writer.Write(unk3);
             writer.Write(parentIndex1.Index);
             writer.Write(parentIndex2.Index);
             writer.Write(unk6);
         }
+
+        protected virtual void SanitizeOnSave() { }
 
         public void SetWorldTransform()
         {
@@ -166,9 +154,9 @@ namespace ResourceTypes.FrameResource
             //the renderer does not update on the first startup of the editor.
             Vector3 position, scale, newPos;
             Quaternion rotation, newRot;
-            Matrix parentTransform = Matrix.Identity;
-            localTransform.Decompose(out scale, out rotation, out position);
-            worldTransform = Matrix.Identity;
+            Matrix4x4 parentTransform = Matrix4x4.Identity;
+            Matrix4x4.Decompose(localTransform, out scale, out rotation, out position);
+            worldTransform = Matrix4x4.Identity;
 
             if (parent != null)
             {
@@ -184,10 +172,10 @@ namespace ResourceTypes.FrameResource
                 Vector3 parentPosition = Vector3.Zero;
                 Vector3 parentScale = Vector3.One;
                 Quaternion parentRotation = Quaternion.Identity;
-                parentTransform.Decompose(out parentScale, out parentRotation, out parentPosition);
+                Matrix4x4.Decompose(parentTransform, out parentScale, out parentRotation, out parentPosition);
 
                 newRot = parentRotation * rotation;
-                newPos = Vector3.TransformCoordinate(position, parentTransform);
+                newPos = Vector3Utils.TransformCoordinate(position, parentTransform);
             }
             else
             {
@@ -195,7 +183,7 @@ namespace ResourceTypes.FrameResource
                 newPos = position;
             }
 
-            worldTransform = MatrixExtensions.SetMatrix(newRot, scale, newPos);
+            worldTransform = MatrixUtils.SetMatrix(newRot, scale, newPos);
             Debug.Assert(!worldTransform.IsNaN(), string.Format("Frame: {0} caused NaN()!", name.ToString()));
             foreach (var child in children)
             {

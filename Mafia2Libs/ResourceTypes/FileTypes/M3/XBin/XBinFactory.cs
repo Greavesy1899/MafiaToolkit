@@ -6,11 +6,11 @@ using System.Diagnostics;
 using System.IO;
 using ResourceTypes.M3.XBin.GuiContainers;
 
-namespace ResourceTypes.FileTypes.M3.XBin
+namespace ResourceTypes.M3.XBin
 {
     public static class XBinFactory
     {
-        public static BaseTable ReadXBin(BinaryReader reader, ulong hash)
+        public static BaseTable ReadXBin(BinaryReader reader, XBin Parent, ulong hash)
         {
             BaseTable XBinData = null;
 
@@ -33,9 +33,10 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     XBinData = new CarInteriorColorsTable();
                     XBinData.ReadFromFile(reader);
                     break;
+                    // TODO: Broken for both games
                 case 0x44FA070D73C43CBD: // CarTrafficTuningTable for M1:DE
                 case 0x44FA070D55388F65: // CarTrafficTuningTable for M3
-                    XBinData = new CarTrafficTuningTable();
+                    XBinData = new CarTrafficTuningTable(); 
                     XBinData.ReadFromFile(reader);
                     break;
                 case 0x09B5140FA382AF8F: // CarTuningModificatorsTable
@@ -50,7 +51,8 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     XBinData = new SlotTable();
                     XBinData.ReadFromFile(reader);
                     break;
-                case 0xB77D0A522C8E12A3: // MissionsTable
+                case 0xB77D0A522C8E12A3: // MissionsTable (Mafia I: DE)
+                case 0xB77D0A52FD0225D0: // MissionTable (Mafia III)
                     XBinData = new MissionsTable();
                     XBinData.ReadFromFile(reader);
                     break;
@@ -79,6 +81,21 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     break;
                 case 0x0E2FBBCF46754F66: // CarTuningPackAvailabilityTable (Mafia I: DE and Mafia III)
                     XBinData = new CarTuningPackAvailabilityTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xA32C16191BC63EEF: // StreamMap Table (Mafia I: DE)
+                case 0xA32C1619D5261223: // StreamMap Table (Mafia III)
+                    XBinData = new StreamMapTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x2B673F12DCA4BBF1:
+                case 0x2B673F120D288C9A:
+                    XBinData = new CitiesTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x8982CC5C78136253: // Subtitles Table (Mafia III)
+                case 0x8982CC5C46848F6E: // Subtitles Table (Mafia I: DE)
+                    XBinData = new SubtitleTable();
                     XBinData.ReadFromFile(reader);
                     break;
                 //case 0xDC327944DD83627E: // TODO: Fix for M1: DE. look for 0xA for PaintCombination array entries.

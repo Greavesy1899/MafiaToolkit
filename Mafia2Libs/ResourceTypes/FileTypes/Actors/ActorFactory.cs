@@ -1,6 +1,5 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace ResourceTypes.Actors
@@ -45,6 +44,8 @@ namespace ResourceTypes.Actors
                     return new ActorActorDetector();
                 case ActorTypes.Blocker:
                     return new ActorBlocker();
+                case ActorTypes.C_StaticWeapon:
+                    return new ActorStaticWeapon();
                 case ActorTypes.C_StaticParticle:
                     return new ActorStaticParticle();
                 case ActorTypes.LightEntity:
@@ -115,6 +116,8 @@ namespace ResourceTypes.Actors
                     return new ActorActorDetector(stream, isBigEndian);
                 case ActorTypes.Blocker:
                     return new ActorBlocker(stream, isBigEndian);
+                case ActorTypes.C_StaticWeapon:
+                    return new ActorStaticWeapon(stream, isBigEndian);
                 case ActorTypes.C_StaticParticle:
                     return new ActorStaticParticle(stream, isBigEndian);
                 case ActorTypes.LightEntity:

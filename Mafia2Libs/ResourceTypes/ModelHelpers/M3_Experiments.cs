@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using Utils.Models;
 using ResourceTypes.FrameResource;
 using static ResourceTypes.FrameResource.FrameLOD;
-using System.Windows;
-using SharpDX;
+using System.Numerics;
+using Vortice.Mathematics;
 
 namespace Mafia2Tool.MafiaLib.ModelHelpers
 {
@@ -72,17 +69,27 @@ namespace Mafia2Tool.MafiaLib.ModelHelpers
             return dictionary;
         }
 
-        public void ReadPrerequisites()
+        public void ReadPrerequisites(string name)
         {
-            VertexDecleration = (VertexFlags)134933;
-            Offset = new Vector3(-233.86592f, -642.7829f, -1.5614158f);
-            Scale = 0.013024263f;
+            using(BinaryReader reader = new BinaryReader(File.Open(name, FileMode.Open)))
+            {
+                ushort MeshFlags = reader.ReadUInt16();
+                VertexDecleration = (VertexFlags)reader.ReadUInt32();
+
+                int IndexSize = reader.ReadInt32();
+                IndexBuffer = reader.ReadBytes(IndexSize);
+
+                VertexCount = reader.ReadInt32();
+                int VertexSize = reader.ReadInt32();
+                VertexBuffer = reader.ReadBytes(VertexSize);
+            }
+
+            //VertexDecleration = (VertexFlags)134933;
+            //Offset = new Vector3(-233.86592f, -642.7829f, -1.5614158f);
+            //Scale = 0.013024263f;
 
             int vertexSize;
             Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = GetVertexOffsets(out vertexSize);
-
-            VertexBuffer = File.ReadAllBytes("M3/VertexBuffer.bin");
-            IndexBuffer = File.ReadAllBytes("M3/IndexBuffer.bin");
 
             int tempVertexSize = VertexBuffer.Length / VertexCount;
             Vertex[] Vertices = new Vertex[VertexCount];
@@ -100,15 +107,15 @@ namespace Mafia2Tool.MafiaLib.ModelHelpers
             int index = 0;
             for (int y = 0; y != IndexBuffer.Length; y+=6)
             {
-                Int3 triangle = new Int3();
-                triangle.X = BitConverter.ToUInt16(IndexBuffer, y + 0);
-                triangle.Y = BitConverter.ToUInt16(IndexBuffer, y + 2);
-                triangle.Z = BitConverter.ToUInt16(IndexBuffer, y + 4);
+                int X = BitConverter.ToUInt16(IndexBuffer, y + 0);
+                int Y = BitConverter.ToUInt16(IndexBuffer, y + 2);
+                int Z = BitConverter.ToUInt16(IndexBuffer, y + 4);
+                Int3 triangle = new Int3(X, Y, Z);
                 Triangles[index] = triangle;
                 index++;
             }
 
-            File.WriteAllLines("Test.obj", BuildMesh(Vertices, Triangles));
+            File.WriteAllLines(name+".obj", BuildMesh(Vertices, Triangles));
         }
 
         private string[] BuildMesh(Vertex[] Vertices, Int3[] Triangles)

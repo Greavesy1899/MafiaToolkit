@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using ResourceTypes.M3.XBin;
+using System.IO;
 using Utils.Helpers.Reflection;
 
 namespace FileTypes.XBin.StreamMap.Commands
@@ -14,7 +15,7 @@ namespace FileTypes.XBin.StreamMap.Commands
             SeasonID = reader.ReadUInt32();
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             writer.Write(SeasonID);
         }

@@ -11,4 +11,9 @@ namespace Utils.Helpers.Reflection
     public class PropertyIgnoreByReflector : Attribute
     {
     }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public class PropertyClassAllowReflection : Attribute
+    {
+    }
 }

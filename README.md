@@ -17,7 +17,7 @@ Not the best feature in this Toolkit, its primary reason it exists is because it
 
 **SDS Packing/Repacking:**
 
-This feature uses Gibbed's SDS code from his [repository](https://github.com/gibbed/Gibbed.Illusion), with multiple fixes and improvements. XML files and the games tables are automatically decompiled, with the option to decompile the LUA files. There is an option to unpack SDS files in the format like "SDS Tools GUI", for the people who would like to open the contents in ZModeler3. For repacking, the modder can either choose compressed or uncompressed in the toolkits options. Double clicking any SDS in the game explorer will unpack, and to repack right click the SDS you unpacked, and click "pack". SDS's from Mafia III and Mafia: DE are also supported. However, with Mafia: DE, the Toolkit requires the end-user (you) to copy and paste the 'Oodle' dll from the game folder into the Toolkit's library folder to function. The Toolkit *does not* redistribute this DLL.
+This feature uses Gibbed's SDS code from his [repository](https://github.com/gibbed/Gibbed.Illusion), with multiple fixes and improvements. XML files and the games tables are automatically decompiled, with the option to decompile the LUA files. There is an option to unpack SDS files in the format like "SDS Tools GUI", for the people who would like to open the contents in ZModeler3. For repacking, the modder can either choose compressed or uncompressed in the toolkits options. Double clicking any SDS in the game explorer will unpack, and to repack right click the SDS you unpacked, and click "pack". SDS's from Mafia III and Mafia: DE are also supported.
 
 **Material Editor:**
 
@@ -47,7 +47,7 @@ A basic table editor which allows modders to manipulate data and add new rows.
 
 ## Mafia III & Mafia I: DE:
 
-** XBin Editor: **
+**XBin Editor:**
 
 An extremely prototype editor, capable of loading & saving certain XBin files. This editor also has the ability to export these XBins to a friendly XML format, which can also be re-imported. This does not support all types of XBin's yet, but support is coming. 
 
@@ -59,4 +59,4 @@ For M2FBX, you'll need to have the Fbx SDK and PhysX 2.8.X to compile the soluti
 You can check the current issues [here](https://github.com/Greavesy1899/Mafia2Toolkit/issues "Issues").
 
 ## Discord link:
-To keep upto date on the progress of this toolkit, I recommend joining this discord by using the link [here](http://bit.ly/2L4z8vj "Discord invite")
+To keep upto date on the progress of this toolkit, I recommend joining this discord by using the link [here](https://discord.gg/WX8RGpQSYu "Discord invite")

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Utils.Extensions;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -14,12 +16,14 @@ namespace ResourceTypes.M3.XBin
 
         private string RawStringBuffer;
         private Dictionary<string, int> StringBuffer;
+        private Dictionary<string, long> ObjectPtrsToFix;
         private List<StringPtr> PtrsToFix;
 
         public XBinWriter(Stream output) : base(output)
         {
             RawStringBuffer = "";
             StringBuffer = new Dictionary<string, int>();
+            ObjectPtrsToFix = new Dictionary<string, long>();
             PtrsToFix = new List<StringPtr>();
         }
 
@@ -27,6 +31,7 @@ namespace ResourceTypes.M3.XBin
         {
             RawStringBuffer = "";
             StringBuffer = new Dictionary<string, int>();
+            ObjectPtrsToFix = new Dictionary<string, long>();
             PtrsToFix = new List<StringPtr>();
         }
 
@@ -34,6 +39,7 @@ namespace ResourceTypes.M3.XBin
         {
             RawStringBuffer = "";
             StringBuffer = new Dictionary<string, int>();
+            ObjectPtrsToFix = new Dictionary<string, long>();
             PtrsToFix = new List<StringPtr>();
         }
 
@@ -41,7 +47,15 @@ namespace ResourceTypes.M3.XBin
         {
             RawStringBuffer = "";
             StringBuffer = new Dictionary<string, int>();
+            ObjectPtrsToFix = new Dictionary<string, long>();
             PtrsToFix = new List<StringPtr>();
+        }
+
+        public override void Close()
+        {
+            Debug.Assert(PtrsToFix.Count == 0, "Should have no StringPtrs to fix!");
+            Debug.Assert(ObjectPtrsToFix.Count == 0, "Should have no ObjectPtrs to fix!");
+            base.Close();
         }
 
         // Functions to help XBin
@@ -57,6 +71,32 @@ namespace ResourceTypes.M3.XBin
 
             // Write temporary -1
             Write(-1);
+        }
+
+        public void PushObjectPtr(string Identifier)
+        {
+            // Push object to the array
+            ObjectPtrsToFix.Add(Identifier, BaseStream.Position);
+
+            // Write temporary -1
+            Write(-1);
+        }
+
+        public void FixUpObjectPtr(string Identifier)
+        {
+            long CurrentPosition = BaseStream.Position;
+
+            long Value = 0;
+            if(ObjectPtrsToFix.TryGetValue(Identifier, out Value))
+            {
+                BaseStream.Seek(Value, SeekOrigin.Begin);
+                uint ValueToWrite = (uint)(CurrentPosition - Value);
+                Write(ValueToWrite);
+
+                BaseStream.Seek(CurrentPosition, SeekOrigin.Begin);
+
+                ObjectPtrsToFix.Remove(Identifier);
+            }
         }
 
         public void FixUpStringPtrs()

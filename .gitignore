@@ -27,6 +27,7 @@ bld/
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
+Mafia2Libs.backup/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -262,6 +263,7 @@ paket-files/
 __pycache__/
 *.pyc
 
-M2FBX/M2FBX/SDKs/
-M2FBX/M2PhysX/SDKs/
+M2FBX/M2FBX/vendors/
+M2FBX/M2FBX_v2/vendors/
+M2FBX/M2PhysX/vendors/
 

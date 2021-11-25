@@ -13,7 +13,8 @@
   <String ID="$FAILED_UPDATE_CHECK">Při kontrole aktualizací se nezdařilo!</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Poděkování</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Poděkování</String>
   <String ID="$VIEW">Zobrazení</String>
   <String ID="$FILE">Soubor</String>
   <String ID="$TOOLS">Nástroje</String>
@@ -29,6 +30,9 @@
   <String ID="$TILE">Dlaždice</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia Toolkit: Herní Prohlížeč</String>
   <String ID="$UNPACK_ALL_SDS">Extrahovat všechny SDS</String>
+  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
+  <String ID="$UNPACK_SELECTED_SDS">Unpack Selected SDS's</String>
+  <String ID="$PACK_SELECTED_SDS">Pack Selected SDS's</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Otevřít složku v průzkumníku souborů</String>
   <String ID="$PACK">Zabalit</String>
   <String ID="$UNPACK">Extrahovat</String>
@@ -41,8 +45,8 @@
   <String ID="$REFRESH">Obnovit</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Umístění složky</String>
   <String ID="$UP_TOOLTIP">Nahoru</String>
-  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder.</String>
-
+  <String ID="$M1DE_OODLEERROR">Could not find Oodle DLL which is required for compression/decompression. Please make sure 'oo2core_8_win64.dll' exists in game directory.</String>
+	
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Zapnout Toolkit</String>
   <String ID="$FOLDER_PATH_LABEL">Složka hry:</String>
@@ -77,6 +81,7 @@
   <String ID="$LANGUAGE_OPTION">Jazyk</String>
   <String ID="$DISCORD_STATE_CUSTOM">Použít vlastní status v discordu.</String>
   <String ID="$CHECK_FOR_UPDATES">Vyhledat aktualizace.</String>
+  <String ID="$SAVE_PROMPT">Uložit před zavřením?</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Umístění exportu:</String>
@@ -95,10 +100,9 @@
   <String ID="$SELECT_ALL">Vybrat vše</String>
   
   <!-- SDS Options -->
-  <String ID="$SDS_COMPRESSION_TYPE">Typ komprese</String>
-  <String ID="$SDS_UNCOMPRESSED">Bez komprese</String>
-  <String ID="$SDS_COMPRESSED">Komprese</String>
-  <String ID="$SDS_ONEBLOCK">Jeden blok</String>
+  <String ID="$SDS_COMPRESSION_RATIO">Poměr Komprese</String>
+  <String ID="$SDS_TOOLTIP_COMPRESSION_RATIO">0.0 se rovná žádné kompresi, 1.0 se rovná plné kompresi. 0.9 je základní komprese.</String>
+  <String ID="$SDS_TOOLTIP_USE_OODLE">Pokud komprimujete archivy hry Mafia: Definitive Edition, použijte komprimaci Oodle.</String>
   <String ID="$ADD_TIME_DATE_BACKUP">Přidání času a data k zálohám.</String>
   <String ID="$DECOMPILE_LUA_UNPACK">Rozšifrovat lua při extrahování</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Použít SDS Tool GUI Formát při extrahování.</String>
@@ -161,6 +165,46 @@
   <String ID="$FRADD_TYPE">Framu Typ</String>
   <String ID="$QUESTION_FRADD">Napište jméno a typ framu.</String>
   <String ID="$FRADD_NAME_TABLE">Přidat Frame do Name Table?</String>
+
+  <!-- Scene Outliner Dock Strings-->
+  <String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
+  <String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
+  <String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+  
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
+  <String ID="$SAVE_TITLE">Save File</String>
+  <String ID="$OPEN_TITLE">Open File</String>
+  <String ID="$EXPORT_XML">Export To XML</String>
+  <String ID="$IMPORT_XML">Import From XML</String>
+  <String ID="$PHYSICS_RB">Physics/Rigidbody</String>
+  <String ID="$MOTOR_TORQUE">Motor/Torque</String>
+  <String ID="$FUEL">Fuel</String>
+  <String ID="$GEARBOX">Gearbox</String>
+  <String ID="$STEERING">Steering</String>
+  <String ID="$DIFFERENTIAL">Differential</String>
+  <String ID="$BRAKES">Brakes</String>
+  <String ID="$AERODYNAMICS">Aerodynamics</String>
+  <String ID="$EFFECTS">Effects</String>
+  <String ID="$ENGINE">Engine</String>
+  <String ID="$ENVIRONMENT">Environment</String>
+  <String ID="$AIR_PUMP">Air Pump</String>
+  <String ID="$DOORS">Doors</String>
+  <String ID="$BONNET_TRUNK">Bonnet/Trunk</String>
+  <String ID="$WHEELS">Wheels</String>
+  <String ID="$HORN_SIREN">Horn/Siren</String>
+  <String ID="$GLASS_BREAK">Glass Effects</String>
+  <String ID="$EXPLOSION">Explosion Effects</String>
+  <String ID="$FIRE">Fire Effects</String>
+  <String ID="$RAIN_CONTACT">Rain Effects</String>
+  <String ID="$HEDGE_CONTACT">Hedge Collision Effects</String>
+  <String ID="$SKIDDING_SLIDING">Powersliding/Skidding</String>
+  <String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Jméno</String>
@@ -264,4 +308,18 @@
   <String ID="$DELETE_OBJECT">Odstranit objekt</String>
   <String ID="$DELETE_INSTANCE">Odstranit instanci</String>
   <String ID="$VIEW_NUM_INST">Zobrazit počet instancí</String>
+
+  <!-- Property Descriptions Strings-->
+  <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+
+  <!-- XBIN Editor Strings-->
+  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+  <String ID="$IMPORT_XBIN">Import from .xml</String>
+  <String ID="$EXPORT_XBIN">Export to .xml</String>
+  
+  <!-- Exception Form-->
+  <String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>
+  <String ID="$EXCEPTION_CONTINUE">Continue</String>
+  <String ID="$EXCEPTION_QUIT">Quit</String>
+  
 </Localisation>

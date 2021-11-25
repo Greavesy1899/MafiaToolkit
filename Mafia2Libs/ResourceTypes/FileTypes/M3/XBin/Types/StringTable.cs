@@ -1,5 +1,6 @@
-﻿using ResourceTypes.FileTypes.M3.XBin;
+﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -13,13 +14,13 @@ namespace ResourceTypes.M3.XBin
         [PropertyIgnoreByReflector]
         public uint Unk0 { get; set; } // I'm guessing this used to be a pointer to the stringID.
         [PropertyForceAsAttribute]
-        public ulong StringID { get; set; } // Hash of the StringID which no longer exists. *cry ever tim*
+        public XBinHashName StringID { get; set; } // Hash of the StringID which no longer exists. *cry ever tim*
         public string Content { get; set; } // Text
 
         public LocalisableString()
         {
             Unk0 = 0;
-            StringID = 0;
+            StringID = new XBinHashName();
             Content = "";
         }
 
@@ -31,8 +32,6 @@ namespace ResourceTypes.M3.XBin
 
     public class StringTable : BaseTable
     {
-        private readonly ulong XBinMagic = 0x5E42EF29E8A3E1D3;
-
         private uint unk0;
         public LocalisableString[] Items { get; set; }
 
@@ -55,7 +54,7 @@ namespace ResourceTypes.M3.XBin
             {
                 LocalisableString Entry = new LocalisableString();
                 Entry.Unk0 = reader.ReadUInt32();
-                Entry.StringID = reader.ReadUInt64();
+                Entry.StringID.ReadFromFile(reader);
                 Entry.Content = XBinCoreUtils.ReadStringPtrWithOffset(reader);
                 Items[i] = Entry;
             }
@@ -63,17 +62,20 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            // Order StringTable entries.
+            Items = Items.OrderBy(e => e.StringID.Hash).ToArray();
+
             writer.Write(unk0);
             writer.Write(Items.Length);
             writer.Write(Items.Length);
 
             // Idea is to write all entries and come back to replace Ptr(offset).
             long[] positions = new long[Items.Length];
-            for(int i = 0; i < Items.Length; i++)
+            for(int i = 0; i < Items.Count(); i++)
             {
                 LocalisableString Entry = Items[i];
                 writer.Write(Entry.Unk0);
-                writer.Write(Entry.StringID);
+                Entry.StringID.WriteToFile(writer);
 
                 positions[i] = writer.BaseStream.Position;
                 writer.Write(-1);

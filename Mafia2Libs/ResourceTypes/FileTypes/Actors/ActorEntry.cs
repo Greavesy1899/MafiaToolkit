@@ -1,9 +1,9 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
-using SharpDX;
 using System.ComponentModel;
 using System.IO;
-using Utils.SharpDXExtensions;
+using System.Numerics;
 using Utils.StringHelpers;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Actors
 {
@@ -128,9 +128,9 @@ namespace ResourceTypes.Actors
             actortypeID = reader.ReadInt32();
             entityHash = reader.ReadUInt64();
             frameNameHash = reader.ReadUInt64();
-            position = Vector3Extenders.ReadFromFile(reader);
+            position = Vector3Utils.ReadFromFile(reader);
             rotation = QuaternionExtensions.ReadFromFile(reader);
-            scale = Vector3Extenders.ReadFromFile(reader);
+            scale = Vector3Utils.ReadFromFile(reader);
             unk3 = reader.ReadUInt16();
             dataID = reader.ReadUInt16();
         }

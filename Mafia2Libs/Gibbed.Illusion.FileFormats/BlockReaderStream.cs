@@ -404,7 +404,7 @@ namespace Gibbed.Illusion.FileFormats
 
                     for (int i = 0; i < compressedBlockHeader.ChunkCount; ++i)
                     {
-                        uint UncompressedSize = remainingUncompressedSize;
+                        uint UncompressedSize = Math.Min(alignment, remainingUncompressedSize);
                         instance.AddCompressedBlock(virtualOffset,
                                                     UncompressedSize, //compressedBlockHeader.UncompressedSize,
                                                     compressedPosition,

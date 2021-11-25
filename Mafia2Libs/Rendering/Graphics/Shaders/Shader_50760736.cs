@@ -1,7 +1,7 @@
-﻿using System.Runtime.InteropServices;
-using SharpDX;
-using SharpDX.Direct3D11;
+﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using Utils.Types;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -12,33 +12,29 @@ namespace Rendering.Graphics
         {
             public Vector4 C005_EmissiveFacadeColorAndIntensity;
         }
-        protected Buffer ConstantShaderParamBuffer { get; set; }
+        protected ID3D11Buffer ConstantShaderParamBuffer { get; set; }
         protected Shader_50760736Params ShaderParams { get; private set; }
 
-        public Shader_50760736(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
-        {
-            if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
-            {
-                throw new System.Exception("Failed to load Shader!");
-            }
-        }
+        public Shader_50760736(ID3D11Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
 
-        public override bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
+        public override bool Init(ID3D11Device Dx11Device, ShaderInitParams InitParams)
         {
-            if (!base.Init(device, elements, vsFileName, psFileName, vsEntryPoint, psEntryPoint))
+            if (!base.Init(Dx11Device, InitParams))
             {
                 return false;
             }
-            ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_50760736Params>(device, "ShaderParamBuffer");
+
+            ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_50760736Params>(Dx11Device, "ShaderParamBuffer");
+
             return true;
         }
-        public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
+        public override void SetSceneVariables(ID3D11DeviceContext deviceContext, Matrix4x4 WorldMatrix, Camera camera)
         {
             base.SetSceneVariables(deviceContext, WorldMatrix, camera);
             ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantShaderParamBuffer, 2, ShaderParams);
         }
 
-        public override void SetShaderParameters(Device device, DeviceContext deviceContext, MaterialParameters matParams)
+        public override void SetShaderParameters(ID3D11Device device, ID3D11DeviceContext deviceContext, MaterialParameters matParams)
         {
             base.SetShaderParameters(device, deviceContext, matParams);
 
@@ -53,14 +49,14 @@ namespace Rendering.Graphics
 
             if (material == null)
             {
-                ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
-                deviceContext.PixelShader.SetShaderResource(0, texture);
+                ID3D11ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
+                deviceContext.PSSetShaderResource(0, texture);
                 ShaderParams = parameters;
             }
             else
             {
 
-                ShaderResourceView[] textures = new ShaderResourceView[2];
+                ID3D11ShaderResourceView[] textures = new ID3D11ShaderResourceView[2];
 
                 HashName TextureFile = material.GetTextureByID("S000");
                 if (TextureFile != null)
@@ -82,7 +78,7 @@ namespace Rendering.Graphics
                     textures[1] = RenderStorageSingleton.Instance.TextureCache[0];
                 }
 
-                deviceContext.PixelShader.SetShaderResources(0, textures.Length, textures);
+                deviceContext.PSSetShaderResources(0, textures);
             }
 
             ShaderParams = parameters;

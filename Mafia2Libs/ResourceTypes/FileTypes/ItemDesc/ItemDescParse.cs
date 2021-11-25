@@ -1,10 +1,8 @@
-﻿using SharpDX;
-using System;
-using System.IO;
+﻿using System.IO;
+using System.Numerics;
 using Utils;
 using Utils.Logging;
-using Utils.SharpDXExtensions;
-using Utils.Types;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.ItemDesc
 {
@@ -18,13 +16,16 @@ namespace ResourceTypes.ItemDesc
         public CollisionTypes colType;
         public ulong idHash;
         public short colMaterial;
-        public Matrix Matrix;
+        public Matrix4x4 Matrix;
         public byte unkByte;
         public object collision;
+
+        public string FileName { get; private set; }
 
         public ItemDescLoader(string fileName)
         {
             Log.WriteLine("Trying to Parse: " + fileName, LoggingTypes.WARNING, LogCategoryTypes.FUNCTION);
+            FileName = Path.GetFileName(fileName);
 
             using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
             {
@@ -40,7 +41,7 @@ namespace ResourceTypes.ItemDesc
             colType = (CollisionTypes)reader.ReadByte();
             idHash = reader.ReadUInt64();
             colMaterial = reader.ReadInt16();
-            Matrix = MatrixExtensions.ReadFromFile(reader);
+            Matrix = MatrixUtils.ReadFromFile(reader);
             unkByte = reader.ReadByte();
 
             if (colType == CollisionTypes.Box)

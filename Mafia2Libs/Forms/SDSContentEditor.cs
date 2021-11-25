@@ -1,13 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using Utils.Helpers;
 using Utils.Types;
+using Utils.Language;
 
 namespace Mafia2Tool
 {
     public partial class SDSContentEditor : Form
     {
+        FileInfo OriginalInfo;
         SDSContentFile file;
+
+        private bool bIsFileEdited = false;
+
         public SDSContentEditor()
         {
             InitializeComponent();
@@ -18,16 +24,22 @@ namespace Mafia2Tool
         {
             InitializeComponent();
             Localise();
+            OriginalInfo = info;
             file = new SDSContentFile();
-            file.ReadFromFile(info);
+            file.ReadFromFile(OriginalInfo);
             PopulateTree();
             ShowDialog();
         }
 
         private void Localise()
         {
-
-
+            Text = Language.GetString("$SDSCONTENT_EDITOR_TITLE");
+            Button_File.Text = Language.GetString("$FILE");
+            Button_Save.Text = Language.GetString("$SAVE");
+            Button_Reload.Text = Language.GetString("$RELOAD");
+            Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Delete.Text = Language.GetString("$DELETE");
+            Context_Delete.Text = Language.GetString("$DELETE");
         }
 
         private void PopulateTree()
@@ -41,19 +53,59 @@ namespace Mafia2Tool
             }
         }
 
-        private void AutoAddFilesButton_Click(object sender, EventArgs e)
+        private void Save()
+        {
+            file.WriteToFile();
+
+            Text = Language.GetString("$SDSCONTENT_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
+        private void Reload()
+        {
+            file = new SDSContentFile();
+            file.ReadFromFile(OriginalInfo);
+            PopulateTree();
+
+            Text = Language.GetString("$SDSCONTENT_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
+        private void Delete()
+        {
+            TreeNode SelNode = ResourceTreeView.SelectedNode;
+
+            if (SelNode.Parent != null)
+            {
+                string ParentNodeName = SelNode.Parent.Text;
+
+                file.Resources[ParentNodeName].Remove(SelNode);
+                ResourceTreeView.Nodes.Remove(ResourceTreeView.SelectedNode);
+
+                Text = Language.GetString("$SDSCONTENT_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
+            }
+            else
+            {
+                file.Resources.Remove(SelNode.Text);
+                ResourceTreeView.Nodes.Remove(ResourceTreeView.SelectedNode);
+
+                Text = Language.GetString("$SDSCONTENT_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
+            }
+        }
+
+        private void Button_AutoAdd_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show("This will only automatically add any buffer pools or textures into the SDSContent.xml. Are you sure you want to do this?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (result == DialogResult.Yes)
             {
                 file.CreateFileFromFolder();
                 PopulateTree();
-            }
-        }
 
-        private void SaveButtonOnClick(object sender, EventArgs e)
-        {
-            file.WriteToFile();
+                Text = Language.GetString("$SDSCONTENT_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
+            }
         }
 
         private void Button_BatchImportTextures_Click(object sender, EventArgs e)
@@ -110,6 +162,32 @@ namespace Mafia2Tool
 
             // Update tree
             PopulateTree();
+
+            Text = Language.GetString("$SDSCONTENT_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
+
+        private void SDSContentEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void Button_Save_Click(object sender, EventArgs e) => Save();
+        private void Button_Reload_Click(object sender, EventArgs e) => Reload();
+        private void Button_Exit_Click(object sender, EventArgs e) => Close();
+        private void Button_Delete_Click(object sender, EventArgs e) => Delete();
+        private void Context_Delete_Click(object sender, EventArgs e) => Delete();
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using SharpDX;
 using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.FrameResource;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 using ResourceTypes.BufferPools;
 using Utils.Types;
+using System.Numerics;
+using Vortice.Mathematics;
 
 namespace Utils.Models
 {
@@ -119,11 +120,11 @@ namespace Utils.Models
         public void CalculateDecompression()
         {
             float minFloatf = 0.000016f;
-            SharpDX.Vector3 minFloat = new SharpDX.Vector3(minFloatf);
+            Vector3 minFloat = new Vector3(minFloatf);
 
-            BoundingBox bounds = new BoundingBox();
-            bounds.Minimum = frameMesh.Boundings.Minimum - minFloat;
-            bounds.Maximum = frameMesh.Boundings.Maximum + minFloat;
+            Vector3 NewMin = frameMesh.Boundings.Minimum - minFloat;
+            Vector3 NewMax = frameMesh.Boundings.Maximum + minFloat;
+            BoundingBox bounds = new BoundingBox(NewMin, NewMax);
             frameGeometry.DecompressionOffset = new Vector3(bounds.Minimum.X, bounds.Minimum.Y, bounds.Minimum.Z);
 
             double MaxX = bounds.Maximum.X - bounds.Minimum.X + minFloatf;
@@ -392,7 +393,7 @@ namespace Utils.Models
             skeletonHierarchy.ParentIndices = new byte[jointCount];
             skeletonHierarchy.LastChildIndices = new byte[jointCount];
             skeletonHierarchy.UnkData = new byte[jointCount];
-            skeleton.JointTransforms = new Matrix[jointCount];
+            skeleton.JointTransforms = new Matrix4x4[jointCount];
 
             skeletonHierarchy.UnkData[0] = (byte)(jointCount + 1);
 

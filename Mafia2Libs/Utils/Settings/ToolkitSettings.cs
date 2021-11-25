@@ -3,6 +3,7 @@ using Utils.Logging;
 using Utils.Discord;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Utils.Settings
 {
@@ -22,7 +23,6 @@ namespace Utils.Settings
         public static float ScreenDepth;
         public static float ScreenNear;
         public static float CameraSpeed;
-        public static string ShaderPath;
         public static string TexturePath;
         public static bool Experimental;
         public static bool UseMIPS;
@@ -35,11 +35,11 @@ namespace Utils.Settings
         //Misc vars;
         private static long ElapsedTime;
         private static DiscordController controller;
-        public const string DiscordLibLocation = "libs/discord-rpc";
         public static bool LoggingEnabled;
         public static int Language;
         public static int SerializeSDSOption;
         public static bool bUseOodleCompression;
+        public static float CompressionRatio;
         public static bool DecompileLUA;
         public static bool bBackupEnabled;
         public static bool AddTimeDataBackup;
@@ -50,7 +50,11 @@ namespace Utils.Settings
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.13f;
+
+        // Update vars
+        public static float CurrentVersion = 1.0f;
+
+        public static readonly float Version = 2.22f;
 
         public static void ReadINI()
         {
@@ -65,6 +69,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("DetailsEnabled", "Discord", "True"), out DiscordDetailsEnabled);
             int.TryParse(ReadKey("SerializeOption", "SDS", "0"), out SerializeSDSOption);
             bool.TryParse(ReadKey("UseOodleCompression", "SDS", "1"), out bUseOodleCompression);
+            float.TryParse(ReadKey("CompressionRatio", "SDS", "0.9"), out CompressionRatio);
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
             bool.TryParse(ReadKey("UseMIPS", "ModelViewer", "True"), out UseMIPS);
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
@@ -86,9 +91,8 @@ namespace Utils.Settings
             int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);
             int.TryParse(ReadKey("VertexMemorySizePerBuffer", "SDS", "6000000 "), out VertexMemorySizePerBuffer);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
+            float.TryParse(ReadKey("CurrentVersion", "Update", "2.22"), out CurrentVersion);
 
-
-            ShaderPath = @"Shaders\";
             Log.LoggingEnabled = LoggingEnabled;
 
             if (DiscordEnabled)
@@ -132,7 +136,7 @@ namespace Utils.Settings
                 largeImageText = "",
                 startTimestamp = ElapsedTime
             };
-            UpdateRichPresence("Using the Game Explorer");
+            UpdateRichPresence("Using the Game Explorer.");
         }
 
         public static void UpdateRichPresence(string details = null)

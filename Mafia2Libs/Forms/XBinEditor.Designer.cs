@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XBinEditor));
             this.Grid_XBin = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_XBin = new System.Windows.Forms.TreeView();
+            this.TreeView_XBin = new Mafia2Tool.Controls.MTreeView();
             this.ToolStrip_Main = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,19 +47,22 @@
             this.Grid_XBin.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.Grid_XBin.Location = new System.Drawing.Point(402, 28);
+            this.Grid_XBin.Location = new System.Drawing.Point(469, 32);
+            this.Grid_XBin.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Grid_XBin.Name = "Grid_XBin";
             this.Grid_XBin.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.Grid_XBin.Size = new System.Drawing.Size(386, 410);
+            this.Grid_XBin.Size = new System.Drawing.Size(450, 473);
             this.Grid_XBin.TabIndex = 10;
+            this.Grid_XBin.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.OnPropertyValidChanged);
             // 
             // TreeView_XBin
             // 
             this.TreeView_XBin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.TreeView_XBin.Location = new System.Drawing.Point(12, 28);
+            this.TreeView_XBin.Location = new System.Drawing.Point(14, 32);
+            this.TreeView_XBin.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.TreeView_XBin.Name = "TreeView_XBin";
-            this.TreeView_XBin.Size = new System.Drawing.Size(368, 410);
+            this.TreeView_XBin.Size = new System.Drawing.Size(429, 472);
             this.TreeView_XBin.TabIndex = 11;
             this.TreeView_XBin.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             // 
@@ -70,7 +73,7 @@
             this.Button_Tools});
             this.ToolStrip_Main.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip_Main.Name = "ToolStrip_Main";
-            this.ToolStrip_Main.Size = new System.Drawing.Size(800, 25);
+            this.ToolStrip_Main.Size = new System.Drawing.Size(933, 25);
             this.ToolStrip_Main.TabIndex = 15;
             this.ToolStrip_Main.Text = "toolStrip1";
             // 
@@ -90,21 +93,25 @@
             // Button_Save
             // 
             this.Button_Save.Name = "Button_Save";
-            this.Button_Save.Size = new System.Drawing.Size(124, 22);
+            this.Button_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.Button_Save.Size = new System.Drawing.Size(165, 22);
             this.Button_Save.Text = "$SAVE";
             this.Button_Save.Click += new System.EventHandler(this.Button_Save_Click);
             // 
             // Button_Reload
             // 
             this.Button_Reload.Name = "Button_Reload";
-            this.Button_Reload.Size = new System.Drawing.Size(124, 22);
+            this.Button_Reload.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.Button_Reload.Size = new System.Drawing.Size(165, 22);
             this.Button_Reload.Text = "$RELOAD";
+            this.Button_Reload.Click += new System.EventHandler(this.Button_Reload_Click);
             // 
             // Button_Exit
             // 
             this.Button_Exit.Name = "Button_Exit";
-            this.Button_Exit.Size = new System.Drawing.Size(124, 22);
+            this.Button_Exit.Size = new System.Drawing.Size(165, 22);
             this.Button_Exit.Text = "$EXIT";
+            this.Button_Exit.Click += new System.EventHandler(this.Button_Exit_Click);
             // 
             // Button_Tools
             // 
@@ -134,17 +141,19 @@
             // 
             // XBinEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(933, 519);
             this.Controls.Add(this.ToolStrip_Main);
             this.Controls.Add(this.Grid_XBin);
             this.Controls.Add(this.TreeView_XBin);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "XBinEditor";
             this.Text = "$XBIN_EDITOR";
             this.ToolStrip_Main.ResumeLayout(false);
             this.ToolStrip_Main.PerformLayout();
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.XbinEditor_Closing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -153,7 +162,6 @@
         #endregion
 
         private System.Windows.Forms.PropertyGrid Grid_XBin;
-        private System.Windows.Forms.TreeView TreeView_XBin;
         private System.Windows.Forms.ToolStrip ToolStrip_Main;
         private System.Windows.Forms.ToolStripDropDownButton Button_File;
         private System.Windows.Forms.ToolStripMenuItem Button_Save;
@@ -162,5 +170,6 @@
         private System.Windows.Forms.ToolStripDropDownButton Button_Tools;
         private System.Windows.Forms.ToolStripMenuItem Button_Import;
         private System.Windows.Forms.ToolStripMenuItem Button_Export;
+        private Controls.MTreeView TreeView_XBin;
     }
 }

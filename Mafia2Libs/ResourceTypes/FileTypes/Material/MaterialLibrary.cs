@@ -4,6 +4,7 @@ using System.Linq;
 using Utils.Logging;
 using Utils.Settings;
 using System.Diagnostics;
+using System.Windows;
 
 namespace ResourceTypes.Materials
 {
@@ -26,14 +27,12 @@ namespace ResourceTypes.Materials
             set { name = value; }
         }
 
-        public MaterialLibrary()
+        public MaterialLibrary(VersionsEnumerator InVersion)
         {
             name = "";
             materials = new Dictionary<ulong, IMaterial>();
             unk2 = 0;
-            version = GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaII_DE 
-                ? VersionsEnumerator.V_58 
-                : VersionsEnumerator.V_57;
+            version = InVersion;
         }
 
         public void ReadMatFile(string name)
@@ -60,15 +59,38 @@ namespace ResourceTypes.Materials
         {
             this.name = name;
 
+            // Validate Materials (TODO: Maybe move to validate function?)
+            for (int i = 0; i != materials.Count; i++)
+            {
+                IMaterial Material = materials.ElementAt(i).Value;
+                if (Version == VersionsEnumerator.V_57 || Version == VersionsEnumerator.V_58)
+                {
+                    if(Material.GetMTLVersion() == VersionsEnumerator.V_63)
+                    {
+                        MessageBox.Show("Detected v63 (M1DE/M3 Material). Cannot save this file. Support will be added soon.", "Toolkit");
+                        return;
+                    }
+                }
+            }
+            
             using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
             {
                 writer.Write("MTLB".ToCharArray());
                 writer.Write((int)version);
                 writer.Write(materials.Count);
                 writer.Write(unk2);
+
+                // Write Materials
                 for (int i = 0; i != materials.Count; i++)
                 {
-                    materials.ElementAt(i).Value.WriteToFile(writer, version);
+                    // Convert material if required.
+                    IMaterial Material = materials.ElementAt(i).Value;
+                    if(Material.GetMTLVersion() != Version)
+                    {
+                        Material = MaterialFactory.ConvertMaterial(Version, Material);
+                    }
+
+                    Material.WriteToFile(writer, version);
                 }
             }
         }
@@ -199,7 +221,7 @@ namespace ResourceTypes.Materials
         {
             IMaterial[] Filtered = null;
 
-            if (currentSearchType >= 3)
+            if (currentSearchType >= 2)
             {
                 Filtered = SearchForMaterialsByHash(text, (SearchTypesHashes)currentSearchType);
             }

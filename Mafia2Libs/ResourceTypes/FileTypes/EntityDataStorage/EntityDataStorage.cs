@@ -3,6 +3,8 @@ using System.IO;
 using System.Windows;
 using Utils.Extensions;
 using ResourceTypes.Actors;
+using Utils.Helpers.Reflection;
+using System.Xml.Linq;
 
 namespace ResourceTypes.EntityDataStorage
 {
@@ -19,6 +21,7 @@ namespace ResourceTypes.EntityDataStorage
 
         public EntityDataStorageLoader()
         {
+            Tables = new IActorExtraDataInterface[0];
         }
 
         public void ReadFromFile(string fileName, bool isBigEndian)
@@ -32,21 +35,24 @@ namespace ResourceTypes.EntityDataStorage
                     MessageBox.Show(string.Format("Detected unsupported entity. The EntityStorageData will not load."), "Toolkit", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+
                 Hash = fileStream.ReadUInt64(isBigEndian);
                 TableSize = fileStream.ReadInt32(isBigEndian);
 
-                var numTables = fileStream.ReadInt32(isBigEndian);
+                uint numTables = fileStream.ReadUInt32(isBigEndian);
                 TableHashes = new ulong[numTables];
                 Tables = new IActorExtraDataInterface[numTables];
 
+                // Iterate and read table hashes
                 for (int i = 0; i < numTables; i++)
                 {
                     TableHashes[i] = fileStream.ReadUInt64(isBigEndian);
                 }
 
+                // Iterate and Read all tables
                 for (int i = 0; i < numTables; i++)
                 {
-                    using (var stream = new MemoryStream(fileStream.ReadBytes(TableSize)))
+                    using (MemoryStream stream = new MemoryStream(fileStream.ReadBytes(TableSize)))
                     {
                         var item = ActorFactory.LoadEntityDataStorage(EntityType, stream, isBigEndian);
                         Tables[i] = item;
@@ -64,14 +70,17 @@ namespace ResourceTypes.EntityDataStorage
                 fileStream.Write(TableSize, isBigEndian);
                 fileStream.Write(Tables.Length, isBigEndian);
 
+                // Write file hashes
                 for(int i = 0; i < Tables.Length; i++)
                 {
                     fileStream.Write(TableHashes[i], isBigEndian);
                 }
 
+                // Iterate through each table and write their data into bespoke streams, 
+                // then dump into main stream.
                 for (int i = 0; i < Tables.Length; i++)
                 {
-                    using (var stream = new MemoryStream())
+                    using (MemoryStream stream = new MemoryStream())
                     {
                         Tables[i].WriteToFile(stream, isBigEndian);
                         fileStream.Write(stream.ToArray());
@@ -80,6 +89,25 @@ namespace ResourceTypes.EntityDataStorage
 
                 File.WriteAllBytes(fileName, fileStream.ToArray());
             }
+        }
+
+        public void ConvertToXML(string Filename)
+        {
+            XElement Root = ReflectionHelpers.ConvertPropertyToXML(this);
+            Root.Save(Filename);
+        }
+
+        public void ConvertFromXML(string Filename)
+        {
+            XElement LoadedDoc = XElement.Load(Filename);
+            EntityDataStorageLoader FileContents = ReflectionHelpers.ConvertToPropertyFromXML<EntityDataStorageLoader>(LoadedDoc);
+
+            // Copy data taken from loaded XML
+            EntityType = FileContents.EntityType;
+            TableSize = FileContents.TableSize;
+            Hash = FileContents.Hash;
+            TableHashes = FileContents.TableHashes;
+            Tables = FileContents.Tables;
         }
     }
 }

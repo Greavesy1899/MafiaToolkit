@@ -29,6 +29,7 @@ namespace Gibbed.Mafia2.FileFormats.Archive
         public int TypeId;
         public ushort Version;
         public byte[] Data;
+        public ulong FileHash; // Version 20 ONLY.
         public uint SlotRamRequired;
         public uint SlotVramRequired;
         public uint OtherRamRequired;

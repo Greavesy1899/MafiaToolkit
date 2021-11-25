@@ -1,4 +1,5 @@
 ﻿using FileTypes.XBin.StreamMap.Commands;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -11,18 +12,31 @@ namespace ResourceTypes.M3.XBin
         public class StreamMapLine
         {
             public EStreamMapLineType LineType { get; set; }
+            [PropertyForceAsAttribute]
             public string GameID { get; set; }
+            [PropertyForceAsAttribute]
             public string MissionID { get; set; }
+            [PropertyForceAsAttribute]
             public string PartID { get; set; }
-            [PropertyIgnoreByReflector]
-            public int TableCommandsOffset_DEBUG { get; set; }
-            [PropertyIgnoreByReflector]
+            [Browsable(false), PropertyIgnoreByReflector]
             public int TableCommandsOffset { get; set; }
+            [Browsable(false), PropertyIgnoreByReflector]
+            public int TableCommandsOffset_DEBUG { get; set; }
+            [Browsable(false), PropertyIgnoreByReflector]
             public int NumTableCommands0 { get; set; }
-            [PropertyIgnoreByReflector]
+            [Browsable(false), PropertyIgnoreByReflector]
             public int NumTableCommands1 { get; set; }
             public ICommand[] TableCommands { get; set; }
+            [PropertyForceAsAttribute]
             public int IsAsync { get; set; }
+
+            public StreamMapLine()
+            {
+                GameID = "";
+                MissionID = "";
+                PartID = "";
+                TableCommands = new ICommand[0];
+            }
 
             public override string ToString()
             {
@@ -108,7 +122,7 @@ namespace ResourceTypes.M3.XBin
                 writer.PushStringPtr(Line.GameID);
                 writer.PushStringPtr(Line.MissionID);
                 writer.PushStringPtr(Line.PartID);
-                writer.Write(-1); // TableOffset
+                writer.PushObjectPtr(string.Format("TableOffset_{0}", i));
                 writer.Write(Line.TableCommands.Length); // This file stores it twice.
                 writer.Write(Line.TableCommands.Length);
                 writer.Write(Line.IsAsync);
@@ -118,14 +132,17 @@ namespace ResourceTypes.M3.XBin
             {
                 StreamMapLine Line = Lines[i];
                 
-                for(int x = 0; x < Line.TableCommands.Length; x++)
+                writer.FixUpObjectPtr(string.Format("TableOffset_{0}", i));
+
+                for (int x = 0; x < Line.TableCommands.Length; x++)
                 {
-                    writer.Write(-1); // Offset
+                    writer.PushObjectPtr(string.Format("TableCommandsOffset_{0}", x));
                     writer.Write(Line.TableCommands[x].GetMagic());
                 }
 
                 for (int x = 0; x < Line.TableCommands.Length; x++)
                 {
+                    writer.FixUpObjectPtr(string.Format("TableCommandsOffset_{0}", x));
                     Line.TableCommands[x].WriteToFile(writer);
                 }
             }
@@ -136,23 +153,43 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromXML(string file)
         {
-            //ReflectionHelpers.ConvertPropertyToXML<StreamMapLine[]>(Lines);
+            XElement Root = XElement.Load(file);
+            StreamMapTable TableInformation = ReflectionHelpers.ConvertToPropertyFromXML<StreamMapTable>(Root);
+            this.Lines = TableInformation.Lines;
         }
 
         public void WriteToXML(string file)
         {
-            XElement Elements = ReflectionHelpers.ConvertPropertyToXML(Lines);
+            XElement Elements = ReflectionHelpers.ConvertPropertyToXML(this);
             Elements.Save(file, SaveOptions.None);
         }
 
         public TreeNode GetAsTreeNodes()
         {
-            return null;
+            TreeNode Root = new TreeNode();
+            Root.Text = "StreamMap Table";
+
+            foreach (var Item in Lines)
+            {
+                TreeNode ChildNode = new TreeNode();
+                ChildNode.Tag = Item;
+                ChildNode.Text = Item.ToString();
+                Root.Nodes.Add(ChildNode);
+            }
+
+            return Root;
         }
 
         public void SetFromTreeNodes(TreeNode Root)
         {
-           // do stuff
+            Lines = new StreamMapLine[Root.Nodes.Count];
+
+            for (int i = 0; i < Lines.Length; i++)
+            {
+                TreeNode ChildNode = Root.Nodes[i];
+                StreamMapLine Entry = (StreamMapLine)ChildNode.Tag;
+                Lines[i] = Entry;
+            }
         }
     }
 }

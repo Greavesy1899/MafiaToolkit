@@ -1,5 +1,4 @@
-﻿using ResourceTypes.FileTypes.M3.XBin;
-using System.IO;
+﻿using System.IO;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -11,31 +10,17 @@ namespace ResourceTypes.M3.XBin
         private int offset;
 
         public BaseTable TableInformation { get; set; }
-        private int unk1; // Unknown.
 
         public void ReadFromFile(BinaryReader reader)
         {
+            ConstructHashPool();
+
             hash = reader.ReadUInt64(); // I *think* this is to UInt32's molded together.
             version = reader.ReadInt32();
             numTables = reader.ReadInt32();
             offset = reader.ReadInt32();
 
-            TableInformation = XBinFactory.ReadXBin(reader, hash);
-
-            /*
-            if (numTables > 0)
-            {
-                for (int i = 0; i < numTables; i++)
-                {
-                    uint offset = reader.ReadUInt32();
-                }
-            }
-            else
-            {
-                unk0 = reader.ReadInt32();
-                TableInformation = XBinFactory.ReadXBin(reader, hash);
-            }
-            */
+            TableInformation = XBinFactory.ReadXBin(reader, this, hash);
         }
 
         public void WriteToFile(FileInfo file)
@@ -53,6 +38,11 @@ namespace ResourceTypes.M3.XBin
             writer.Write(numTables);
             writer.Write(offset);
             TableInformation.WriteToFile(writer);
+        }
+
+        private void ConstructHashPool()
+        {
+            XBinHashStorage.LoadStorage();
         }
     }
 }

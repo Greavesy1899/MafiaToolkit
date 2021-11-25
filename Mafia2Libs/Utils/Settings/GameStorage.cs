@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Windows;
 using System.Xml;
 
 namespace Utils.Settings
@@ -65,6 +68,17 @@ namespace Utils.Settings
         public void InitStorage()
         {
             games.Clear();
+
+            // TODO: Maybe we should ask to create a new one if this file does not exist?
+            string ExePath = Assembly.GetExecutingAssembly().Location;
+            FileInfo Exe = new FileInfo(ExePath);
+            string GamesFile = Path.Combine(Exe.Directory.FullName, "games.xml");
+            if(!File.Exists(GamesFile))
+            {
+                MessageBox.Show("Could not start due to missing file: games.xml. Please setup this file.", "Toolkit", MessageBoxButton.OK);
+                return;
+            }
+
             XmlDocument document = new XmlDocument();
             document.Load("games.xml");
             var nav = document.CreateNavigator();

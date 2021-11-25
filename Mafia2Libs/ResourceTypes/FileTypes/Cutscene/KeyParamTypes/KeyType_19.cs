@@ -1,7 +1,7 @@
-﻿using SharpDX;
-using System.IO;
+﻿using System.IO;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -78,7 +78,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                 SoundInfo.Unk17 = stream.ReadSingle(isBigEndian);
 
                 SoundInfo.Unk18 = stream.ReadByte8();
-                SoundInfo.Position = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+                SoundInfo.Position = Vector3Utils.ReadFromFile(stream, isBigEndian);
                 SoundInfo.Unk19 = stream.ReadSingle(isBigEndian);
                 SoundInfo.Unk20 = stream.ReadSingle(isBigEndian);
                 SoundInfo.Unk21 = stream.ReadSingle(isBigEndian);
