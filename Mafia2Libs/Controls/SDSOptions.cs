@@ -43,9 +43,9 @@ namespace Forms.OptionControls
 
             Label_IBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.IndexMemorySizePerBuffer);
             Label_VBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.VertexMemorySizePerBuffer);
-            NumericBox_IBSize.Value = ToolkitSettings.IndexMemorySizePerBuffer;
-            NumericBox_VBSize.Value = ToolkitSettings.VertexMemorySizePerBuffer;
-            NumericUpDown_Ratio.Value = (decimal)ToolkitSettings.CompressionRatio;
+            NumericBox_IBSize.SetClamped((decimal)ToolkitSettings.IndexMemorySizePerBuffer);
+            NumericBox_VBSize.SetClamped((decimal)ToolkitSettings.VertexMemorySizePerBuffer);
+            NumericUpDown_Ratio.SetClamped((decimal)ToolkitSettings.CompressionRatio);
         }
 
         private void AddTimeDateBackupsBox_CheckedChanged(object sender, EventArgs e)

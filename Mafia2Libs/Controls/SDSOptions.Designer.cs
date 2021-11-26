@@ -30,11 +30,11 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupSDS = new System.Windows.Forms.GroupBox();
-            this.NumericUpDown_Ratio = new System.Windows.Forms.NumericUpDown();
-            this.NumericBox_VBSize = new System.Windows.Forms.NumericUpDown();
+            this.NumericUpDown_Ratio = new Utils.Extensions.MNumericUpDown();
+            this.NumericBox_VBSize = new Utils.Extensions.MNumericUpDown();
             this.Label_VBSize = new System.Windows.Forms.Label();
             this.Label_VertexBufferSize = new System.Windows.Forms.Label();
-            this.NumericBox_IBSize = new System.Windows.Forms.NumericUpDown();
+            this.NumericBox_IBSize = new Utils.Extensions.MNumericUpDown();
             this.Label_IBSize = new System.Windows.Forms.Label();
             this.Label_IndexBufferSize = new System.Windows.Forms.Label();
             this.CheckBox_BackupSDS = new System.Windows.Forms.CheckBox();
@@ -282,11 +282,11 @@
         private System.Windows.Forms.CheckBox CheckBox_BackupSDS;
         private System.Windows.Forms.Label Label_IndexBufferSize;
         private System.Windows.Forms.Label Label_IBSize;
-        private System.Windows.Forms.NumericUpDown NumericBox_IBSize;
-        private System.Windows.Forms.NumericUpDown NumericBox_VBSize;
+        private Utils.Extensions.MNumericUpDown NumericBox_IBSize;
+        private Utils.Extensions.MNumericUpDown NumericBox_VBSize;
         private System.Windows.Forms.Label Label_VBSize;
         private System.Windows.Forms.Label Label_VertexBufferSize;
-        private System.Windows.Forms.NumericUpDown NumericUpDown_Ratio;
+        private Utils.Extensions.MNumericUpDown NumericUpDown_Ratio;
         private System.Windows.Forms.ToolTip ToolTips;
     }
 }

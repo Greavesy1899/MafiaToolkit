@@ -133,7 +133,9 @@ namespace Mafia2Tool
                     Process.Start(StartInfo);
                 }
 
+                // Write new version
                 ToolkitSettings.CurrentVersion = ToolkitSettings.Version;
+                ToolkitSettings.WriteKey("CurrentVersion", "Update", ToolkitSettings.CurrentVersion.ToString());
             }
         }
 
@@ -192,18 +194,18 @@ namespace Mafia2Tool
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            //if (!Debugger.IsAttached)
-            //{
+            if (!Debugger.IsAttached)
+            {
                 ToolkitExceptionHandler.ShowExceptionForm((Exception)e.ExceptionObject);
-            //}
+            }
         }
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
-           // if(!Debugger.IsAttached)
-            //{
+            if (!Debugger.IsAttached)
+            {
                 ToolkitExceptionHandler.ShowExceptionForm(e.Exception);
-            //}
+            }
         }
 
         private static void ShowExceptionForm(Exception InException)

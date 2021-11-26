@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
@@ -42,6 +43,25 @@ namespace Utils.Extensions
         {
             string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), InText);
             Text = Message;
+        }
+    }
+
+    // Had to create a derived class to avoid the thrown exception if the value is not between Min and Max.
+    // Once we move to WPF, consider removing this as we're just trying to avoid WinForms behaviour.
+    public class MNumericUpDown : NumericUpDown
+    {
+        public void SetClamped(decimal InNewValue)
+        {
+            decimal NewValue = Math.Clamp((decimal)InNewValue, Minimum, Maximum);
+
+            // Debug message if we had to clamp a value.
+            if (NewValue != InNewValue)
+            {
+                string Message = string.Format("Clamped NumericUpDown value because it was either to high or to low. \nControl Name: {2}\nBefore: {0} After: {1}", InNewValue, NewValue, Name);
+                MessageBox.Show(Message, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            Value = NewValue;
         }
     }
 
