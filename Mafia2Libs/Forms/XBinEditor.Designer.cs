@@ -128,14 +128,14 @@
             // Button_Import
             // 
             this.Button_Import.Name = "Button_Import";
-            this.Button_Import.Size = new System.Drawing.Size(153, 22);
+            this.Button_Import.Size = new System.Drawing.Size(180, 22);
             this.Button_Import.Text = "$IMPORT_XBIN";
             this.Button_Import.Click += new System.EventHandler(this.Button_Import_Click);
             // 
             // Button_Export
             // 
             this.Button_Export.Name = "Button_Export";
-            this.Button_Export.Size = new System.Drawing.Size(153, 22);
+            this.Button_Export.Size = new System.Drawing.Size(180, 22);
             this.Button_Export.Text = "$EXPORT_XBIN";
             this.Button_Export.Click += new System.EventHandler(this.Button_Export_Click);
             // 
@@ -151,9 +151,9 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "XBinEditor";
             this.Text = "$XBIN_EDITOR";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.XbinEditor_Closing);
             this.ToolStrip_Main.ResumeLayout(false);
             this.ToolStrip_Main.PerformLayout();
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.XbinEditor_Closing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
