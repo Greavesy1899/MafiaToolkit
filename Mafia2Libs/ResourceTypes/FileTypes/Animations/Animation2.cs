@@ -96,38 +96,6 @@ namespace ResourceTypes.Animation2
             // aligned to uint
             => 4 + 4 * (NumRotationFrames * GetRotationKeyframeSize() / 32);
 
-#if false
-        // See code in engine at sub_14061C260 (M2DE EXE)
-        // Might be 
-        private int GetSize()
-        {
-            int Var0 = NumFrames; // (v7 + 8); // 0x14061c302
-            int Var1 = ComponentSize; // v25 // 0x14061c31d
-            int Var2 = TimeSize; // v26 // 0x14061c33f
-
-            int v7_10 = (0 ^ 32 * Var1) & 2016; // 6 middle bits
-            var v15 = v7_10 ^ (v7_10 ^ Var2) & 31; // 5 lower bits
-            var v16 = v15 ^ (v15 ^ ((3 * Var1 + Var2 + 2) << 11)) & 260096; // 7 higher bits
-
-            // Speculation is that 'unk6' represents bits per coord, and 'unk7' represents bits per something else (w component?)
-            var sizeSimplified = 4 * (Var0 * ((3 * Var1 + Var2 + 2) & 0x7F) >> 5) + 4;
-            var size = 4 * (Var0 * ((v16 >> 11) & 0x7F) >> 5) + 4;
-
-            Debug.Assert(size == sizeSimplified);
-
-            return size;
-
-            /**(v7 + 10) ^= (*(v7 + 10) ^ 32 * v25) & 2016;
-            v15 = *(v7 + 10) ^ (*(v7 + 10) ^ v26) & 31;
-            *(v7 + 10) = v15;
-            v16 = v15 ^ (v15 ^ ((3 * v25 + v26 + 2) << 11)) & 260096;
-            *(v7 + 10) = v16;
-            v17 = 4 * (*(v7 + 8) * ((v16 >> 11) & 0x7F) >> 5) + 4;
-            v18 = (*(*v4 + 8i64))(v4, v17, 1i64);
-            *v7 = v18;*/
-        }
-#endif
-
         private static Quaternion UnpackQuaternion(uint packedQuat)
         {
             const float scale = 0.001382418f;
@@ -271,79 +239,6 @@ namespace ResourceTypes.Animation2
 
             PositionKeyframes = keyframes.ToArray();
         }
-
-#if false
-        private void DequantizeRotationKeyframes()
-        {
-            var data = new BigInteger(QuantizedRotationKeyframes);
-            var quats = new List<Quaternion>();
-            var chunkSize = 3 * ComponentSize + TimeSize + 2;
-
-            for (var i = 0; i < NumRotationFrames; i++)
-            {
-                var dataCurrent = data >> (i * chunkSize);
-
-                var time = (dataCurrent) & ((1 << TimeSize) - 1);
-                var component1 = (dataCurrent >> (TimeSize)) & ((1 << ComponentSize) - 1);
-                var component2 = (dataCurrent >> (TimeSize + ComponentSize)) & ((1 << ComponentSize) - 1);
-                var component3 = (dataCurrent >> (TimeSize + ComponentSize * 2)) & ((1 << ComponentSize) - 1);
-                var omittedComponent = (dataCurrent >> (TimeSize + ComponentSize * 2 + 2)) & ((1 << 2) - 1);
-
-                float x;
-                float y;
-                float z;
-                float w;
-                switch ((int)omittedComponent)
-                {
-                    case 0: // x omitted
-                        y = Normalize((int)component1, ComponentSize);
-                        z = Normalize((int)component2, ComponentSize);
-                        w = Normalize((int)component3, ComponentSize);
-                        x = (float)Math.Sqrt(1 - y * y - z * z - w * w);
-                        break;
-                    case 1: // y omitted
-                        x = Normalize((int)component1, ComponentSize);
-                        z = Normalize((int)component2, ComponentSize);
-                        w = Normalize((int)component3, ComponentSize);
-                        y = (float)Math.Sqrt(1 - x * x - z * z - w * w);
-                        break;
-                    case 2: // z omitted
-                        x = Normalize((int)component1, ComponentSize);
-                        y = Normalize((int)component2, ComponentSize);
-                        w = Normalize((int)component3, ComponentSize);
-                        z = (float)Math.Sqrt(1 - x * x - y * y - w * w);
-                        break;
-                    case 3: // w omitted
-                        x = Normalize((int)component1, ComponentSize);
-                        y = Normalize((int)component2, ComponentSize);
-                        z = Normalize((int)component3, ComponentSize);
-                        w = (float)Math.Sqrt(1 - x * x - y * y - z * z);
-                        break;
-                    default:
-                        throw new Exception();
-                }
-
-                var quat = new Quaternion(x, y, z, w);
-                var euler = quat.ToEuler();
-
-                quats.Add(quat);
-            }
-
-            RotationKeyframes = quats.ToArray();
-        }
-
-        private static float Normalize(int value, int size)
-        {
-            var maxValue = (float)((1 << size) - 1);
-            return (value - maxValue / 2) / (maxValue);
-        }
-
-        private static float Normalize2(int value, int size)
-        {
-            var maxValue = (float)((1 << size - 1) - 1);
-            return ((((1 << size - 1) & value) > 0) ? -1 : 1) * (value & ((1 << size - 1) - 1)) / maxValue;
-        }
-#endif
     }
 
     public class Animation2Loader
