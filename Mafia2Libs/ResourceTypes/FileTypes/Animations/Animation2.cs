@@ -7,6 +7,7 @@ using System.Numerics;
 using BitStreams;
 using Mafia2Tool.Utils.Helpers;
 using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Animation2
 {
@@ -98,7 +99,8 @@ namespace ResourceTypes.Animation2
 
         private static Quaternion UnpackQuaternion(uint packedQuat)
         {
-            const float scale = 0.001382418f;
+            // 0.001382418f
+            var scale = (float)Math.Sin(MathHelper.ToRadians(45f)) / 511.5f;
             var comp1f = (float)(packedQuat >> 22);
             var comp2f = (float)((packedQuat >> 12) & 0x3ff);
             var comp3f = (float)((packedQuat >> 2) & 0x3ff);
@@ -192,7 +194,7 @@ namespace ResourceTypes.Animation2
             const int positionKeyframeSize = 12;
             const float maxTime = 28800f;
             const uint maxTimeQuantized = 0xffffffu;
-            const float baseScale = 0.00000011920929f;
+            const float baseScale = 1f / (1u << 23);
 
             var scale = baseScale * PositionScale;
             var keyframes = new List<PositionKeyframe>(NumPositionFrames);
