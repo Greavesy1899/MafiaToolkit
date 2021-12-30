@@ -166,9 +166,6 @@
     <Content Include="libs\Gibbed.Squish.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="libs\oo2core_8_win64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="libs\OodleSharp.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -203,6 +200,9 @@
     <Content Include="Localisations\sk_SK.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Update="libs\M2FBX.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="libs\M2PhysX.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
