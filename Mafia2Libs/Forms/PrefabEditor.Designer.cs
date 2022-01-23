@@ -45,6 +45,8 @@
             this.Button_Export = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.Browser_ExportPRB = new System.Windows.Forms.SaveFileDialog();
+            this.Context_ImportXML = new System.Windows.Forms.ToolStripMenuItem();
+            this.Context_ExportXML = new System.Windows.Forms.ToolStripMenuItem();
             this.Context_Menu.SuspendLayout();
             this.ToolStrip_Main.SuspendLayout();
             this.SuspendLayout();
@@ -76,15 +78,18 @@
             // Context_Menu
             // 
             this.Context_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Context_ImportXML,
+            this.Context_ExportXML,
             this.Context_Delete});
             this.Context_Menu.Name = "Context_Menu";
-            this.Context_Menu.Size = new System.Drawing.Size(170, 26);
+            this.Context_Menu.Size = new System.Drawing.Size(181, 92);
+            this.Context_Menu.Opening += new System.ComponentModel.CancelEventHandler(this.Context_Menu_OnOpening);
             // 
             // Context_Delete
             // 
             this.Context_Delete.Name = "Context_Delete";
             this.Context_Delete.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.Context_Delete.Size = new System.Drawing.Size(169, 22);
+            this.Context_Delete.Size = new System.Drawing.Size(180, 22);
             this.Context_Delete.Text = "$DELETE";
             this.Context_Delete.Click += new System.EventHandler(this.Context_Delete_Click);
             // 
@@ -122,20 +127,20 @@
             // 
             this.Button_Save.Name = "Button_Save";
             this.Button_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.Button_Save.Size = new System.Drawing.Size(146, 22);
+            this.Button_Save.Size = new System.Drawing.Size(180, 22);
             this.Button_Save.Text = "$SAVE";
             this.Button_Save.Click += new System.EventHandler(this.Button_Save_Click);
             // 
             // Button_Reload
             // 
             this.Button_Reload.Name = "Button_Reload";
-            this.Button_Reload.Size = new System.Drawing.Size(146, 22);
+            this.Button_Reload.Size = new System.Drawing.Size(180, 22);
             this.Button_Reload.Text = "$RELOAD";
             // 
             // Button_Exit
             // 
             this.Button_Exit.Name = "Button_Exit";
-            this.Button_Exit.Size = new System.Drawing.Size(146, 22);
+            this.Button_Exit.Size = new System.Drawing.Size(180, 22);
             this.Button_Exit.Text = "$EXIT";
             // 
             // Button_Tools
@@ -178,6 +183,20 @@
             this.Browser_ExportPRB.FileName = "Save Singular Prefab file";
             this.Browser_ExportPRB.Filter = "Prefab File|*.prb|All Files|*.*";
             // 
+            // Context_ImportXML
+            // 
+            this.Context_ImportXML.Name = "Context_ImportXML";
+            this.Context_ImportXML.Size = new System.Drawing.Size(180, 22);
+            this.Context_ImportXML.Text = "$IMPORT_XML";
+            this.Context_ImportXML.Click += new System.EventHandler(this.Context_ImportAsXML_Clicked);
+            // 
+            // Context_ExportXML
+            // 
+            this.Context_ExportXML.Name = "Context_ExportXML";
+            this.Context_ExportXML.Size = new System.Drawing.Size(180, 22);
+            this.Context_ExportXML.Text = "$EXPORT_XML";
+            this.Context_ExportXML.Click += new System.EventHandler(this.Context_ExportAsXML_Clicked);
+            // 
             // PrefabEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -218,5 +237,7 @@
         private System.Windows.Forms.ContextMenuStrip Context_Menu;
         private System.Windows.Forms.ToolStripMenuItem Context_Delete;
         private Controls.MTreeView TreeView_Prefabs;
+        private System.Windows.Forms.ToolStripMenuItem Context_ImportXML;
+        private System.Windows.Forms.ToolStripMenuItem Context_ExportXML;
     }
 }

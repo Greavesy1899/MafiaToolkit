@@ -1,37 +1,35 @@
-﻿using ResourceTypes.Navigation;
-using System;
+﻿using Rendering.Core;
+using ResourceTypes.Navigation.Traffic;
 using System.ComponentModel;
 using System.Numerics;
+using Toolkit.Core;
 using Vortice.Direct3D11;
-using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
     public class RenderJunction : IRenderer
     {
-        RenderLine[] splines;
         RenderLine boundary;
-        JunctionDefinition data;
 
-        [Browsable(false)]
-        public RenderLine[] Splines {
-            get { return splines; }
-            set { splines = value; }
-        }
         [Browsable(false)]
         public RenderLine Boundary {
             get { return boundary; }
             set { boundary = value; }
         }
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public JunctionDefinition Data {
-            get { return data; }
-            set { data = value; }
-        }
 
-        public void Init(JunctionDefinition data)
+        private ICrossroad OurData;
+        private PrimitiveBatch SplineBatch;
+
+        private GraphicsClass OwnerGraphics;
+
+        public void Init(ICrossroad data, GraphicsClass InGraphics)
         {
-            this.data = data;
+            OurData = data;
+            OwnerGraphics = InGraphics;
+
+            SplineBatch = new PrimitiveBatch(PrimitiveType.Line, string.Format("RenderJunction_{0}", RefManager.GetNewRefID()));
+            OwnerGraphics.OurPrimitiveManager.AddPrimitiveBatch(SplineBatch);
+
             InitBoundary();
             InitSplines();
             DoRender = true;
@@ -39,35 +37,31 @@ namespace Rendering.Graphics
 
         private void InitBoundary()
         {
-            if (data.Boundaries != null)
-            {
-                //boundary init
-                if (data.Boundaries.Length > 0)
-                {
-                    Vector3[] extraPoints = new Vector3[data.Boundaries.Length + 1];
-                    Array.Copy(data.Boundaries, extraPoints, data.Boundaries.Length);
-                    extraPoints[extraPoints.Length - 1] = extraPoints[0];
-                    Boundary = new RenderLine();
-                    Boundary.SetSelectedColour(Color.Red);
-                    Boundary.SetUnselectedColour(Color.White);
-                    Boundary.Init(extraPoints);
-                }
-            }
+            //if (data.Boundaries != null)
+            //{
+            //    //boundary init
+            //    if (data.Boundaries.Length > 0)
+            //    {
+            //        Vector3[] extraPoints = new Vector3[data.Boundaries.Length + 1];
+            //        Array.Copy(data.Boundaries, extraPoints, data.Boundaries.Length);
+            //        extraPoints[extraPoints.Length - 1] = extraPoints[0];
+            //        Boundary = new RenderLine();
+            //        Boundary.SetSelectedColour(Color.Red);
+            //        Boundary.SetUnselectedColour(Color.White);
+            //        Boundary.Init(extraPoints);
+            //    }
+            //}
         }
 
         private void InitSplines()
         {
-            if (data.Splines != null)
+            for (int i = 0; i < OurData.Junctions.Count; i++)
             {
-                //do spline
-                Splines = new RenderLine[data.Splines.Length];
-                for (int i = 0; i < data.Splines.Length; i++)
-                {
-                    RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(Color.FromArgb(255, 222, 255));
-                    line.Init(data.Splines[i].Path);
-                    Splines[i] = line;
-                }
+                IRoadJunction Junction = OurData.Junctions[i];
+
+                RenderLine Spline = new RenderLine();
+                Spline.Init(Junction.Spline.Points.ToArray());
+                SplineBatch.AddObject(RefManager.GetNewRefID(), Spline);
             }
         }
 
@@ -76,14 +70,6 @@ namespace Rendering.Graphics
             if (Boundary != null)
             {
                 Boundary.InitBuffers(d3d, deviceContext);
-            }
-
-            if (Splines != null)
-            {
-                foreach (var spline in Splines)
-                {
-                    spline.InitBuffers(d3d, deviceContext);
-                }
             }
         }
 
@@ -97,14 +83,6 @@ namespace Rendering.Graphics
             if (Boundary != null)
             {
                 Boundary.Render(device, deviceContext, camera);
-            }
-
-            if (Splines != null)
-            {
-                foreach (var spline in Splines)
-                {
-                    spline.Render(device, deviceContext, camera);
-                }
             }
         }
 
@@ -128,14 +106,6 @@ namespace Rendering.Graphics
             {
                 Boundary.Shutdown();
             }
-
-            if (Splines != null)
-            {
-                foreach (var spline in Splines)
-                {
-                    spline.Shutdown();
-                }
-            }
         }
 
         public override void Unselect()
@@ -151,24 +121,14 @@ namespace Rendering.Graphics
         {
             if (boundary != null)
             {
-                boundary.Points = data.Boundaries;
+                //boundary.Points = data.Boundaries;
             }
             else
             {
                 InitBoundary();
             }
 
-            if (splines != null)
-            {
-                for (int i = 0; i < data.Splines.Length; i++)
-                {
-                    splines[i].Points = data.Splines[i].Path;
-                }
-            }
-            else
-            {
-                InitSplines();
-            }
+            InitSplines();
             bIsUpdatedNeeded = true;
         }
 
@@ -181,13 +141,6 @@ namespace Rendering.Graphics
                     Boundary.UpdateBuffers(device, deviceContext);
                 }
 
-                if (Splines != null)
-                {
-                    for(int i = 0; i < data.Splines.Length; i++)
-                    {
-                        Splines[i].UpdateBuffers(device, deviceContext);
-                    }
-                }
                 bIsUpdatedNeeded = false;
             }
         }

@@ -99,13 +99,17 @@ namespace Rendering.Core
                 UpdateBuffer(InDevice, InDeviceContext);
             }
 
-            if (BatchType == PrimitiveType.Box)
+            // Only attempt to render if we've got visible data in this batch.
+            if (SizeToRender > 0)
             {
-                RenderBBox(InDeviceContext, InCamera);
-            }
-            else if (BatchType == PrimitiveType.Line)
-            {
-                RenderLines(InDeviceContext, InCamera);
+                if (BatchType == PrimitiveType.Box)
+                {
+                    RenderBBox(InDeviceContext, InCamera);
+                }
+                else if (BatchType == PrimitiveType.Line)
+                {
+                    RenderLines(InDeviceContext, InCamera);
+                }
             }
         }
 
@@ -132,8 +136,15 @@ namespace Rendering.Core
             VertexLayouts.BasicLayout.Vertex[] BBoxVertices = new VertexLayouts.BasicLayout.Vertex[Objects.Count * 8];
 
             int CurrentBBoxIndex = 0;
+            int NumSkippedVertices = 0;
             foreach (RenderBoundingBox BBox in Objects.Values)
             {
+                if (!BBox.DoRender)
+                {
+                    NumSkippedVertices += 8;
+                    continue;
+                }
+
                 VertexLayouts.BasicLayout.Vertex[] Cached = BBox.GetTransformVertices();
                 System.Array.Copy(Cached, 0, BBoxVertices, CurrentBBoxIndex * Cached.Length, Cached.Length);
                 CurrentBBoxIndex++;
@@ -143,8 +154,15 @@ namespace Rendering.Core
             uint[] BBoxIndices = new uint[Objects.Count * 24];
 
             CurrentBBoxIndex = 0;
+            int NumSkippedIndices = 0;
             foreach (RenderBoundingBox BBox in Objects.Values)
             {
+                if (!BBox.DoRender)
+                {
+                    NumSkippedIndices += 24;
+                    continue;
+                }
+
                 uint[] CopiedIndices = new uint[BBox.Indices.Length];
                 for (int i = 0; i < CopiedIndices.Length; i++)
                 {
@@ -156,7 +174,20 @@ namespace Rendering.Core
                 CurrentBBoxIndex++;
             }
 
-            SizeToRender = Objects.Count * 24;
+            // Remove empty data
+            if (NumSkippedVertices > 0)
+            {
+                System.Array.Resize(ref BBoxVertices, BBoxVertices.Length - NumSkippedVertices);
+            }
+
+            if (NumSkippedIndices > 0)
+            {
+                System.Array.Resize(ref BBoxIndices, BBoxIndices.Length - NumSkippedIndices);
+            }
+
+            // Remove the objects we skipped
+            int NumObjectsSkipped = (NumSkippedIndices / 24);
+            SizeToRender = (Objects.Count - NumObjectsSkipped) * 24;
             if (VertexBuffer == null && IndexBuffer == null)
             {
                 VertexBuffer = InDevice.CreateBuffer(BindFlags.VertexBuffer, BBoxVertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
@@ -190,6 +221,12 @@ namespace Rendering.Core
             int CurrentVertexCount = 0;
             foreach (RenderLine Line in Objects.Values)
             {
+                // Skip line if no desire to render
+                if(!Line.DoRender)
+                {
+                    continue;
+                }
+
                 TempLineVertices.AddRange(Line.GetVertices);
 
                 ushort[] CopiedIndices = Line.GetStrippedIndices;

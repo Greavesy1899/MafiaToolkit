@@ -15,6 +15,7 @@ namespace ResourceTypes.FrameResource
     {
         // Used for both
         private Dictionary<ulong, List<int>> ModelAttachments;
+        private FrameResource OwningResource;
 
         // Used for loading
         private Dictionary<int, FrameObjectBase> OldRefIDLookupTable;
@@ -28,6 +29,11 @@ namespace ResourceTypes.FrameResource
         private Dictionary<int, FrameMaterial> FrameMaterials;
         private Dictionary<int, FrameGeometry> FrameGeometries;
 
+        public FramePack(FrameResource OwningResource)
+        {
+            this.OwningResource = OwningResource;
+        }
+
         private void SaveFrame(FrameObjectBase frame, BinaryWriter writer)
         {
             //is this even needed? hmm.
@@ -35,53 +41,53 @@ namespace ResourceTypes.FrameResource
             Debug.WriteLine(frame.ToString());
             if (frame.GetType() == typeof(FrameObjectArea))
             {
-                writer.Write((ushort)ObjectType.Area);
+                writer.Write((ushort)FrameResourceObjectType.Area);
                 (frame as FrameObjectArea).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectCamera))
             {
-                writer.Write((ushort)ObjectType.Camera);
+                writer.Write((ushort)FrameResourceObjectType.Camera);
                 (frame as FrameObjectCamera).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectCollision))
             {
-                writer.Write((ushort)ObjectType.Collision);
+                writer.Write((ushort)FrameResourceObjectType.Collision);
                 (frame as FrameObjectCollision).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectComponent_U005))
             {
-                writer.Write((ushort)ObjectType.Component_U00000005);
+                writer.Write((ushort)FrameResourceObjectType.Component_U00000005);
                 (frame as FrameObjectComponent_U005).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectDummy))
             {
-                writer.Write((ushort)ObjectType.Dummy);
+                writer.Write((ushort)FrameResourceObjectType.Dummy);
                 (frame as FrameObjectDummy).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectDeflector))
             {
-                writer.Write((ushort)ObjectType.ParticleDeflector);
+                writer.Write((ushort)FrameResourceObjectType.ParticleDeflector);
                 (frame as FrameObjectDeflector).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectFrame))
             {
-                writer.Write((ushort)ObjectType.Frame);
+                writer.Write((ushort)FrameResourceObjectType.Frame);
                 (frame as FrameObjectFrame).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectJoint))
             {
-                writer.Write((ushort)ObjectType.Joint);
+                writer.Write((ushort)FrameResourceObjectType.Joint);
                 (frame as FrameObjectJoint).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectLight))
             {
-                writer.Write((ushort)ObjectType.Light);
+                writer.Write((ushort)FrameResourceObjectType.Light);
                 (frame as FrameObjectLight).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectModel))
             {
                 var mesh = (frame as FrameObjectModel);
-                writer.Write((ushort)ObjectType.Model);
+                writer.Write((ushort)FrameResourceObjectType.Model);
                 mesh.WriteToFilePart1(writer);
                 mesh.Geometry.WriteToFile(writer);
                 mesh.Material.WriteToFile(writer);
@@ -111,13 +117,13 @@ namespace ResourceTypes.FrameResource
             }
             else if (frame.GetType() == typeof(FrameObjectSector))
             {
-                writer.Write((ushort)ObjectType.Sector);
+                writer.Write((ushort)FrameResourceObjectType.Sector);
                 (frame as FrameObjectSector).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectSingleMesh))
             {
                 var mesh = (frame as FrameObjectSingleMesh);
-                writer.Write((ushort)ObjectType.SingleMesh);
+                writer.Write((ushort)FrameResourceObjectType.SingleMesh);
                 mesh.WriteToFile(writer);
                 mesh.Geometry.WriteToFile(writer);
                 mesh.Material.WriteToFile(writer);
@@ -134,7 +140,7 @@ namespace ResourceTypes.FrameResource
             }
             else if (frame.GetType() == typeof(FrameObjectTarget))
             {
-                writer.Write((ushort)ObjectType.Target);
+                writer.Write((ushort)FrameResourceObjectType.Target);
                 (frame as FrameObjectTarget).WriteToFile(writer);
             }
             else
@@ -162,53 +168,34 @@ namespace ResourceTypes.FrameResource
         {
             int OldRefID = stream.ReadInt32(false); // read old RefID so we can make lookup dictionary
 
-            ObjectType frameType = (ObjectType)stream.ReadInt16(false);
-            FrameObjectBase parent = FrameFactory.ReadFrameByObjectID(stream, frameType, false);
+            FrameResourceObjectType frameType = (FrameResourceObjectType)stream.ReadInt16(false);
+            FrameObjectBase parent = FrameFactory.ReadFrameByObjectID(stream, false, OwningResource, frameType);
             Debug.WriteLine(parent.ToString());
 
             if (parent is FrameObjectSingleMesh || parent is FrameObjectModel)
             {
+                FrameObjectSingleMesh SingleMesh = (parent as FrameObjectSingleMesh);
+
                 // Read the required blocks;
-                FrameGeometry geometry = new FrameGeometry();
+                FrameGeometry geometry = SingleMesh.GetGeometry();
                 geometry.ReadFromFile(stream, false);
-                FrameMaterial material = new FrameMaterial();
+                FrameMaterial material = SingleMesh.GetMaterial();
                 material.ReadFromFile(stream, false);
-
-                // Add them into our pool of blocks
-                FrameGeometries.Add(geometry.RefID, geometry);
-                FrameMaterials.Add(material.RefID, material);
-
-                // Add our references onto our mesh
-                FrameObjectSingleMesh mesh = (parent as FrameObjectSingleMesh);
-                mesh.AddRef(FrameEntryRefTypes.Geometry, geometry.RefID);
-                mesh.Geometry = FrameGeometries[geometry.RefID];
-                mesh.AddRef(FrameEntryRefTypes.Material, material.RefID);
-                mesh.Material = FrameMaterials[material.RefID];
 
                 if (parent is FrameObjectModel)
                 {
+                    FrameObjectModel RiggedMesh = (parent as FrameObjectModel);
+
                     // Read the rigged specific blocks
-                    FrameBlendInfo blendInfo = new FrameBlendInfo();
+                    FrameBlendInfo blendInfo = RiggedMesh.BlendInfo;
                     blendInfo.ReadFromFile(stream, false);
-                    FrameSkeleton skeleton = new FrameSkeleton();
+                    FrameSkeleton skeleton = RiggedMesh.Skeleton;
                     skeleton.ReadFromFile(stream, false);
-                    FrameSkeletonHierachy hierarchy = new FrameSkeletonHierachy();
+                    FrameSkeletonHierachy hierarchy = RiggedMesh.SkeletonHierarchy;
                     hierarchy.ReadFromFile(stream, false);
 
-                    // Add our new rigged specific blocks into our pools
-                    FrameBlendInfos.Add(blendInfo.RefID, blendInfo);
-                    FrameSkeletons.Add(skeleton.RefID, skeleton);
-                    FrameSkeletonHierarchy.Add(hierarchy.RefID, hierarchy);
-
-                    // Finally, add our references to the model.
-                    FrameObjectModel model = (parent as FrameObjectModel);
-                    model.AddRef(FrameEntryRefTypes.BlendInfo, blendInfo.RefID);
-                    model.BlendInfo = FrameBlendInfos[blendInfo.RefID];
-                    model.AddRef(FrameEntryRefTypes.Skeleton, skeleton.RefID);
-                    model.Skeleton = FrameSkeletons[skeleton.RefID];
-                    model.AddRef(FrameEntryRefTypes.SkeletonHierachy, hierarchy.RefID);
-                    model.SkeletonHierarchy = FrameSkeletonHierarchy[hierarchy.RefID];
-                    model.ReadFromFilePart2(stream, false);
+                    // read end of mesh
+                    RiggedMesh.ReadFromFilePart2(stream, false);
                 }
 
                 // We have to make sure we have index and buffer pools available
@@ -309,23 +296,23 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public void PushPacketIntoFrameResource(FrameResource FrameResource)
+        public void PushPacketIntoFrameResource()
         {
             Dictionary<int, FrameObjectBase> AttachmentRefLookup = new Dictionary<int, FrameObjectBase>();
 
-            FrameResource.FrameBlendInfos.AddRange(FrameBlendInfos);
-            FrameResource.FrameGeometries.AddRange(FrameGeometries);
-            FrameResource.FrameMaterials.AddRange(FrameMaterials);
-            FrameResource.FrameSkeletonHierachies.AddRange(FrameSkeletonHierarchy);
-            FrameResource.FrameSkeletons.AddRange(FrameSkeletons);
-            FrameResource.FrameObjects.AddRange(FrameObjects);
+            OwningResource.FrameBlendInfos.AddRange(FrameBlendInfos);
+            OwningResource.FrameGeometries.AddRange(FrameGeometries);
+            OwningResource.FrameMaterials.AddRange(FrameMaterials);
+            OwningResource.FrameSkeletonHierachies.AddRange(FrameSkeletonHierarchy);
+            OwningResource.FrameSkeletons.AddRange(FrameSkeletons);
+            OwningResource.FrameObjects.AddRange(FrameObjects);
 
             // Update child relations
             // Then push Object and hash to AttachmentRefLookup
             foreach (var Pair in FrameObjects)
             {
                 FrameObjectBase CurrentObject = (Pair.Value as FrameObjectBase);
-                UpdateParentChildRelations(FrameResource, CurrentObject);
+                UpdateParentChildRelations(OwningResource, CurrentObject);
             }
 
             // Update AttachmentReferences on FrameObjectModels    
@@ -357,12 +344,12 @@ namespace ResourceTypes.FrameResource
                 if (OldRefIDLookupTable.TryGetValue(Child.Refs[FrameEntryRefTypes.Parent1], out Parent1))
                 {
                     Child.SubRef(FrameEntryRefTypes.Parent1);
-                    FrameResource.SetParentOfObject(0, Child, Parent1);
+                    FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex1, Child, Parent1);
                 }
                 else
                 {
                     Child.SubRef(FrameEntryRefTypes.Parent1);
-                    FrameResource.SetParentOfObject(0, Child, null);
+                    FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex1, Child, null);
                 }
             }
 
@@ -371,12 +358,12 @@ namespace ResourceTypes.FrameResource
                 if (OldRefIDLookupTable.TryGetValue(Child.Refs[FrameEntryRefTypes.Parent2], out Parent2))
                 {
                     Child.SubRef(FrameEntryRefTypes.Parent2);
-                    FrameResource.SetParentOfObject(1, Child, Parent2);
+                    FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, Child, Parent2);
                 }
                 else
                 {
                     Child.SubRef(FrameEntryRefTypes.Parent2);
-                    FrameResource.SetParentOfObject(1, Child, null);
+                    FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, Child, null);
                 }
             }
         }

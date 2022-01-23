@@ -12,25 +12,21 @@ namespace Mafia2Tool
         private bool searchMode = false;
         public object chosenObject = null;
         private const string ROOT_STRING = "root (-1)";
-        private FrameEntry ROOT_ENTRY = null;
-        int type = 0;
+        ParentInfo.ParentType type = 0;
 
         public ListWindow()
         {
             InitializeComponent();
-
-            ROOT_ENTRY = new FrameEntry();
-            ROOT_ENTRY.RefID = 0;
         }
 
-        public void PopulateForm(int parent)
+        public void PopulateForm(ParentInfo.ParentType ParentType)
         {
             labelInfo.Text = Language.GetString("$SELECT_PARENT") + '\n' + Language.GetString("$HOW_TO_SEARCH");
-            type = parent;
+            type = ParentType;
             frameMode = true;
             listBox1.Items.Add(ROOT_STRING);
 
-            if (parent == 1)
+            if (ParentType == ParentInfo.ParentType.ParentIndex2)
             {
                 foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
                 {
@@ -92,7 +88,7 @@ namespace Mafia2Tool
         {
             if (listBox1.SelectedItem != null)
             {
-                chosenObject = (listBox1.SelectedItem.ToString() == ROOT_STRING) ? ROOT_ENTRY : listBox1.SelectedItem;       
+                chosenObject = (listBox1.SelectedItem.ToString() == ROOT_STRING) ? null : listBox1.SelectedItem;       
                 DialogResult = DialogResult.OK;
                 Close();
             }

@@ -1,6 +1,7 @@
 ﻿using Rendering.Core;
 using Rendering.Graphics;
 using ResourceTypes.FrameNameTable;
+using ResourceTypes.Misc;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -17,8 +18,8 @@ namespace ResourceTypes.FrameResource
         protected HashName name;
         protected int secondaryFlags;
         protected short unk3;
-        protected ParentStruct parentIndex1;
-        protected ParentStruct parentIndex2;
+        protected ParentInfo parentIndex1;
+        protected ParentInfo parentIndex2;
         protected short unk6;
         protected bool isOnTable;
         protected NameTableFlags nameTableFlags;
@@ -67,11 +68,11 @@ namespace ResourceTypes.FrameResource
             get { return unk3; }
             set { unk3 = value; }
         }
-        public ParentStruct ParentIndex1 {
+        public ParentInfo ParentIndex1 {
             get { return parentIndex1; }
             set { parentIndex1 = value; }
         }
-        public ParentStruct ParentIndex2 {
+        public ParentInfo ParentIndex2 {
             get { return parentIndex2; }
             set { parentIndex2 = value; }
         }
@@ -95,7 +96,10 @@ namespace ResourceTypes.FrameResource
             get { return GetType().ToString(); }
         }
 
-        public FrameObjectBase() : base()
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public FrameProps.FrameInfo OurFrameProps { get; set; }
+
+        public FrameObjectBase(FrameResource OwningResource) : base(OwningResource)
         {
             //do example name.
             name = new HashName("NewObject");
@@ -103,8 +107,8 @@ namespace ResourceTypes.FrameResource
             localTransform = Matrix4x4.Identity;
             worldTransform = Matrix4x4.Identity;
             unk3 = -1;
-            parentIndex1 = new ParentStruct(-1);
-            parentIndex2 = new ParentStruct(-1);
+            parentIndex1 = new ParentInfo(-1);
+            parentIndex2 = new ParentInfo(-1);
             unk6 = -1;
         }
 
@@ -115,8 +119,8 @@ namespace ResourceTypes.FrameResource
             localTransform = other.localTransform;
             worldTransform = other.worldTransform;
             unk3 = other.unk3;
-            parentIndex1 = new ParentStruct(other.parentIndex1);
-            parentIndex2 = new ParentStruct(other.parentIndex2);
+            parentIndex1 = new ParentInfo(other.parentIndex1);
+            parentIndex2 = new ParentInfo(other.parentIndex2);
             unk6 = -1;
             isOnTable = other.isOnTable;
             nameTableFlags = other.nameTableFlags;
@@ -128,8 +132,8 @@ namespace ResourceTypes.FrameResource
             secondaryFlags = stream.ReadInt32(isBigEndian);
             localTransform = MatrixUtils.ReadFromFile(stream, isBigEndian);
             unk3 = stream.ReadInt16(isBigEndian);
-            parentIndex1 = new ParentStruct(stream.ReadInt32(isBigEndian));
-            parentIndex2 = new ParentStruct(stream.ReadInt32(isBigEndian));
+            parentIndex1 = new ParentInfo(stream.ReadInt32(isBigEndian));
+            parentIndex2 = new ParentInfo(stream.ReadInt32(isBigEndian));
             unk6 = stream.ReadInt16(isBigEndian);
         }
 
@@ -189,6 +193,81 @@ namespace ResourceTypes.FrameResource
             {
                 child.SetWorldTransform();
             }
+        }
+
+        public void SetParent(ParentInfo.ParentType ParentType, FrameEntry NewParent)
+        {
+            // Fix any parent-children relationships.
+            if (Parent != null)
+            {
+                Parent.children.Remove(this);
+                Parent = null;
+            }
+
+            // This is if the user wants to change parent
+            if (NewParent != null)
+            {
+                int index = (NewParent is FrameHeaderScene) ? OwningResource.FrameScenes.IndexOfValue(NewParent.RefID) : OwningResource.GetIndexOfObject(NewParent.RefID);
+                FrameObjectBase ParentObject = (NewParent as FrameObjectBase);
+
+                // Fix any parent relationships only if ParentObj is not null.
+                if (ParentObject != null)
+                {
+                    ParentObject.children.Add(this);
+                    Parent = ParentObject;
+                }
+
+                // Update Parent
+                InternalSetParent(ParentType, NewParent, index);
+            }
+            else // this is if the user wants to remove the parent relationship, therefore -1 = root.
+            {
+                RemoveParent(ParentType);
+            }
+        }
+
+        private void InternalSetParent(ParentInfo.ParentType ParentType, FrameEntry NewParent, int ParentIndex)
+        {
+            // Get type of FrameEntryRefType we want to replace/add
+            FrameEntryRefTypes ParentRef = (ParentType == ParentInfo.ParentType.ParentIndex1) ?
+                FrameEntryRefTypes.Parent1 : FrameEntryRefTypes.Parent2;
+
+            ReplaceRef(ParentRef, NewParent.RefID);
+
+            int index = (NewParent is FrameHeaderScene) ? OwningResource.FrameScenes.IndexOfValue(NewParent.RefID) : OwningResource.GetIndexOfObject(NewParent.RefID);
+
+            // Update ParentInfo
+            if (ParentType == ParentInfo.ParentType.ParentIndex1)
+            {
+                ParentIndex1.SetParent(NewParent, ParentIndex);
+                ReplaceRef(FrameEntryRefTypes.Parent1, NewParent.RefID);
+            }
+            else
+            {
+                ParentIndex2.SetParent(NewParent, ParentIndex);
+                ReplaceRef(FrameEntryRefTypes.Parent2, NewParent.RefID);
+            }
+        }
+
+        private void RemoveParent(ParentInfo.ParentType ParentType)
+        {
+            // Get type of FrameEntryRefType we want to remove
+            FrameEntryRefTypes ParentRef = (ParentType == ParentInfo.ParentType.ParentIndex1) ? 
+                FrameEntryRefTypes.Parent1 : FrameEntryRefTypes.Parent2;
+
+            // Remove the reference
+            SubRef(ParentRef);
+            
+            // Remove the parent from the desired ParentIndex
+            if (ParentType == ParentInfo.ParentType.ParentIndex1)
+            {
+                ParentIndex1.RemoveParent();
+            }
+            else
+            {
+                ParentIndex2.RemoveParent();
+            }
+
         }
 
         public IRenderer GetRenderItem()

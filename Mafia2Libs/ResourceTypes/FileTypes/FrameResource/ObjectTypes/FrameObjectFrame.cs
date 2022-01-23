@@ -22,17 +22,12 @@ namespace ResourceTypes.FrameResource
             set { item = value; }
         }
 
-        public FrameObjectFrame(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
         public FrameObjectFrame(FrameObjectFrame other) : base(other)
         {
             actorHash = other.actorHash;
         }
 
-        public FrameObjectFrame() : base()
+        public FrameObjectFrame(FrameResource OwningResource) : base(OwningResource)
         {
             actorHash = new HashName();
         }

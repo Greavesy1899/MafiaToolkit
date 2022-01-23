@@ -16,14 +16,9 @@ namespace ResourceTypes.FrameResource
             set { lens = value; }
         }
 
-        public FrameObjectCamera() : base()
+        public FrameObjectCamera(FrameResource OwningResource) : base(OwningResource)
         {
             numLens = 0;
-        }
-
-        public FrameObjectCamera(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectCamera(FrameObjectCamera other) : base(other)

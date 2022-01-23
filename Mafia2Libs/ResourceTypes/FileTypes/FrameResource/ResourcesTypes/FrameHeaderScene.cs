@@ -20,12 +20,8 @@ namespace ResourceTypes.FrameResource
             set { name = value; }
         }
 
-        public FrameHeaderScene() : base() { }
-        public FrameHeaderScene(HashName name) : base()
-        {
-            this.name = name;
+        public FrameHeaderScene(FrameResource OwningResource) : base(OwningResource) { }
 
-        }
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             name = new HashName(reader, isBigEndian);

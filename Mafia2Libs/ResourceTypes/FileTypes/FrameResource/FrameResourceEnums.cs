@@ -2,8 +2,9 @@
 
 namespace ResourceTypes.FrameResource
 {
-    public enum ObjectType
+    public enum FrameResourceObjectType
     {
+        NULL = -1,
         Joint = 0,
         SingleMesh,
         Frame,

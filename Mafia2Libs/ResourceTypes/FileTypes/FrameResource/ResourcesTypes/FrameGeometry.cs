@@ -34,27 +34,8 @@ namespace ResourceTypes.FrameResource
             set { lod = value; }
         }
 
-        /// <summary>
-        /// Construct FrameGeometry from stream data.
-        /// </summary>
-        /// <param name="reader"></param>
-        public FrameGeometry(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
+        public FrameGeometry(FrameResource OwningResource) : base(OwningResource) { }
 
-        /// <summary>
-        /// Construct FrameGeometry with default data.
-        /// </summary>
-        public FrameGeometry() : base()
-        {
-
-        }
-
-        /// <summary>
-        /// Read data from stream.
-        /// </summary>
-        /// <param name="reader"></param>
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             numLods = reader.ReadByte8();
@@ -72,11 +53,6 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-
-        /// <summary>
-        /// Write data to stream.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(numLods);

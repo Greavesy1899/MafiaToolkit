@@ -2,6 +2,7 @@
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
+using Utils.Models;
 using Utils.Types;
 using Utils.VorticeUtils;
 
@@ -67,29 +68,22 @@ namespace ResourceTypes.FrameResource
         }
         [Category("Linked Blocks")]
         public FrameSkeleton Skeleton {
-            get { return skeleton; }
+            get { return GetSkeletonObject(); }
             set { skeleton = value; }
         }
         [Category("Linked Blocks")]
         public FrameBlendInfo BlendInfo {
-            get { return blendInfo; }
+            get { return GetBlendInfoObject(); }
             set { blendInfo = value; }
         }
 
         [Category("Linked Blocks"), TypeConverter(typeof(ExpandableObjectConverter))]
         public FrameSkeletonHierachy SkeletonHierarchy {
-            get { return hierachy; }
+            get { return GetSkeletonHierarchyObject(); }
             set { hierachy = value; }
         }
 
-        public FrameObjectModel() : base()
-        {
-
-
-        }
-        public FrameObjectModel (MemoryStream reader, bool isBigEndian)
-        {
-        }
+        public FrameObjectModel(FrameResource OwningResource) : base(OwningResource) { }
 
         public FrameObjectModel(FrameObjectSingleMesh other) : base(other)
         {
@@ -244,6 +238,67 @@ namespace ResourceTypes.FrameResource
             {
                 hitBoxInfo[i].WriteToFile(writer);
             }
+        }
+
+        protected FrameBlendInfo ConstructBlendInfoObject()
+        {
+            blendInfo = OwningResource.ConstructFrameAssetOfType<FrameBlendInfo>();
+            AddRef(FrameEntryRefTypes.BlendInfo, blendInfo.RefID);
+            return blendInfo;
+        }
+        protected FrameSkeletonHierachy ConstructSkeletonHierarchyObject()
+        {
+            SkeletonHierarchy = OwningResource.ConstructFrameAssetOfType<FrameSkeletonHierachy>();
+            AddRef(FrameEntryRefTypes.SkeletonHierachy, SkeletonHierarchy.RefID);
+            return SkeletonHierarchy;
+        }
+
+        protected FrameSkeleton ConstructSkeletonObject()
+        {
+            skeleton = OwningResource.ConstructFrameAssetOfType<FrameSkeleton>();
+            AddRef(FrameEntryRefTypes.Skeleton, skeleton.RefID);
+            return skeleton;
+        }
+
+        public FrameBlendInfo GetBlendInfoObject()
+        {
+            if(blendInfo == null)
+            {
+                return ConstructBlendInfoObject();
+            }
+
+            return blendInfo;
+        }
+
+        public FrameSkeletonHierachy GetSkeletonHierarchyObject()
+        {
+            if (hierachy == null)
+            {
+                return ConstructSkeletonHierarchyObject();
+            }
+
+            return hierachy;
+        }
+
+        public FrameSkeleton GetSkeletonObject()
+        {
+            if (skeleton == null)
+            {
+                return ConstructSkeletonObject();
+            }
+
+            return skeleton;
+        }
+
+        public override void CreateMeshFromRawModel(Model NewModel)
+        {
+            base.CreateMeshFromRawModel(NewModel);
+
+            ConstructBlendInfoObject();
+            ConstructGeometryObject();
+            ConstructMaterialObject();
+
+            NewModel.CreateObjectsFromModel();
         }
 
         public override string ToString()

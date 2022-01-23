@@ -39,8 +39,9 @@ namespace ResourceTypes.Navigation
             Unk2 = Vector3Utils.ReadFromFile(Reader);
             Unk3 = Reader.ReadUInt32();
 
-            Minimum = new Vector3(-Unk2.Y, -Unk2.X, -Unk2.Z);
-            Maximum = new Vector3(Unk2.Y, Unk2.X, Unk2.Z);
+            // TODO: Need to convert this back to Unk2.
+            Minimum = new Vector3(-Unk2.X, -Unk2.Z, -Unk2.Y);
+            Maximum = new Vector3(Unk2.X, Unk2.Z, Unk2.Y);
         }
 
         public override void Write(BinaryWriter Writer)
@@ -75,11 +76,11 @@ namespace ResourceTypes.Navigation
 
             BoundingBox BBox = new BoundingBox(Minimum, Maximum);
 
-            //Matrix4x4 RotationMatrix = MatrixExtensions.ConvertFromDirection(Direction);
-            //RotationMatrix.TranslationVector = Position;
+            Matrix4x4 RotationMatrix = MatrixUtils.CreateFromDirection(Direction);
+            RotationMatrix.Translation = Position;
 
             navigationBox.Init(BBox);
-            navigationBox.SetTransform(Matrix4x4.CreateTranslation(Position));
+            navigationBox.SetTransform(RotationMatrix);
 
             BBoxBatcher.AddObject(RefID, navigationBox);
         }

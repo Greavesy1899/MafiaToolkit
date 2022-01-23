@@ -14,6 +14,7 @@ using ResourceTypes.Sound;
 using ResourceTypes.Actors;
 using ResourceTypes.Collisions;
 using ResourceTypes.Navigation;
+using ResourceTypes.Navigation.Traffic;
 using ResourceTypes.Translokator;
 using ResourceTypes.Prefab;
 using ResourceTypes.Misc;
@@ -35,7 +36,7 @@ namespace Mafia2Tool
         public static Collision Collisions;
         public static CityAreas CityAreas;
         public static CityShops CityShops;
-        public static Roadmap roadMap;
+        public static IRoadmap roadMap;
         public static AnimalTrafficLoader ATLoader;
         public static NAVData[] AIWorlds;
         public static NAVData[] OBJData;
@@ -154,25 +155,33 @@ namespace Mafia2Tool
             //}
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
+#if DEBUG
             if (!isBigEndian && sdsContent.HasResource("PREFAB"))
             {
                 var name = sdsContent.GetResourceFiles("PREFAB", true)[0];
                 PrefabLoader loader = new PrefabLoader(new FileInfo(name));
                 Prefabs = loader;
             }
+#endif // DEBUG
 
             //RoadMap
-            if (!isBigEndian)
-            {
-                paths = sdsContent.GetResourceFiles("MemFile", true);
-                foreach (var item in paths)
-                {
-                    if (item.Contains("RoadMap") || item.Contains("roadmap"))
-                    {
-                        roadMap = new Roadmap(new FileInfo(item));
-                    }
-                }
-            }
+#if DEBUG
+            //if (!isBigEndian)
+            //{
+            //    paths = sdsContent.GetResourceFiles("MemFile", true);
+            //    foreach (var item in paths)
+            //    {
+            //        if (item.Contains("RoadMap") || item.Contains("roadmap"))
+            //        {
+            //            using (FileStream RoadmapStream = File.Open(item, FileMode.Open))
+            //            {
+            //                roadMap = new RoadmapCe();
+            //                roadMap.Read(RoadmapStream);
+            //            }
+            //        }
+            //    }
+            //}
+#endif // DEBUG
 
             //~ENABLE THIS SECTION AT YOUR OWN RISK
             //Translokator
@@ -184,10 +193,10 @@ namespace Mafia2Tool
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
             //~ENABLE THIS SECTION AT YOUR OWN RISK
-            /* Kynapse OBJ_DATA
+            // Kynapse OBJ_DATA
+#if DEBUG
             if (!isBigEndian)
             {
-                tis' broken for now
                 paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
                 foreach (var item in paths)
                 {
@@ -200,7 +209,7 @@ namespace Mafia2Tool
                 }
             }
 
-            AI WORLD
+            //AI WORLD
             if (!isBigEndian)
             {
                 paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
@@ -217,7 +226,7 @@ namespace Mafia2Tool
                 HPDData = (data.data as HPDData);
                 data.WriteToFile();
             }
-            */
+#endif // DEBUG
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
             IndexBufferPool = new IndexBufferManager(ibps, dirInfo, isBigEndian);

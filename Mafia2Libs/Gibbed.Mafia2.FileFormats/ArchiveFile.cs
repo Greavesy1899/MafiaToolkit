@@ -351,6 +351,14 @@ namespace Gibbed.Mafia2.FileFormats
 
             string SDSContentPath = Path.Combine(sdsFolder, "SDSContent.xml");
 
+            // First check if it actually exists
+            if (!File.Exists(SDSContentPath))
+            {
+                MessageBox.Show("SDSContent.xml does not exist. Cannot pack this SDS.", "Mafia Toolkit");
+                return false;
+            }
+
+            // Then attempt to read
             // Attempt to sort the file.
             // Only works for M2 and M2DE.
             if (ChosenGameType == GamesEnumerator.MafiaII || ChosenGameType == GamesEnumerator.MafiaII_DE)

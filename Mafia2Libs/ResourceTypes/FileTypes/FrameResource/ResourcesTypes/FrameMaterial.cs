@@ -34,12 +34,7 @@ namespace ResourceTypes.FrameResource
             set { materials = value; }
         }
 
-        public FrameMaterial(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
-        public FrameMaterial(FrameMaterial other)
+        public FrameMaterial(FrameMaterial other) : base(other)
         {
             bounds = other.bounds;
             numLods = other.numLods;
@@ -56,7 +51,7 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public FrameMaterial() : base()
+        public FrameMaterial(FrameResource OwningResource) : base(OwningResource)
         {
             numLods = 0;
             lodMatCount = new int[0];
