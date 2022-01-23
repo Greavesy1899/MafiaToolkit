@@ -118,63 +118,6 @@ namespace Utils.Types
         }
     }
 
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class ParentStruct
-    {
-        int index;
-        string name;
-        int refID;
-
-        public int Index {
-            get { return index; }
-            set { index = value; }
-        }
-
-        public string Name {
-            get { return name; }
-            set { name = value; }
-        }
-
-        public int RefID {
-            get { return refID; }
-            set { refID = value; }
-        }
-
-        public ParentStruct(int index)
-        {
-            this.index = index;
-        }
-
-        public ParentStruct(ParentStruct other)
-        {
-            index = other.index;
-            name = other.name;
-            refID = other.refID;
-        }
-
-        public void SetParent(int index, FrameEntry entry)
-        {
-            SetParent(index, entry.ToString(), entry.RefID);
-        }
-
-        public void SetParent(int index, string name, int refID)
-        {
-            this.index = index;
-            this.name = name;
-            this.refID = refID;
-        }
-
-        public override string ToString()
-        {
-            if (index == -1)
-            {
-                return string.Format("{0}, root", index);
-            }
-            
-            return string.Format("{0}, {1}", index, name);
-        }
-    }
-
     public class Short3
     {
         public ushort S1 { get; set; }

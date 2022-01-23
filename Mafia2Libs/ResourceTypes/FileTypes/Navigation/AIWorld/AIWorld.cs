@@ -74,8 +74,10 @@ namespace ResourceTypes.Navigation
             OriginStream = StringHelpers.ReadString(reader);
             uint originFileSize = reader.ReadUInt32();
             Unk8 = reader.ReadUInt32();
-            Unk9 = reader.ReadUInt32();
-            Unk10 = reader.ReadUInt32();
+
+            // pepa found crash, do we still need these?
+            //Unk9 = reader.ReadUInt32();
+            //Unk10 = reader.ReadUInt32();
 
             DebugWriteToFile();
         }
@@ -105,8 +107,10 @@ namespace ResourceTypes.Navigation
             StringHelpers.WriteString(Writer, OriginStream);
             Writer.Write(OriginStream.Length + 1);
             Writer.Write(Unk8);
-            Writer.Write(Unk9);
-            Writer.Write(Unk10);
+
+            // pepa found crash, are these two required?
+            //Writer.Write(Unk9);
+            //Writer.Write(Unk10);
         }
 
         public void DebugWriteToFile()

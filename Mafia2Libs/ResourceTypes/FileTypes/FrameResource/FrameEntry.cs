@@ -24,6 +24,8 @@ namespace ResourceTypes.FrameResource
         protected int refID;
         protected Dictionary<FrameEntryRefTypes, int> refs = new Dictionary<FrameEntryRefTypes, int>();
 
+        protected FrameResource OwningResource;
+
         [ReadOnly(true)]
         public int RefID {
             set { refID = value; }
@@ -34,9 +36,10 @@ namespace ResourceTypes.FrameResource
             get { return refs; }
         }
 
-        public FrameEntry()
+        public FrameEntry(FrameResource OwningResource)
         {
             refID = RefManager.GetNewRefID();
+            this.OwningResource = OwningResource;
         }
 
         public FrameEntry(FrameEntry entry)
@@ -48,6 +51,8 @@ namespace ResourceTypes.FrameResource
             {
                 refs.Add(entry.refs.ElementAt(i).Key, entry.refs.ElementAt(i).Value);
             }
+
+            OwningResource = entry.OwningResource;
         }
 
         public void AddRef(FrameEntryRefTypes type, int objRef)

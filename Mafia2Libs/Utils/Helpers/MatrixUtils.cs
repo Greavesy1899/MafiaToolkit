@@ -125,6 +125,21 @@ namespace Utils.VorticeUtils
             return matrix;
         }
 
+        public static Matrix4x4 CreateFromDirection(Vector3 Direction)
+        {
+            Vector3 UpDirection = new Vector3(0.0f, 0.0f, 1.0f);
+
+            Matrix4x4 NewMatrix = Matrix4x4.Identity;
+
+            Vector3 XAxis = Vector3.Normalize(Vector3.Cross(UpDirection, Direction));
+            Vector3 YAxis = Vector3.Normalize(Vector3.Cross(Direction, XAxis));
+
+            NewMatrix.SetColumn(0, new Vector4(XAxis.X, YAxis.X, Direction.X, 1.0f));
+            NewMatrix.SetColumn(1, new Vector4(XAxis.Y, YAxis.Y, Direction.Y, 1.0f));
+            NewMatrix.SetColumn(2, new Vector4(XAxis.Z, YAxis.Z, Direction.Z, 1.0f));
+            return NewMatrix;
+        }
+
         public static Matrix4x4 SetMatrix(Vector3 rotation, Vector3 scale, Vector3 position)
         {
             /*float radX, radY, radZ;

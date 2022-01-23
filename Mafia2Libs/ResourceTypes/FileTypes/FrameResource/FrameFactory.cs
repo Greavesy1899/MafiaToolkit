@@ -5,61 +5,55 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameFactory
     {
-        public static FrameObjectBase ReadFrameByObjectID(MemoryStream stream, ObjectType FrameType, bool isBigEndian)
+        public static FrameObjectBase ReadFrameByObjectID(MemoryStream stream, bool isBigEndian, FrameResource OwningResource, FrameResourceObjectType FrameType)
         {
-            switch(FrameType)
+            FrameObjectBase NewFrameObject = ConstructFrameByObjectID(OwningResource, FrameType);
+            NewFrameObject.ReadFromFile(stream, isBigEndian);
+            return NewFrameObject;
+        }
+
+        public static FrameObjectBase ConstructFrameByObjectID(FrameResource OwningResource, FrameResourceObjectType FrameType)
+        {
+            switch (FrameType)
             {
-                case ObjectType.Joint:
-                    FrameObjectJoint joint = new FrameObjectJoint();
-                    joint.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Joint:
+                    FrameObjectJoint joint = OwningResource.ConstructFrameAssetOfType<FrameObjectJoint>();
                     return joint;
-                case ObjectType.SingleMesh:
-                    FrameObjectSingleMesh mesh = new FrameObjectSingleMesh();
-                    mesh.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.SingleMesh:
+                    FrameObjectSingleMesh mesh = OwningResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
                     return mesh;
-                case ObjectType.Frame:
-                    FrameObjectFrame frame = new FrameObjectFrame();
-                    frame.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Frame:
+                    FrameObjectFrame frame = OwningResource.ConstructFrameAssetOfType<FrameObjectFrame>();
                     return frame;
-                case ObjectType.Light:
-                    FrameObjectLight light = new FrameObjectLight();
-                    light.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Light:
+                    FrameObjectLight light = OwningResource.ConstructFrameAssetOfType<FrameObjectLight>();
                     return light;
-                case ObjectType.Camera:
-                    FrameObjectCamera camera = new FrameObjectCamera();
-                    camera.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Camera:
+                    FrameObjectCamera camera = OwningResource.ConstructFrameAssetOfType<FrameObjectCamera>();
                     return camera;
-                case ObjectType.Component_U00000005:
-                    FrameObjectComponent_U005 u005 = new FrameObjectComponent_U005();
-                    u005.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Component_U00000005:
+                    FrameObjectComponent_U005 u005 = OwningResource.ConstructFrameAssetOfType<FrameObjectComponent_U005>();
                     return u005;
-                case ObjectType.Sector:
-                    FrameObjectSector sector = new FrameObjectSector();
-                    sector.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Sector:
+                    FrameObjectSector sector = OwningResource.ConstructFrameAssetOfType<FrameObjectSector>();
                     return sector;
-                case ObjectType.Dummy:
-                    FrameObjectDummy dummy = new FrameObjectDummy();
-                    dummy.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Dummy:
+                    FrameObjectDummy dummy = OwningResource.ConstructFrameAssetOfType<FrameObjectDummy>();
                     return dummy;
-                case ObjectType.ParticleDeflector:
-                    FrameObjectDeflector deflector = new FrameObjectDeflector();
-                    deflector.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.ParticleDeflector:
+                    FrameObjectDeflector deflector = OwningResource.ConstructFrameAssetOfType<FrameObjectDeflector>();
                     return deflector;
-                case ObjectType.Area:
-                    FrameObjectArea area = new FrameObjectArea();
-                    area.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Area:
+                    FrameObjectArea area = OwningResource.ConstructFrameAssetOfType<FrameObjectArea>();
                     return area;
-                case ObjectType.Target:
-                    FrameObjectTarget target = new FrameObjectTarget();
-                    target.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Target:
+                    FrameObjectTarget target = OwningResource.ConstructFrameAssetOfType<FrameObjectTarget>();
                     return target;
-                case ObjectType.Model:
-                    FrameObjectModel model = new FrameObjectModel();
-                    model.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Model:
+                    FrameObjectModel model = OwningResource.ConstructFrameAssetOfType<FrameObjectModel>();
                     return model;
-                case ObjectType.Collision:
-                    FrameObjectCollision collision = new FrameObjectCollision();
-                    collision.ReadFromFile(stream, isBigEndian);
+                case FrameResourceObjectType.Collision:
+                    FrameObjectCollision collision = OwningResource.ConstructFrameAssetOfType<FrameObjectCollision>();
                     return collision;
                 default:
                     Debug.WriteLine("Missing frame type!");

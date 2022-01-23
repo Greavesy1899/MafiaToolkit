@@ -30,17 +30,12 @@ namespace ResourceTypes.FrameResource
             set { bounds.SetMaximum(value); }
         }
 
-        public FrameObjectDummy(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
         public FrameObjectDummy(FrameObjectDummy other) : base(other)
         {
             bounds = other.bounds;
         }
 
-        public FrameObjectDummy() : base()
+        public FrameObjectDummy(FrameResource OwningResource) : base(OwningResource)
         {
             bounds = new BoundingBox();
         }

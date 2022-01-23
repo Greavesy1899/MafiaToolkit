@@ -420,6 +420,12 @@ namespace Rendering.Graphics
                 return Assets[RefID];
             }
 
+            IRenderer ObjectInPrimitive = OurPrimitiveManager.GetObject(RefID);
+            if(ObjectInPrimitive != null)
+            {
+                return ObjectInPrimitive;
+            }
+
             return OurPrimitiveManager.GetObject(RefID);
         }
 
@@ -432,6 +438,15 @@ namespace Rendering.Graphics
 
             // TODO: The owner if a 'PrimitiveBatch' is pretty ambiguous right now.
             return OurPrimitiveManager.RemoveObject(RefID);
+        }
+
+        public void SetAssetVisibility(int RefID, bool bVisibility)
+        {
+            IRenderer ObjectAsset = GetAsset(RefID);
+            if (ObjectAsset != null)
+            {
+                ObjectAsset.DoRender = bVisibility;
+            }
         }
 
         public void MoveGizmo(int sx, int sy, int Width, int Height)

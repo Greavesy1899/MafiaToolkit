@@ -11,14 +11,9 @@ namespace ResourceTypes.FrameResource
             get { return unk01; }
             set { unk01 = value; }
         }
-        public FrameObjectComponent_U005() : base()
+        public FrameObjectComponent_U005(FrameResource OwningResource) : base(OwningResource)
         {
             unk01 = 0;
-        }
-
-        public FrameObjectComponent_U005(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectComponent_U005(FrameObjectComponent_U005 other) : base(other)

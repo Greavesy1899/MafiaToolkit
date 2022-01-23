@@ -27,15 +27,10 @@ namespace ResourceTypes.FrameResource
             set { bounds = value; }
         }
 
-        public FrameBlendInfo() : base()
+        public FrameBlendInfo(FrameResource OwningResource) : base(OwningResource)
         {
             boneIndexInfos = new BoneIndexInfo[0];
             boneTransforms = new BoneTransform[0];
-        }
-
-        public FrameBlendInfo(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)

@@ -12,6 +12,7 @@ using ResourceTypes.FrameNameTable;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using ResourceTypes.Navigation;
+using ResourceTypes.Navigation.Traffic;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -103,7 +104,6 @@ namespace Mafia2Tool
             Button_ImportFrame.Text = Language.GetString("$IMPORT_FRAME");
             AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
             AddCollisionButton.Text = Language.GetString("$ADD_COLLISION");
-            AddRoadSplineButton.Text = Language.GetString("$ADD_ROAD_SPLINE");
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
         }
@@ -232,7 +232,7 @@ namespace Mafia2Tool
         {
             if (node.Tag != null)
             {
-                bool isFrame = FrameResource.IsFrameType(node.Tag);
+                bool bIsFrame = FrameResource.IsFrameType(node.Tag);
 
                 int result = -1;
                 int.TryParse(node.Name, out result);
@@ -243,12 +243,8 @@ namespace Mafia2Tool
                 }
 
                 // Update rendered counterpart
-                int refID = (isFrame) ? (node.Tag as FrameEntry).RefID : result;
-                IRenderer ObjectAsset = Graphics.GetAsset(refID);
-                if(ObjectAsset != null)
-                {
-                    ObjectAsset.DoRender = node.Checked && node.CheckIfParentsAreValid();
-                }
+                int refID = (bIsFrame) ? (node.Tag as FrameEntry).RefID : result;
+                Graphics.SetAssetVisibility(refID, node.Checked && node.CheckIfParentsAreValid());
             }
 
             foreach (TreeNode child in node.Nodes)
@@ -327,14 +323,14 @@ namespace Mafia2Tool
         private void UpdateParent_Click(object sender, EventArgs e)
         {
             string name = (sender as ToolStripMenuItem).Name;
-            int parent = (name == "UpdateParent1Button" ? 0 : 1);
+            ParentInfo.ParentType ParentType = (name == "UpdateParent1Button" ? ParentInfo.ParentType.ParentIndex1 : ParentInfo.ParentType.ParentIndex2);
             ListWindow window = new ListWindow();
-            window.PopulateForm(parent);
+            window.PopulateForm(ParentType);
             
             if (window.ShowDialog() == DialogResult.OK)
             {
                 FrameEntry obj = (window.chosenObject as FrameEntry);
-                UpdateObjectParents(parent, obj.RefID, obj);
+                UpdateObjectParents(ParentType, obj.RefID, obj);
             }
         }
 
@@ -562,33 +558,7 @@ namespace Mafia2Tool
 
                 if (SceneData.roadMap != null && ToolkitSettings.Experimental)
                 {
-                    List<SplineDefinition> splines = new List<SplineDefinition>();
-                    List<JunctionDefinition> junctions = new List<JunctionDefinition>();
-
-                    for (int i = 0; i != roadRoot.Nodes.Count; i++)
-                    {
-                        RenderRoad road = (RenderRoad)roadRoot.Nodes[i].Tag;
-                        SplineDefinition spline = new SplineDefinition();
-                        spline.NumSplines1 = spline.NumSplines2 = (ushort)road.Spline.Points.Length;
-                        spline.Points = road.Spline.Points;
-                        spline.HasToward = road.HasToward;
-                        spline.HasBackward = road.HasBackward;
-                        spline.Backward = road.Backward;
-                        spline.Toward = road.Toward;
-                        spline.IndexOffset = road.IndexOffset;
-                        splines.Add(spline);
-                    }
-
-                    for (int i = 0; i < junctionRoot.Nodes.Count; i++)
-                    {
-                        RenderJunction junction = (RenderJunction)junctionRoot.Nodes[i].Tag;
-                        JunctionDefinition definition = junction.Data;
-                        junctions.Add(definition);
-                    }
-
-                    SceneData.roadMap.splines = splines.ToArray();
-                    SceneData.roadMap.junctionData = junctions.ToArray();
-                    SceneData.roadMap.WriteToFile();
+                    // save code 
                 }
 
                 if (SceneData.Collisions != null)
@@ -656,15 +626,23 @@ namespace Mafia2Tool
                 TreeNode node = new TreeNode("Road Data");
                 TreeNode node2 = new TreeNode("Junction Data");
                 node.Tag = node2.Tag = "Folder";
-                roadRoot = node;             
+                roadRoot = node;
                 junctionRoot = node2;
 
-                for (int i = 0; i != SceneData.roadMap.splines.Length; i++)
+                for (int i = 0; i < SceneData.roadMap.Roads.Count; i++)
                 {
+                    IRoadDefinition RoadDef = SceneData.roadMap.Roads[i];
+                    if(RoadDef.Direction == RoadDirection.Backwards)
+                    {
+                        continue;
+                    }
+
+                    IRoadSpline RoadSpline = SceneData.roadMap.Splines[RoadDef.RoadSplineIndex];
                     RenderRoad road = new RenderRoad();
                     int generatedID = RefManager.GetNewRefID();
-                    road.Init(SceneData.roadMap.splines[i]);
+                    road.Init(RoadDef, RoadSpline);
                     assets.Add(generatedID, road);
+
                     TreeNode child = new TreeNode(i.ToString());
                     child.Text = "Road ID: " + i;
                     child.Name = generatedID.ToString();
@@ -672,11 +650,11 @@ namespace Mafia2Tool
                     node.Nodes.Add(child);
                 }
 
-                for (int i = 0; i < SceneData.roadMap.junctionData.Length; i++)
+                for (int i = 0; i < SceneData.roadMap.Crossroads.Count; i++)
                 {
                     int generatedID = RefManager.GetNewRefID();
                     RenderJunction junction = new RenderJunction();
-                    junction.Init(SceneData.roadMap.junctionData[i]);
+                    junction.Init(SceneData.roadMap.Crossroads[i], Graphics);
                     assets.Add(generatedID, junction);
                     TreeNode child = new TreeNode(i.ToString());
                     child.Text = "Junction ID: " + i;
@@ -684,6 +662,7 @@ namespace Mafia2Tool
                     child.Tag = junction;
                     junctionRoot.Nodes.Add(child);
                 }
+
                 dSceneTree.AddToTree(node);
                 dSceneTree.AddToTree(node2);
             }
@@ -907,6 +886,11 @@ namespace Mafia2Tool
                 SpatialGrid grid = (node.Parent.Tag as SpatialGrid);
                 grid.SetSelectedCell(node.Index);
             }
+            else if(node.Parent != null && node.Parent.Tag is RenderNav)
+            {
+                RenderNav ObjNav = (node.Parent.Tag as RenderNav);
+                ObjNav.SelectNode(node.Index);
+            }
             else
             {
                 int result = 0;
@@ -1104,117 +1088,19 @@ namespace Mafia2Tool
 
         private void CreateMeshBuffers(Model model)
         {
-            for (int i = 0; i < model.FrameGeometry.NumLods; i++)
+            // TODO: I want to move this into FrameObjectSingleMesh.
+            FrameGeometry MeshGeometry = model.FrameMesh.Geometry;
+
+            for (int i = 0; i < MeshGeometry.NumLods; i++)
             {
                bool bAdded = SceneData.VertexBufferPool.TryAddBuffer(model.VertexBuffers[i]);
                bAdded = SceneData.IndexBufferPool.TryAddBuffer(model.IndexBuffers[i]);
             }
         }
 
-        private FrameObjectBase CreateSingleMesh(Model model)
+        private void CreateNewEntry(FrameResourceObjectType SelectedType, string name, bool addToNameTable)
         {
-            // The model is invalid; we should not continue;
-            // TODO:: Ideally we should move this check somewhere else..
-            if(model == null)
-            {
-                return null;
-
-            }
-
-            // Create a new SM and assign the frame mesh onto the model for future frame construction.
-            FrameObjectSingleMesh sm = new FrameObjectSingleMesh();
-            model.FrameMesh = sm;
-
-            Debug.Assert(sm != null && model != null, "Failed to load model from file!");
-
-            sm.Name.Set(model.ModelStructure.Name);
-            model.CreateObjectsFromModel();
-            sm.AddRef(FrameEntryRefTypes.Geometry, model.FrameGeometry.RefID);
-            sm.Geometry = model.FrameGeometry;
-            sm.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
-            sm.Material = model.FrameMaterial;
-            SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
-            SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
-
-            sm.LocalTransform = Matrix4x4.Identity;
-            sm.WorldTransform = Matrix4x4.Identity;
-
-            CreateMeshBuffers(model);
-            return sm;
-        }
-
-        private FrameObjectBase CreateSkinnedMesh(Model model)
-        {
-            // We use the single mesh and convert to skinned and replace the old data on the model
-            FrameObjectSingleMesh sm = (CreateSingleMesh(model) as FrameObjectSingleMesh);
-            FrameObjectModel rigged = new FrameObjectModel(sm);
-            model.FrameMesh = sm;
-            model.FrameModel = rigged;
-
-            rigged.AddRef(FrameEntryRefTypes.BlendInfo, model.BlendInfoBlock.RefID);
-            rigged.BlendInfo = model.BlendInfoBlock;
-            rigged.AddRef(FrameEntryRefTypes.Skeleton, model.SkeletonBlock.RefID);
-            rigged.Skeleton = model.SkeletonBlock;
-            rigged.AddRef(FrameEntryRefTypes.SkeletonHierachy, model.SkeletonHierachyBlock.RefID);
-            rigged.SkeletonHierarchy = model.SkeletonHierachyBlock;
-
-            SceneData.FrameResource.FrameBlendInfos.Add(rigged.BlendInfo.RefID, rigged.BlendInfo);
-            SceneData.FrameResource.FrameSkeletons.Add(rigged.Skeleton.RefID, rigged.Skeleton);
-            SceneData.FrameResource.FrameSkeletonHierachies.Add(rigged.SkeletonHierarchy.RefID, rigged.SkeletonHierarchy);
-
-            return rigged;
-        }
-
-        private void CreateNewEntry(int selected, string name, bool addToNameTable)
-        {
-            FrameObjectBase frame;
-
-            switch (selected)
-            {
-                case 0:
-                    frame = CreateSingleMesh(LoadModelFromFile());
-                    break;
-                case 1:
-                    frame = new FrameObjectFrame();
-                    break;
-                case 2:
-                    frame = new FrameObjectLight();
-                    break;
-                case 3:
-                    frame = new FrameObjectCamera();
-                    break;
-                case 4:
-                    frame = new FrameObjectComponent_U005();
-                    break;
-                case 5:
-                    frame = new FrameObjectSector();
-                    break;
-                case 6:
-                    frame = new FrameObjectDummy();
-                    break;
-                case 7:
-                    frame = new FrameObjectDeflector();
-                    break;
-                case 8:
-                    frame = new FrameObjectArea();
-                    break;
-                case 9:
-                    frame = new FrameObjectTarget();
-                    break;
-                case 10:
-                    frame = CreateSkinnedMesh(LoadModelFromFile());
-                    break;
-                case 11:
-                    frame = new FrameObjectCollision();
-                    break;
-                case 12:
-                    frame = new FrameObjectJoint();
-                    break;
-                default:
-                    frame = new FrameObjectBase();
-                    Console.WriteLine("Unknown type selected");
-                    break;
-            }
+            FrameObjectBase frame = FrameFactory.ConstructFrameByObjectID(SceneData.FrameResource, SelectedType);
 
             // Frame was not valid, there is no need to carry on.
             if (frame == null)
@@ -1222,14 +1108,33 @@ namespace Mafia2Tool
                 return;
             }
 
+
             Debug.Assert(frame != null, "Frame was null!");
 
             frame.Name.Set(name);
             frame.IsOnFrameTable = addToNameTable;
-            SceneData.FrameResource.FrameObjects.Add(frame.RefID, frame);
             TreeNode node = new TreeNode(frame.Name.String);
             node.Tag = frame;
             node.Name = frame.RefID.ToString();
+
+            if (frame is FrameObjectSingleMesh)
+            {
+                FrameObjectSingleMesh SingleMesh = (frame as FrameObjectSingleMesh);
+                Model LoadedModel = LoadModelFromFile();
+
+                if (LoadedModel == null)
+                {
+                    // failed to load model
+                    return;
+                }
+
+                SingleMesh.CreateMeshFromRawModel(LoadedModel);
+
+                // TODO: This will need to live elsewhere one day!
+                CreateMeshBuffers(LoadedModel);
+            }
+
+            // If everything was succesful, then we would have reached this point.
             dSceneTree.AddToTree(node, frameResourceRoot);
 
             IRenderer renderer = BuildRenderObjectFromFrame(frame);
@@ -1277,7 +1182,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void UpdateObjectParents(int parent, int refID, FrameEntry entry = null)
+        private void UpdateObjectParents(ParentInfo.ParentType ParentType, int refID, FrameEntry entry = null)
         {
             FrameObjectBase obj = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
             //make sure refID is not root.
@@ -1294,11 +1199,11 @@ namespace Mafia2Tool
                     }
                 }
 
-                SceneData.FrameResource.SetParentOfObject(parent, obj, entry);
+                SceneData.FrameResource.SetParentOfObject(ParentType, obj, entry);
             }
             else
             {
-                SceneData.FrameResource.SetParentOfObject(parent, obj, null);
+                SceneData.FrameResource.SetParentOfObject(ParentType, obj, null);
             }
 
             dSceneTree.RemoveNode(dSceneTree.SelectedNode);
@@ -1371,9 +1276,9 @@ namespace Mafia2Tool
                 }
                 else if (e.ChangedItem.Label == "RefID")
                 {
-                    //used just incase the user wants to set the parent to "root"
-                    int parent = (e.ChangedItem.Parent.Label == "ParentIndex1" ? 0 : 1);
-                    UpdateObjectParents(parent, (int)e.ChangedItem.Value);
+                    // Used just in case the user wants to set the parent to "root"
+                    ParentInfo.ParentType ParentType = (e.ChangedItem.Parent.Label == "ParentIndex1" ? ParentInfo.ParentType.ParentIndex1 : ParentInfo.ParentType.ParentIndex2);
+                    UpdateObjectParents(ParentType, (int)e.ChangedItem.Value);
                 }
                 
                 ApplyChangesToRenderable((FrameObjectBase)pGrid.SelectedObject);
@@ -1737,7 +1642,7 @@ namespace Mafia2Tool
             if(form.ShowDialog() == DialogResult.OK)
             {
                 ControlOptionFrameAdd window = (form.control as ControlOptionFrameAdd);
-                int selection = window.GetSelectedType();
+                FrameResourceObjectType selection = window.GetSelectedType();
                 CreateNewEntry(selection, form.GetInputText(), window.GetAddToNameTable());
             }
         }
@@ -1755,129 +1660,18 @@ namespace Mafia2Tool
         {
             if (SceneData.roadMap == null)
                 return;
-
-            RenderRoad road = new RenderRoad();
-            RenderLine spline = new RenderLine();
-            spline.Points = new Vector3[2] { new Vector3(0, 0, 0), new Vector3(10, 10, 10) };
-            road.Spline = spline;
-            road.HasToward = true;
-            road.Toward = new SplineProperties();
-            road.Toward.Flags = 0;
-            road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
-            road.Toward.Lanes = new LaneProperties[2];
-            road.Toward.Lanes[0] = new LaneProperties();
-            road.Toward.Lanes[0].Width = 3.5f;
-            road.Toward.Lanes[0].Unk03 = 440;
-            road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
-            road.Toward.Lanes[1] = new LaneProperties();
-            road.Toward.Lanes[1].Width = 3.5f;
-            road.Toward.Lanes[1].Unk03 = 440;
-            road.Toward.Lanes[1].Flags = LaneTypes.None;
-            road.HasBackward = true;
-            road.Backward = new SplineProperties();
-            road.Backward.Flags = RoadFlags.BackwardDirection;
-            road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
-            road.Backward.Lanes = new LaneProperties[2];
-            road.Backward.Lanes[1] = new LaneProperties();
-            road.Backward.Lanes[1].Width = 3.5f;
-            road.Backward.Lanes[1].Unk03 = 440;
-            road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
-            road.Backward.Lanes[0] = new LaneProperties();
-            road.Backward.Lanes[0].Width = 3.5f;
-            road.Backward.Lanes[0].Unk03 = 440;
-            road.Backward.Lanes[0].Flags = LaneTypes.None;
-
-
-            int generatedID = RefManager.GetNewRefID();
-            RenderStorageSingleton.Instance.SplineStorage.Add(spline);
-            Graphics.InitObjectStack.Add(generatedID, road);
-            int nodeID = (roadRoot.Nodes.Count);
-            TreeNode child = new TreeNode(nodeID.ToString());
-            child.Text = "Road ID: " + nodeID;
-            child.Name = generatedID.ToString();
-            child.Tag = road;
-            dSceneTree.AddToTree(child, roadRoot);
         }
 
         private void AddSplineTxT_Click(object sender, EventArgs e)
         {
             if (SceneData.roadMap == null)
                 return;
-
-            if (TxtBrowser.ShowDialog() == DialogResult.Cancel)
-                return;
-
-            RenderRoad road = new RenderRoad();
-            RenderLine spline = new RenderLine();
-
-            string[] content = File.ReadAllLines(TxtBrowser.FileName);
-            int numVertexes = int.Parse(content[0]);
-            spline.Points = new Vector3[numVertexes];
-
-            for (int i = 1; i != numVertexes; i++)
-            {
-                string[] splits = content[i].Split(' ');
-                spline.Points[i - 1] = new Vector3(float.Parse(splits[0]), float.Parse(splits[1]), float.Parse(splits[2]));
-            }
-
-            road.Spline = spline;
-            road.HasToward = true;
-            road.Toward = new SplineProperties();
-            road.Toward.Flags = 0;
-            road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
-            road.Toward.Lanes = new LaneProperties[2];
-            road.Toward.Lanes[0] = new LaneProperties();
-            road.Toward.Lanes[0].Width = 3.5f;
-            road.Toward.Lanes[0].Unk03 = 440;
-            road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
-            road.Toward.Lanes[1] = new LaneProperties();
-            road.Toward.Lanes[1].Width = 3.5f;
-            road.Toward.Lanes[1].Unk03 = 440;
-            road.Toward.Lanes[1].Flags = LaneTypes.None;
-            road.HasBackward = true;
-            road.Backward = new SplineProperties();
-            road.Backward.Flags = RoadFlags.BackwardDirection;
-            road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
-            road.Backward.Lanes = new LaneProperties[2];
-            road.Backward.Lanes[1] = new LaneProperties();
-            road.Backward.Lanes[1].Width = 3.5f;
-            road.Backward.Lanes[1].Unk03 = 440;
-            road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
-            road.Backward.Lanes[0] = new LaneProperties();
-            road.Backward.Lanes[0].Width = 3.5f;
-            road.Backward.Lanes[0].Unk03 = 440;
-            road.Backward.Lanes[0].Flags = LaneTypes.None;
-
-
-            int generatedID = RefManager.GetNewRefID();
-            RenderStorageSingleton.Instance.SplineStorage.Add(spline);
-            Graphics.InitObjectStack.Add(generatedID, road);
-            int nodeID = (roadRoot.Nodes.Count);
-            TreeNode child = new TreeNode(nodeID.ToString());
-            child.Text = "Road ID: " + nodeID;
-            child.Name = generatedID.ToString();
-            child.Tag = road;
-            dSceneTree.AddToTree(child, roadRoot);
         }
 
         private void AddJunctionOnClick(object sender, EventArgs e)
         {
             if (SceneData.roadMap == null)
                 return;
-
-            JunctionDefinition definition = new JunctionDefinition();
-            RenderJunction junction = new RenderJunction();
-            definition.JunctionIDX = junctionRoot.Nodes.Count;
-            junction.Init(definition);
-
-            int generatedID = RefManager.GetNewRefID();
-            Graphics.InitObjectStack.Add(generatedID, junction);
-            int nodeID = (junctionRoot.Nodes.Count);
-            TreeNode child = new TreeNode(nodeID.ToString());
-            child.Text = "Junction ID: " + nodeID;
-            child.Name = generatedID.ToString();
-            child.Tag = junction;
-            dSceneTree.AddToTree(child, junctionRoot);
         }
 
         private void EditUnkSet3Click(object sender, EventArgs e)
@@ -1888,50 +1682,10 @@ namespace Mafia2Tool
 
         private void AddTowardClick(object sender, EventArgs e)
         {
-            if (SceneData.roadMap != null && dSceneTree.SelectedNode != null)
-            {
-                if (dSceneTree.SelectedNode.Tag.GetType() == typeof(RenderRoad))
-                {
-                    RenderRoad road = (dSceneTree.SelectedNode.Tag as RenderRoad);
-                    road.HasToward = true;
-                    road.Toward = new SplineProperties();
-                    road.Toward.Flags = 0;
-                    road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
-                    road.Toward.Lanes = new LaneProperties[2];
-                    road.Toward.Lanes[0] = new LaneProperties();
-                    road.Toward.Lanes[0].Width = 3.5f;
-                    road.Toward.Lanes[0].Unk03 = 440;
-                    road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
-                    road.Toward.Lanes[1] = new LaneProperties();
-                    road.Toward.Lanes[1].Width = 3.5f;
-                    road.Toward.Lanes[1].Unk03 = 440;
-                    road.Toward.Lanes[1].Flags = LaneTypes.None;
-                }
-            }
         }
 
         private void AddBackwardClick(object sender, EventArgs e)
         {
-            if (SceneData.roadMap != null && dSceneTree.SelectedNode != null)
-            {
-                if (dSceneTree.SelectedNode.Tag.GetType() == typeof(RenderRoad))
-                {
-                    RenderRoad road = (dSceneTree.SelectedNode.Tag as RenderRoad);
-                    road.HasBackward = true;
-                    road.Backward = new SplineProperties();
-                    road.Backward.Flags = RoadFlags.BackwardDirection;
-                    road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
-                    road.Backward.Lanes = new LaneProperties[2];
-                    road.Backward.Lanes[1] = new LaneProperties();
-                    road.Backward.Lanes[1].Width = 3.5f;
-                    road.Backward.Lanes[1].Unk03 = 440;
-                    road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
-                    road.Backward.Lanes[0] = new LaneProperties();
-                    road.Backward.Lanes[0].Width = 3.5f;
-                    road.Backward.Lanes[0].Unk03 = 440;
-                    road.Backward.Lanes[0].Flags = LaneTypes.None;
-                }
-            }
         }
 
         private void AddCollisionButton_Click(object sender, EventArgs e)

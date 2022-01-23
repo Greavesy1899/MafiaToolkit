@@ -48,12 +48,7 @@ namespace ResourceTypes.FrameResource
             set { bounds.SetMaximum(value); }
         }
 
-        public FrameObjectArea(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
-        public FrameObjectArea() : base()
+        public FrameObjectArea(FrameResource OwningResource) : base(OwningResource)
         {
             unk01 = 0;
             planesSize = 0;

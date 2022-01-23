@@ -22,7 +22,7 @@ namespace ResourceTypes.FrameResource
             set { nodeData = value; }
         }
 
-        public FrameObjectJoint() : base()
+        public FrameObjectJoint(FrameResource OwningResource) : base(OwningResource)
         {
             dataSize = 0;
             nodeData = new NodeStruct[dataSize];
@@ -31,11 +31,6 @@ namespace ResourceTypes.FrameResource
             {
                 nodeData[i] = new NodeStruct();
             }
-        }
-
-        public FrameObjectJoint(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectJoint(FrameObjectJoint other) : base(other)
