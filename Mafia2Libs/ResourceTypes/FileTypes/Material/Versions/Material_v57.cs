@@ -31,6 +31,14 @@ namespace ResourceTypes.Materials
                 Unk3 = CastedMaterial.Unk3;
                 Unk4 = CastedMaterial.Unk4;
                 Unk5 = CastedMaterial.Unk5;
+
+                // Copy over samplers
+                Samplers = new List<MaterialSampler_v57>();
+                foreach (var Sampler in CastedMaterial.Samplers)
+                {
+                    MaterialSampler_v57 NewSampler = new MaterialSampler_v57(Sampler);
+                    Samplers.Add(NewSampler);
+                }
             }
             else if (OtherMaterial.GetMTLVersion() == VersionsEnumerator.V_58)
             {
@@ -40,6 +48,14 @@ namespace ResourceTypes.Materials
                 Unk3 = CastedMaterial.Unk3;
                 Unk4 = CastedMaterial.Unk4;
                 Unk5 = CastedMaterial.Unk5;
+
+                // Copy over samplers
+                Samplers = new List<MaterialSampler_v57>();
+                foreach (var Sampler in CastedMaterial.Samplers)
+                {
+                    MaterialSampler_v57 NewSampler = new MaterialSampler_v57(Sampler);
+                    Samplers.Add(NewSampler);
+                }
             }
             else
             {
@@ -48,12 +64,6 @@ namespace ResourceTypes.Materials
                 return;
             }
 
-            Samplers = new List<MaterialSampler_v57>();
-            foreach (var Sampler in Samplers)
-            {
-                MaterialSampler_v57 NewSampler = new MaterialSampler_v57(Sampler);
-                Samplers.Add(Sampler);
-            }
         }
 
         public override void ReadFromFile(BinaryReader reader, VersionsEnumerator version)

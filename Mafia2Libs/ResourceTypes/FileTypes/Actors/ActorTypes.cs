@@ -2021,13 +2021,12 @@ namespace ResourceTypes.Actors
     public class ActorHuman : IActorExtraDataInterface
     {
         public float HealthMax { get; set; }
-        public float HumanType { get; set; }
+        public int HumanType { get; set; }
         public int Aggressiveness { get; set; }
         public int Courage { get; set; }
         public int PanicOnEvent { get; set; }
         public int PanicOnHP { get; set; }
         public int Sight { get; set; }
-        [Description("VisionAngle is stored in radians. Not degrees!")]
         public float VisionAngle { get; set; }
         public float Hearing { get; set; }
         public int UseSoundScene { get; set; }
@@ -2069,13 +2068,13 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             HealthMax = stream.ReadSingle(isBigEndian);
-            HumanType = stream.ReadSingle(isBigEndian);
+            HumanType = stream.ReadInt32(isBigEndian);
             Aggressiveness = stream.ReadInt32(isBigEndian);
             Courage = stream.ReadInt32(isBigEndian);
             PanicOnEvent = stream.ReadInt32(isBigEndian);
             PanicOnHP = stream.ReadInt32(isBigEndian);
             Sight = stream.ReadInt32(isBigEndian);
-            VisionAngle = stream.ReadSingle(isBigEndian);
+            VisionAngle = MathHelper.ToDegrees(stream.ReadSingle(isBigEndian));
             Hearing = stream.ReadSingle(isBigEndian);
             UseSoundScene = stream.ReadInt32(isBigEndian);
             FightingSkill = stream.ReadSingle(isBigEndian);
@@ -2110,7 +2109,7 @@ namespace ResourceTypes.Actors
             writer.Write(PanicOnEvent, isBigEndian);
             writer.Write(PanicOnHP, isBigEndian);
             writer.Write(Sight, isBigEndian);
-            writer.Write(VisionAngle, isBigEndian);
+            writer.Write(MathHelper.ToRadians(VisionAngle), isBigEndian);
             writer.Write(Hearing, isBigEndian);
             writer.Write(UseSoundScene, isBigEndian);
             writer.Write(FightingSkill, isBigEndian);

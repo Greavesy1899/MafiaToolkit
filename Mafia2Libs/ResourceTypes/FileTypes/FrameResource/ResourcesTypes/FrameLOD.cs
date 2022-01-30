@@ -214,65 +214,49 @@ namespace ResourceTypes.FrameResource
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public struct Descriptor
         {
-            int num1;
-            int num2;
-            short[] p0;
-            short[] p1;
+            uint mPosData;
+            uint mNegData;
+            short[] mCenter;
+            ushort[] mExtents;
 
-            Vector3 unpackedP0;
-            Vector3 unpackedP1;
-
-            public int Num1 {
-                get { return num1; }
-                set { num1 = value; }
+            public uint PosData {
+                get { return mPosData; }
+                set { mPosData = value; }
             }
-            public int Num2 {
-                get { return num2; }
-                set { num2 = value; }
+            public uint NegData {
+                get { return mNegData; }
+                set { mNegData = value; }
             }
-            public short[] P0 {
-                get { return p0; }
-                set { p0 = value; }
+            public uint PosLeafIndex { get { return PosData / 20; } }
+            public uint NegLeafIndex { get { return NegData / 20; } }
+            public short[] QuantizedCenter {
+                get { return mCenter; }
+                set { mCenter = value; }
             }
-            public short[] P1 {
-                get { return p1; }
-                set { p1 = value; }
+            public ushort[] QuantizedExtents {
+                get { return mExtents; }
+                set { mExtents = value; }
             }
-
-            //public Vector3 UnpackedP0 {
-            //    get { return unpackedP0; }
-            //    set { unpackedP0 = value; }
-            //}
-
-            //public Vector3 UnpackedP1 {
-            //    get { return unpackedP1; }
-            //    set { unpackedP1 = value; }
-            //}
 
             public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                num1 = reader.ReadInt32(isBigEndian);
-                p0 = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
-                p1 = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
-                num2 = reader.ReadInt32(isBigEndian);
+                mPosData = reader.ReadUInt32(isBigEndian);
+                mNegData = reader.ReadUInt32(isBigEndian);
+                mCenter = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
+                mExtents = new ushort[3] { reader.ReadUInt16(isBigEndian), reader.ReadUInt16(isBigEndian), reader.ReadUInt16(isBigEndian) }; //packed
             }
 
             public void WriteToFile(BinaryWriter writer)
             {
-                writer.Write(num1);
-                for (int i = 0; i != p0.Length; i++)
-                    writer.Write(p0[i]);
-                for (int i = 0; i != p1.Length; i++)
-                    writer.Write(p1[i]);
-                writer.Write(num2);
-            }
-
-            public void Unpack(Vector3 factor1, Vector3 factor2)
-            {
-                unpackedP0 = new Vector3(p0[0] * factor1.X, p0[1] * factor1.Y, p0[2] * factor1.Z);
-                unpackedP1 = new Vector3(p1[0] * factor2.X, p1[1] * factor2.Y, p1[2] * factor2.Z);
+                writer.Write(mPosData);
+                for (int i = 0; i != mCenter.Length; i++)
+                    writer.Write(mCenter[i]);
+                for (int i = 0; i != mExtents.Length; i++)
+                    writer.Write(mExtents[i]);
+                writer.Write(mNegData);
             }
         }
+
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class PartitionInfo
         {
@@ -285,7 +269,7 @@ namespace ResourceTypes.FrameResource
             Descriptor[] numDesc1;
             bool isAvailB;
             int numLongs1Length;
-            int[] numLongs1;
+            uint[] numLongs1;
             int numLongs2Length;
             bool isAvailC;
             int[] numLongs2;
@@ -319,7 +303,7 @@ namespace ResourceTypes.FrameResource
                 get { return numLongs1Length; }
                 set { numLongs1Length = value; }
             }
-            public int[] Longs1 {
+            public uint[] Longs1 {
                 get { return numLongs1; }
                 set {
                     numLongs1Length = value.Length;
@@ -380,10 +364,12 @@ namespace ResourceTypes.FrameResource
                 if (isAvailB)
                 {
 
-                    numLongs1 = new int[numLongs1Length];
+                    numLongs1 = new uint[numLongs1Length];
                     for (int i = 0; i != numLongs1.Length; i++)
                     {
-                        numLongs1[i] = reader.ReadInt32(isBigEndian);
+                        numLongs1[i] = reader.ReadUInt32(isBigEndian);
+                        uint NbTriangles = (numLongs1[i] & 15) + 1;
+                        uint TriangleIndex = (numLongs1[i] >> 4);
                     }
                 }
                 numLongs2Length = reader.ReadInt32(isBigEndian);
@@ -445,7 +431,7 @@ namespace ResourceTypes.FrameResource
                 memRequireA = 0x44;
                 memRequireB = 0x44;
                 partitionType = 4;
-                Longs1 = new int[0];
+                Longs1 = new uint[0];
                 Longs2 = new int[0];
                 Descriptors = new Descriptor[0];
                 numDesc1Length = 0;

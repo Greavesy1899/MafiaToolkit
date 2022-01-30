@@ -281,6 +281,7 @@ namespace Mafia2Tool
                 Panel_Main.Visible = true;
                 MergePanel.Visible = false;
 
+                // Attempt to convert (if required) and add to this materials file.
                 for(int i = 0; i < NewMatListBox.CheckedItems.Count; i++)
                 {
                     var mat = (NewMatListBox.CheckedItems[i] as IMaterial);
@@ -292,6 +293,7 @@ namespace Mafia2Tool
                     mtl.Materials.Add(mat.GetMaterialHash(), mat);
                 }
 
+                // Attempt to overwrite (if required) and apply to this materials file.
                 for(int i = 0; i < OverwriteListBox.CheckedItems.Count; i++)
                 {
                     var mat = (OverwriteListBox.CheckedItems[i] as IMaterial);
@@ -303,8 +305,12 @@ namespace Mafia2Tool
                     mtl.Materials[mat.GetMaterialHash()] = mat;
                 }
 
+                // Make sure to clean up any merge panel elements
                 OverwriteListBox.Items.Clear();
                 NewMatListBox.Items.Clear();
+
+                // Force GridView update
+                FetchMaterials();
             }
         }
 

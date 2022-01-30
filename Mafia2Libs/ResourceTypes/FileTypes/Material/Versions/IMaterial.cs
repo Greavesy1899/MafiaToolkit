@@ -37,10 +37,12 @@ namespace ResourceTypes.Materials
             ShaderID = OtherMaterial.ShaderID;
             ShaderHash = OtherMaterial.ShaderHash;
 
+            // Copy over parameters
             Parameters = new List<MaterialParameter>();
             foreach(var Param in OtherMaterial.Parameters)
             {
-                Parameters.Add(Param);
+                MaterialParameter NewParam = new MaterialParameter(Param);
+                Parameters.Add(NewParam);
             }
         }
 
