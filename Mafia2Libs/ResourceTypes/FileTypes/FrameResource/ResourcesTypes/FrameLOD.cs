@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using ThirdParty.OPCODE;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;

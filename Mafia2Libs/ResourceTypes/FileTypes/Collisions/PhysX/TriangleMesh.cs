@@ -1,19 +1,21 @@
-﻿using System;
+﻿using ResourceTypes.Collisions.PhysX;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using ThirdParty.OPCODE;
 using Vortice.Mathematics;
-using static ResourceTypes.Collisions.Opcode.SerializationUtils;
+using static ResourceTypes.Collisions.PhysX.SerializationUtils;
 
-namespace ResourceTypes.Collisions.Opcode
+namespace ResourceTypes.Collisions
 {
     /// <summary>
     /// A triangle mesh, also called a 'polygon soup'.
     /// </summary>
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class TriangleMesh : IOpcodeSerializable
+    public class TriangleMesh
     {
         [Flags]
         public enum MeshSerialFlags
@@ -183,15 +185,15 @@ namespace ResourceTypes.Collisions.Opcode
 
             if (!ReadHeader('N', 'X', 'S', out h0, out h1, out h2, out h3, out version, out littleEndian, reader))
             {
-                throw new OpcodeException("Invalid 'NXS' header");
+                throw new PhysXException("Invalid 'NXS' header");
             }
             if ((h0 != 'M') && (h1 != 'E') && (h2 != 'S') && (h3 != 'H'))
             {
-                throw new OpcodeException("Invalid 'MESH' header");
+                throw new PhysXException("Invalid 'MESH' header");
             }
             if (version != SupportedMeshVersion)
             {
-                throw new OpcodeException($"Unsupported mesh version {version}");
+                throw new PhysXException($"Unsupported mesh version {version}");
             }
 
             bool platformMismatch = !littleEndian;
@@ -214,13 +216,13 @@ namespace ResourceTypes.Collisions.Opcode
             ReadFlatParts(numFlatParts, numTriangles, reader, platformMismatch);
 
             uint readModelSize = ReadDword(reader, platformMismatch);
-            hybridModel.Load(reader);
+            hybridModel.Load_Collision(reader);
             
             // just extra check
             uint calculatedModelSize = hybridModel.GetUsedBytes();
             if (calculatedModelSize != readModelSize)
             {
-                throw new OpcodeException($"Read {readModelSize} and calculated {calculatedModelSize} model sizes do not match");
+                throw new PhysXException($"Read {readModelSize} and calculated {calculatedModelSize} model sizes do not match");
             }
 
             ReadBounds(reader, platformMismatch);
@@ -244,7 +246,7 @@ namespace ResourceTypes.Collisions.Opcode
         {
             if (serialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) && serialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
             {
-                throw new OpcodeException($"Invalid serial flags {serialFlags}");
+                throw new PhysXException($"Invalid serial flags {serialFlags}");
             }
 
             Triangles = new List<Triangle>((int)numTriangles);
@@ -413,7 +415,7 @@ namespace ResourceTypes.Collisions.Opcode
             uint numExtraTriangleData = ReadDword(reader, platformMismatch);
             if (numExtraTriangleData != numTriangles)
             {
-                throw new OpcodeException($"Number of ExtraTriangleData {numExtraTriangleData} does not match the number of triangles {numTriangles}");
+                throw new PhysXException($"Number of ExtraTriangleData {numExtraTriangleData} does not match the number of triangles {numTriangles}");
             }
 
             byte[] extraTrigDataBytes = reader.ReadBytes((int)numExtraTriangleData);
@@ -425,27 +427,27 @@ namespace ResourceTypes.Collisions.Opcode
         {
             if (SerialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) && SerialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
             {
-                throw new OpcodeException($"Invalid serial flags {SerialFlags}");
+                throw new PhysXException($"Invalid serial flags {SerialFlags}");
             }
             if (SerialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS) && MaterialIndices.Count != NumTriangles)
             {
-                throw new OpcodeException($"Number of material indices ({MaterialIndices.Count}) does not match the number of triangles ({Triangles.Count})");
+                throw new PhysXException($"Number of material indices ({MaterialIndices.Count}) does not match the number of triangles ({Triangles.Count})");
             }
             if (SerialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP) && remapIndices.Count != NumTriangles)
             {
-                throw new OpcodeException($"Number of remap indices ({remapIndices.Count}) does not match the number of triangles ({Triangles.Count})");
+                throw new PhysXException($"Number of remap indices ({remapIndices.Count}) does not match the number of triangles ({Triangles.Count})");
             }
             if (numConvexParts > 0 && convexParts.Count != NumTriangles)
             {
-                throw new OpcodeException($"Number of convex parts elements ({convexParts.Count}) does not match the number of triangles ({Triangles.Count})");
+                throw new PhysXException($"Number of convex parts elements ({convexParts.Count}) does not match the number of triangles ({Triangles.Count})");
             }
             if (numFlatParts > 0 && flatParts.Count != NumTriangles)
             {
-                throw new OpcodeException($"Number of flat parts elements ({flatParts.Count}) does not match the number of triangles ({Triangles.Count})");
+                throw new PhysXException($"Number of flat parts elements ({flatParts.Count}) does not match the number of triangles ({Triangles.Count})");
             }
             if (ExtraTriangleData.Count != NumTriangles)
             {
-                throw new OpcodeException($"Number of extra triangle data({ExtraTriangleData.Count}) does not match the number of triangles ({Triangles.Count})");
+                throw new PhysXException($"Number of extra triangle data({ExtraTriangleData.Count}) does not match the number of triangles ({Triangles.Count})");
             }
         }
 
@@ -491,7 +493,7 @@ namespace ResourceTypes.Collisions.Opcode
 
             uint modelSize = hybridModel.GetUsedBytes();
             WriteDword(modelSize, writer, platformMismatch);
-            hybridModel.Save(writer, endian);
+            hybridModel.Save_Collision(writer, endian);
 
             WriteBounds(writer, platformMismatch);
             WritePhysProperties(writer, platformMismatch);
@@ -513,7 +515,7 @@ namespace ResourceTypes.Collisions.Opcode
         {
             if (SerialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) && SerialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
             {
-                throw new OpcodeException($"Invalid serial flags {SerialFlags}");
+                throw new PhysXException($"Invalid serial flags {SerialFlags}");
             }
 
             if (SerialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))

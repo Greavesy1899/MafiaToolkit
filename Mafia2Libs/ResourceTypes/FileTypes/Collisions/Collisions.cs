@@ -1,4 +1,4 @@
-﻿using ResourceTypes.Collisions.Opcode;
+﻿using ResourceTypes.Collisions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

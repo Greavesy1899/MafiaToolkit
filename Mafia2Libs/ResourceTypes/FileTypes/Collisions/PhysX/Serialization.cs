@@ -4,23 +4,8 @@ using System.IO;
 using System.Linq;
 using Gibbed.IO;
 
-namespace ResourceTypes.Collisions.Opcode
+namespace ResourceTypes.Collisions.PhysX
 {
-    // NOTE: Could be migrated to Gibbed.IO.Endian to reduce
-    // the number of semantically identical types
-    public enum Endian
-    {
-        Little,
-        Big
-    }
-
-    public interface IOpcodeSerializable
-    {
-        void Load(BinaryReader reader);
-        void Save(BinaryWriter writer, Endian endian = Endian.Little);
-        uint GetUsedBytes();
-    }
-
     /// <summary>
     /// In general class contains some kind of reflection to the utility methods
     /// located in the <c>Serialize.h</c> and <c>Serialize.cpp</c> of the original SDK 

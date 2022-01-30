@@ -1,25 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
-using static ResourceTypes.Collisions.Opcode.SerializationUtils;
+using System.Text;
+using System.Threading.Tasks;
+using static ResourceTypes.Collisions.PhysX.SerializationUtils;
 
-namespace ResourceTypes.Collisions.Opcode
+namespace ThirdParty.OPCODE
 {
-    interface AABBOptimizedTree
+    public interface AABBOptimizedTree
     {
-        void Load(BinaryReader reader, bool endianMismatch = false);
-        void Save(BinaryWriter writer, bool endianMismatch = false);
+        /* Load the tree in the format that is required for Collision files. */
+        void Load_Collision(BinaryReader reader, bool endianMismatch = false);
+
+        /* Save the tree in the format that is required for Collision files. */
+        void Save_Collision(BinaryWriter writer, bool endianMismatch = false);
         uint GetUsedBytes();
     }
 
-    class DummyTree : AABBOptimizedTree
+    public class DummyTree : AABBOptimizedTree
     {
-        public void Load(BinaryReader reader, bool endianMismatch = false)
+        public void Load_Collision(BinaryReader reader, bool endianMismatch = false)
         {
             // do nothing
         }
 
-        public void Save(BinaryWriter writer, bool endianMismatch = false)
+        public void Save_Collision(BinaryWriter writer, bool endianMismatch = false)
         {
             // do nothing
         }
@@ -66,10 +73,10 @@ namespace ResourceTypes.Collisions.Opcode
         private Vector3 centerCoeff = Vector3.One;
         private Vector3 extentsCoeff = Vector3.One;
 
-        public void Load(BinaryReader reader, bool endianMismatch = false)
+        public void Load_Collision(BinaryReader reader, bool endianMismatch = false)
         {
             uint numNodes = ReadDword(reader, endianMismatch);
-            nodes = new List<AABBQuantizedNoLeafNode>((int) numNodes);
+            nodes = new List<AABBQuantizedNoLeafNode>((int)numNodes);
             for (int i = 0; i < numNodes; i++)
             {
                 QuantizedAABB aabb = new QuantizedAABB();
@@ -94,9 +101,9 @@ namespace ResourceTypes.Collisions.Opcode
             extentsCoeff.Z = ReadFloat(reader, endianMismatch);
         }
 
-        public void Save(BinaryWriter writer, bool endianMismatch = false)
+        public void Save_Collision(BinaryWriter writer, bool endianMismatch = false)
         {
-            WriteDword((uint) nodes.Count, writer, endianMismatch);
+            WriteDword((uint)nodes.Count, writer, endianMismatch);
 
             foreach (AABBQuantizedNoLeafNode node in nodes)
             {
