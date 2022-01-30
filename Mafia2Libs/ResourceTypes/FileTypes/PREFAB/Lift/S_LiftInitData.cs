@@ -27,7 +27,7 @@ namespace ResourceTypes.Prefab.CrashObject
         public void Save(BitStream MemStream)
         {
             MemStream.WriteInt32(Unk0);
-            MemStream.WriteInt32(Unk1);
+            MemStream.WriteBit(Unk1);
             MemStream.WriteInt32(Unk2);
             MemStream.WriteInt32(Unk3);
             MemStream.WriteInt32(Unk4);
@@ -127,6 +127,27 @@ namespace ResourceTypes.Prefab.CrashObject
         public override void Save(BitStream MemStream)
         {
             base.Save(MemStream);
+
+            MemStream.WriteUInt64(BodyModelFrameHash);
+            MemStream.WriteUInt64(ButtonFrameHash);
+            MemStream.WriteUInt64(LightFrameHash);
+
+            // Write all floors
+            MemStream.WriteInt32(Floors.Length);
+            foreach(S_LiftFloor Floor in Floors)
+            {
+                Floor.Save(MemStream);
+            }
+
+            // Write all doors
+            MemStream.WriteInt32(InternalDoors.Length);
+            foreach (S_InternalDoor Door in InternalDoors)
+            {
+                Door.Save(MemStream);
+            }
+
+            PrefabUtils.WriteHashArray(MemStream, AIEnterActionFrameHashes);
+            PrefabUtils.WriteHashArray(MemStream, AILeaveActionFrameHashes);
         }
     }
 }

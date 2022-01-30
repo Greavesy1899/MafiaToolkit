@@ -219,7 +219,7 @@ namespace ResourceTypes.Prefab
             private byte[] GetLatestData(out bool bIsLengthTheSame)
             {
                 // Write prefab data to stream
-                byte[] Storage = new byte[32768];
+                byte[] Storage = new byte[65536];
                 BitStream OutStream = new BitStream(Storage);
                 InitData.Save(OutStream);
 

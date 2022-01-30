@@ -28,6 +28,28 @@ namespace ResourceTypes.Prefab.CrashObject
     }
 
     [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class S_InitDropPart
+    {
+        public int DropPart { get; set; }
+        public float VersionOrEnergy { get; set; }
+        public uint Flags { get; set; }
+
+        public void Load(BitStream MemStream)
+        {
+            DropPart = MemStream.ReadInt32();
+            VersionOrEnergy = MemStream.ReadSingle();
+            Flags = MemStream.ReadUInt32();
+        }
+
+        public void Save(BitStream MemStream)
+        {
+            MemStream.WriteInt32(DropPart);
+            MemStream.WriteSingle(VersionOrEnergy);
+            MemStream.WriteUInt32(Flags);
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class S_InitInternalImpulse
     {
         public C_Vector3 Direction { get; set; }
@@ -94,7 +116,7 @@ namespace ResourceTypes.Prefab.CrashObject
             // Read array
             uint NumUnk2 = MemStream.ReadUInt32();
             Unk2 = new ushort[NumUnk2];
-            for(int i = 0; i < NumUnk2; i++)
+            for (int i = 0; i < NumUnk2; i++)
             {
                 Unk2[i] = MemStream.ReadUInt16();
             }
@@ -110,7 +132,7 @@ namespace ResourceTypes.Prefab.CrashObject
 
             // Write array
             MemStream.WriteInt32(Unk2.Length);
-            foreach(ushort Value in Unk2)
+            foreach (ushort Value in Unk2)
             {
                 MemStream.WriteUInt16(Value);
             }
@@ -122,7 +144,7 @@ namespace ResourceTypes.Prefab.CrashObject
 
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class S_InitDeformRelData
-    { 
+    {
         public C_Vector3 Unk0 { get; set; }
         public C_Transform Transform { get; set; }
 
@@ -160,7 +182,7 @@ namespace ResourceTypes.Prefab.CrashObject
         public float Unk8 { get; set; }
         public float Unk9 { get; set; }
         public S_InitInternalImpulse[] DPInternalImpulses { get; set; }
-        public uint Unk11 { get; set; }
+        public S_InitDropPart[] DropParts { get; set; }
         public S_InitDrainEnergy[] DPDrainEnergy { get; set; }
         public uint Unk13 { get; set; }
         public S_InitCollVolumeCollection[] CollisionVolumesCollections { get; set; }
@@ -184,6 +206,7 @@ namespace ResourceTypes.Prefab.CrashObject
         {
             Unk3 = new ulong[0];
             DPDrainEnergy = new S_InitDrainEnergy[0];
+            DropParts = new S_InitDropPart[0];
             CollisionVolumesCollections = new S_InitCollVolumeCollection[0];
             SMDeformBones = new S_InitSMDeformBone[0];
             DPInternalImpulses = new S_InitInternalImpulse[0];
@@ -201,7 +224,7 @@ namespace ResourceTypes.Prefab.CrashObject
             Unk1 = MemStream.ReadUInt32();
             Unk2 = MemStream.ReadBit();
 
-            switch(Unk0)
+            switch (Unk0)
             {
                 case 13:
                 case 15:
@@ -241,8 +264,15 @@ namespace ResourceTypes.Prefab.CrashObject
                 DPInternalImpulses[i] = Packet;
             }
 
-            Unk11 = MemStream.ReadUInt32(); // Count
-            Debug.Assert(Unk11 == 0, "We expect one here. This has extra data!");
+            // Read InitDropParts data
+            uint NumDropParts = MemStream.ReadUInt32(); // Count
+            DropParts = new S_InitDropPart[NumDropParts];
+            for (int i = 0; i < DropParts.Length; i++)
+            {
+                S_InitDropPart DropPart = new S_InitDropPart();
+                DropPart.Load(MemStream);
+                DropParts[i] = DropPart;
+            }
 
             // Read InitDrainEnergy data
             uint NumInitDrainEnergy = MemStream.ReadUInt32(); // Count
@@ -301,7 +331,7 @@ namespace ResourceTypes.Prefab.CrashObject
 
             // If one - means something is available.
             Unk21 = MemStream.ReadBit();
-            if(Unk21 == 1)
+            if (Unk21 == 1)
             {
                 Unk21Data = new S_InitDeformOrigData();
                 Unk21Data.Load(MemStream);
@@ -309,7 +339,7 @@ namespace ResourceTypes.Prefab.CrashObject
 
             // If one - means something is available.
             Unk22 = MemStream.ReadBit();
-            if(Unk22 == 1)
+            if (Unk22 == 1)
             {
                 Unk22_RelData = new S_InitDeformRelData();
                 Unk22_RelData.Load(MemStream);
@@ -343,15 +373,20 @@ namespace ResourceTypes.Prefab.CrashObject
                 Value.Save(MemStream);
             }
 
-            MemStream.WriteUInt32(Unk11);
-
-            // Write S_InitDrainEnergy entries
-            MemStream.WriteUInt32((uint)DPDrainEnergy.Length);
-            foreach(S_InitDrainEnergy Value in DPDrainEnergy)
+            // Write S_InitDropPart entries
+            MemStream.WriteUInt32((uint)DropParts.Length);
+            foreach (S_InitDropPart Value in DropParts)
             {
                 Value.Save(MemStream);
             }
-            
+
+            // Write S_InitDrainEnergy entries
+            MemStream.WriteUInt32((uint)DPDrainEnergy.Length);
+            foreach (S_InitDrainEnergy Value in DPDrainEnergy)
+            {
+                Value.Save(MemStream);
+            }
+
             // Write Collision Volumes
             MemStream.WriteUInt32((uint)CollisionVolumesCollections.Length);
             foreach (S_InitCollVolumeCollection ColVolume in CollisionVolumesCollections)
@@ -390,13 +425,13 @@ namespace ResourceTypes.Prefab.CrashObject
 
             // Write unknown hash
             MemStream.WriteBit(Unk21);
-            if(Unk21 == 1)
+            if (Unk21 == 1)
             {
                 Unk21Data.Save(MemStream);
             }
 
             MemStream.WriteBit(Unk22);
-            if(Unk22 == 1)
+            if (Unk22 == 1)
             {
                 Unk22_RelData.Save(MemStream);
             }

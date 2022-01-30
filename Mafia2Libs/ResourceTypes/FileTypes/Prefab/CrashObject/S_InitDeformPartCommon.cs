@@ -115,7 +115,7 @@ namespace ResourceTypes.Prefab.CrashObject
             MemStream.WriteSingle(EnergyStart * 0.01f);
             MemStream.WriteSingle(EnergyDrop * 0.01f);
 
-            MemStream.WriteUInt32((uint)Unk2.Length);
+            MemStream.WriteInt32(Unk2.Length);
             foreach (int Value in Unk2)
             {
                 MemStream.WriteInt32(Value);
@@ -151,7 +151,7 @@ namespace ResourceTypes.Prefab.CrashObject
             MemStream.WriteInt32(Unk7);
 
             // Unknown data. Could be indexes?
-            MemStream.WriteUInt32((uint)Unk8.Length);
+            MemStream.WriteInt32(Unk8.Length);
             foreach(uint Value in Unk8)
             {
                 MemStream.WriteUInt32(Value);
