@@ -9,28 +9,30 @@ namespace ResourceTypes.Prefab.CrashObject
 {
     public class S_LiftFloor
     {
-        public int Unk0 { get; set; }
-        public byte Unk1 { get; set; } // bit
-        public int Unk2 { get; set; }
-        public int Unk3 { get; set; }
-        public int Unk4 { get; set; }
+        [Description("The height of this floor.")]
+        public float FloorHeight { get; set; }
+        [Description("Should we lock the Player into position? The position is stored in 'LockedPlayerPosition'")]
+        public bool bShouldLockPlayer { get; set; } // bit
+        [Description("The position we should lock the player to.")]
+        public C_Vector3 LockedPlayerPosition { get; set; }
+
+        public S_LiftFloor()
+        {
+            LockedPlayerPosition = new C_Vector3();
+        }
 
         public void Load(BitStream MemStream)
         {
-            Unk0 = MemStream.ReadInt32();
-            Unk1 = MemStream.ReadBit();
-            Unk2 = MemStream.ReadInt32();
-            Unk3 = MemStream.ReadInt32();
-            Unk4 = MemStream.ReadInt32();
+            FloorHeight = MemStream.ReadSingle();
+            bShouldLockPlayer = MemStream.ReadBit();
+            LockedPlayerPosition.Load(MemStream);
         }
 
         public void Save(BitStream MemStream)
         {
-            MemStream.WriteInt32(Unk0);
-            MemStream.WriteBit(Unk1);
-            MemStream.WriteInt32(Unk2);
-            MemStream.WriteInt32(Unk3);
-            MemStream.WriteInt32(Unk4);
+            MemStream.WriteSingle(FloorHeight);
+            MemStream.WriteBit(bShouldLockPlayer);
+            LockedPlayerPosition.Save(MemStream);
         }
     }
 
@@ -38,26 +40,26 @@ namespace ResourceTypes.Prefab.CrashObject
     {
         public ulong Unk0 { get; set; }
         public int Unk1 { get; set; }
-        public int Unk2 { get; set; }
-        public int Unk3 { get; set; }
-        public int Unk4 { get; set; }
-        public int Unk5 { get; set; }
+        public float Unk2 { get; set; }
+        public float Unk3 { get; set; }
+        public float Unk4 { get; set; }
+        public float Unk5 { get; set; }
         public int Unk6 { get; set; }
         public int Unk7 { get; set; }
-        public int Unk8 { get; set; }
+        public float Unk8 { get; set; }
         public byte Unk9 { get; set; }
 
         public void Load(BitStream MemStream)
         {
             Unk0 = MemStream.ReadUInt64();
             Unk1 = MemStream.ReadInt32();
-            Unk2 = MemStream.ReadInt32();
-            Unk3 = MemStream.ReadInt32();
-            Unk4 = MemStream.ReadInt32();
-            Unk5 = MemStream.ReadInt32();
+            Unk2 = MemStream.ReadSingle();
+            Unk3 = MemStream.ReadSingle();
+            Unk4 = MemStream.ReadSingle();
+            Unk5 = MemStream.ReadSingle();
             Unk6 = MemStream.ReadInt32();
             Unk7 = MemStream.ReadInt32();
-            Unk8 = MemStream.ReadInt32();
+            Unk8 = MemStream.ReadSingle();
             Unk9 = MemStream.ReadBit();
         }
 
@@ -65,13 +67,13 @@ namespace ResourceTypes.Prefab.CrashObject
         {
             MemStream.WriteUInt64(Unk0);
             MemStream.WriteInt32(Unk1);
-            MemStream.WriteInt32(Unk2);
-            MemStream.WriteInt32(Unk3);
-            MemStream.WriteInt32(Unk4);
-            MemStream.WriteInt32(Unk5);
+            MemStream.WriteSingle(Unk2);
+            MemStream.WriteSingle(Unk3);
+            MemStream.WriteSingle(Unk4);
+            MemStream.WriteSingle(Unk5);
             MemStream.WriteInt32(Unk6);
             MemStream.WriteInt32(Unk7);
-            MemStream.WriteInt32(Unk8);
+            MemStream.WriteSingle(Unk8);
             MemStream.WriteBit(Unk9);
         }
     }

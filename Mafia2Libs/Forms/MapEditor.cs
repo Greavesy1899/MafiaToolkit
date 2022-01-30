@@ -440,18 +440,9 @@ namespace Mafia2Tool
 
             if (bCameraUpdated)
             {
-                // Hack: We have to remove the delegate before we can change the values, 
-                // or we'll fire some unnecessary code.
-                PositionXTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
-                PositionYTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
-                PositionZTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
-                PositionXTool.Value = (decimal)Graphics.Camera.Position.X;
-                PositionYTool.Value = (decimal)Graphics.Camera.Position.Y;
-                PositionZTool.Value = (decimal)Graphics.Camera.Position.Z;
-                PositionXTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
-                PositionYTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
-                PositionZTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
+                UpdatePositionElement(Graphics.Camera.Position);
             }
+
             Process process = Process.GetCurrentProcess();
             Label_MemoryUsage.Text = string.Format("Usage: {0}", process.WorkingSet64.ConvertToMemorySize());
             Label_FPS.Text = Graphics.Profile.ToString();
@@ -1167,6 +1158,7 @@ namespace Mafia2Tool
         private void JumpButton_Click(object sender, EventArgs e)
         {
             Graphics.Camera.Position = dSceneTree.JumpToHelper();
+            UpdatePositionElement(Graphics.Camera.Position);
         }
 
         private void UpdateObjectParentsRecurse(TreeNode parent, FrameObjectBase entry)
@@ -1989,6 +1981,22 @@ namespace Mafia2Tool
             }
 
             File.WriteAllLines("AllTextures.txt", AllTextures.ToArray());
+        }
+
+        private void UpdatePositionElement(Vector3 InPosition)
+        {
+            // Hack: We have to remove the delegate before we can change the values, 
+            // or we'll fire some unnecessary code..
+
+            PositionXTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
+            PositionYTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
+            PositionZTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
+            PositionXTool.Value = (decimal)InPosition.X;
+            PositionYTool.Value = (decimal)InPosition.Y;
+            PositionZTool.Value = (decimal)InPosition.Z;
+            PositionXTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
+            PositionYTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
+            PositionZTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
         }
     }
 }
