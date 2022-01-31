@@ -1,5 +1,5 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.Collisions.Opcode;
+using ResourceTypes.Collisions;
 using System;
 using System.Collections.Generic;
 using System.IO;

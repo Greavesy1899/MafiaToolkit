@@ -1,5 +1,4 @@
 ﻿using ResourceTypes.Collisions;
-using ResourceTypes.Collisions.Opcode;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;

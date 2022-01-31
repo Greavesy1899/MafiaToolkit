@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using ThirdParty.OPCODE;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;
@@ -81,6 +82,10 @@ namespace ResourceTypes.FrameResource
             numVerts = reader.ReadInt32(isBigEndian);
             nZero1 = reader.ReadInt32(isBigEndian);
 
+            // TODO: When the model rework is implemented, we need to do:
+            // - load MemReqA and MemReqB.
+            // - load Opcode.HybridModel.
+            // Currently it is disabled.
             nPartition = reader.ReadInt32(isBigEndian);
             if (nPartition != 0)
                 partitionInfo.ReadFromFile(reader, isBigEndian);
@@ -102,6 +107,10 @@ namespace ResourceTypes.FrameResource
             writer.Write(numVerts);
             writer.Write(nZero1);
 
+            // TODO: When the model rework is implemented, we need to do:
+            // - save MemReqA and MemReqB.
+            // - save Opcode.HybridModel.
+            // Currently it is disabled.
             writer.Write(nPartition);
             if (nPartition != 0)
                 partitionInfo.WriteToFile(writer);
