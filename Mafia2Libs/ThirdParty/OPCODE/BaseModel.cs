@@ -1,6 +1,7 @@
 ﻿using ResourceTypes.Collisions.PhysX;
 using System;
 using System.IO;
+using Utils.Extensions;
 using static ResourceTypes.Collisions.PhysX.SerializationUtils;
 
 namespace ThirdParty.OPCODE
@@ -19,6 +20,8 @@ namespace ThirdParty.OPCODE
         void Load_Collision(BinaryReader reader);
         /* Save the serializable data whilst respecting Collision format */
         void Save_Collision(BinaryWriter writer, Endian endian = Endian.Little);
+        void Load_FrameRes(MemoryStream stream, Endian endian = Endian.Little);
+        void Save_FrameRes(MemoryStream stream, Endian endian = Endian.Little);
         uint GetUsedBytes();
     }
 
@@ -28,7 +31,7 @@ namespace ThirdParty.OPCODE
     abstract class ModelBase : IOpcodeSerializable
     {
         [Flags]
-        enum ModelFlag
+        protected enum ModelFlag
         {
             // ReSharper disable InconsistentNaming
             /// <summary>
@@ -48,8 +51,8 @@ namespace ThirdParty.OPCODE
 
         private const uint SupportedModelVersion = 1;
 
-        private ModelFlag modelCode = ModelFlag.OPC_SINGLE_NODE;
-        private AABBOptimizedTree tree = new DummyTree();
+        protected ModelFlag modelCode = ModelFlag.OPC_SINGLE_NODE;
+        protected AABBOptimizedTree tree = new DummyTree();
 
         public virtual void Load_Collision(BinaryReader reader)
         {
@@ -74,6 +77,13 @@ namespace ThirdParty.OPCODE
 
             CreateTree();
             tree.Load_Collision(reader, platformMismatch);
+        }
+        public virtual void Load_FrameRes(MemoryStream stream, Endian endian)
+        {
+            bool bIsBigEndian = (endian == Endian.Big);
+            modelCode = (ModelFlag)stream.ReadUInt32(bIsBigEndian);
+
+            CreateTree();
         }
 
         /// <summary>
@@ -127,6 +137,12 @@ namespace ThirdParty.OPCODE
             WriteDword((uint)modelCode, writer, platformMismatch);
 
             tree.Save_Collision(writer, platformMismatch);
+        }
+
+        public virtual void Save_FrameRes(MemoryStream stream, Endian endian = Endian.Little)
+        {
+            bool bIsBigEndian = (endian == Endian.Big);
+            stream.Write((int)modelCode, bIsBigEndian);
         }
 
         public virtual uint GetUsedBytes()

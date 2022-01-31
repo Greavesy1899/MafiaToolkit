@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using Utils.Extensions;
+using Utils.VorticeUtils;
 using static ResourceTypes.Collisions.PhysX.SerializationUtils;
 
 namespace ThirdParty.OPCODE
@@ -77,6 +80,47 @@ namespace ThirdParty.OPCODE
             }
         }
 
+        public override void Load_FrameRes(MemoryStream stream, Endian endian)
+        {
+            base.Load_FrameRes(stream, endian);
+
+            bool bIsBigEndian = (endian == Endian.Big);
+
+            // Quantization flag?
+            // Load the AABB tree (should be quantized here)
+            bool bIsQuantized = stream.ReadBoolean();
+            if(bIsQuantized)
+            {
+                tree.Load_FrameRes(stream, endian);
+            }
+
+            // Try and read LeafTriangles.
+            // Data is packed inside a UInt32.
+            uint NumLeafTriangles = stream.ReadUInt32(bIsBigEndian);
+            bool bHasLeafTriangles = stream.ReadBoolean();
+            if(bHasLeafTriangles)
+            {
+                leafTriangles = new List<LeafTriangles>((int)NumLeafTriangles);
+                for(int i = 0; i < NumLeafTriangles; i++)
+                {
+                    LeafTriangles NewLeafTri = (LeafTriangles)stream.ReadUInt32(bIsBigEndian);
+                    leafTriangles.Add(NewLeafTri);
+                }
+            }
+
+            // Try and read Primitive indices
+            uint NumPrimitives = stream.ReadUInt32(bIsBigEndian);
+            bool bHasPrimitives = stream.ReadBoolean();
+            if(bHasPrimitives)
+            {
+                primitiveIndices = new List<uint>((int)NumPrimitives);
+                for (int i = 0; i < NumPrimitives; i++)
+                {
+                    primitiveIndices.Add(stream.ReadUInt32(bIsBigEndian));
+                }
+            }
+        }
+
         public override void Save_Collision(BinaryWriter writer, Endian endian = Endian.Little)
         {
             base.Save_Collision(writer, endian);
@@ -108,6 +152,43 @@ namespace ThirdParty.OPCODE
             if (primitiveIndices.Count > 0)
             {
                 WriteIndices(primitiveIndices, writer, platformMismatch);
+            }
+        }
+
+        public override void Save_FrameRes(MemoryStream stream, Endian endian = Endian.Little)
+        {
+            base.Save_FrameRes(stream, endian);
+
+            bool bIsBigEndian = (endian == Endian.Big);
+
+            // Quantization flag?
+            // Save the AABB tree (should be quantized here)
+            bool bIsQuantized = stream.ReadBoolean();
+            if (bIsQuantized)
+            {
+                tree.Save_FrameRes(stream, endian);
+            }
+
+            // Try and save LeafTriangles.
+            stream.Write(leafTriangles.Count, bIsBigEndian);
+            stream.Write(leafTriangles.Count > 0);
+            if (leafTriangles.Count > 0)
+            {
+                foreach(LeafTriangles LeafTri in leafTriangles)
+                {
+                    stream.Write((uint)LeafTri, bIsBigEndian);
+                }
+            }
+
+            // Try and save Primitive indices
+            stream.Write(primitiveIndices.Count, bIsBigEndian);
+            stream.Write(primitiveIndices.Count > 0);
+            if (primitiveIndices.Count > 0)
+            {
+                foreach (uint index in primitiveIndices)
+                {
+                    stream.Write(index, bIsBigEndian);
+                }
             }
         }
 

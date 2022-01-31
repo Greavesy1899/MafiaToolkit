@@ -5,6 +5,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Utils.Extensions;
+using Utils.VorticeUtils;
 using static ResourceTypes.Collisions.PhysX.SerializationUtils;
 
 namespace ThirdParty.OPCODE
@@ -16,6 +18,9 @@ namespace ThirdParty.OPCODE
 
         /* Save the tree in the format that is required for Collision files. */
         void Save_Collision(BinaryWriter writer, bool endianMismatch = false);
+
+        void Load_FrameRes(MemoryStream stream, Endian endian = Endian.Little);
+        void Save_FrameRes(MemoryStream stream, Endian endian = Endian.Little);
         uint GetUsedBytes();
     }
 
@@ -27,6 +32,16 @@ namespace ThirdParty.OPCODE
         }
 
         public void Save_Collision(BinaryWriter writer, bool endianMismatch = false)
+        {
+            // do nothing
+        }
+
+        public void Load_FrameRes(MemoryStream stream, Endian endian = Endian.Little)
+        {
+            // do nothing
+        }
+
+        public void Save_FrameRes(MemoryStream stream, Endian endian = Endian.Little)
         {
             // do nothing
         }
@@ -67,7 +82,7 @@ namespace ThirdParty.OPCODE
     /// <remarks>
     /// See also original sources (<c>OPC_OptimizedTree.cpp</c>)
     /// </remarks>
-    class AABBQuantizedNoLeafTree : AABBOptimizedTree
+    public class AABBQuantizedNoLeafTree : AABBOptimizedTree
     {
         private IList<AABBQuantizedNoLeafNode> nodes = new List<AABBQuantizedNoLeafNode>();
         private Vector3 centerCoeff = Vector3.One;
@@ -125,6 +140,52 @@ namespace ThirdParty.OPCODE
             WriteFloat(extentsCoeff.Z, writer, endianMismatch);
         }
 
+        public void Load_FrameRes(MemoryStream stream, Endian endian = Endian.Little)
+        {
+            bool bIsBigEndian = (endian == Endian.Big);
+            centerCoeff = Vector3Utils.ReadFromFile(stream, bIsBigEndian);
+            extentsCoeff = Vector3Utils.ReadFromFile(stream, bIsBigEndian);
+
+            // Read QuantizedNoLeaf nodes.
+            uint NumNodes = stream.ReadUInt32(bIsBigEndian);
+            nodes = new List<AABBQuantizedNoLeafNode>((int)NumNodes);
+            for(int i = 0; i < NumNodes; i++)
+            {
+                AABBQuantizedNoLeafNode Node;
+                uint posData = stream.ReadUInt32(bIsBigEndian);
+                uint negData = stream.ReadUInt32(bIsBigEndian);
+                short centerX = stream.ReadInt16(bIsBigEndian);
+                short centerY = stream.ReadInt16(bIsBigEndian);
+                short centerZ = stream.ReadInt16(bIsBigEndian);
+                ushort extentsX = stream.ReadUInt16(bIsBigEndian);
+                ushort extentsY = stream.ReadUInt16(bIsBigEndian);
+                ushort extentsZ = stream.ReadUInt16(bIsBigEndian);
+                //nodes.Add(Node);
+            }
+        }
+
+        public void Save_FrameRes(MemoryStream stream, Endian endian = Endian.Little)
+        {
+            bool bIsBigEndian = (endian == Endian.Big);
+            Vector3Utils.WriteToFile(centerCoeff, stream, bIsBigEndian);
+            Vector3Utils.WriteToFile(extentsCoeff, stream, bIsBigEndian);
+
+            // Write the number of quantized nodes
+            // Then continue with the nodes
+            foreach(AABBQuantizedNoLeafNode Node in nodes)
+            {
+                stream.Write(Node.posData, bIsBigEndian);
+                stream.Write(Node.negData, bIsBigEndian);
+                stream.Write(Node.negData, bIsBigEndian);
+                stream.Write(Node.aabb.centerX, bIsBigEndian);
+                stream.Write(Node.aabb.centerY, bIsBigEndian);
+                stream.Write(Node.aabb.centerZ, bIsBigEndian);
+                stream.Write(Node.aabb.extentsX, bIsBigEndian);
+                stream.Write(Node.aabb.extentsY, bIsBigEndian);
+                stream.Write(Node.aabb.extentsZ, bIsBigEndian);
+            }
+        }
+
         public uint GetUsedBytes()
         {
             return 4 // numNodes
@@ -132,6 +193,5 @@ namespace ThirdParty.OPCODE
                 + 12  // centerCoeff
                 + 12; // extentsCoeff
         }
-
-    };
+    }
 }
