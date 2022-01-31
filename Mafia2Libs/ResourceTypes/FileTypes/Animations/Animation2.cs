@@ -138,7 +138,7 @@ namespace ResourceTypes.Animation2
                 float comp1;
                 {
                     var compBytes = stream.ReadBytes(ComponentSize);
-                    var compi = BitConverter.ToInt32(compBytes);
+                    var compi = BitConverterExtensions.ToInt32(compBytes);
                     var compAbs = BitConverter.Int32BitsToSingle(compi & invSignMask) * maxComponentRecp * RotationScale;
                     var compSign = (compi & signMask) << signShift;
                     compi = BitConverter.SingleToInt32Bits(compAbs) | compSign;
@@ -148,7 +148,7 @@ namespace ResourceTypes.Animation2
                 float comp2;
                 {
                     var compBytes = stream.ReadBytes(ComponentSize);
-                    var compi = BitConverter.ToInt32(compBytes);
+                    var compi = BitConverterExtensions.ToInt32(compBytes);
                     var compAbs = BitConverter.Int32BitsToSingle(compi & invSignMask) * maxComponentRecp * RotationScale;
                     var compSign = (compi & signMask) << signShift;
                     compi = BitConverter.SingleToInt32Bits(compAbs) | compSign;
@@ -158,7 +158,7 @@ namespace ResourceTypes.Animation2
                 float comp3;
                 {
                     var compBytes = stream.ReadBytes(ComponentSize);
-                    var compi = BitConverter.ToInt32(compBytes);
+                    var compi = BitConverterExtensions.ToInt32(compBytes);
                     var compAbs = BitConverter.Int32BitsToSingle(compi & invSignMask) * maxComponentRecp * RotationScale;
                     var compSign = (compi & signMask) << signShift;
                     compi = BitConverter.SingleToInt32Bits(compAbs) | compSign;
@@ -167,7 +167,7 @@ namespace ResourceTypes.Animation2
 
                 var comp4 = (float)Math.Sqrt(1f - comp1 * comp1 - comp2 * comp2 - comp3 * comp3);
                 var selectorBytes = stream.ReadBytes(2);
-                var selector = BitConverter.ToInt32(selectorBytes);
+                var selector = BitConverterExtensions.ToInt32(selectorBytes);
 
                 var quat = selector switch
                 {
@@ -203,7 +203,7 @@ namespace ResourceTypes.Animation2
             {
                 var keyframeOffset = i * positionKeyframeSize;
                 var timeBytes = QuantizedPositionKeyframes[keyframeOffset..(keyframeOffset + 2)];
-                var timeQuantized = BitConverter.ToUInt32(timeBytes);
+                var timeQuantized = BitConverterExtensions.ToInt32(timeBytes);
                 var time = (timeQuantized / (float)maxTimeQuantized) * maxTime;
 
                 var posxBytes = QuantizedPositionKeyframes[(keyframeOffset + 3)..(keyframeOffset + 5)];
@@ -218,15 +218,15 @@ namespace ResourceTypes.Animation2
                 var poszSign = poszBytes[2] & 0x80;
                 poszBytes[2] &= 0x7f;
 
-                var posxabs = BitConverter.ToSingle(posxBytes) * scale;
+                var posxabs = BitConverterExtensions.ToSingle(posxBytes) * scale;
                 var posxi = BitConverter.SingleToInt32Bits(posxabs) | (posxSign << 24);
                 var posx = BitConverter.Int32BitsToSingle(posxi);
 
-                var posyabs = BitConverter.ToSingle(posyBytes) * scale;
+                var posyabs = BitConverterExtensions.ToSingle(posyBytes) * scale;
                 var posyi = BitConverter.SingleToInt32Bits(posyabs) | (posySign << 24);
                 var posy = BitConverter.Int32BitsToSingle(posyi);
 
-                var poszabs = BitConverter.ToSingle(poszBytes) * scale;
+                var poszabs = BitConverterExtensions.ToSingle(poszBytes) * scale;
                 var poszi = BitConverter.SingleToInt32Bits(poszabs) | (poszSign << 24);
                 var posz = BitConverter.Int32BitsToSingle(poszi);
 
