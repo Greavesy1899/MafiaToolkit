@@ -1,7 +1,6 @@
 ﻿using Mafia2Tool;
 using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
-using ResourceTypes.Collisions.Opcode;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using System;
