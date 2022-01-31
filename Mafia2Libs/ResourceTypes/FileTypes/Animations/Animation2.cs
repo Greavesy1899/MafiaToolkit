@@ -202,19 +202,19 @@ namespace ResourceTypes.Animation2
             for (ushort i = 0; i < NumPositionFrames; ++i)
             {
                 var keyframeOffset = i * positionKeyframeSize;
-                var timeBytes = QuantizedPositionKeyframes[keyframeOffset..(keyframeOffset + 2)];
+                var timeBytes = QuantizedPositionKeyframes[keyframeOffset..(keyframeOffset + 3)];
                 var timeQuantized = BitConverterExtensions.ToInt32(timeBytes);
                 var time = (timeQuantized / (float)maxTimeQuantized) * maxTime;
 
-                var posxBytes = QuantizedPositionKeyframes[(keyframeOffset + 3)..(keyframeOffset + 5)];
+                var posxBytes = QuantizedPositionKeyframes[(keyframeOffset + 3)..(keyframeOffset + 6)];
                 var posxSign = posxBytes[2] & 0x80;
                 posxBytes[2] &= 0x7f;
 
-                var posyBytes = QuantizedPositionKeyframes[(keyframeOffset + 6)..(keyframeOffset + 8)];
+                var posyBytes = QuantizedPositionKeyframes[(keyframeOffset + 6)..(keyframeOffset + 9)];
                 var posySign = posyBytes[2] & 0x80;
                 posyBytes[2] &= 0x7f;
 
-                var poszBytes = QuantizedPositionKeyframes[(keyframeOffset + 9)..(keyframeOffset + 11)];
+                var poszBytes = QuantizedPositionKeyframes[(keyframeOffset + 9)..(keyframeOffset + 12)];
                 var poszSign = poszBytes[2] & 0x80;
                 poszBytes[2] &= 0x7f;
 
