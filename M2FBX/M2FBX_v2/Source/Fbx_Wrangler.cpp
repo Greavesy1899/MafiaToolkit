@@ -715,7 +715,7 @@ bool Fbx_Wrangler::SaveDocument()
 	bool bWasSuccessful = false;
 
 	// attempt to initialise
-	if (Exporter->Initialize(FbxName, 1, SdkManager->GetIOSettings()))
+	if (Exporter->Initialize(FbxName, 0, SdkManager->GetIOSettings()))
 	{
 		// attempt to export
 		if (Exporter->Export(Scene))

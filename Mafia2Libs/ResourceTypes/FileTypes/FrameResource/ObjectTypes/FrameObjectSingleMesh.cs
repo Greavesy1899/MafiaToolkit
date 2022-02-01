@@ -196,7 +196,7 @@ namespace ResourceTypes.FrameResource
             return geometry;
         }
 
-        public virtual void CreateMeshFromRawModel(Model NewModel)
+        public virtual void CreateMeshFromRawModel(ModelWrapper NewModel)
         {
             ConstructMaterialObject();
             ConstructGeometryObject();
@@ -205,16 +205,16 @@ namespace ResourceTypes.FrameResource
             NewModel.CreateObjectsFromModel();
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0}", Name);
-        }
-
         public override void ConstructRenderable()
         {
             RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this);
             RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}", Name);
         }
     }
 }

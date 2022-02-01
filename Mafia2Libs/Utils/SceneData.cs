@@ -233,8 +233,8 @@ namespace Mafia2Tool
             VertexBufferPool = new VertexBufferManager(vbps, dirInfo, isBigEndian);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
-            OBJData = obj.ToArray();
-            AIWorlds = aiw.ToArray();
+            //OBJData = obj.ToArray();
+            //AIWorlds = aiw.ToArray();
         }
 
         public static void UpdateResourceType()

@@ -290,7 +290,7 @@ namespace ResourceTypes.FrameResource
             return skeleton;
         }
 
-        public override void CreateMeshFromRawModel(Model NewModel)
+        public override void CreateMeshFromRawModel(ModelWrapper NewModel)
         {
             base.CreateMeshFromRawModel(NewModel);
 

@@ -11,6 +11,8 @@ namespace Utils
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunConvertM2T(string source, string dest, byte extDesc);
         [DllImport("libs/M2FBX.dll")]
+        private static extern int RunConvertMTB(string source, string dest, byte extDesc);
+        [DllImport("libs/M2FBX.dll")]
         private static extern int RunCookTriangleCollision(string source, string dest);
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunCookConvexCollision(string source, string dest);
@@ -25,6 +27,13 @@ namespace Utils
         public static int ConvertM2T(string source, string dest)
         {
             int exitCode = RunConvertM2T(source, dest, (byte)ToolkitSettings.Format);
+            ThrowMessageBox(exitCode);
+            return exitCode;
+        }
+
+        public static int ConvertMTB(string source, string dest)
+        {
+            int exitCode = RunConvertMTB(source, dest, (byte)ToolkitSettings.Format);
             ThrowMessageBox(exitCode);
             return exitCode;
         }

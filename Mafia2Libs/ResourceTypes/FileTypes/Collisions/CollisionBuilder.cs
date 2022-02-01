@@ -1,38 +1,33 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.Collisions;
+using ResourceTypes.ModelHelpers.ModelExporter;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using Utils.Helpers;
-using Utils.Models;
 using Utils.VorticeUtils;
-using static Utils.Models.M2TStructure;
 
 namespace ResourceTypes.Collisions
 {
     public class CollisionModelBuilder
     {
-        public Collision.CollisionModel BuildFromM2TStructure(M2TStructure sourceModel)
+        public Collision.CollisionModel BuildFromMTCollision(string Name, MT_Collision CollisionObject)
         {
             Collision.CollisionModel collisionModel = new Collision.CollisionModel();
-            collisionModel.Hash = FNV64.Hash(sourceModel.Name);
+            collisionModel.Hash = FNV64.Hash(Name);
 
-            Lod modelLod = sourceModel.Lods[0];
-
-            IList<Vector3> vertexList = modelLod.Vertices.Select(v => v.Position).ToList();
+            IList<Vector3> vertexList = CollisionObject.Vertices.ToList();
 
             // Material sections should be unique and sorted by material
-
-            var sortedParts = new SortedDictionary<ushort, List<ModelPart>>(
-                modelLod.Parts
-                    .GroupBy(p => MaterialToIndex(p.Material))
+            var sortedParts = new SortedDictionary<ushort, List<MT_FaceGroup>>(
+                CollisionObject.FaceGroups
+                    .GroupBy(p => CollisionEnumUtils.MaterialNameToIndex(p.Material.Name))
                     .ToDictionary(p => p.Key, p => p.ToList())
             );
             collisionModel.Sections = new List<Collision.Section>(sortedParts.Count);
 
-            IList<TriangleMesh.Triangle> orderedTriangles = new List<TriangleMesh.Triangle>(modelLod.Indices.Length / 3);
+            IList<TriangleMesh.Triangle> orderedTriangles = new List<TriangleMesh.Triangle>(CollisionObject.Indices.Length / 3);
             IList<ushort> materials = new List<ushort>();
 
             foreach (var part in sortedParts)
@@ -42,19 +37,19 @@ namespace ResourceTypes.Collisions
                 {
                     Material = part.Key - 2,
                     Start = orderedTriangles.Count * 3,
-                    NumEdges = (int) sameMaterialParts.Sum(p => p.NumFaces) * 3
+                    NumEdges = (int)sameMaterialParts.Sum(p => p.NumFaces) * 3
                 });
 
                 foreach (var sameMaterialPart in sameMaterialParts)
                 {
-                    var start = (int) sameMaterialPart.StartIndex;
+                    var start = (int)sameMaterialPart.StartIndex;
                     var end = start + sameMaterialPart.NumFaces * 3;
                     for (int ci = start; ci < end; ci += 3)
                     {
                         orderedTriangles.Add(new TriangleMesh.Triangle(
-                            modelLod.Indices[ci],
-                            modelLod.Indices[ci + 1],
-                            modelLod.Indices[ci + 2]
+                            CollisionObject.Indices[ci],
+                            CollisionObject.Indices[ci + 1],
+                            CollisionObject.Indices[ci + 2]
                         ));
                         materials.Add(part.Key);
                     }

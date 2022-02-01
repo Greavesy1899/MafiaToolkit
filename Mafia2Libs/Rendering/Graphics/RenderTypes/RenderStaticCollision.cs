@@ -50,7 +50,7 @@ namespace Rendering.Graphics
             }
             CalculateNormals();
         }
-        public void ConvertCollisionToRender(TriangleMesh triangleMesh)
+        public void ConvertCollisionToRender(ulong CollisionName, TriangleMesh triangleMesh)
         { 
             DoRender = true;
             BoundingBox = triangleMesh.BoundingBox;

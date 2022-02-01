@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net5.0-windows7.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mafia2Tool</RootNamespace>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -114,16 +114,10 @@
     <Compile Update="Controls\MListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Controls\MTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="Controls\RenderOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Controls\TextureEntry.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Controls\FrameResourceAddSceneOption.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Controls\ControlOptionFrameAdd.cs">
@@ -320,5 +314,7 @@ del *.py
 del *.cmd</PostBuildEvent>
     <LangVersion>7.3</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>2.24</AssemblyVersion>
+    <FileVersion>2.24</FileVersion>
   </PropertyGroup>
 </Project>

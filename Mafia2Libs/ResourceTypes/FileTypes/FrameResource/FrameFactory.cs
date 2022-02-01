@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using ResourceTypes.ModelHelpers.ModelExporter;
+using System.Diagnostics;
 using System.IO;
 
 namespace ResourceTypes.FrameResource
@@ -17,48 +18,72 @@ namespace ResourceTypes.FrameResource
             switch (FrameType)
             {
                 case FrameResourceObjectType.Joint:
-                    FrameObjectJoint joint = OwningResource.ConstructFrameAssetOfType<FrameObjectJoint>();
-                    return joint;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectJoint>();
                 case FrameResourceObjectType.SingleMesh:
-                    FrameObjectSingleMesh mesh = OwningResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
-                    return mesh;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
                 case FrameResourceObjectType.Frame:
-                    FrameObjectFrame frame = OwningResource.ConstructFrameAssetOfType<FrameObjectFrame>();
-                    return frame;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectFrame>();
                 case FrameResourceObjectType.Light:
-                    FrameObjectLight light = OwningResource.ConstructFrameAssetOfType<FrameObjectLight>();
-                    return light;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectLight>();
                 case FrameResourceObjectType.Camera:
-                    FrameObjectCamera camera = OwningResource.ConstructFrameAssetOfType<FrameObjectCamera>();
-                    return camera;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectCamera>();
                 case FrameResourceObjectType.Component_U00000005:
-                    FrameObjectComponent_U005 u005 = OwningResource.ConstructFrameAssetOfType<FrameObjectComponent_U005>();
-                    return u005;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectComponent_U005>();
                 case FrameResourceObjectType.Sector:
-                    FrameObjectSector sector = OwningResource.ConstructFrameAssetOfType<FrameObjectSector>();
-                    return sector;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectSector>();
                 case FrameResourceObjectType.Dummy:
-                    FrameObjectDummy dummy = OwningResource.ConstructFrameAssetOfType<FrameObjectDummy>();
-                    return dummy;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectDummy>();
                 case FrameResourceObjectType.ParticleDeflector:
-                    FrameObjectDeflector deflector = OwningResource.ConstructFrameAssetOfType<FrameObjectDeflector>();
-                    return deflector;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectDeflector>();
                 case FrameResourceObjectType.Area:
-                    FrameObjectArea area = OwningResource.ConstructFrameAssetOfType<FrameObjectArea>();
-                    return area;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectArea>();
                 case FrameResourceObjectType.Target:
-                    FrameObjectTarget target = OwningResource.ConstructFrameAssetOfType<FrameObjectTarget>();
-                    return target;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectTarget>();
                 case FrameResourceObjectType.Model:
-                    FrameObjectModel model = OwningResource.ConstructFrameAssetOfType<FrameObjectModel>();
-                    return model;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectModel>();
                 case FrameResourceObjectType.Collision:
-                    FrameObjectCollision collision = OwningResource.ConstructFrameAssetOfType<FrameObjectCollision>();
-                    return collision;
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectCollision>();
                 default:
                     Debug.WriteLine("Missing frame type!");
                     return null;
             }
+        }
+
+        public static FrameObjectBase ConstructFrameByObjectType(MT_ObjectType ObjectType, FrameResource OwningResource)
+        {
+            switch (ObjectType)
+            {
+                case MT_ObjectType.Joint:
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectJoint>();
+                case MT_ObjectType.StaticMesh:
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
+                case MT_ObjectType.Actor:
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectFrame>();
+                //case MT_ObjectType.Light:
+                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectLight>();
+                //case MT_ObjectType.Camera:
+                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectCamera>();
+                //case MT_ObjectType.Component_U00000005:
+                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectComponent_U005>();
+                //case MT_ObjectType.Sector:
+                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectSector>();
+                case MT_ObjectType.Dummy:
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectDummy>();
+                //case MT_ObjectType.ParticleDeflector:
+                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectDeflector>();
+                //case MT_ObjectType.Area:
+                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectArea>();
+                //case MT_ObjectType.Target:
+                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectTarget>();
+                //case MT_ObjectType.Model:
+                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectModel>();
+                case MT_ObjectType.ItemDesc:
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectCollision>();
+                default:
+                    return null;
+            }
+
+            // TODO: Log when failed
         }
     }
 }

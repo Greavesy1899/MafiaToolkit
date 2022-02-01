@@ -48,8 +48,8 @@ namespace Mafia2Tool
             this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddButton = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_ImportFrame = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ImportBundle = new System.Windows.Forms.ToolStripMenuItem();
             this.AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewTopButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewFrontButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -298,8 +298,8 @@ namespace Mafia2Tool
             this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddButton,
             this.Button_ImportFrame,
-            this.AddSceneFolderButton,
-            this.AddCollisionButton});
+            this.Button_ImportBundle,
+            this.AddSceneFolderButton});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
@@ -320,19 +320,19 @@ namespace Mafia2Tool
             this.Button_ImportFrame.Text = "$IMPORT_FRAME";
             this.Button_ImportFrame.Click += new System.EventHandler(this.Button_ImportFrame_OnClicked);
             // 
+            // Button_ImportBundle
+            // 
+            this.Button_ImportBundle.Name = "Button_ImportBundle";
+            this.Button_ImportBundle.Size = new System.Drawing.Size(191, 22);
+            this.Button_ImportBundle.Text = "$IMPORT_BUNDLE";
+            this.Button_ImportBundle.Click += new System.EventHandler(this.Button_ImportBundle_OnClick);
+            // 
             // AddSceneFolderButton
             // 
             this.AddSceneFolderButton.Name = "AddSceneFolderButton";
             this.AddSceneFolderButton.Size = new System.Drawing.Size(191, 22);
             this.AddSceneFolderButton.Text = "$ADD_SCENE_FOLDER";
             this.AddSceneFolderButton.Click += new System.EventHandler(this.AddSceneFolderButton_Click);
-            // 
-            // AddCollisionButton
-            // 
-            this.AddCollisionButton.Name = "AddCollisionButton";
-            this.AddCollisionButton.Size = new System.Drawing.Size(191, 22);
-            this.AddCollisionButton.Text = "$ADD_COLLISION";
-            this.AddCollisionButton.Click += new System.EventHandler(this.AddCollisionButton_Click);
             // 
             // ViewButton
             // 
@@ -501,7 +501,7 @@ namespace Mafia2Tool
             // 
             // MeshBrowser
             // 
-            this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx";
+            this.MeshBrowser.Filter = "Bundle|*.mtb|FBX|*.fbx";
             // 
             // TxtBrowser
             // 
@@ -562,7 +562,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem AddSceneFolderButton;
         private System.Windows.Forms.ToolStripMenuItem ViewOptionProperties;
         private System.Windows.Forms.OpenFileDialog TxtBrowser;
-        private System.Windows.Forms.ToolStripMenuItem AddCollisionButton;
         private System.Windows.Forms.ToolStripStatusLabel Label_FPS;
         private NumericUpDownToolStrip PositionYTool;
         private NumericUpDownToolStrip PositionZTool;
@@ -583,5 +582,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem Button_ImportFrame;
         private System.Windows.Forms.OpenFileDialog FrameBrowser;
         private System.Windows.Forms.ToolStripMenuItem Button_DumpTexture;
+        private System.Windows.Forms.ToolStripMenuItem Button_ImportBundle;
     }
 }

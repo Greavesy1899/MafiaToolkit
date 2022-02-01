@@ -1,91 +1,219 @@
-﻿using System;
-using Utils.Language;
-using Utils.Models;
-using System.Windows.Forms;
+﻿using ResourceTypes.ModelHelpers.ModelExporter;
+using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using Utils.Models;
 
 namespace Forms.EditorControls
 {
     public partial class FrameResourceModelOptions : Form
     {
-        private Dictionary<string, bool> options;
-        public Dictionary<string, bool> Options {
-            get { return options; }
-            set { options = value; }
-        }
+        private MT_ObjectBundle CurrentBundle;
+        private MT_ValidationTracker TrackerObject;
 
-        public FrameResourceModelOptions(VertexFlags flags, int i, bool is32bit)
+        private IImportHelper CurrentHelper;
+
+        public FrameResourceModelOptions(ModelWrapper Wrapper)
         {
             InitializeComponent();
-            Label_BufferType.Visible = is32bit;
-            Init(flags, i);
-            Localise();
+
+            MT_Object Model = Wrapper.ModelObject;
+            TreeView_Objects.Nodes.Add(ConvertObjectToNode(Model));
+
+            // Create a bundle to make it easier to validate
+            CurrentBundle = new MT_ObjectBundle();
+            CurrentBundle.Objects = new MT_Object[1];
+            CurrentBundle.Objects[0] = Model;
+
+            InitiateValidation();
         }
 
-        private void Localise()
+        public FrameResourceModelOptions(MT_ObjectBundle ObjectBundle)
         {
-            buttonCancel.Text = Language.GetString("$CANCEL");
-            buttonContinue.Text = Language.GetString("$CONTINUE");
-            Text = Language.GetString("$MODEL_OPTIONS_TITLE");
-            ModelOptionsText.Text = Language.GetString("$MODEL_OPTIONS_TEXT");
-            ImportNormalBox.Text = Language.GetString("$IMPORT_NORMAL");
-            ImportTangentBox.Text = Language.GetString("$IMPORT_TANGENT");
-            ImportDiffuseBox.Text = Language.GetString("$IMPORT_DIFFUSE");
-            ImportUV1Box.Text = Language.GetString("$IMPORT_UV1");
-            ImportUV2Box.Text = Language.GetString("$IMPORT_UV2");
-            ImportAOBox.Text = Language.GetString("$IMPORT_AO");
-            ImportColor0Box.Text = Language.GetString("$IMPORT_COLOR0");
-            ImportColor1Box.Text = Language.GetString("$IMPORT_COLOR1");
-            FlipUVBox.Text = Language.GetString("$FLIP_UV");
+            InitializeComponent();
+
+            CurrentBundle = ObjectBundle;
+
+            InitiateValidation();
+
+            TreeView_Objects.Nodes.Add(ConvertBundleToNode(ObjectBundle));
         }
 
-        private void Init(VertexFlags flags, int i)
+        private TreeNode ConvertObjectToNode(MT_Object Object)
         {
-            string text = string.Format("{0} LOD: {1}", Language.GetString("$MODEL_OPTIONS_TEXT"), i.ToString());
-            ModelOptionsText.Text = text;
+            TreeNode Root = new TreeNode(Object.ObjectName);
+            Root.Tag = Object;
+            ValidateObject(Root);
 
-            options = new Dictionary<string, bool>();
-            options.Add("NORMALS", false);
-            options.Add("TANGENTS", false);
-            options.Add("DIFFUSE", false);
-            options.Add("UV1", false);
-            options.Add("UV2", false);
-            options.Add("AO", false);
-            options.Add("FLIP_UV", false);
-            options.Add("COLOR0", false);
-            options.Add("COLOR1", false);
+            if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
+            {
+                for (int i = 0; i < Object.Lods.Length; i++)
+                {
+                    TreeNode LodNode = new TreeNode("LOD" + i);
+                    LodNode.Tag = Object.Lods[i];
+                    ValidateObject(LodNode);
+                    Root.Nodes.Add(LodNode);
+                }
+            }
 
-            ImportNormalBox.Enabled = flags.HasFlag(VertexFlags.Normals);
-            ImportTangentBox.Enabled = flags.HasFlag(VertexFlags.Tangent);
-            ImportDiffuseBox.Enabled = flags.HasFlag(VertexFlags.TexCoords0);
-            ImportUV1Box.Enabled = flags.HasFlag(VertexFlags.TexCoords1);
-            ImportUV2Box.Enabled = flags.HasFlag(VertexFlags.TexCoords2);
-            ImportAOBox.Enabled = flags.HasFlag(VertexFlags.ShadowTexture);
-            ImportColor0Box.Enabled = flags.HasFlag(VertexFlags.Color);
-            ImportColor1Box.Enabled = flags.HasFlag(VertexFlags.Color1);
-            FlipUVBox.Enabled = false;
+            if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
+            {
+                TreeNode SCollisionNode = new TreeNode("Static Collision");
+                SCollisionNode.Tag = Object.Collision;
+                ValidateObject(SCollisionNode);
+                Root.Nodes.Add(SCollisionNode);
+            }
+
+            if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))
+            {
+                foreach (MT_Object Child in Object.Children)
+                {
+                    Root.Nodes.Add(ConvertObjectToNode(Child));
+                }
+            }
+
+            return Root;
         }
 
-        public void OnButtonClickContinue(object sender, EventArgs e)
+        private TreeNode ConvertBundleToNode(MT_ObjectBundle Bundle)
+        {
+            TreeNode Root = new TreeNode("Bundle");
+            Root.Tag = Bundle;
+            ValidateObject(Root);
+
+            foreach (MT_Object ObjectInfo in Bundle.Objects)
+            {
+                Root.Nodes.Add(ConvertObjectToNode(ObjectInfo));
+            }
+
+            return Root;
+        }
+
+        private void TreeView_OnAfterSelect(object sender, TreeViewEventArgs e)
+        {
+            e.Node.SelectedImageIndex = e.Node.ImageIndex;
+
+            if (e.Node.Tag is MT_Lod)
+            {
+                MT_LodHelper LodHelper = new MT_LodHelper((MT_Lod)e.Node.Tag);
+                LodHelper.Setup();
+                CurrentHelper = LodHelper;
+                PropertyGrid_Test.SelectedObject = LodHelper;
+
+            }
+            else if (e.Node.Tag is MT_Object)
+            {
+                MT_ObjectHelper ObjectHelper = new MT_ObjectHelper((MT_Object)e.Node.Tag);
+                ObjectHelper.Setup();
+                CurrentHelper = ObjectHelper;
+                PropertyGrid_Test.SelectedObject = ObjectHelper;
+            }
+            else if (e.Node.Tag is MT_Collision)
+            {
+                MT_CollisionHelper ColHelper = new MT_CollisionHelper((MT_Collision)e.Node.Tag);
+                ColHelper.Setup();
+                CurrentHelper = ColHelper;
+                PropertyGrid_Test.SelectedObject = ColHelper;
+            }
+
+            // Get validation messages for object and add to tab
+            ListBox_Validation.Items.Clear();
+            List<string> Messages = TrackerObject.GetObjectMessages((IValidator)e.Node.Tag);
+            foreach (string Message in Messages)
+            {
+                ListBox_Validation.Items.Add(Message);
+            }
+        }
+
+        private void TreeView_OnBeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            TreeNode Selected = TreeView_Objects.SelectedNode;
+
+            if (Selected == null)
+            {
+                return;
+            }
+
+            if (Selected.Tag is MT_Lod)
+            {
+                MT_LodHelper LodHelper = (CurrentHelper as MT_LodHelper);
+                LodHelper.Store();
+
+                string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), "Updated Vertex Flags for LOD");
+                //Label_MessageText.Text = Message;
+            }
+            else if (Selected.Tag is MT_Object)
+            {
+                MT_ObjectHelper ObjectHelper = (CurrentHelper as MT_ObjectHelper);
+                ObjectHelper.Store();
+
+                string Message = string.Format("{0} - Updated Object: {1}", DateTime.Now.ToLongTimeString(), ObjectHelper.ObjectName);
+                //Label_MessageText.Text = Message;
+            }
+            else if (Selected.Tag is MT_Collision)
+            {
+                MT_CollisionHelper CollisionHelper = (CurrentHelper as MT_CollisionHelper);
+                CollisionHelper.Store();
+
+                string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), "Updated COL.");
+                //Label_MessageText.Text = Message;
+            }
+
+            // clear validation box
+            ListBox_Validation.Items.Clear();
+
+            // clear helper
+            CurrentHelper = null;
+        }
+
+        private void ValidateObject(TreeNode CurrentNode)
+        {
+            IValidator ValidationObject = (CurrentNode.Tag as IValidator);
+            if (ValidationObject != null)
+            {
+                bool bIsValid = TrackerObject.IsObjectValid((IValidator)CurrentNode.Tag);
+                CurrentNode.ImageIndex = (bIsValid ? 1 : 0);
+            }
+        }
+
+        private void InitiateValidation()
+        {
+            TrackerObject = new MT_ValidationTracker();
+            CurrentBundle.ValidateObject(TrackerObject);
+
+            Label_DebugMessage.Text = string.Format("MESSAGE DEBUG: {0}", TrackerObject.GetMessageCount());
+        }
+
+        private void Button_Continue_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
-            options["NORMALS"] = ImportNormalBox.Checked;
-            options["TANGENTS"] = ImportTangentBox.Checked;
-            options["DIFFUSE"] = ImportDiffuseBox.Checked;
-            options["UV1"] = ImportUV1Box.Checked;
-            options["UV2"] = ImportUV2Box.Checked;
-            options["AO"] = ImportAOBox.Checked;
-            options["FLIP_UV"] = FlipUVBox.Checked;
-            options["COLOR0"] = ImportColor0Box.Checked;
-            options["COLOR1"] = ImportColor1Box.Checked;
-            DialogResult = DialogResult.OK;
+            CleanupHelper();
             Close();
         }
 
-        public void OnButtonClickCancel(object sender, EventArgs e)
+        private void Button_StopImport_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
+            CleanupHelper();
             Close();
+        }
+
+        private void CleanupHelper()
+        {
+            if (CurrentHelper != null)
+            {
+                CurrentHelper.Store();
+            }
+        }
+
+        private void Button_Validate_Click(object sender, EventArgs e)
+        {
+            InitiateValidation();
+
+            PropertyGrid_Test.SelectedObject = null;
+            TreeView_Objects.Nodes.Clear();
+
+            TreeView_Objects.Nodes.Add(ConvertBundleToNode(CurrentBundle));
         }
     }
 }

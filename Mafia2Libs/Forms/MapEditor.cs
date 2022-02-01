@@ -1,6 +1,5 @@
 ﻿using Forms.Docking;
 using Forms.EditorControls;
-using Gibbed.Illusion.FileFormats.Hashing;
 using Rendering.Core;
 using Rendering.Factories;
 using Rendering.Graphics;
@@ -11,6 +10,7 @@ using ResourceTypes.Collisions;
 using ResourceTypes.FrameNameTable;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
+using ResourceTypes.ModelHelpers.ModelExporter;
 using ResourceTypes.Navigation;
 using ResourceTypes.Navigation.Traffic;
 using System;
@@ -23,7 +23,6 @@ using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Extensions;
 using Utils.Language;
-using Utils.Logging;
 using Utils.Models;
 using Utils.Settings;
 using Utils.VorticeUtils;
@@ -103,7 +102,6 @@ namespace Mafia2Tool
             AddButton.Text = Language.GetString("$ADD");
             Button_ImportFrame.Text = Language.GetString("$IMPORT_FRAME");
             AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
-            AddCollisionButton.Text = Language.GetString("$ADD_COLLISION");
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
         }
@@ -748,7 +746,7 @@ namespace Mafia2Tool
                 {
                     Collision.CollisionModel data = SceneData.Collisions.Models.ElementAt(i).Value;
                     RenderStaticCollision collision = new RenderStaticCollision();
-                    collision.ConvertCollisionToRender(data.Mesh);
+                    collision.ConvertCollisionToRender(data.Hash, data.Mesh);
                     RenderStorageSingleton.Instance.StaticCollisions.Add(SceneData.Collisions.Models.ElementAt(i).Key, collision);
                     TreeNode treeNode = new TreeNode(data.Hash.ToString());
                     treeNode.Text = data.Hash.ToString();
@@ -1028,68 +1026,52 @@ namespace Mafia2Tool
             Graphics.OnSelectedObjectUpdated(this, Arguments);
         }
 
-        private Model LoadModelFromFile()
+        private ModelWrapper LoadModelFromFile()
         {
-            Model model = new Model();
+            ModelWrapper model = new ModelWrapper();
 
             if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
             {
                 return null;
             }
 
-            if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
+            string FileNameExtension = Path.GetExtension(MeshBrowser.FileName);
+            FileNameExtension = FileNameExtension.ToLower();
+
+            if (FileNameExtension.Equals(".fbx"))
             {
-                if (!model.ModelStructure.ReadFromFbx(MeshBrowser.FileName))
-                {
-                    return null;
-                }
+                model.ReadObjectFromFbx(MeshBrowser.FileName);
             }
-            else if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+            else if (FileNameExtension.Equals(".mto"))
             {
-                using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
-                {
-                    model.ModelStructure.ReadFromM2T(reader);
-                }
+                model.ReadObjectFromM2T(MeshBrowser.FileName);
             }
 
-            for (int i = 0; i < model.ModelStructure.Lods.Length; i++)
+            // Let users change their import values
+            FrameResourceModelOptions modelForm = new FrameResourceModelOptions(model);
+            if (modelForm.ShowDialog() != DialogResult.OK)
             {
-                var lod = model.ModelStructure.Lods[i];
-                var is32bit = model.ModelStructure.Lods[i].Over16BitLimit();
-                FrameResourceModelOptions modelForm = new FrameResourceModelOptions(lod.VertexDeclaration, i, is32bit);
-                if (modelForm.ShowDialog() != DialogResult.OK)
-                {
-                    return null;
-                }
-                var options = modelForm.Options;
-                modelForm.Dispose();
-                lod.VertexDeclaration = VertexFlags.Position;
-                lod.VertexDeclaration |= (options["NORMALS"] == true ? VertexFlags.Normals : 0);
-                lod.VertexDeclaration |= (options["TANGENTS"] == true ? VertexFlags.Tangent : 0);
-                lod.VertexDeclaration |= (options["DIFFUSE"] == true ? VertexFlags.TexCoords0 : 0);
-                lod.VertexDeclaration |= (options["UV1"] == true ? VertexFlags.TexCoords1 : 0);
-                lod.VertexDeclaration |= (options["UV2"] == true ? VertexFlags.TexCoords2 : 0);
-                lod.VertexDeclaration |= (options["AO"] == true ? VertexFlags.ShadowTexture : 0);
-                lod.VertexDeclaration |= (options["COLOR0"] == true ? VertexFlags.Color : 0);
-                lod.VertexDeclaration |= (options["COLOR1"] == true ? VertexFlags.Color1 : 0);
+                return null;
             }
+
+            modelForm.Dispose();
 
             return model;
         }
 
-        private void CreateMeshBuffers(Model model)
+        private void CreateMeshBuffers(ModelWrapper model)
         {
             // TODO: I want to move this into FrameObjectSingleMesh.
             FrameGeometry MeshGeometry = model.FrameMesh.Geometry;
 
             for (int i = 0; i < MeshGeometry.NumLods; i++)
             {
-               bool bAdded = SceneData.VertexBufferPool.TryAddBuffer(model.VertexBuffers[i]);
-               bAdded = SceneData.IndexBufferPool.TryAddBuffer(model.IndexBuffers[i]);
+                bool bAdded = SceneData.VertexBufferPool.TryAddBuffer(model.VertexBuffers[i]);
+                bAdded = SceneData.IndexBufferPool.TryAddBuffer(model.IndexBuffers[i]);
             }
         }
 
-        private void CreateNewEntry(FrameResourceObjectType SelectedType, string name, bool addToNameTable)
+        private void CreateNewEntry(FrameResourceObjectType SelectedType, string name, bool bAddToNameTable)
         {
             FrameObjectBase frame = FrameFactory.ConstructFrameByObjectID(SceneData.FrameResource, SelectedType);
 
@@ -1099,11 +1081,10 @@ namespace Mafia2Tool
                 return;
             }
 
-
             Debug.Assert(frame != null, "Frame was null!");
 
             frame.Name.Set(name);
-            frame.IsOnFrameTable = addToNameTable;
+            frame.IsOnFrameTable = bAddToNameTable;
             TreeNode node = new TreeNode(frame.Name.String);
             node.Tag = frame;
             node.Name = frame.RefID.ToString();
@@ -1111,7 +1092,7 @@ namespace Mafia2Tool
             if (frame is FrameObjectSingleMesh)
             {
                 FrameObjectSingleMesh SingleMesh = (frame as FrameObjectSingleMesh);
-                Model LoadedModel = LoadModelFromFile();
+                ModelWrapper LoadedModel = LoadModelFromFile();
 
                 if (LoadedModel == null)
                 {
@@ -1129,7 +1110,7 @@ namespace Mafia2Tool
             dSceneTree.AddToTree(node, frameResourceRoot);
 
             IRenderer renderer = BuildRenderObjectFromFrame(frame);
-            if(renderer != null)
+            if (renderer != null)
             {
                 Graphics.InitObjectStack.Add(frame.RefID, renderer);
             }
@@ -1555,73 +1536,62 @@ namespace Mafia2Tool
         private void Export3DButton_Click(object sender, EventArgs e)
         {
             if (dSceneTree.SelectedNode.Tag.GetType() == typeof(Collision.CollisionModel))
+            {
                 ExportCollision(dSceneTree.SelectedNode.Tag as Collision.CollisionModel);
+            }
             else
+            {
                 Export3DFrame();
+            }
         }
 
         private void ExportCollision(Collision.CollisionModel data)
         {
-            M2TStructure structure = new M2TStructure();
-            structure.BuildCollision(data, dSceneTree.SelectedNode.Name);
-            structure.ExportCollisionToM2T(ToolkitSettings.ExportPath, data.Hash.ToString());
+            MT_Object CollisionObject = new MT_Object();
+            CollisionObject.BuildFromCollision(data);
 
-            if (ToolkitSettings.Format != 2)
-            {
-                structure.ExportToFbx(ToolkitSettings.ExportPath, false);
-            }
+            ModelWrapper WrapperObject = new ModelWrapper();
+            WrapperObject.ModelObject = CollisionObject;
+            WrapperObject.ExportObject();
         }
+
         private void Export3DFrame()
         {
-            var tag = dSceneTree.SelectedNode.Tag;
-            FrameObjectSingleMesh model;
-            if(tag is FrameObjectSingleMesh)
-            {
-                model = (tag as FrameObjectSingleMesh);
-            }
-            else
-            {
-                //enter message here
-                return;
-            }
+            FrameObjectBase FrameObject = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
+            ModelWrapper ModelWrapperObject = null;
 
-            IndexBuffer[] indexBuffers = new IndexBuffer[model.Geometry.LOD.Length];
-            VertexBuffer[] vertexBuffers = new VertexBuffer[model.Geometry.LOD.Length];
+            if (FrameObject is FrameObjectSingleMesh)
+            {
+                FrameObjectSingleMesh SingleMesh = (FrameObject as FrameObjectSingleMesh);
+                IndexBuffer[] indexBuffers = new IndexBuffer[SingleMesh.Geometry.LOD.Length];
+                VertexBuffer[] vertexBuffers = new VertexBuffer[SingleMesh.Geometry.LOD.Length];
 
-            //we need to retrieve buffers first.
-            for (int c = 0; c != model.Geometry.LOD.Length; c++)
-            {
-                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(model.Geometry.LOD[c].IndexBufferRef.Hash);
-                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(model.Geometry.LOD[c].VertexBufferRef.Hash);
-            }
-
-            Model newModel = null;
-            if (tag is FrameObjectModel)
-            {
-                newModel = new Model(tag as FrameObjectModel, indexBuffers, vertexBuffers);
-            }
-            else
-            {
-                newModel = new Model(tag as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
-            }
-
-            for (int c = 0; c != newModel.ModelStructure.Lods.Length; c++)
-            {
-                newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
-                switch (ToolkitSettings.Format)
+                //we need to retrieve buffers first.
+                for (int c = 0; c != SingleMesh.Geometry.LOD.Length; c++)
                 {
-                    case 0:
-                        newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
-                        break;
-                    case 1:
-                        newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
-                        break;
-                    case 2:
-                        newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
-                        break;
-                    default:
-                        break;
+                    indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(SingleMesh.Geometry.LOD[c].IndexBufferRef.Hash);
+                    vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(SingleMesh.Geometry.LOD[c].VertexBufferRef.Hash);
                 }
+
+                // Construct wrapper (based on model)
+                if (FrameObject is FrameObjectModel)
+                {
+                    ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectModel, indexBuffers, vertexBuffers);
+                }
+                else
+                {
+                    ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
+                }
+            }
+            else
+            {
+                ModelWrapperObject = new ModelWrapper(FrameObject);
+            }
+
+            // Make sure it's actually valid
+            if (ModelWrapperObject != null)
+            {
+                ModelWrapperObject.ExportObject();
             }
         }
 
@@ -1641,45 +1611,15 @@ namespace Mafia2Tool
 
         private void AddSceneFolderButton_Click(object sender, EventArgs e)
         {
-            var scene = SceneData.FrameResource.AddSceneFolder("sceneNew");
+            var scene = SceneData.FrameResource.AddSceneFolder("NEW_SCENE");
             TreeNode node = new TreeNode(scene.ToString());
             node.Tag = scene;
             node.Name = scene.RefID.ToString();
             dSceneTree.AddToTree(node, frameResourceRoot);
         }
 
-        private void AddRoadSplineButton_Click(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap == null)
-                return;
-        }
-
-        private void AddSplineTxT_Click(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap == null)
-                return;
-        }
-
-        private void AddJunctionOnClick(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap == null)
-                return;
-        }
-
-        private void EditUnkSet3Click(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap != null)
-                dPropertyGrid.SetObject(SceneData.roadMap);
-        }
-
-        private void AddTowardClick(object sender, EventArgs e)
-        {
-        }
-
-        private void AddBackwardClick(object sender, EventArgs e)
-        {
-        }
-
+        // TODO: Need to cleanup this function, it's atrocious.
+        // TODO: This function is no longer used, I need to find a new home for this SceneData.Collisions construction.
         private void AddCollisionButton_Click(object sender, EventArgs e)
         {
             // Check if we need to create a collisions folder
@@ -1702,43 +1642,18 @@ namespace Mafia2Tool
                     return;
                 }
             }
+        }
 
-            // Try and select a model
-            if (MeshBrowser.ShowDialog() != DialogResult.OK)
-            {
-                MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Read M2T file
-            M2TStructure m2tColModel = new M2TStructure();
-            if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
-            {
-                using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
-                {
-                    m2tColModel.ReadFromM2T(reader);
-                }
-            }
-            else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
-            {
-                m2tColModel.ReadFromFbx(MeshBrowser.FileName);
-            }
-
-            // If we have no LODs, crash happened.
-            if (m2tColModel.Lods[0] == null)
-            {
-                MessageBox.Show("Failed to load model! No LOD[0] is present.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            ulong CollisionHash = FNV64.Hash(m2tColModel.Name);
+        // TODO: Cleanup this function, it's atrocious.
+        private Collision.Placement AddCollision(Collision.CollisionModel collisionModel)
+        {
+            ulong CollisionHash = collisionModel.Hash;
             Collision.CollisionModel CollisionModel = null;
-            if(!SceneData.Collisions.Models.ContainsKey(CollisionHash))
+            if (!SceneData.Collisions.Models.ContainsKey(CollisionHash))
             {
                 // Create a new renderable for collision object
-                Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
                 RenderStaticCollision collision = new RenderStaticCollision();
-                collision.ConvertCollisionToRender(collisionModel.Mesh);
+                collision.ConvertCollisionToRender(collisionModel.Hash, collisionModel.Mesh);
                 RenderStorageSingleton.Instance.StaticCollisions.TryAdd(collisionModel.Hash, collision);
 
                 // Push it onto the collisions dictionary
@@ -1782,6 +1697,7 @@ namespace Mafia2Tool
             child.Name = refID.ToString();
             child.Tag = placement;
             dSceneTree.AddToTree(child, ExistingCollisionNode);
+            dSceneTree.SelectedNode = child;
 
             // Complete it
             RenderInstance instance = new RenderInstance();
@@ -1789,6 +1705,8 @@ namespace Mafia2Tool
             instance.SetTransform(placement.Transform);
             Graphics.InitObjectStack.Add(refID, instance);
             SceneData.Collisions.Placements.Add(placement);
+
+            return placement;
         }
 
         private void CameraToolsOnValueChanged(object sender, EventArgs e)
@@ -1997,6 +1915,103 @@ namespace Mafia2Tool
             PositionXTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
             PositionYTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
             PositionZTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
+        }
+
+        private void Button_ImportBundle_OnClick(object sender, EventArgs e)
+        {
+            if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            MT_ObjectBundle BundleObject = MT_ObjectHandler.ReadBundleFromFile(MeshBrowser.FileName);
+            if (BundleObject == null)
+            {
+                return;
+            }
+
+            // Let users change their import values
+            FrameResourceModelOptions modelForm = new FrameResourceModelOptions(BundleObject);
+            DialogResult Result = modelForm.ShowDialog();
+            modelForm.Dispose();
+            if (Result != DialogResult.OK)
+            {
+                return;
+            }
+
+            foreach (MT_Object ModelObject in BundleObject.Objects)
+            {
+                ConstructFrameFromImportedObject(ModelObject, frameResourceRoot);
+            }
+        }
+
+        private void ConstructFrameFromImportedObject(MT_Object ObjectInfo, TreeNode Parent)
+        {
+            ModelWrapper Wrapper = new ModelWrapper();
+            Wrapper.ModelObject = ObjectInfo;
+
+            // Prep for frame node
+            TreeNode FrameNode = null;
+
+            // Convert object into SingleMesh
+            FrameObjectBase NewFrame = FrameFactory.ConstructFrameByObjectType(ObjectInfo.ObjectType, SceneData.FrameResource);
+            if (NewFrame != null)
+            {
+                // Set other MetaInfo
+                Matrix4x4 LocalTransform = MatrixUtils.SetMatrix(ObjectInfo.Rotation, ObjectInfo.Scale, ObjectInfo.Position);
+                NewFrame.LocalTransform = LocalTransform;
+                NewFrame.Name.Set(ObjectInfo.ObjectName);
+
+                // Construct mesh (if applicable)
+                if (ObjectInfo.ObjectType == MT_ObjectType.StaticMesh)
+                {
+                    FrameObjectSingleMesh NewMesh = (NewFrame as FrameObjectSingleMesh);
+                    NewMesh.CreateMeshFromRawModel(Wrapper);
+                    CreateMeshBuffers(Wrapper);
+                }
+                else if (ObjectInfo.ObjectType == MT_ObjectType.RiggedMesh)
+                {
+                    FrameObjectModel NewMesh = (NewFrame as FrameObjectModel);
+                    NewMesh.CreateMeshFromRawModel(Wrapper);
+                    CreateMeshBuffers(Wrapper);
+                }
+
+                // Construct TreeNode
+                FrameNode = new TreeNode(NewFrame.Name.ToString());
+                FrameNode.Tag = NewFrame;
+                FrameNode.Name = NewFrame.RefID.ToString();
+                dSceneTree.AddToTree(FrameNode, Parent);
+
+                FrameEntry ParentEntry = (Parent.Tag as FrameEntry);
+                if (ParentEntry != null)
+                {
+                    SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, ParentEntry);
+                    SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex1, NewFrame, ParentEntry);
+                }
+
+                // Construct renderer and add to stack
+                IRenderer Renderer = BuildRenderObjectFromFrame(NewFrame);
+                if (Renderer != null)
+                {
+                    Graphics.InitObjectStack.Add(NewFrame.RefID, Renderer);
+                }
+            }
+
+            if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
+            {
+                Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromMTCollision(ObjectInfo.ObjectName, ObjectInfo.Collision);
+                Collision.Placement Placement = AddCollision(collisionModel);
+                Placement.Position = ObjectInfo.Position;
+                Placement.RotationDegrees = ObjectInfo.Rotation;
+            }
+
+            if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))
+            {
+                foreach (MT_Object Child in ObjectInfo.Children)
+                {
+                    ConstructFrameFromImportedObject(Child, FrameNode);
+                }
+            }
         }
     }
 }

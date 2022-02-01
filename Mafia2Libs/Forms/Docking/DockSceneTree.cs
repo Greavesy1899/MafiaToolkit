@@ -207,18 +207,18 @@ namespace Forms.Docking
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
-                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || 
-                    TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) ||                   
-                    TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
+
+                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
                 {
                     EntryMenuStrip.Items[3].Visible = true;
                 }
 
                 if (FrameResource.IsFrameType(TreeView_Explorer.SelectedNode.Tag))
                 {
+                    EntryMenuStrip.Items[3].Visible = true;
                     EntryMenuStrip.Items[4].Visible = true;
 
-                    if(TreeView_Explorer.SelectedNode.Tag is FrameObjectFrame)
+                    if (TreeView_Explorer.SelectedNode.Tag is FrameObjectFrame)
                     {
                         FrameActions.DropDownItems[3].Visible = true;
                     }
