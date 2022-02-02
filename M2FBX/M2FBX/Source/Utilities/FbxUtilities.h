@@ -16,5 +16,8 @@ public:
 
 	static bool FindInString(const FbxString& Text, const FbxString& StringToFind);
 	
+	// TODO: Find a new home for this. Perhaps generalised utlity header?
 
+	// Convert string to FNV64 hash.
+	static uint64_t FNV64_Hash(const std::string& Text);
 };

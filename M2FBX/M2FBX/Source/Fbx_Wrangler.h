@@ -2,6 +2,8 @@
 
 #include "Common.h"
 
+#include <map>
+
 class MT_Collision;
 class MT_FaceGroup;
 class MT_MaterialInstance;
@@ -60,6 +62,10 @@ private:
 
 	// MTO related
 	MT_Object* LoadedObject = nullptr;
+
+	// Cached managers
+	std::map<uint64_t, FbxSurfacePhong*> MaterialLookup;
+	std::map<uint64_t, FbxTexture*> TextureLookup;
 
 	// Fbx related
 	FbxManager* SdkManager = nullptr;

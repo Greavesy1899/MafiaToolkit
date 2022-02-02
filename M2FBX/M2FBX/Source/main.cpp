@@ -58,6 +58,8 @@ int main(int argc, char** argv)
 	{
 		Fbx_Wrangler* Wrangler = new Fbx_Wrangler(argv[2], argv[3]);
 		Wrangler->ConvertObjectToFbx();
+		delete Wrangler;
+		Wrangler = nullptr;
 	}
 	else
 	{

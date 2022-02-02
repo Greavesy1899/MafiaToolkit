@@ -49,6 +49,9 @@ Fbx_Wrangler::~Fbx_Wrangler()
 		Logger = nullptr;
 	}
 
+	MaterialLookup.clear();
+	TextureLookup.clear();
+
 	Fbx_Utilities::DestroySdkObjects(SdkManager, true);
 }
 
@@ -621,6 +624,14 @@ FbxGeometryElementMaterial* Fbx_Wrangler::CreateMaterialElement(FbxMesh* pMesh, 
 
 FbxSurfacePhong* Fbx_Wrangler::CreateMaterial(const MT_MaterialInstance& MaterialInstance)
 {
+	// Check if the Material exists first.
+	// We don't want to duplicate Materials (otherwise Blender has tantrums)
+	const uint64_t MaterialHash = Fbx_Utilities::FNV64_Hash(MaterialInstance.GetName());
+	if (MaterialLookup.find(MaterialHash) != MaterialLookup.end())
+	{
+		return MaterialLookup[MaterialHash];
+	}
+
 	const FbxString& MaterialName = MaterialInstance.GetName().data();
 	const FbxString& ShadingName = "Phong";
 
@@ -636,6 +647,8 @@ FbxSurfacePhong* Fbx_Wrangler::CreateMaterial(const MT_MaterialInstance& Materia
 			NewMaterial->Diffuse.ConnectSrcObject(CreateTexture(MaterialInstance.GetTextureName()));
 		}
 
+		MaterialLookup.insert({ MaterialHash, NewMaterial });
+
 		return NewMaterial;
 	}
 
@@ -644,6 +657,14 @@ FbxSurfacePhong* Fbx_Wrangler::CreateMaterial(const MT_MaterialInstance& Materia
 
 FbxTexture* Fbx_Wrangler::CreateTexture(const std::string& Name)
 {
+	// Check if the Texture exists first.
+	// We don't want to duplicate Materials (otherwise Blender has tantrums)
+	const uint64_t TextureHash = Fbx_Utilities::FNV64_Hash(Name);
+	if (TextureLookup.find(TextureHash) != TextureLookup.end())
+	{
+		return TextureLookup[TextureHash];
+	}
+
 	FbxFileTexture* NewTexture = FbxFileTexture::Create(SdkManager, Name.data());
 	const FbxString& Path = FbxGetApplicationDirectory();
 	const FbxString& TextureString = Name.data();
@@ -660,6 +681,7 @@ FbxTexture* Fbx_Wrangler::CreateTexture(const std::string& Name)
 	NewTexture->SetScale(1.0, 1.0);
 	NewTexture->SetRotation(0.0, 0.0);
 
+	TextureLookup.insert({ TextureHash, NewTexture });
 	return NewTexture;
 }
 
@@ -705,12 +727,6 @@ bool Fbx_Wrangler::SaveDocument()
 	IOS_REF.SetBoolProp(EXP_FBX_EMBEDDED, false);
 	IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, false);
 	IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
-
-	// Force set axis system
-	FbxGlobalSettings& GlobalSettings = Scene->GetGlobalSettings();
-	GlobalSettings.SetAxisSystem(FbxAxisSystem::eMax);
-	GlobalSettings.SetSystemUnit(FbxSystemUnit::cm);
-
 
 	bool bWasSuccessful = false;
 

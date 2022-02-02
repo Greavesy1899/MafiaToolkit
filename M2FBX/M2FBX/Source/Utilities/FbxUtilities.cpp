@@ -40,3 +40,17 @@ bool Fbx_Utilities::FindInString(const FbxString& Text, const FbxString& StringT
 	bool bIsFound = Result != std::string::npos;
 	return bIsFound;
 }
+
+static const uint64_t Initial = 0xCBF29CE484222325;
+uint64_t Fbx_Utilities::FNV64_Hash(const std::string& Text)
+{
+	uint64_t Hash = Initial;
+
+	for (size_t i = 0; i < Text.size(); i++)
+	{
+		Hash *= 0x00000100000001B3;
+		Hash ^= Text[i];
+	}
+
+	return Hash;
+}
