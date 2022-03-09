@@ -47,7 +47,7 @@ namespace Mafia2Tool
 
         private void BuildData()
         {
-            actors = new Actor(actorFile.FullName);
+            actors = new Actor(actorFile);
             definitions = new TreeNode("Definitions");
             items = new TreeNode("Entities");
 

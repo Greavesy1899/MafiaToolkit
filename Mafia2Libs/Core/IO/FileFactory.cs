@@ -64,6 +64,8 @@ namespace Core.IO
                     return new FilePCK(info);
                 case "BNK":
                     return new FileBNK(info);
+                case "STBL":
+                    return new FileSoundTable(info);
                 default:
                     return new FileBase(info);
             }

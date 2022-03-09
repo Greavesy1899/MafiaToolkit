@@ -34,6 +34,67 @@ void Fbx_Utilities::DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
 #endif _DEBUG
 }
 
+void Fbx_Utilities::ConvertToOppositeSerialization(const char* Source, const char* Dest)
+{
+	FbxManager* SdkManager = nullptr;
+
+	Fbx_Utilities::InitializeSdkObjects(SdkManager);
+	if (SdkManager)
+	{
+		FbxImporter* Importer = FbxImporter::Create(SdkManager, "");
+		FBX_ASSERT(Importer);
+
+		// Attempt to initialise the scene
+		if (!Importer->Initialize(Source, -1, SdkManager->GetIOSettings()))
+		{
+			return;
+		}
+
+		// move imported data into scene
+		FbxScene* Scene = FbxScene::Create(SdkManager, "Scene");
+		if (!Scene)
+		{
+			return;
+		}
+
+		// Attempt to import the scene
+		if (!Importer->Import(Scene))
+		{
+			return;
+		}
+
+		const int ExportFormat = (Importer->GetFileFormat() == 1 ? 0 : 1);
+
+		// destroy importer
+		Importer->Destroy();
+		Importer = nullptr;
+
+		FbxExporter* Exporter = FbxExporter::Create(SdkManager, "");
+
+		// Set the export states. By default, the export states are always set to 
+		// true except for the option eEXPORT_TEXTURE_AS_EMBEDDED. The code below 
+		// shows how to change these states.
+		IOS_REF.SetBoolProp(EXP_FBX_MATERIAL, true);
+		IOS_REF.SetBoolProp(EXP_FBX_TEXTURE, true);
+		IOS_REF.SetBoolProp(EXP_FBX_EMBEDDED, false);
+		IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, false);
+		IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
+
+		// attempt to initialise
+		if (Exporter->Initialize(Dest, 0, SdkManager->GetIOSettings()))
+		{
+			// attempt to export
+			Exporter->Export(Scene);
+
+			// destroy
+			Exporter->Destroy();
+			Exporter = nullptr;
+		}
+
+		Fbx_Utilities::DestroySdkObjects(SdkManager, true);
+	}
+}
+
 bool Fbx_Utilities::FindInString(const FbxString& Text, const FbxString& StringToFind)
 {
 	int Result = Text.Find(StringToFind);

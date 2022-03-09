@@ -12,6 +12,7 @@ using ResourceTypes.Materials;
 using System.Numerics;
 using Vortice.Mathematics;
 using Utils.VorticeUtils;
+using System.Diagnostics;
 
 namespace Utils.Models
 {
@@ -89,6 +90,13 @@ namespace Utils.Models
             frameMesh = Mesh;
         }
 
+        private float GetMaxInverted(float Val1, float Val2)
+        {
+            float AbsVal1 = MathF.Abs(Val1);
+            float AbsVal2 = MathF.Abs(Val2);
+            return -MathF.Max(AbsVal1, AbsVal2);
+        }
+
         /// <summary>
         /// Update decompression offset and position.
         /// </summary>
@@ -96,26 +104,27 @@ namespace Utils.Models
         {
             FrameGeometry frameGeometry = frameMesh.Geometry;
 
-            float minFloatf = 0.000016f;
-            Vector3 minFloat = new Vector3(minFloatf);
-
             BoundingBox bounds = new BoundingBox();
-            bounds.SetMinimum(frameMesh.Boundings.Minimum - minFloat);
-            bounds.SetMaximum(frameMesh.Boundings.Maximum - minFloat);
+            bounds.SetMinimum(frameMesh.Boundings.Minimum);
+            bounds.SetMaximum(frameMesh.Boundings.Maximum);
             frameGeometry.DecompressionOffset = new Vector3(bounds.Minimum.X, bounds.Minimum.Y, bounds.Minimum.Z);
 
-            double MaxX = bounds.Maximum.X - bounds.Minimum.X + minFloatf;
-            double MaxY = bounds.Maximum.Y - bounds.Minimum.Y + minFloatf;
-            double MaxZ = bounds.Maximum.Z - bounds.Minimum.Z + minFloatf;
+            double MaxX = bounds.Maximum.X - bounds.Minimum.X;
+            double MaxY = bounds.Maximum.Y - bounds.Minimum.Y;
+            double MaxZ = bounds.Maximum.Z - bounds.Minimum.Z;
+
+            float Max = (float)Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
+            frameGeometry.DecompressionFactor = Max / 0xFFFF;
 
             double fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
             Console.WriteLine("Decompress value before: " + fMaxSize);
             double result = Math.Log(fMaxSize) / Math.Log(2.0f);
             double pow = Math.Ceiling(result);
             double factor = Math.Pow(2.0f, pow);
-            frameGeometry.DecompressionFactor = (float)(factor / 0x10000);
+            float OldOutput = (float)(factor / 0x10000);
+            float NewOutput = frameGeometry.DecompressionFactor;
 
-            Console.WriteLine("Using decompression value from: " + fMaxSize + " result is: " + frameGeometry.DecompressionFactor);
+            Debug.WriteLine(string.Format("{0} => {1}", OldOutput, NewOutput));
         }
 
         public void BuildIndexBuffer()

@@ -18,9 +18,17 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public MT_MaterialInstance()
         {
-            Name = "";
-            DiffuseTexture = "";
+            Name = String.Empty;
+            DiffuseTexture = String.Empty;
         }
+
+        public MT_MaterialInstance(MT_MaterialInstance Other)
+        {
+            MaterialFlags = Other.MaterialFlags;
+            Name = Other.Name;
+            DiffuseTexture = Other.DiffuseTexture;
+        }
+
 
         protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
         {

@@ -202,7 +202,7 @@ namespace ResourceTypes.Collisions
                     //vec.X = ((vec.X + vec.Y) * -1);
                     vec.Y = ((vec.X + vec.Y) * -1);
                     vec.X = 0.0f;
-                    vec.Z = /*Unk5 != 128 ? MathUtil.RadiansToDegrees(Rotation.Z) : */-MathHelper.ToRadians(Rotation.Z);
+                    vec.Z = /*Unk5 != 128 ? MathUtil.RadiansToDegrees(Rotation.Z) : */-MathHelper.ToDegrees(Rotation.Z);
                     return vec;
                 }
                 set {

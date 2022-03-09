@@ -4,8 +4,8 @@
 
 #include "MTObject/MT_FaceGroup.h"
 
-#include <vector>
 #include <map>
+#include <vector>
 
 class MT_Collision;
 class MT_Object;
@@ -40,8 +40,18 @@ private:
 	bool SetupFbxManager();
 	bool SetupImporter();
 
-	void ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std::vector<Int3>* Indices, std::vector<MT_FaceGroup>* FaceGroups);
+	// Construct the mesh data from the FbxNode (expected to be an FbxMesh).
+	void ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std::vector<Vertex>* Vertices, std::vector<Int3>* Indices, std::vector<MT_FaceGroup>* FaceGroups);
+
+	// Construct a Vertex from the passed FbxMesh. Based on the layers Reference/Mapping mode, we will either use the ControlPointIndex OR the PolygonIndex.
+	// Make sure both are correct setup otherwise you may see some wonky mesh outputs.
+	void ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPointIndex, uint32_t PolygonIndex, Vertex& OutVertex);
+
+	// Get the UVElement by index. Based on how we order each UV in the format.
 	FbxGeometryElementUV* GetUVElementByIndex(FbxMesh* Mesh, uint ElementType) const;
+
+	// Update the LodObject vertex declaration based on the passed FbxMesh.
+	void UpdateVertexDeclaration(FbxMesh* InMesh, MT_Lod& LodObject) const;
 
 	const char* MTOName;
 	const char* FbxName;

@@ -139,16 +139,10 @@ namespace Mafia2Tool
             FileIsNotEdited();
         }
 
-        private void Delete()
-        {
-            if (GirdView_Materials.SelectedCells[0] == null || !Panel_Main.Visible)
-            {
-                return;
-            }
-
-            int index = GirdView_Materials.SelectedCells[0].RowIndex;
-            mtl.Materials.Remove((GirdView_Materials.Rows[index].Tag as IMaterial).GetMaterialHash());
-            GirdView_Materials.Rows.RemoveAt(index);
+        private void Delete(int RowIndex)
+        {         
+            mtl.Materials.Remove((GirdView_Materials.Rows[RowIndex].Tag as IMaterial).GetMaterialHash());
+            GirdView_Materials.Rows.RemoveAt(RowIndex);
 
             FileIsEdited();
         }
@@ -428,6 +422,13 @@ namespace Mafia2Tool
                 GirdView_Materials.ClearSelection();
                 MaterialGrid.SelectedObject = null;
             }
+            else if(e.KeyCode == Keys.Delete)
+            {
+                foreach(DataGridViewRow Row in GirdView_Materials.SelectedRows)
+                {
+                    Delete(Row.Index);
+                }
+            }
             else if (e.Control && e.KeyCode == Keys.F)
             {
                 MaterialSearch.Focus();
@@ -461,8 +462,17 @@ namespace Mafia2Tool
 
         private void Button_Save_Click(object sender, EventArgs e) => Save();
         private void Button_AddMaterial_Click(object sender, EventArgs e) => AddMaterial();
-        private void Button_Delete_Click(object sender, EventArgs e) => Delete();
         private void Button_Reload_Click(object sender, EventArgs e) => Reload();
+        private void Button_Delete_Click(object sender, EventArgs e)
+        {
+            if (GirdView_Materials.SelectedCells[0] == null || !Panel_Main.Visible)
+            {
+                return;
+            }
+
+            int Index = GirdView_Materials.SelectedCells[0].RowIndex;
+            Delete(Index);
+        }
 
         private void MaterialEditor_Closing(object sender, FormClosingEventArgs e)
         {

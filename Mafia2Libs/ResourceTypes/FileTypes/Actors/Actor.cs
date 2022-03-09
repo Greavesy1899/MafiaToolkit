@@ -36,10 +36,26 @@ namespace ResourceTypes.Actors
             set { extraData = value; }
         }
 
-        public Actor(string file)
+        public Actor() : base()
         {
-            fileName = file;
-            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            definitions = new List<ActorDefinition>();
+            items = new List<ActorEntry>();
+            extraData = new List<ActorExtraData>();
+        }
+
+        public Actor(string InFilename) : this()
+        {
+            fileName = InFilename;
+
+            const16 = 16;
+            const2 = 2;
+            const6 = 6;
+        }
+
+        public Actor(FileInfo InFileInfo)
+        {
+            fileName = InFileInfo.FullName;
+            using (BinaryReader reader = new BinaryReader(File.Open(InFileInfo.FullName, FileMode.Open)))
             {
                 ReadFromFile(reader);
             }
@@ -226,7 +242,9 @@ namespace ResourceTypes.Actors
         {
             Sanitize();
             pool = BuildDefinitions();
-            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Open)))
+
+            // Write the file
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Create)))
             {
                 WriteToFile(writer);
             }

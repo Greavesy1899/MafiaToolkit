@@ -84,13 +84,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public int GetMessageCount()
         {
             int CurrentCount = 0;
-            foreach(var Entry in Messages)
+            foreach(List<string> Entry in Messages.Values)
             {
-                CurrentCount += Entry.Value.Count;
+                CurrentCount += Entry.Count;
             }
 
             return CurrentCount;
         }
+
         public List<string> GetObjectMessages(IValidator ObjectToCheck)
         {
             return InternalGetObjectMessages(ObjectToCheck);

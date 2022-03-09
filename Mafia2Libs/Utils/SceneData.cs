@@ -21,6 +21,7 @@ using ResourceTypes.Misc;
 using Utils.Types;
 using System.Diagnostics;
 using Utils.Models;
+using System.Linq;
 
 namespace Mafia2Tool
 {
@@ -99,7 +100,11 @@ namespace Mafia2Tool
                 {
                     try
                     {
-                        act.Add(new Actor(item));
+                        if(File.Exists(item))
+                        {
+                            FileInfo NewFileInfo = new FileInfo(item);
+                            act.Add(new Actor(NewFileInfo));
+                        }              
                     }
                     catch (Exception ex)
                     {
@@ -223,8 +228,8 @@ namespace Mafia2Tool
             {
                 var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
                 var data = new NAVData(new FileInfo(name));
-                HPDData = (data.data as HPDData);
-                data.WriteToFile();
+                //HPDData = (data.data as HPDData);
+                //data.WriteToFile();
             }
 #endif // DEBUG
             //~ENABLE THIS SECTION AT YOUR OWN RISK
@@ -241,6 +246,19 @@ namespace Mafia2Tool
         {
             sdsContent.CreateFileFromFolder();
             sdsContent.WriteToFile();
+        }
+
+        public static Actor CreateNewActor()
+        {
+            string DirectoryAndName = string.Format("{0}/Actors_{1}.act", ScenePath, Actors.Length);
+            Actor NewActorFile = new Actor(DirectoryAndName);
+
+            // TODO: Terrible code, but this whole class is going to be re-written anyway.
+            List<Actor> ActorFiles = Actors.ToList();
+            ActorFiles.Add(NewActorFile);
+            Actors = ActorFiles.ToArray();
+
+            return NewActorFile;
         }
 
         public static void CleanData()
@@ -261,6 +279,7 @@ namespace Mafia2Tool
             OBJData = null;
         }
     }
+
     public static class MaterialData
     {
         public static bool HasLoaded = false;

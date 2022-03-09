@@ -2,12 +2,14 @@
 #include "MTObject/MT_ObjectHandler.h"
 #include "Fbx_Wrangler.h"
 #include "MT_Wrangler.h"
+#include "Utilities/FbxUtilities.h"
 
 #include <fbxsdk.h>
 #include <conio.h>
 
 extern "C" int  __declspec(dllexport) _stdcall RunConvertFBX(const char* source, const char* dest);
 extern "C" int  __declspec(dllexport) _stdcall RunConvertMTB(const char* source, const char* dest, unsigned char isBin);
+extern "C" int  __declspec(dllexport) _stdcall RunConvert(const char* source, const char* dest);
 
 extern int _stdcall RunConvertFBX(const char* source, const char* dest)
 {
@@ -42,6 +44,14 @@ extern int _stdcall RunConvertMTB(const char* source, const char* dest, unsigned
 	return 0;
 }
 
+extern int _stdcall RunConvert(const char* source, const char* dest)
+{
+	printf("Called RunConvert\n");
+	Fbx_Utilities::ConvertToOppositeSerialization(source, dest);
+
+	return 0;
+}
+
 int main(int argc, char** argv)
 {
 	int result = 0;
@@ -60,6 +70,10 @@ int main(int argc, char** argv)
 		Wrangler->ConvertObjectToFbx();
 		delete Wrangler;
 		Wrangler = nullptr;
+	}
+	if ((strcmp(argv[1], "-Convert") == 0) && (argc >= 4))
+	{
+		result = RunConvert(argv[2], argv[3]);
 	}
 	else
 	{

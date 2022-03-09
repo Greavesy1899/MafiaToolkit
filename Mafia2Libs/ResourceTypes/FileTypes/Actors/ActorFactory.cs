@@ -70,7 +70,7 @@ namespace ResourceTypes.Actors
                 case ActorEDSTypes.C_ActionPointScript:
                     return new ActorActionPointScript(stream, isBigEndian);
                 case ActorEDSTypes.C_Train:
-                    throw new NotImplementedException();
+                    return new ActorTrain(stream, isBigEndian);
                 default:
                     return null;
             }
