@@ -1,6 +1,7 @@
 ﻿using Core.IO;
 using Mafia2Tool.Forms;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -201,9 +202,26 @@ namespace Mafia2Tool
 
             if (!directory.Exists)
             {
-                MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                OpenDirectory(rootDirectory, false);
-                return;
+                int Index = 0;
+                string FolderPath = directory.FullName;
+                List<string> NewPath = new List<string>();
+                while (Index != -1)
+                {
+                    Index = FolderPath.LastIndexOf('\\');
+                    if (Index == -1) { break; }
+                    NewPath.Add(FolderPath.Substring(0, Index));
+                    FolderPath = FolderPath.Substring(0, Index);
+                }
+                for (int i = 0; i < NewPath.Count; i++)
+                {
+                    if (Directory.Exists(NewPath[i]) == true)
+                    {
+                        DirectoryInfo NewDirectoryInfo = new DirectoryInfo(NewPath[i]);
+                        OpenDirectory(NewDirectoryInfo);
+                        infoText.Text = "Returned to the previous folder.";
+                        return;
+                    }
+                }
             }
 
             DirectoryBase directoryInfo = new DirectoryBase(directory);
