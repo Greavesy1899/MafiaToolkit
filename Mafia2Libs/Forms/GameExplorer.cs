@@ -165,11 +165,11 @@ namespace Mafia2Tool
         }
 
         private void DirectoryWatcher_OnAnyChange(object sender, FileSystemEventArgs e)
-        {
-            if (e.FullPath.Contains(currentDirectory.FullName))
-            {
-                this.BeginInvoke((MethodInvoker)(() => OpenDirectory(currentDirectory)));
-            }
+        { 
+            //if (e.FullPath.Contains(currentDirectory.FullName))
+           // {
+           //     this.BeginInvoke((MethodInvoker)(() => OpenDirectory(currentDirectory)));
+          //  }
         }
 
         private void GetSubdirectories(DirectoryInfo directory, TreeNode rootTreeNode)
@@ -192,6 +192,7 @@ namespace Mafia2Tool
 
         private void OpenDirectory(DirectoryInfo directory, bool searchMode = false, string filename = null)
         {
+            
             // Make sure toolstrip buttons are reset
             SetPackUnpackButtonEnabled(false);
 
@@ -202,15 +203,14 @@ namespace Mafia2Tool
 
             if (!directory.Exists)
             {
-                int Index = 0;
                 string FolderPath = directory.FullName;
+                int Index = FolderPath.LastIndexOf('\\');
                 List<string> NewPath = new List<string>();
                 while (Index != -1)
                 {
-                    Index = FolderPath.LastIndexOf('\\');
-                    if (Index == -1) { break; }
                     NewPath.Add(FolderPath.Substring(0, Index));
                     FolderPath = FolderPath.Substring(0, Index);
+                    Index = FolderPath.LastIndexOf('\\');
                 }
                 for (int i = 0; i < NewPath.Count; i++)
                 {
