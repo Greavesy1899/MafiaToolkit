@@ -156,7 +156,7 @@ namespace Mafia2Tool
             DirectoryWatcher = new FileSystemWatcher(rootDirectory.FullName);
             DirectoryWatcher.SynchronizingObject = this;
             DirectoryWatcher.IncludeSubdirectories = true;
-            DirectoryWatcher.EnableRaisingEvents = false;
+            DirectoryWatcher.EnableRaisingEvents = true;
             DirectoryWatcher.Changed += DirectoryWatcher_OnAnyChange;
             DirectoryWatcher.Created += DirectoryWatcher_OnAnyChange;
             DirectoryWatcher.Created += DirectoryWatcher_OnAnyChange;
@@ -168,8 +168,15 @@ namespace Mafia2Tool
         {
             if (e.FullPath.Contains(currentDirectory.FullName))
             {
-                this.BeginInvoke((MethodInvoker)(() => OpenDirectory(currentDirectory)));
+                this.BeginInvoke((MethodInvoker)(() => DirectoryWatcher_UpdateWindow()));
             }
+        }
+
+        private void DirectoryWatcher_UpdateWindow()
+        {
+            int ListViewTopItemIndex = fileListView.TopItem.Index;
+            OpenDirectory(currentDirectory);
+            fileListView.TopItem = fileListView.Items[ListViewTopItemIndex];
         }
 
         private void GetSubdirectories(DirectoryInfo directory, TreeNode rootTreeNode)
