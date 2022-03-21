@@ -63,30 +63,36 @@ namespace ResourceTypes.Actors
 
         private string BuildDefinitions()
         {
-            string bufferPool = "";
-            bufferPool += "<scene>\0";
-            Dictionary<string, int> names = new Dictionary<string, int>();
-            for(int i = 0; i < definitions.Count; i++)
+            // Only fill buffer if we have definitions.
+            // If we have no definitions we leave the pool empty.
+            string bufferPool = String.Empty;
+            if (definitions.Count > 0)
             {
-                int startPos = 0;
-
-                if(!string.IsNullOrEmpty(definitions[i].Name))
+                bufferPool += "<scene>\0";
+                Dictionary<string, int> names = new Dictionary<string, int>();
+                for (int i = 0; i < definitions.Count; i++)
                 {
-                    if(!names.ContainsKey(definitions[i].Name))
+                    int startPos = 0;
+
+                    if (!string.IsNullOrEmpty(definitions[i].Name))
                     {
-                        startPos = bufferPool.Length;
-                        bufferPool += definitions[i].Name;
-                        bufferPool += '\0';
-                        names.Add(definitions[i].Name, startPos);
-                        definitions[i].NamePos = (ushort)startPos;
-                    }
-                    else
-                    {
-                        names.TryGetValue(definitions[i].Name, out startPos);
-                        definitions[i].NamePos = (ushort)startPos;
+                        if (!names.ContainsKey(definitions[i].Name))
+                        {
+                            startPos = bufferPool.Length;
+                            bufferPool += definitions[i].Name;
+                            bufferPool += '\0';
+                            names.Add(definitions[i].Name, startPos);
+                            definitions[i].NamePos = (ushort)startPos;
+                        }
+                        else
+                        {
+                            names.TryGetValue(definitions[i].Name, out startPos);
+                            definitions[i].NamePos = (ushort)startPos;
+                        }
                     }
                 }
             }
+            
             return bufferPool;
         }
 
