@@ -140,17 +140,6 @@ namespace ResourceTypes.Actors
             }
         }
 
-        public static IActorExtraDataInterface CreateDuplicateExtraData(ActorTypes type, IActorExtraDataInterface extraData)
-        {
-            switch(type)
-            {
-                case ActorTypes.C_Sound:
-                    return new ActorSoundEntity(extraData);
-                default:
-                    return null;
-            }
-        }
-
         public static ActorEntry CreateActorItem(ActorTypes type, string name)
         {
             ActorEntry item = new ActorEntry();

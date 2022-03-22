@@ -951,8 +951,6 @@ namespace ResourceTypes.Actors
                 boundingBox = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
                 unk_byte3 = stream.ReadByte8();
                 uMatrix1 = MatrixUtils.ReadFromFile(stream, isBigEndian);
-
-                long end = stream.Position - pos;
             }
             stream.Seek(2308, SeekOrigin.Begin);
             instanced = stream.ReadInt32(isBigEndian);

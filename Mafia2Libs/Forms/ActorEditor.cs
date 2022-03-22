@@ -1,9 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Actors;
 using Utils.Language;
 using Utils.Settings;
+using Utils.Helpers.Reflection;
 using Forms.EditorControls;
 
 namespace Mafia2Tool
@@ -122,24 +124,40 @@ namespace Mafia2Tool
 
         private void Paste()
         {
-            if(clipboard is ActorExtraData)
+            TreeNode SelectedNode = ActorTreeView.SelectedNode;
+            if (!ActorTreeView.SelectedNode.Text.Equals("Extra Data"))
             {
-                ActorExtraData ExtraData = (clipboard as ActorExtraData);
-                IActorExtraDataInterface NewExtraData = ActorFactory.CreateDuplicateExtraData(ExtraData.BufferType, ExtraData.Data);
-
-                TreeNode SelectedNode = ActorTreeView.SelectedNode;
-                if (ActorTreeView.SelectedNode.Text.Equals("Extra Data"))
-                {
-                    ActorExtraData ExistingExtraData = (SelectedNode.Tag as ActorExtraData);
-                    if(ExtraData.BufferType == ExistingExtraData.BufferType)
-                    {
-                        ExistingExtraData.Data = NewExtraData;
-                    }
-                }
-
-                Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
-                bIsFileEdited = true;
+                // Not on the correct node type
+                return;
             }
+
+            ActorExtraData ExtraDataToCopy = (clipboard as ActorExtraData);
+            ActorExtraData ExtaDataToEdit = (SelectedNode.Tag as ActorExtraData);
+            if (ExtraDataToCopy.BufferType != ExtaDataToEdit.BufferType)
+            {
+                // Dont accept if types are not the same.
+                // Do not allow replacement of types.
+                return;
+            }
+
+            // Copy contents and then assign the new pasted data into the selected extra data.
+            object ObjectToCopy = ExtraDataToCopy.Data;
+            object NewObject = Activator.CreateInstance(ObjectToCopy.GetType());
+            ReflectionHelpers.Copy(ObjectToCopy, NewObject);
+            ExtaDataToEdit.Data = (NewObject as IActorExtraDataInterface);
+
+            // Force reload
+            ActorGrid.SelectedObject = SelectedNode.Tag;
+
+            // Mark as edited
+            Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
+        private bool IsTypeofInterface(object ObjectToCheck, Type InterfaceType)
+        {
+            Type TypeOfObject = ObjectToCheck.GetType();
+            return InterfaceType.IsAssignableFrom(TypeOfObject);
         }
 
         private void Delete()
