@@ -242,11 +242,24 @@ namespace ResourceTypes.FrameResource
         {
             ModelAttachments = new Dictionary<ulong, List<int>>();
 
-            string FrameName = Frame.Name.String;
-            string ExportPath = Path.Combine(ToolkitSettings.ExportPath, FrameName);
-            string ExportName = ExportPath + ".framedata";
+            string ExportFullPath = null;
+            System.Windows.Forms.SaveFileDialog SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            SaveFileDialog.FileName = Frame.Name.String;
+            SaveFileDialog.RestoreDirectory = true;
+            SaveFileDialog.Filter = "FrameData File (*.framedata)|*.framedata*";
+            SaveFileDialog.FilterIndex = 1;
+            SaveFileDialog.DefaultExt = "framedata";
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(ExportName, FileMode.Create)))
+            if (SaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ExportFullPath = SaveFileDialog.FileName;
+            }
+            else
+            {
+                return;
+            }
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ExportFullPath, FileMode.Create)))
             {
                 SaveFrame(Frame, writer);
 

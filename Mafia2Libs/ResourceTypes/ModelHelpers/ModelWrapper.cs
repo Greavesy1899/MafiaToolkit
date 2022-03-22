@@ -257,43 +257,43 @@ namespace Utils.Models
 
         public void ExportObject()
         {
-            string SavePath = ToolkitSettings.ExportPath;
+            string SavePath = null;
+            SaveFileDialog SaveFileDialog = new SaveFileDialog();
+            SaveFileDialog.FileName = ModelObject.ObjectName;
+            SaveFileDialog.RestoreDirectory = true;
+            SaveFileDialog.Filter = "MTB File(*.mtb)|*.mtb|FBX File (ASCII) (*.fbx)|*.fbx|FBX File (Binary) (*.fbx)|*.fbx*";
+            SaveFileDialog.FilterIndex = 3;
 
-            if (!Directory.Exists(ToolkitSettings.ExportPath))
+            if (SaveFileDialog.ShowDialog() == DialogResult.OK) 
+            { 
+                SavePath = SaveFileDialog.FileName; 
+            }
+            else 
             {
-                // Ask if we can create it
-                DialogResult Result = MessageBox.Show("The path does not exist. Do you want to create it?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                if (Result == DialogResult.Yes)
-                {
-                    Directory.CreateDirectory(SavePath);
-                }
-                else
-                {
-                    // Can't export file with no valid directory.
-                    MessageBox.Show("Cannot export a mesh with no valid directory. Please change your directory.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                return; 
             }
 
-            // Export Object
-            string FileName = ToolkitSettings.ExportPath + "\\" + ModelObject.ObjectName;
-            ExportBundle(FileName);
-            switch (ToolkitSettings.Format)
+            if(SaveFileDialog.FilterIndex == 2)
             {
-                case 0:
-                    ExportObjectToFbx(FileName, false);
-                    break;
-                case 1:
-                    ExportObjectToFbx(FileName, true);
-                    break;
-                default:
-                    break;
+                ExportBundle(SavePath);
+                ExportObjectToFbx(SavePath, false);
+                File.Delete(SavePath + ".mtb");
+            }
+            else if(SaveFileDialog.FilterIndex == 3)
+            {
+                ExportBundle(SavePath);
+                ExportObjectToFbx(SavePath, true);
+                File.Delete(SavePath + ".mtb");
+            }
+            else if(SaveFileDialog.FilterIndex == 1)
+            {
+                ExportBundle(SavePath.Substring(0, SavePath.LastIndexOf(".mtb")));
             }
         }
 
         private void ExportObjectToFbx(string File, bool bIsBinary)
         {
-            FBXHelper.ConvertMTB(File + ".mtb", File + ".fbx");
+            FBXHelper.ConvertMTB(File + ".mtb", File);
         }
 
         private void ExportBundle(string FileToWrite)
