@@ -62,6 +62,8 @@ namespace Mafia2Tool
 
         private Dictionary<string, int> NamesAndDuplicationStore;
 
+        private SaveFileDialog SaveFileDialog = new SaveFileDialog(); //Opening a SaveFileDialog window for receiving the path for exporting objects/frames in it.
+
         public MapEditor(FileInfo info)
         {
             InitializeComponent();
@@ -241,7 +243,27 @@ namespace Mafia2Tool
             {
                 if(node.Tag != null)
                 {
-                    SceneData.FrameResource.SaveFramesToFile(frame);
+                    if (SaveFileDialog != null) 
+                    { 
+                        SaveFileDialog.Reset(); 
+                    }
+                    string ExportName = null;
+                    SaveFileDialog.FileName = frame.Name.String;
+                    SaveFileDialog.RestoreDirectory = true;
+                    SaveFileDialog.Filter = "FrameData File (*.framedata)|*.framedata*";
+                    SaveFileDialog.FilterIndex = 1;
+                    SaveFileDialog.DefaultExt = "framedata";
+
+                    if (SaveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        ExportName = SaveFileDialog.FileName;
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                    SceneData.FrameResource.SaveFramesToFile(ExportName, frame);
                 }
             }        
         }
@@ -1580,7 +1602,27 @@ namespace Mafia2Tool
 
             ModelWrapper WrapperObject = new ModelWrapper();
             WrapperObject.ModelObject = CollisionObject;
-            WrapperObject.ExportObject();
+
+            if (SaveFileDialog != null) 
+            { 
+                SaveFileDialog.Reset(); 
+            }
+            string ExportName = null;
+            SaveFileDialog.FileName = WrapperObject.ModelObject.ObjectName;
+            SaveFileDialog.RestoreDirectory = true;
+            SaveFileDialog.Filter = "MTB File(*.mtb)|*.mtb|FBX File (ASCII) (*.fbx)|*.fbx|FBX File (Binary) (*.fbx)|*.fbx*";
+            SaveFileDialog.FilterIndex = 3;
+
+            if (SaveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                ExportName = SaveFileDialog.FileName;
+            }
+            else
+            {
+                return;
+            }
+
+            WrapperObject.ExportObject(ExportName, SaveFileDialog.FilterIndex);
         }
 
         private void Export3DFrame()
@@ -1619,7 +1661,26 @@ namespace Mafia2Tool
             // Make sure it's actually valid
             if (ModelWrapperObject != null)
             {
-                ModelWrapperObject.ExportObject();
+                if(SaveFileDialog != null)
+                {
+                    SaveFileDialog.Reset(); 
+                }              
+                string ExportName = null;
+                SaveFileDialog.FileName = ModelWrapperObject.ModelObject.ObjectName;
+                SaveFileDialog.RestoreDirectory = true;
+                SaveFileDialog.Filter = "MTB File(*.mtb)|*.mtb|FBX File (ASCII) (*.fbx)|*.fbx|FBX File (Binary) (*.fbx)|*.fbx*";
+                SaveFileDialog.FilterIndex = 3;
+
+                if (SaveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ExportName = SaveFileDialog.FileName;
+                }
+                else
+                {
+                    return;
+                }
+
+                ModelWrapperObject.ExportObject(ExportName, SaveFileDialog.FilterIndex);
             }
         }
 

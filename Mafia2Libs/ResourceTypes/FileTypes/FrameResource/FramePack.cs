@@ -238,28 +238,11 @@ namespace ResourceTypes.FrameResource
             return parent;
         }
 
-        public void WriteToFile(FrameObjectBase Frame)
+        public void WriteToFile(string ExportName, FrameObjectBase Frame)
         {
             ModelAttachments = new Dictionary<ulong, List<int>>();
 
-            string ExportFullPath = null;
-            System.Windows.Forms.SaveFileDialog SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            SaveFileDialog.FileName = Frame.Name.String;
-            SaveFileDialog.RestoreDirectory = true;
-            SaveFileDialog.Filter = "FrameData File (*.framedata)|*.framedata*";
-            SaveFileDialog.FilterIndex = 1;
-            SaveFileDialog.DefaultExt = "framedata";
-
-            if (SaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                ExportFullPath = SaveFileDialog.FileName;
-            }
-            else
-            {
-                return;
-            }
-
-            using (BinaryWriter writer = new BinaryWriter(File.Open(ExportFullPath, FileMode.Create)))
+            using (BinaryWriter writer = new BinaryWriter(File.Open(ExportName, FileMode.Create)))
             {
                 SaveFrame(Frame, writer);
 

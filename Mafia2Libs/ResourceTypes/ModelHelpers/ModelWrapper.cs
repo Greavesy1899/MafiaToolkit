@@ -255,37 +255,21 @@ namespace Utils.Models
             ModelObject = MT_ObjectHandler.ReadObjectFromFile(file);
         }
 
-        public void ExportObject()
-        {
-            string SavePath = null;
-            SaveFileDialog SaveFileDialog = new SaveFileDialog();
-            SaveFileDialog.FileName = ModelObject.ObjectName;
-            SaveFileDialog.RestoreDirectory = true;
-            SaveFileDialog.Filter = "MTB File(*.mtb)|*.mtb|FBX File (ASCII) (*.fbx)|*.fbx|FBX File (Binary) (*.fbx)|*.fbx*";
-            SaveFileDialog.FilterIndex = 3;
-
-            if (SaveFileDialog.ShowDialog() == DialogResult.OK) 
-            { 
-                SavePath = SaveFileDialog.FileName; 
-            }
-            else 
-            {
-                return; 
-            }
-
-            if(SaveFileDialog.FilterIndex == 2)
+        public void ExportObject(string SavePath, int FilterIndex)
+        {          
+            if (FilterIndex == 2)
             {
                 ExportBundle(SavePath);
                 ExportObjectToFbx(SavePath, false);
                 File.Delete(SavePath + ".mtb");
             }
-            else if(SaveFileDialog.FilterIndex == 3)
+            else if(FilterIndex == 3)
             {
                 ExportBundle(SavePath);
                 ExportObjectToFbx(SavePath, true);
                 File.Delete(SavePath + ".mtb");
             }
-            else if(SaveFileDialog.FilterIndex == 1)
+            else if(FilterIndex == 1)
             {
                 ExportBundle(SavePath.Substring(0, SavePath.LastIndexOf(".mtb")));
             }
