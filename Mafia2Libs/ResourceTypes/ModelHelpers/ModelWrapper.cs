@@ -257,21 +257,23 @@ namespace Utils.Models
 
         public void ExportObject(string SavePath, int FilterIndex)
         {          
-            if (FilterIndex == 2)
+            switch(FilterIndex)
             {
-                ExportBundle(SavePath);
-                ExportObjectToFbx(SavePath, false);
-                File.Delete(SavePath + ".mtb");
-            }
-            else if(FilterIndex == 3)
-            {
-                ExportBundle(SavePath);
-                ExportObjectToFbx(SavePath, true);
-                File.Delete(SavePath + ".mtb");
-            }
-            else if(FilterIndex == 1)
-            {
-                ExportBundle(SavePath.Substring(0, SavePath.LastIndexOf(".mtb")));
+                case 1:
+                    ExportBundle(SavePath);
+                    ExportObjectToFbx(SavePath, true);
+                    File.Delete(SavePath + ".mtb");
+                    break;
+                case 2:
+                    ExportBundle(SavePath);
+                    ExportObjectToFbx(SavePath, false);
+                    File.Delete(SavePath + ".mtb");
+                    break;
+                case 3:
+                    ExportBundle(SavePath);
+                    break;
+                default:
+                    break;
             }
         }
 
