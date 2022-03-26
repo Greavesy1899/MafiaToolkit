@@ -255,36 +255,22 @@ namespace Utils.Models
             ModelObject = MT_ObjectHandler.ReadObjectFromFile(file);
         }
 
-        public void ExportObject()
-        {
-            string SavePath = ToolkitSettings.ExportPath;
-
-            if (!Directory.Exists(ToolkitSettings.ExportPath))
+        public void ExportObject(string SavePath, int FilterIndex)
+        {          
+            switch(FilterIndex)
             {
-                // Ask if we can create it
-                DialogResult Result = MessageBox.Show("The path does not exist. Do you want to create it?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                if (Result == DialogResult.Yes)
-                {
-                    Directory.CreateDirectory(SavePath);
-                }
-                else
-                {
-                    // Can't export file with no valid directory.
-                    MessageBox.Show("Cannot export a mesh with no valid directory. Please change your directory.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-            }
-
-            // Export Object
-            string FileName = ToolkitSettings.ExportPath + "\\" + ModelObject.ObjectName;
-            ExportBundle(FileName);
-            switch (ToolkitSettings.Format)
-            {
-                case 0:
-                    ExportObjectToFbx(FileName, false);
-                    break;
                 case 1:
-                    ExportObjectToFbx(FileName, true);
+                    ExportBundle(SavePath);
+                    ExportObjectToFbx(SavePath, true);
+                    File.Delete(SavePath + ".mtb");
+                    break;
+                case 2:
+                    ExportBundle(SavePath);
+                    ExportObjectToFbx(SavePath, false);
+                    File.Delete(SavePath + ".mtb");
+                    break;
+                case 3:
+                    ExportBundle(SavePath);
                     break;
                 default:
                     break;
@@ -293,7 +279,7 @@ namespace Utils.Models
 
         private void ExportObjectToFbx(string File, bool bIsBinary)
         {
-            FBXHelper.ConvertMTB(File + ".mtb", File + ".fbx");
+            FBXHelper.ConvertMTB(File + ".mtb", File);
         }
 
         private void ExportBundle(string FileToWrite)

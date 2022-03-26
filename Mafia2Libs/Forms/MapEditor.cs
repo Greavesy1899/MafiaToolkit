@@ -231,6 +231,25 @@ namespace Mafia2Tool
             }
         }
 
+        private void InternalSaveModelWrapper(ModelWrapper Model)
+        {
+            if (SaveFileDialog != null)
+            {
+                SaveFileDialog.Reset();
+            }
+            SaveFileDialog.FileName = Model.ModelObject.ObjectName;
+            SaveFileDialog.RestoreDirectory = true;
+            SaveFileDialog.Filter = "FBX File (Binary) (*.fbx)|*.fbx|FBX File (ASCII) (*.fbx)|*.fbx|MTB File(*.mtb)|*.mtb*";
+            SaveFileDialog.FilterIndex = ToolkitSettings.Format + 1;
+
+            if (SaveFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            Model.ExportObject(SaveFileDialog.FileName, SaveFileDialog.FilterIndex);
+        }
+
         private void ExportFrame_Click(object sender, EventArgs e)
         {
             var node = dSceneTree.SelectedNode;
@@ -241,7 +260,27 @@ namespace Mafia2Tool
             {
                 if(node.Tag != null)
                 {
-                    SceneData.FrameResource.SaveFramesToFile(frame);
+                    if (SaveFileDialog != null) 
+                    { 
+                        SaveFileDialog.Reset(); 
+                    }
+                    string ExportName = null;
+                    SaveFileDialog.FileName = frame.Name.String;
+                    SaveFileDialog.RestoreDirectory = true;
+                    SaveFileDialog.Filter = "FrameData File (*.framedata)|*.framedata*";
+                    SaveFileDialog.FilterIndex = 1;
+                    SaveFileDialog.DefaultExt = "framedata";
+
+                    if (SaveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        ExportName = SaveFileDialog.FileName;
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                    SceneData.FrameResource.SaveFramesToFile(ExportName, frame);
                 }
             }        
         }
@@ -1580,7 +1619,8 @@ namespace Mafia2Tool
 
             ModelWrapper WrapperObject = new ModelWrapper();
             WrapperObject.ModelObject = CollisionObject;
-            WrapperObject.ExportObject();
+
+            InternalSaveModelWrapper(WrapperObject);
         }
 
         private void Export3DFrame()
@@ -1619,7 +1659,7 @@ namespace Mafia2Tool
             // Make sure it's actually valid
             if (ModelWrapperObject != null)
             {
-                ModelWrapperObject.ExportObject();
+                InternalSaveModelWrapper(ModelWrapperObject);
             }
         }
 
