@@ -106,6 +106,8 @@ namespace Mafia2Tool
             Button_PackSDS.ToolTipText = Language.GetString("$PACK");
             Button_Settings.Text = Language.GetString("$OPTIONS");
             Button_Settings.ToolTipText = Language.GetString("$OPTIONS");
+            Button_OpenMapEditor.Text = Language.GetString("$OPEN_MAP_EDITOR");
+            Button_OpenMapEditor.ToolTipText = Language.GetString("$OPEN_MAP_EDITOR");
         }
 
         public void InitExplorerSettings()
@@ -193,6 +195,7 @@ namespace Mafia2Tool
         {
             // Make sure toolstrip buttons are reset
             SetPackUnpackButtonEnabled(false);
+            Button_OpenMapEditor.Enabled = false;
 
             infoText.Text = "Loading Directory..";
             fileListView.Items.Clear();
@@ -204,6 +207,11 @@ namespace Mafia2Tool
                 MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 OpenDirectory(rootDirectory, false);
                 return;
+            }
+
+            if (Directory.GetFiles(directory.FullName, "*.fr", SearchOption.TopDirectoryOnly).Length != 0)
+            {
+                Button_OpenMapEditor.Enabled = true;
             }
 
             DirectoryBase directoryInfo = new DirectoryBase(directory);
@@ -453,6 +461,15 @@ namespace Mafia2Tool
             }
         }
 
+        private void ContextOpenMapEditor_Click(object sender, EventArgs e)
+        {
+            if (fileListView.Items.Count > 0)
+            {
+                string[] FrameResourceFile = System.IO.Directory.GetFiles(currentDirectory.FullName, "*.fr", SearchOption.TopDirectoryOnly);
+                FileFrameResource FileFrameResource = new FileFrameResource(new FileInfo(FrameResourceFile[0]));
+                FileFrameResource.Open();
+            }
+        }
         private void onPathChange(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '\r')
