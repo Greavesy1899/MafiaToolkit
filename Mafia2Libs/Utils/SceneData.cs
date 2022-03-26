@@ -200,37 +200,37 @@ namespace Mafia2Tool
             //~ENABLE THIS SECTION AT YOUR OWN RISK
             // Kynapse OBJ_DATA
 #if DEBUG
-            if (!isBigEndian)
-            {
-                paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
-                foreach (var item in paths)
-                {
-                    obj.Add(new NAVData(new FileInfo(item)));
-                }
+            //if (!isBigEndian)
+            //{
+            //    paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
+            //    foreach (var item in paths)
+            //    {
+            //        obj.Add(new NAVData(new FileInfo(item)));
+            //    }
 
-                for (int i = 0; i < obj.Count; i++)
-                {
-                    obj[i].WriteToFile();
-                }
-            }
+            //    for (int i = 0; i < obj.Count; i++)
+            //    {
+            //        obj[i].WriteToFile();
+            //    }
+            //}
 
             //AI WORLD
-            if (!isBigEndian)
-            {
-                paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
-                foreach (var Item in paths)
-                {
-                    aiw.Add(new NAVData(new FileInfo(Item)));
-                }
-            }
+            //if (!isBigEndian)
+            //{
+            //    paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
+            //    foreach (var Item in paths)
+            //    {
+            //        aiw.Add(new NAVData(new FileInfo(Item)));
+            //    }
+            //}
 
-            if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
-            {
-                var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
-                var data = new NAVData(new FileInfo(name));
-                //HPDData = (data.data as HPDData);
-                //data.WriteToFile();
-            }
+            //if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
+            //{
+            //    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
+            //    var data = new NAVData(new FileInfo(name));
+            //    //HPDData = (data.data as HPDData);
+            //    //data.WriteToFile();
+            //}
 #endif // DEBUG
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
