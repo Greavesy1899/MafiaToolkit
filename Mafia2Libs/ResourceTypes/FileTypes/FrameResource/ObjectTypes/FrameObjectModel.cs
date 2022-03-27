@@ -315,21 +315,33 @@ namespace ResourceTypes.FrameResource
             string jointName;
             FrameObjectBase attachment;
 
+            [Description("Assumed to be Frame Index")]
             public int AttachmentIndex {
                 get { return attachmentIndex; }
                 set { attachmentIndex = value; }
             }
+            [Description("Assumed to be Joint Index in skeleton")]
             public byte JointIndex {
                 get { return jointIndex; }
                 set { jointIndex = value; }
             }
+            [Description("NOT SAVED IN FRAME RESOURCE. FILLED IN AT RUNTIME")]
             public string JointName {
                 get { return jointName; }
                 set { jointName = value; }
             }
+            [Description("NOT SAVED IN FRAME RESOURCE. FILLED IN AT RUNTIME")]
             public FrameObjectBase Attachment {
                 get { return attachment; }
                 set { attachment = value; }
+            }
+
+            public AttachmentReference()
+            {
+                attachmentIndex = -1;
+                jointIndex = 0;
+                jointName = string.Empty;
+                attachment = null;
             }
 
             public AttachmentReference(MemoryStream reader, bool isBigEndian)

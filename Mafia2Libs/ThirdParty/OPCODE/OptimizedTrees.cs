@@ -151,16 +151,17 @@ namespace ThirdParty.OPCODE
             nodes = new List<AABBQuantizedNoLeafNode>((int)NumNodes);
             for(int i = 0; i < NumNodes; i++)
             {
-                AABBQuantizedNoLeafNode Node;
-                uint posData = stream.ReadUInt32(bIsBigEndian);
-                uint negData = stream.ReadUInt32(bIsBigEndian);
-                short centerX = stream.ReadInt16(bIsBigEndian);
-                short centerY = stream.ReadInt16(bIsBigEndian);
-                short centerZ = stream.ReadInt16(bIsBigEndian);
-                ushort extentsX = stream.ReadUInt16(bIsBigEndian);
-                ushort extentsY = stream.ReadUInt16(bIsBigEndian);
-                ushort extentsZ = stream.ReadUInt16(bIsBigEndian);
-                //nodes.Add(Node);
+                uint PosData = stream.ReadUInt32(bIsBigEndian);
+                uint NegData = stream.ReadUInt32(bIsBigEndian);
+
+                QuantizedAABB AABB = new QuantizedAABB();
+                AABB.centerX = stream.ReadInt16(bIsBigEndian);
+                AABB.centerY = stream.ReadInt16(bIsBigEndian);
+                AABB.centerZ = stream.ReadInt16(bIsBigEndian);
+                AABB.extentsX = stream.ReadUInt16(bIsBigEndian);
+                AABB.extentsY = stream.ReadUInt16(bIsBigEndian);
+                AABB.extentsZ = stream.ReadUInt16(bIsBigEndian);
+                nodes.Add(new AABBQuantizedNoLeafNode(AABB, PosData, NegData));
             }
         }
 
@@ -172,10 +173,10 @@ namespace ThirdParty.OPCODE
 
             // Write the number of quantized nodes
             // Then continue with the nodes
+            stream.Write(nodes.Count, bIsBigEndian);
             foreach(AABBQuantizedNoLeafNode Node in nodes)
             {
                 stream.Write(Node.posData, bIsBigEndian);
-                stream.Write(Node.negData, bIsBigEndian);
                 stream.Write(Node.negData, bIsBigEndian);
                 stream.Write(Node.aabb.centerX, bIsBigEndian);
                 stream.Write(Node.aabb.centerY, bIsBigEndian);

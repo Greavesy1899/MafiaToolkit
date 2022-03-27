@@ -135,6 +135,33 @@ namespace ResourceTypes.Materials
             }
         }
 
+        public override void SetTextureFor(string SamplerOrTextureID, string NewTextureName)
+        {
+            foreach (IMaterialSampler Sampler in Samplers)
+            {
+                if(Sampler.ID.Equals(SamplerOrTextureID))
+                {
+                    // Don't check the cast so we crash on purpose because this 
+                    // should never cause an error.
+                    MaterialSampler_v57 CastedSampler = (Sampler as MaterialSampler_v57);
+                    CastedSampler.TextureName.Set(NewTextureName);
+                }
+            }
+        }
+
+        public override void SetupFromPreset(MaterialPreset Preset)
+        {
+            base.SetupFromPreset(Preset);
+
+            if(Preset == MaterialPreset.Default)
+            {
+                MaterialSampler_v57 NewSampler = new MaterialSampler_v57();
+                NewSampler.ID = "S000";
+
+                Samplers.Add(NewSampler);
+            }
+        }
+
         public override HashName GetTextureByID(string SamplerName)
         {
             foreach (var sampler in Samplers)
@@ -171,6 +198,19 @@ namespace ResourceTypes.Materials
             }
 
             return FoundTextures;
+        }
+
+        public override IMaterialSampler GetSamplerByKey(string SamplerKey)
+        {
+            foreach (IMaterialSampler Sampler in Samplers)
+            {
+                if (Sampler.ID.Equals(SamplerKey))
+                {
+                    return Sampler;
+                }
+            }
+
+            return null;
         }
 
         public override VersionsEnumerator GetMTLVersion()

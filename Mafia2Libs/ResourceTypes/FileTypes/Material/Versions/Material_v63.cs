@@ -124,6 +124,18 @@ namespace ResourceTypes.Materials
             }
         }
 
+        public override void SetTextureFor(string SamplerOrTextureID, string NewTextureName)
+        {
+            // Iterate through Textures and check if we can replace.
+            foreach (MaterialTexture Texture in Textures)
+            {
+                if (Texture.ID.Equals(SamplerOrTextureID))
+                {
+                    Texture.TextureName.Set(NewTextureName);
+                }
+            }
+        }
+
         public override HashName GetTextureByID(string SamplerName)
         {
             foreach(var texture in Textures)
@@ -146,6 +158,19 @@ namespace ResourceTypes.Materials
             }
 
             return false;
+        }
+
+        public override IMaterialSampler GetSamplerByKey(string SamplerKey)
+        {
+            foreach (IMaterialSampler Sampler in Samplers)
+            {
+                if (Sampler.ID.Equals(SamplerKey))
+                {
+                    return Sampler;
+                }
+            }
+
+            return null;
         }
 
         public override VersionsEnumerator GetMTLVersion()

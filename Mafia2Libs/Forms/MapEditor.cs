@@ -101,6 +101,7 @@ namespace Mafia2Tool
             ViewOptionProperties.Text = Language.GetString("$VIEW_VIS_OPTIONS");
             AddButton.Text = Language.GetString("$ADD");
             Button_ImportFrame.Text = Language.GetString("$IMPORT_FRAME");
+            Button_ImportBundle.Text = Language.GetString("$IMPORT_BUNDLE");
             AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
@@ -152,63 +153,101 @@ namespace Mafia2Tool
             }
         }
         
+        // TODO: The fetching of the actor file should be inside SceneData,
+        // or whatever I can the Multi-SDS class later on.
         private void LinkToActor_Click(object sender, EventArgs e)
         {
             var node = dSceneTree.SelectedNode;
-            if (SceneData.Actors != null)
+            if(node == null)
             {
-                if (node != null)
+                // Not selecting a node
+                return;
+            }
+
+            if(node.Tag == null)
+            {
+                // Doesn't have any valid data
+                return;
+            }
+
+            if(SceneData.Actors != null)
+            {
+                // Actors array is invalid
+                SceneData.Actors = new Actor[0];
+                SceneData.CreateNewActor();
+
+                LoadActorFiles();
+            }
+
+            // Should have atleast one file, try to link actors.
+            if(SceneData.Actors.Length > 0 && SceneData.Actors[0] != null)
+            {
+                FrameObjectFrame frame = (node.Tag as FrameObjectFrame);
+
+                NewObjectForm objectForm = new NewObjectForm(true);
+                objectForm.SetLabel("$SELECT_TYPE_AND_NAME");
+                ActorItemAddOption optionControl = new ActorItemAddOption();
+                objectForm.LoadOption(optionControl);
+
+                if (objectForm.ShowDialog() == DialogResult.OK)
                 {
-                    if (node.Tag != null)
+                    //create the new entry
+                    ActorTypes type = optionControl.GetSelectedType();
+                    string def = optionControl.GetDefinitionName();
+                    ActorEntry entry = SceneData.Actors[0].CreateActorEntry(type, objectForm.GetInputText());
+                    entry.DefinitionName = def;
+                    entry.FrameName = frame.Name.String;
+                    entry.FrameNameHash = frame.Name.Hash;
+                    frame.Item = entry;
+
+                    //create the definition
+                    ActorDefinition definition = SceneData.Actors[0].CreateActorDefinition(entry);
+                    definition.FrameIndex = (uint)SceneData.FrameResource.FrameObjects.IndexOfValue(frame.RefID);
+                    frame.ActorHash.Set(definition.Name);
+
+                    //create the node
+                    TreeNode entityNode = new TreeNode("actor_" + entry.EntityName);
+                    entityNode.Text = entry.EntityName;
+                    entityNode.Tag = entry;
+
+                    //now add the node to the scene tree
+                    var typeString = string.Format("actorType_" + entry.ActorTypeName);
+                    var foundnodes = actorRoot.Nodes[0].Nodes.Find(typeString, false);
+                    if (foundnodes.Length > 0)
                     {
-                        FrameObjectFrame frame = (node.Tag as FrameObjectFrame);
-
-                        NewObjectForm objectForm = new NewObjectForm(true);
-                        objectForm.SetLabel("$SELECT_TYPE_AND_NAME");
-                        ActorItemAddOption optionControl = new ActorItemAddOption();
-                        objectForm.LoadOption(optionControl);
-
-                        if (objectForm.ShowDialog() == DialogResult.OK)
-                        {
-                            //create the new entry
-                            ActorTypes type = optionControl.GetSelectedType();
-                            string def = optionControl.GetDefinitionName();
-                            ActorEntry entry = SceneData.Actors[0].CreateActorEntry(type, objectForm.GetInputText());
-                            entry.DefinitionName = def;
-                            entry.FrameName = frame.Name.String;
-                            entry.FrameNameHash = frame.Name.Hash;
-                            frame.Item = entry;
-
-                            //create the definition
-                            ActorDefinition definition = SceneData.Actors[0].CreateActorDefinition(entry);
-                            definition.FrameIndex = (uint)SceneData.FrameResource.FrameObjects.IndexOfValue(frame.RefID);
-
-                            //create the node
-                            TreeNode entityNode = new TreeNode("actor_" + entry.EntityName);
-                            entityNode.Text = entry.EntityName;
-                            entityNode.Tag = entry;
-
-                            //now add the node to the scene tree
-                            var typeString = string.Format("actorType_" + entry.ActorTypeName);
-                            var foundnodes = actorRoot.Nodes[0].Nodes.Find(typeString, false);
-                            if (foundnodes.Length > 0)
-                            {
-                                dSceneTree.AddToTree(entityNode, foundnodes[0]);
-                            }
-                            else
-                            {
-                                TreeNode typeNode = new TreeNode(typeString);
-                                typeNode.Name = typeString;
-                                typeNode.Text = entry.ActorTypeName;
-                                typeNode.Nodes.Add(entityNode);
-                                dSceneTree.AddToTree(typeNode, actorRoot.Nodes[0]);
-                            }
-                        }
-
-                        objectForm.Dispose();
+                        dSceneTree.AddToTree(entityNode, foundnodes[0]);
+                    }
+                    else
+                    {
+                        TreeNode typeNode = new TreeNode(typeString);
+                        typeNode.Name = typeString;
+                        typeNode.Text = entry.ActorTypeName;
+                        typeNode.Nodes.Add(entityNode);
+                        dSceneTree.AddToTree(typeNode, actorRoot.Nodes[0]);
                     }
                 }
+
+                objectForm.Dispose();
             }
+        }
+
+        private void InternalSaveModelWrapper(ModelWrapper Model)
+        {
+            if (SaveFileDialog != null)
+            {
+                SaveFileDialog.Reset();
+            }
+            SaveFileDialog.FileName = Model.ModelObject.ObjectName;
+            SaveFileDialog.RestoreDirectory = true;
+            SaveFileDialog.Filter = "FBX File (Binary) (*.fbx)|*.fbx|FBX File (ASCII) (*.fbx)|*.fbx|MTB File(*.mtb)|*.mtb*";
+            SaveFileDialog.FilterIndex = ToolkitSettings.Format + 1;
+
+            if (SaveFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            Model.ExportObject(SaveFileDialog.FileName, SaveFileDialog.FilterIndex);
         }
 
         private void ExportFrame_Click(object sender, EventArgs e)
@@ -221,7 +260,27 @@ namespace Mafia2Tool
             {
                 if(node.Tag != null)
                 {
-                    SceneData.FrameResource.SaveFramesToFile(frame);
+                    if (SaveFileDialog != null) 
+                    { 
+                        SaveFileDialog.Reset(); 
+                    }
+                    string ExportName = null;
+                    SaveFileDialog.FileName = frame.Name.String;
+                    SaveFileDialog.RestoreDirectory = true;
+                    SaveFileDialog.Filter = "FrameData File (*.framedata)|*.framedata*";
+                    SaveFileDialog.FilterIndex = 1;
+                    SaveFileDialog.DefaultExt = "framedata";
+
+                    if (SaveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        ExportName = SaveFileDialog.FileName;
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                    SceneData.FrameResource.SaveFramesToFile(ExportName, frame);
                 }
             }        
         }
@@ -798,40 +857,9 @@ namespace Mafia2Tool
             }
             if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
-                actorRoot = new TreeNode("Actor Items");
-                actorRoot.Tag = "Folder";
-                for (int z = 0; z < SceneData.Actors.Length; z++)
-                {
-                    Actor actor = SceneData.Actors[z];
-                    TreeNode actorFile = new TreeNode("Actor File " + z);
-                    actorFile.Tag = "Folder";
-                    actorRoot.Nodes.Add(actorFile);
-                    for (int c = 0; c != actor.Items.Count; c++)
-                    {
-                        var item = actor.Items[c];
-                        TreeNode itemNode = new TreeNode("actor_" + z + "-" + c);
-                        itemNode.Text = item.EntityName;
-                        itemNode.Tag = item;
-
-                        var typeString = string.Format("actorType_" + item.ActorTypeName);
-                        var foundnodes = actorFile.Nodes.Find(typeString, false);
-                        if(foundnodes.Length > 0)
-                        {
-                            foundnodes[0].Nodes.Add(itemNode);
-                        }
-                        else
-                        {
-                            TreeNode typeNode = new TreeNode(typeString);
-                            typeNode.Name = typeString;
-                            typeNode.Text = item.ActorTypeName;
-                            typeNode.Nodes.Add(itemNode);
-                            actorFile.Nodes.Add(typeNode);
-                        }
-                    }
-                    FixActorDefintions(actor);
-                }
-                dSceneTree.AddToTree(actorRoot);
+                LoadActorFiles();
             }
+
             for(int i = 0; i < SceneData.FrameNameTable.FrameData.Length; i++)
             {
                 FrameNameTable.Data data = SceneData.FrameNameTable.FrameData[i];
@@ -856,6 +884,45 @@ namespace Mafia2Tool
             }
 
             Graphics.InitObjectStack = assets;
+        }
+
+        private void LoadActorFiles()
+        {
+            actorRoot = new TreeNode("Actor Items");
+            actorRoot.Tag = "Folder";
+            for (int z = 0; z < SceneData.Actors.Length; z++)
+            {
+                Actor actor = SceneData.Actors[z];
+                TreeNode actorFile = new TreeNode("Actor File " + z);
+                actorFile.Tag = "Folder";
+                actorRoot.Nodes.Add(actorFile);
+                for (int c = 0; c < actor.Items.Count; c++)
+                {
+                    var item = actor.Items[c];
+                    TreeNode itemNode = new TreeNode("actor_" + z + "-" + c);
+                    itemNode.Text = item.EntityName;
+                    itemNode.Tag = item;
+
+                    var typeString = string.Format("actorType_" + item.ActorTypeName);
+                    var foundnodes = actorFile.Nodes.Find(typeString, false);
+                    if (foundnodes.Length > 0)
+                    {
+                        foundnodes[0].Nodes.Add(itemNode);
+                    }
+                    else
+                    {
+                        TreeNode typeNode = new TreeNode(typeString);
+                        typeNode.Name = typeString;
+                        typeNode.Text = item.ActorTypeName;
+                        typeNode.Nodes.Add(itemNode);
+                        actorFile.Nodes.Add(typeNode);
+                    }
+                }
+
+                FixActorDefintions(actor);
+            }
+
+            dSceneTree.AddToTree(actorRoot);
         }
 
         private void TreeViewUpdateSelected()
@@ -1552,7 +1619,8 @@ namespace Mafia2Tool
 
             ModelWrapper WrapperObject = new ModelWrapper();
             WrapperObject.ModelObject = CollisionObject;
-            WrapperObject.ExportObject();
+
+            InternalSaveModelWrapper(WrapperObject);
         }
 
         private void Export3DFrame()
@@ -1591,7 +1659,7 @@ namespace Mafia2Tool
             // Make sure it's actually valid
             if (ModelWrapperObject != null)
             {
-                ModelWrapperObject.ExportObject();
+                InternalSaveModelWrapper(ModelWrapperObject);
             }
         }
 
@@ -1939,6 +2007,17 @@ namespace Mafia2Tool
                 return;
             }
 
+            // Only ask we they want to save the materials if we have some.
+            if (modelForm.NewMaterials.Count > 0)
+            {
+                if (MessageBox.Show(Language.GetString("$Q_IMPORT_MATERIALS"), "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    // Manager will handle adding for us.
+                    MaterialsManager.AddMaterialsToLibrary(modelForm.NewMaterials);
+                }
+            }
+
+            // Continue with the importing of the bundle
             foreach (MT_Object ModelObject in BundleObject.Objects)
             {
                 ConstructFrameFromImportedObject(ModelObject, frameResourceRoot);

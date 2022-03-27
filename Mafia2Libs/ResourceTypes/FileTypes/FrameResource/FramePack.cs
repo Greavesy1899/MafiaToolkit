@@ -238,13 +238,9 @@ namespace ResourceTypes.FrameResource
             return parent;
         }
 
-        public void WriteToFile(FrameObjectBase Frame)
+        public void WriteToFile(string ExportName, FrameObjectBase Frame)
         {
             ModelAttachments = new Dictionary<ulong, List<int>>();
-
-            string FrameName = Frame.Name.String;
-            string ExportPath = Path.Combine(ToolkitSettings.ExportPath, FrameName);
-            string ExportName = ExportPath + ".framedata";
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ExportName, FileMode.Create)))
             {

@@ -56,6 +56,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
+        public void Accept(IVisitor InVisitor)
+        {
+            foreach(MT_Object Object in Objects)
+            {
+                Object.Accept(InVisitor);
+            }
+        }
+
         protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
         {
             bool bIsValid = true;

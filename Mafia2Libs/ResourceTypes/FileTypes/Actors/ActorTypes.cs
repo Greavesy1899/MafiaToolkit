@@ -684,7 +684,6 @@ namespace ResourceTypes.Actors
     public class 
     ActorLight : IActorExtraDataInterface
     {
-        int size;
         byte[] padding;
         int unk01;
         byte unk02;
@@ -719,9 +718,6 @@ namespace ResourceTypes.Actors
         private Quaternion uMatrix0Quat;
         private Quaternion uMatrix1Quat;
 
-        public int Size {
-            get { return size; }
-        }
         public int Unk01 {
             get { return unk01; }
             set { unk01 = value; }
@@ -889,9 +885,10 @@ namespace ResourceTypes.Actors
 
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            size = stream.ReadInt32(isBigEndian);
+            int size = stream.ReadInt32(isBigEndian);
             if (size < 2305)
             {
+                long pos = stream.Position;
                 padding = stream.ReadBytes(10);
                 unk01 = stream.ReadInt32(isBigEndian);
                 uMatrix0 = MatrixUtils.ReadFromFile(stream, isBigEndian);
@@ -912,32 +909,44 @@ namespace ResourceTypes.Actors
                 }
 
                 for (int i = 0; i < 7; i++)
+                {
                     unkFloat1[i] = stream.ReadSingle(isBigEndian);
+                }
 
                 unk_int = stream.ReadInt32(isBigEndian);
 
                 for (int i = 0; i < 5; i++)
+                {
                     unkFloat2[i] = stream.ReadSingle(isBigEndian);
+                }
 
                 unk_byte1 = stream.ReadByte8();
 
                 for (int i = 0; i < 17; i++)
+                {
                     unkFloat3[i] = stream.ReadSingle(isBigEndian);
+                }
 
                 unk_byte2 = stream.ReadByte8();
 
                 for (int i = 0; i < 5; i++)
+                {
                     unkFloat4[i] = stream.ReadSingle(isBigEndian);
+                }
 
                 nameLight = new HashName(stream, isBigEndian);
 
                 unk_int2 = stream.ReadInt32(isBigEndian);
 
                 for (int i = 0; i < 20; i++)
+                {
                     unkFloat5[i] = stream.ReadSingle(isBigEndian);
+                }
 
                 for (int i = 0; i < 4; i++)
+                {
                     names[i] = new HashName(stream, isBigEndian);
+                }
 
                 boundingBox = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
                 unk_byte3 = stream.ReadByte8();
@@ -958,10 +967,15 @@ namespace ResourceTypes.Actors
             int Length = sceneLinks.Length;
             Debug.Assert(frameLinks.Length == Length && frameIdxLinks.Length == Length, "SceneLinks, FrameLinks and FrameIDXLinks should be all equal. Fix this problem and resave");
 
+            // Stubbed light, go back to beginning
             writer.Write(new byte[2316]);
             writer.Seek(0, SeekOrigin.Begin);
-            size = CalculateSize();
-            writer.Write(size, isBigEndian);
+
+            // we will come back and fill this in
+            writer.Write(-1, isBigEndian);
+            long StartPos = writer.Position;
+
+            // begin writing light data
             writer.Write(padding);
             writer.Write(unk01, isBigEndian);
             //writer.WriteByte(unk02);
@@ -980,60 +994,58 @@ namespace ResourceTypes.Actors
             }
 
             for (int i = 0; i < 7; i++)
+            {
                 writer.Write(unkFloat1[i], isBigEndian);
+            }
 
             writer.Write(unk_int, isBigEndian);
 
             for (int i = 0; i < 5; i++)
+            {
                 writer.Write(unkFloat2[i], isBigEndian);
+            }
 
             writer.WriteByte(unk_byte1);
 
             for (int i = 0; i < 17; i++)
+            {
                 writer.Write(unkFloat3[i], isBigEndian);
+            }
 
             writer.WriteByte(unk_byte2);
 
             for (int i = 0; i < 5; i++)
+            {
                 writer.Write(unkFloat4[i], isBigEndian);
+            }
 
             nameLight.WriteToFile(writer, isBigEndian);
 
             writer.Write(unk_int2, isBigEndian);
 
             for (int i = 0; i != 20; i++)
+            {
                 writer.Write(unkFloat5[i], isBigEndian);
+            }
 
             for (int i = 0; i != 4; i++)
+            {
                 names[i].WriteToFile(writer, isBigEndian);
+            }
 
             boundingBox.WriteToFile(writer, isBigEndian);
             writer.WriteByte(unk_byte3);
             uMatrix1.WriteToFile(writer, isBigEndian);
+
+            // fix size
+            long Size = writer.Position - StartPos;
+            writer.Seek(0, SeekOrigin.Begin);
+            writer.Write((int)Size, isBigEndian);
+
+            // move to the end of the stream and fill in Instanced & Type
             writer.Seek(2308, SeekOrigin.Begin);
             writer.Write(instanced, isBigEndian);
             writer.Write(type, isBigEndian);
-        }
-
-        private int CalculateSize()
-        {
-            //this is the base size of a light; the rest is determined by the data of hashes/strings etc.
-            int size = 378; 
-
-            for (int i = 0; i < count; i++)
-            {
-                size += sceneLinks[i].CalculateSize();
-                size += FrameLinks[i].CalculateSize();
-                size += 4;
-            }
-
-            size += nameLight.CalculateSize();
-
-            for (int i = 0; i < 4; i++)
-            {
-                size += names[i].CalculateSize();
-            }
-            return size;
         }
 
         public int GetSize()

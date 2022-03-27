@@ -35,9 +35,11 @@ namespace Mafia2Tool.Forms
                 "- Foxite\r\n" +
                 "- MafiaGameVideo\r\n" +
                 "- Kamzik123\r\n" +
+                "- Hurfy\r\n" +
                 "And Patreons:\r\n" +
                 "- HamAndRock\r\n" +
-                "- Melber\r\n";
+                "- Melber\r\n" +
+                "- Hurfy\r\n";
         }
 
         private void CloseButton_Click(object sender, EventArgs e)

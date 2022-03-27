@@ -379,10 +379,10 @@ namespace ResourceTypes.FrameResource
             return BuildFromFrames(null, Packet.RootFrame);
         }
 
-        public void SaveFramesToFile(FrameObjectBase frame)
+        public void SaveFramesToFile(string FileName, FrameObjectBase frame)
         {
             FramePack Packet = new FramePack(this);
-            Packet.WriteToFile(frame);
+            Packet.WriteToFile(FileName, frame);
         }
 
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)

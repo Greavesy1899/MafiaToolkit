@@ -60,4 +60,9 @@ namespace ResourceTypes.Materials
         MaterialName = 0,
         TextureName = 1
     }
+
+    public enum MaterialPreset
+    {
+        Default = 0
+    }
 }
