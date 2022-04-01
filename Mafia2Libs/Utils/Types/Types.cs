@@ -83,10 +83,10 @@ namespace Utils.Types
             byte[] RightHand = new byte[4];
             Array.Copy(GuidBytes, 4, RightHand, 0, 4);
 
-            string SLeftHand = BitConverter.ToString(LeftHand).Replace("-", "");
-            string SRightHand = BitConverter.ToString(RightHand).Replace("-", "");
-            string FormattedGUID = string.Format("0x{0:x8}, 0x{1:x8}", SLeftHand, SRightHand);
-            return FormattedGUID;
+            uint GuidLeft = BitConverter.ToUInt32(LeftHand, 0);
+            uint GuidRight = BitConverter.ToUInt32(RightHand, 0);
+
+            return string.Format("[{0}, {1}]", GuidLeft, GuidRight);
         }
 
         public void Set(string value)

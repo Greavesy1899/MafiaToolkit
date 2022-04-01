@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
+using Utils.Logging;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
@@ -965,7 +966,7 @@ namespace ResourceTypes.Actors
         {
             // Sanity check whether the user has got it right
             int Length = sceneLinks.Length;
-            Debug.Assert(frameLinks.Length == Length && frameIdxLinks.Length == Length, "SceneLinks, FrameLinks and FrameIDXLinks should be all equal. Fix this problem and resave");
+            ToolkitAssert.Ensure(frameLinks.Length == Length && frameIdxLinks.Length == Length, "SceneLinks, FrameLinks and FrameIDXLinks should be all equal. Fix this problem and resave");
 
             // Stubbed light, go back to beginning
             writer.Write(new byte[2316]);
@@ -2371,7 +2372,7 @@ namespace ResourceTypes.Actors
             Human3SpawnPos = Vector3Utils.ReadFromFile(stream, isBigEndian);
             Human4SpawnPos = Vector3Utils.ReadFromFile(stream, isBigEndian);
 
-            Debug.Assert(RestrictedCars == 0, "Restricted Cars is not 0. Please inform Greavesy.");
+            ToolkitAssert.Ensure(RestrictedCars == 0, "Restricted Cars is not 0. Please inform Greavesy.");
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)

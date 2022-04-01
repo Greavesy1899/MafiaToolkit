@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using Utils.Helpers;
+using Utils.Logging;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 
@@ -223,7 +224,7 @@ namespace ResourceTypes.Collisions
                 get {
 
                     Matrix4x4 transform = MatrixUtils.SetMatrix(RotationDegrees, Vector3.One, Position);
-                    Debug.Assert(!transform.IsNaN());
+                    ToolkitAssert.Ensure(!transform.IsNaN(), "Transform is NaN");
                     transform.Translation = Position;
                     return transform;
                 }

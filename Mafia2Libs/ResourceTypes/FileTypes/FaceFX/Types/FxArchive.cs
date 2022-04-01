@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Utils.Logging;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.OC3.FaceFX
@@ -123,7 +124,7 @@ namespace ResourceTypes.OC3.FaceFX
         public T GetObjectAs<T>() where T : FxObject
         {
             T CastedObject = (ObjectData as T);
-            Debug.Assert(CastedObject != null, "This Object was not of type");
+            ToolkitAssert.Ensure(CastedObject != null, "This Object was not of type");
 
             return CastedObject;
         }

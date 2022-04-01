@@ -22,6 +22,7 @@ using Utils.Types;
 using System.Diagnostics;
 using Utils.Models;
 using System.Linq;
+using Utils.Logging;
 
 namespace Mafia2Tool
 {
@@ -53,7 +54,7 @@ namespace Mafia2Tool
         {
             var file = name;
             var info = new FileInfo(file);
-            Debug.Assert(info.Exists);
+            ToolkitAssert.Ensure(info.Exists, "File [{0}] does not exist!", name);
             return info;
         }
 

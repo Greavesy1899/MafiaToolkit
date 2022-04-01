@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
+using Utils.Logging;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.AnimEntities
@@ -83,7 +84,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         {
             base.ReadFromFile(stream, isBigEndian);
 
-            Debug.Assert(stream.Position != stream.Length, "AeUnk4Data's ReadFromFile has reached the eos, but we still need to read an extra piece of data!");
+            ToolkitAssert.Ensure(stream.Position != stream.Length, "AeUnk4Data's ReadFromFile has reached the eos, but we still need to read an extra piece of data!");
             Unk4_01 = stream.ReadInt32(isBigEndian);
         }
 

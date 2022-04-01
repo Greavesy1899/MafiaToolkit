@@ -18,6 +18,8 @@ namespace Mafia2Tool
         private FileInfo prefabFile;
         private PrefabLoader prefabs;
 
+        private List<string> ActorDefinitionNames;
+
         private bool bIsFileEdited = false;
 
         public PrefabEditor(FileInfo file)
@@ -42,13 +44,49 @@ namespace Mafia2Tool
 
         public void InitEditor(List<string> definitionNames)
         {
-            prefabs = new PrefabLoader(prefabFile);
+            ActorDefinitionNames = definitionNames;
+
+            Reload();
 
             Show();
+        }
 
-            for (int i = 0; i < definitionNames.Count; i++)
+        private void Save()
+        {
+            PrefabLoader.PrefabStruct[] NewPrefabs = new PrefabLoader.PrefabStruct[TreeView_Prefabs.Nodes.Count];
+
+            for(int i = 0; i < TreeView_Prefabs.Nodes.Count; i++)
             {
-                var name = definitionNames[i];
+                TreeNode Node = TreeView_Prefabs.Nodes[i];
+                if (Node.Tag is PrefabLoader.PrefabStruct)
+                {
+                    PrefabLoader.PrefabStruct Prefab = (Node.Tag as PrefabLoader.PrefabStruct);
+                    NewPrefabs[i] = Prefab;
+                }
+            }
+
+            // Create backup, set our new prefabs, and then save.
+            File.Copy(prefabFile.FullName, prefabFile.FullName + "_old", true);
+            prefabs.Prefabs = NewPrefabs;
+            prefabs.WriteToFile(prefabFile);
+
+            Text = Language.GetString("PREFAB_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
+        private void Reload()
+        {
+            // Clear controls
+            TreeView_Prefabs.Nodes.Clear();
+            Grid_Prefabs.SelectedObject = null;
+
+            // Load the prefab
+            prefabs = new PrefabLoader(prefabFile);
+
+            // Add names if we know them
+            for (int i = 0; i < ActorDefinitionNames.Count; i++)
+            {
+                var name = ActorDefinitionNames[i];
                 var hash = FNV64.Hash(name);
 
                 foreach (var prefab in prefabs.Prefabs)
@@ -56,45 +94,21 @@ namespace Mafia2Tool
                     if (hash == prefab.Hash)
                     {
                         prefab.AssignedName = name;
-                    }
-                    else
-                    {
-                        Console.WriteLine(prefab.Hash);
+                        break;
                     }
                 }
             }
 
+            // Iterate and add them to TreeNode control
             foreach (var prefab in prefabs.Prefabs)
             {
-                var name = string.IsNullOrEmpty(prefab.AssignedName) ? "Not Found!" : prefab.AssignedName;
+                var name = string.IsNullOrEmpty(prefab.AssignedName) ? "[NAME NOT FOUND]" : prefab.AssignedName;
                 TreeNode node = new TreeNode();
                 node.Tag = prefab;
                 node.Text = name;
                 node.Name = name;
                 TreeView_Prefabs.Nodes.Add(node);
             }
-        }
-
-        private void Save()
-        {
-            List<PrefabLoader.PrefabStruct> NewPrefabs = new List<PrefabLoader.PrefabStruct>();
-
-            foreach (TreeNode Node in TreeView_Prefabs.Nodes)
-            {
-                if (Node.Tag is PrefabLoader.PrefabStruct)
-                {
-                    PrefabLoader.PrefabStruct Prefab = (Node.Tag as PrefabLoader.PrefabStruct);
-                    NewPrefabs.Add(Prefab);
-                }
-            }
-
-            // Create backup, set our new prefabs, and then save.
-            File.Copy(prefabFile.FullName, prefabFile.FullName + "_old", true);
-            prefabs.Prefabs = NewPrefabs.ToArray();
-            prefabs.WriteToFile(prefabFile);
-
-            Text = Language.GetString("PREFAB_EDITOR_TITLE");
-            bIsFileEdited = false;
         }
 
         private void Delete()
@@ -174,12 +188,12 @@ namespace Mafia2Tool
         }
 
         private void Button_Export_Click(object sender, EventArgs e) => Export();
-
         private void Button_Import_Click(object sender, EventArgs e) => Import();
-
+        private void Button_Reload_Click(object sender, EventArgs e) => Reload();
         private void Button_Delete_Click(object sender, EventArgs e) => Delete();
         private void Button_Save_Click(object sender, EventArgs e) => Save();
         private void Context_Delete_Click(object sender, EventArgs e) => Delete();
+        private void Grid_Prefabs_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e) => Grid_Prefabs.Refresh();
 
         private void PrefabEditor_Closing(object sender, FormClosingEventArgs e)
         {

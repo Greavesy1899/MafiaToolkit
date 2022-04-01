@@ -78,7 +78,7 @@ namespace ResourceTypes.M3.XBin
                 // If not, we will have big problems and undoubtedly fail. 
                 //if (Line.NumTableCommands0 > 0)
                 //{
-                //    Debug.Assert(reader.BaseStream.Position == Line.TableCommandsOffset_DEBUG, "We did not reach the Commands Offset");
+                //    ToolkitAssert.Ensure(reader.BaseStream.Position == Line.TableCommandsOffset_DEBUG, "We did not reach the Commands Offset");
                 //}
                 reader.BaseStream.Seek(Line.TableCommandsOffset_DEBUG, SeekOrigin.Begin);
 

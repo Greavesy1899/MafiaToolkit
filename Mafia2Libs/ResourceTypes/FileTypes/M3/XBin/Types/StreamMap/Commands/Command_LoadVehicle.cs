@@ -2,6 +2,7 @@
 using ResourceTypes.XBin.Types;
 using System.Diagnostics;
 using System.IO;
+using Utils.Logging;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {
@@ -64,7 +65,7 @@ namespace FileTypes.XBin.StreamMap.Commands
             uint VehicleOffset = reader.ReadUInt32();
             uint NumInstances0 = reader.ReadUInt32();
             uint NumInstances1 = reader.ReadUInt32();
-            Debug.Assert(NumInstances0 == NumInstances1, "Number of instances is incorrect!");
+            ToolkitAssert.Ensure(NumInstances0 == NumInstances1, "Number of instances is incorrect!");
 
             SlotType = (ESlotType)reader.ReadUInt32();
             SDSName = XBinCoreUtils.ReadStringPtrWithOffset(reader);

@@ -9,6 +9,7 @@ using ResourceTypes.Prefab.Vehicle;
 using ResourceTypes.Prefab.Door;
 using ResourceTypes.Prefab.Wagon;
 using System.Xml.Linq;
+using Utils.Logging;
 
 namespace ResourceTypes.Prefab
 {
@@ -75,7 +76,7 @@ namespace ResourceTypes.Prefab
                 Prefabs[i].ReadFromFile(reader);
             }
 
-            Debug.Assert(reader.BaseStream.Position == reader.BaseStream.Position, "We did not reach the end of the prefab file!");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == reader.BaseStream.Position, "We did not reach the end of the prefab file!");
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -189,7 +190,7 @@ namespace ResourceTypes.Prefab
                     InitData.Load(MemStream);
                 }
 
-                Debug.Assert(MemStream.Length == PrefabSize, "Didn't read everthing when loading");
+                ToolkitAssert.Ensure(MemStream.Length == PrefabSize, "Didn't read everthing when loading");
             }
 
             public bool WriteToFile(BinaryWriter writer, bool bMakeNew = false)
@@ -231,7 +232,7 @@ namespace ResourceTypes.Prefab
                 // (Debugger only)
                 if (Debugger.IsAttached)
                 {
-                    Debug.Assert(OutStream.Length == PrefabSize, "Incorrect Size when doing the save test");
+                    ToolkitAssert.Ensure(OutStream.Length == PrefabSize, "Incorrect Size when doing the save test");
                 }
 
                 bIsLengthTheSame = OutStream.Length == PrefabSize;

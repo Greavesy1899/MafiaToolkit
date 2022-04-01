@@ -348,7 +348,7 @@ namespace Utils.Helpers.Reflection
                 PropertyInfo[] PropertyInfos = Info.PropertyType.GetProperties();
 
                 // Check if this property has nested properties.
-                //Debug.Assert(PropertyInfos.Length == 0, "ERROR: Cannot save property with nested properties as attribute.",
+                //ToolkitAssert.Ensure(PropertyInfos.Length == 0, "ERROR: Cannot save property with nested properties as attribute.",
                  //   "We cannot save a property with more child properties. Please remove the attribute from this property: " + Info.Name);
 
                 return true;

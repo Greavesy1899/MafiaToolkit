@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Utils.Logging;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
@@ -241,7 +242,7 @@ namespace ResourceTypes.Actors
                 reader.BaseStream.Position = endPosition;
             }
 
-            Debug.Assert(reader.BaseStream.Position == reader.BaseStream.Length, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == reader.BaseStream.Length, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
         }
 
         public void WriteToFile()

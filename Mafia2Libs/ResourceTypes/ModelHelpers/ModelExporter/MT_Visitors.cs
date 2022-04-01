@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utils.Logging;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -34,13 +35,13 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         private void AddMessage(MT_MessageType MessageType, string Format, params object[] Args)
         {
-            Debug.Assert(ValidationTracker != null, "TrackerObject shouldn't be invalid.");
+            ToolkitAssert.Ensure(ValidationTracker != null, "TrackerObject shouldn't be invalid.");
             ValidationTracker.AddMessage(CurrentObject, MessageType, Format, Args);
         }
 
         private void AddMessage(MT_MessageType MessageType, string Text)
         {
-            Debug.Assert(ValidationTracker != null, "TrackerObject shouldn't be invalid.");
+            ToolkitAssert.Ensure(ValidationTracker != null, "TrackerObject shouldn't be invalid.");
             ValidationTracker.AddMessage(CurrentObject, MessageType, Text);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using BitStreams;
 using System;
 using System.Diagnostics;
+using Utils.Logging;
 
 namespace ResourceTypes.Prefab.CrashObject
 {
@@ -57,7 +58,7 @@ namespace ResourceTypes.Prefab.CrashObject
 
             // If one - means something is available.
             Unk8 = MemStream.ReadUInt32();
-            Debug.Assert(Unk8 == 0, "We expect one here. This has extra data!");
+            ToolkitAssert.Ensure(Unk8 == 0, "We expect one here. This has extra data!");
         }
 
         public void Save(BitStream MemStream)

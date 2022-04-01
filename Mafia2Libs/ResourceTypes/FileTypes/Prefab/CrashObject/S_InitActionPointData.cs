@@ -1,5 +1,6 @@
 ﻿using BitStreams;
 using System.Diagnostics;
+using Utils.Logging;
 
 namespace ResourceTypes.Prefab.CrashObject
 {
@@ -14,12 +15,12 @@ namespace ResourceTypes.Prefab.CrashObject
         public void Load(BitStream MemStream)
         {
             Unk0 = MemStream.ReadBit();
-            Debug.Assert(Unk0 == 1, "Extra data detected");
+            ToolkitAssert.Ensure(Unk0 == 1, "Extra data detected");
 
             Unk1 = MemStream.ReadString32();
 
             Unk2 = MemStream.ReadBit();
-            Debug.Assert(Unk2 == 1, "Extra data detected");
+            ToolkitAssert.Ensure(Unk2 == 1, "Extra data detected");
 
             Unk3 = MemStream.ReadString32();
 

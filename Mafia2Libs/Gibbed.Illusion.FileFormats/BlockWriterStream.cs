@@ -25,6 +25,7 @@ using System.Diagnostics;
 using System.IO;
 using Gibbed.IO;
 using OodleSharp;
+using Utils.Logging;
 using Utils.Settings;
 using ZLibNet;
 
@@ -194,7 +195,7 @@ namespace Gibbed.Illusion.FileFormats
         private bool FlushOodleCompressedBlock(MemoryStream data, int blockLength)
         {
             byte[] compressed = Oodle.Compress(this._BlockBytes, blockLength, OodleFormat.Kraken, OodleCompressionLevel.Normal);
-            Debug.Assert(compressed.Length != 0, "Compressed Block should not be empty");
+            ToolkitAssert.Ensure(compressed.Length != 0, "Compressed Block should not be empty");
             data.WriteBytes(compressed);
 
             // If it doesn't fit within the range of ratio, store as uncompressed.

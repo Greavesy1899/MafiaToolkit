@@ -2,6 +2,7 @@
 using System.Text;
 using System.IO;
 using System.Diagnostics;
+using Utils.Logging;
 
 namespace ResourceTypes.Navigation
 {
@@ -40,7 +41,7 @@ namespace ResourceTypes.Navigation
         //~ Overridden Functions
         public override void Close()
         {
-            Debug.Assert(ObjectPtrs.Count == 0, "Should have no ObjectPtrs to fix!");
+            ToolkitAssert.Ensure(ObjectPtrs.Count == 0, "Should have no ObjectPtrs to fix!");
 
             base.Close();
         }
@@ -53,7 +54,7 @@ namespace ResourceTypes.Navigation
             NewPtr.FileOffset = BaseStream.Position;
             NewPtr.BaseOffset = PositionToOffsetFrom;
 
-            Debug.Assert(!ObjectPtrs.ContainsKey(UniqueID), "Cannot add duplicate key into the ObjectPtrs dictionary.");
+            ToolkitAssert.Ensure(!ObjectPtrs.ContainsKey(UniqueID), "Cannot add duplicate key into the ObjectPtrs dictionary.");
 
             Write(-1);
 
@@ -62,7 +63,7 @@ namespace ResourceTypes.Navigation
 
         public void SolveLooseObjectPtr(string UniqueID)
         {
-            Debug.Assert(ObjectPtrs.ContainsKey(UniqueID), "Cannot solve loose object if it doesn't exist.");
+            ToolkitAssert.Ensure(ObjectPtrs.ContainsKey(UniqueID), "Cannot solve loose object if it doesn't exist.");
 
             // get ptr
             ObjectPtr ExistingPtr = ObjectPtrs[UniqueID];

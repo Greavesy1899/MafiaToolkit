@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using Utils.Logging;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -19,14 +20,14 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 Entity.ReadFromFile(Reader, isBigEndian);
             }
             
-            Debug.Assert(Entity != null, "Did not find a AnimEntityType. Maybe the Toolkit does not support it?");
-            Debug.Assert(Reader.Position == Reader.Length, "When reading the AnimEntity Definition, we did not reach the end of stream!");
+            ToolkitAssert.Ensure(Entity != null, "Did not find a AnimEntityType. Maybe the Toolkit does not support it?");
+            ToolkitAssert.Ensure(Reader.Position == Reader.Length, "When reading the AnimEntity Definition, we did not reach the end of stream!");
             return Entity;
         }
 
         public static void WriteAnimEntityToFile(MemoryStream Writer, AnimEntityWrapper EntityWrapper)
         {
-            Debug.Assert(EntityWrapper != null, "The passed Entity was not valid. Maybe the Toolkit does not support it?");
+            ToolkitAssert.Ensure(EntityWrapper != null, "The passed Entity was not valid. Maybe the Toolkit does not support it?");
 
             bool isBigEndian = false;
             EntityWrapper.WriteToFile(Writer, isBigEndian);

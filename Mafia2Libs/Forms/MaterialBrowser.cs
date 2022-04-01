@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Diagnostics;
 using Utils.Language;
+using Utils.Logging;
 
 namespace Mafia2Tool.Forms
 {
@@ -90,7 +91,7 @@ namespace Mafia2Tool.Forms
         private void TextureEntry_OnDoubleClick(object sender, EventArgs e)
         {
             // Add the new selected one
-            Debug.Assert(sender == SelectedEntry, "The sent control should be the same as SelectedMaterial, but it is not!");
+            ToolkitAssert.Ensure(sender == SelectedEntry, "The sent control should be the same as SelectedMaterial, but it is not!");
             SelectedMaterial = SelectedEntry.GetMaterial();
             Close();
         }

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
+using Utils.Logging;
 using Utils.Types;
 using Utils.VorticeUtils;
 
@@ -188,7 +189,7 @@ namespace ResourceTypes.FrameResource
             }
 
             worldTransform = MatrixUtils.SetMatrix(newRot, scale, newPos);
-            Debug.Assert(!worldTransform.IsNaN(), string.Format("Frame: {0} caused NaN()!", name.ToString()));
+            ToolkitAssert.Ensure(!worldTransform.IsNaN(), string.Format("Frame: {0} caused NaN()!", name.ToString()));
             foreach (var child in children)
             {
                 child.SetWorldTransform();

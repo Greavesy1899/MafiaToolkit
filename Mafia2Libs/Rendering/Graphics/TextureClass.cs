@@ -80,7 +80,7 @@ namespace Rendering.Graphics
 
             }
             Image Thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
-            Debug.Assert(Thumbnail != null, string.Format("Thumbnail is wrong here? Trying to load: {0}", name));
+            ToolkitAssert.Ensure(Thumbnail != null, string.Format("Thumbnail is wrong here? Trying to load: {0}", name));
 
             if(Thumbnail != null && hash != 0)
             {

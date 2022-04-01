@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Extensions;
 using Utils.Language;
+using Utils.Logging;
 using Utils.Models;
 using Utils.Settings;
 using Utils.VorticeUtils;
@@ -1003,7 +1004,7 @@ namespace Mafia2Tool
                             }
                         }
 
-                        Debug.Assert(sorted, "Error: Did not detect the frame accompanying this actor " + item.EntityName + "; This means it will probably cause errors in game. Check your actors in the toolkit!");
+                        ToolkitAssert.Ensure(sorted, "Error: Did not detect the frame accompanying this actor " + item.EntityName + "; This means it will probably cause errors in game. Check your actors in the toolkit!");
                     }
                 }
             }
@@ -1148,7 +1149,7 @@ namespace Mafia2Tool
                 return;
             }
 
-            Debug.Assert(frame != null, "Frame was null!");
+            ToolkitAssert.Ensure(frame != null, "Frame was null!");
 
             frame.Name.Set(name);
             frame.IsOnFrameTable = bAddToNameTable;
@@ -1384,7 +1385,7 @@ namespace Mafia2Tool
                     Graphics.DeleteAsset(entry.RefID);
                     DeleteFrames(node.Nodes[i]);
 
-                    Debug.Assert(bDidRemove == true, "Failed to remove!");
+                    ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
                 }
             }
         }
@@ -1403,7 +1404,7 @@ namespace Mafia2Tool
                     bool bDidRemove = SceneData.FrameResource.DeleteFrame(obj);
                     Graphics.DeleteAsset(obj.RefID);
 
-                    Debug.Assert(bDidRemove == true, "Failed to remove!");
+                    ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
                 }
 
                 DeleteFrames(node);

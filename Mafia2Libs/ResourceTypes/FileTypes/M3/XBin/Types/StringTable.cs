@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
 using Utils.StringHelpers;
+using Utils.Logging;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -46,7 +47,7 @@ namespace ResourceTypes.M3.XBin
             unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
-            Debug.Assert(count0 == count1, "These numbers should be identical.");
+            ToolkitAssert.Ensure(count0 == count1, "These numbers should be identical.");
 
             Items = new LocalisableString[count0];
 

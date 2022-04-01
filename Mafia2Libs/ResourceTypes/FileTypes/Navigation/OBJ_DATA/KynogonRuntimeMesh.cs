@@ -352,7 +352,7 @@ namespace ResourceTypes.Navigation
             string FooterName = StringHelpers.ReadString(reader); // A null terminated string.
             uint FooterUnk0 = reader.ReadUInt32(); // Size of string. Goes _after_ the string has been stored.
             uint FooterMagic = reader.ReadUInt32(); // should be 0x1213F001
-            Debug.Assert(FooterMagic == 0x1213F001, "Didn't reach end of file.");
+            ToolkitAssert.Ensure(FooterMagic == 0x1213F001, "Didn't reach end of file.");
             */
 
             //File.WriteAllLines("model.obj", data.ToArray());

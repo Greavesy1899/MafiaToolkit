@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
+using Utils.Logging;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -48,14 +49,14 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+            ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
             Unk02 = stream.ReadInt32(isBigEndian);
             Unk03 = stream.ReadInt32(isBigEndian);
             Unk04 = stream.ReadInt32(isBigEndian);
             Unk05 = stream.ReadBytes(112);
             /*
-            Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+            ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
             Unk04_Effects = new Effect[Unk04];
             for(int i = 0; i < Unk04; i++)
@@ -66,13 +67,13 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 Unk04_Effects[i] = NewEffect;
             }
 
-            Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+            ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
             Unk05 = stream.ReadInt32(isBigEndian);
             Unk06 = stream.ReadInt32(isBigEndian);
             Unk07 = stream.ReadInt32(isBigEndian);
 
-            Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+            ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
             Unk07_Effects = new Effect[Unk07];
             for (int i = 0; i < Unk07; i++)
@@ -83,13 +84,13 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 Unk07_Effects[i] = NewEffect;
             }
 
-            Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+            ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
             Unk08 = stream.ReadInt32(isBigEndian);
             Unk09 = stream.ReadInt32(isBigEndian);
             Unk10 = stream.ReadInt32(isBigEndian);
 
-            Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+            ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
             Unk10_Effects = new Effect[Unk07];
             for (int i = 0; i < Unk07; i++)
@@ -100,7 +101,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 Unk10_Effects[i] = NewEffect;
             }
 
-            Debug.Assert(stream.Position == stream.Length, "We expect to have hit the eof by now.");
+            ToolkitAssert.Ensure(stream.Position == stream.Length, "We expect to have hit the eof by now.");
             */
         }
 

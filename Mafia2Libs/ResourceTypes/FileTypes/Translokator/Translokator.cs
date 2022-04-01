@@ -8,6 +8,7 @@ using Utils.Extensions;
 using Utils.VorticeUtils;
 using Utils.StringHelpers;
 using Utils.Types;
+using Utils.Logging;
 
 namespace ResourceTypes.Translokator
 {
@@ -601,7 +602,7 @@ namespace ResourceTypes.Translokator
                     ulong hashvalue = reader.ReadUInt64();
                     obj.Name.Hash = hashvalue;
                     obj.Name.String = StringHelpers.ReadString(reader);
-                    Debug.Assert(obj.Name.Hash == hashvalue, "Object Hash and Name should be identical");
+                    ToolkitAssert.Ensure(obj.Name.Hash == hashvalue, "Object Hash and Name should be identical");
 
                     obj.UnkBytes1 = reader.ReadBytes(31 - obj.Name.ToString().Length);
                     obj.GridMax = reader.ReadSingle();

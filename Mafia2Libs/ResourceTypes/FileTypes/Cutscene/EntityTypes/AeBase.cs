@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
+using Utils.Logging;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -32,10 +33,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
             for (int i = 0; i < NumKeyFrames; i++)
             {
-                Debug.Assert(stream.Position != stream.Length, "Reached the end to early?");
+                ToolkitAssert.Ensure(stream.Position != stream.Length, "Reached the end to early?");
 
                 int Header = stream.ReadInt32(isBigEndian);
-                Debug.Assert(Header == 1000, "Keyframe magic did not equal 1000");
+                ToolkitAssert.Ensure(Header == 1000, "Keyframe magic did not equal 1000");
                 int Size = stream.ReadInt32(isBigEndian);
                 int KeyType = stream.ReadInt32(isBigEndian);
                 AnimKeyParamTypes KeyParamType = (AnimKeyParamTypes)KeyType;

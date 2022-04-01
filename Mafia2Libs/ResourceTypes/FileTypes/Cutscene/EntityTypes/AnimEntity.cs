@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
+using Utils.Logging;
 using Utils.Types;
 
 namespace ResourceTypes.Cutscene.AnimEntities
@@ -27,7 +28,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             EntityFlags = stream.ReadInt32(isBigEndian);
 
             uint AeIdentifier = stream.ReadUInt32(isBigEndian); // 117
-            Debug.Assert(AeIdentifier == 117, "AnimEntity Identifier should be 117.");
+            ToolkitAssert.Ensure(AeIdentifier == 117, "AnimEntity Identifier should be 117.");
             Size = stream.ReadUInt32(isBigEndian);
 
             // Store the frame hash information.

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using Utils.Extensions;
 using ResourceTypes.Misc;
+using Utils.Logging;
 
 namespace ResourceTypes.FrameResource
 {
@@ -306,7 +307,7 @@ namespace ResourceTypes.FrameResource
                 if(ParentObject != null)
                 {
                     bool bDeleted = ParentObject.Children.Remove(BaseObject);
-                    Debug.Assert(bDeleted, "Failed to delete an object which should be in the child array.");
+                    ToolkitAssert.Ensure(bDeleted, "Failed to delete an object which should be in the child array.");
 
                     BaseObject.Parent = null;
                 }

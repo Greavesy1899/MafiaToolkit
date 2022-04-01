@@ -169,7 +169,7 @@ namespace ResourceTypes.Materials
 
         private bool DoesMaterialContainTexture(string text, IMaterial material)
         {
-            Debug.Assert(material != null, "Attempted to look for a texture on a non-valid Material");
+            ToolkitAssert.Ensure(material != null, "Attempted to look for a texture on a non-valid Material");
             return material.HasTexture(text);
         }
 
