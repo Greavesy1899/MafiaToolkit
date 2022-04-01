@@ -56,10 +56,24 @@ namespace Mafia2Tool
                     columnNames.TryAdd(key, hash);
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 MessageBox.Show("Missing hashes.txt, No column names will be present.", "Toolkit", MessageBoxButtons.OK);
                 columnNames = new Dictionary<uint, string>();
+            }
+
+            // Load custom hashes. This is optional. Expects format like [uint32] [string]
+            FileInfo CustomHashesFile = new FileInfo(Path.Combine("Resources", "custom_hashes.txt"));
+            if(CustomHashesFile.Exists)
+            {
+                string[] CustomHashes = File.ReadAllLines(CustomHashesFile.FullName);
+
+                foreach (string Line in CustomHashes)
+                {
+                    string[] values = Line.Split(" ");
+                    uint hash = uint.Parse(values[0]);
+                    columnNames.TryAdd(hash, values[1]);
+                }
             }
         }
 
