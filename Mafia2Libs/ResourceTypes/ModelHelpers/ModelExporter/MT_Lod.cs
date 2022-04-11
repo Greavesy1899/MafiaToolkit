@@ -110,7 +110,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
                 if (NewMaterial.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.HasDiffuse))
                 {
-                    NewMaterial.DiffuseTexture = StringHelpers.ReadString8(reader);
+                    string Diffuse = StringHelpers.ReadString8(reader);
+                    NewMaterial.DiffuseTexture = Path.GetFileName(Diffuse);
                 }
 
                 NewFaceGroup.Material = NewMaterial;

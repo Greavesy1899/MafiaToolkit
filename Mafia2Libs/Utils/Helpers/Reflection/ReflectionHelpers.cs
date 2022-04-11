@@ -59,11 +59,28 @@ namespace Utils.Helpers.Reflection
 
                     // TODO: Not spectacular, as this will probably copy references from one object to another.
                     // Particularly problematic with strings. 
+                    if (Info.CanWrite)
+                    {
+                        Info.SetValue(ToObject, Info.GetValue(FromObject));
+                    }
+                }
+                else if (Info.CanWrite)
+                {
                     Info.SetValue(ToObject, Info.GetValue(FromObject));
                 }
                 else
                 {
-                    Info.SetValue(ToObject, Info.GetValue(FromObject));
+                    object ToCopy = Info.GetValue(FromObject);
+                    object NewObject = Info.GetValue(ToObject);
+                    FieldInfo[] Fields = Info.PropertyType.GetFields();
+                    for(int i = 0; i < Fields.Length; i++)
+                    {
+                        FieldInfo ThisField = Fields[i];
+                        if (!ThisField.Attributes.HasFlag(FieldAttributes.Static))
+                        {
+                            ThisField.SetValue(NewObject, ThisField.GetValue(ToCopy));
+                        }
+                    }
                 }
             }
         }

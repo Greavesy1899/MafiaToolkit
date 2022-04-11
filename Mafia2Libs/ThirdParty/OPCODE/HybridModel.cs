@@ -1,10 +1,10 @@
 ﻿using ResourceTypes.Collisions.PhysX;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using Utils.Extensions;
-using Utils.VorticeUtils;
 using static ResourceTypes.Collisions.PhysX.SerializationUtils;
 
 namespace ThirdParty.OPCODE
@@ -15,7 +15,7 @@ namespace ThirdParty.OPCODE
     /// <remarks>
     /// See full description in the original sources to get a general idea (<c>OPC_HybridModel.cpp</c>)
     /// </remarks>
-    class HybridModel : ModelBase
+    public class HybridModel : ModelBase
     {
         /// <summary>
         /// Leaf descriptor
@@ -43,6 +43,13 @@ namespace ThirdParty.OPCODE
         private uint numLeaves = 1;
         private IList<LeafTriangles> leafTriangles = new List<LeafTriangles>();
         private IList<uint> primitiveIndices = new List<uint>();
+
+        public override void BuildDefault()
+        {
+            base.BuildDefault();
+
+            numLeaves = 1;
+        }
 
         public override void Load_Collision(BinaryReader reader)
         {
@@ -96,12 +103,12 @@ namespace ThirdParty.OPCODE
 
             // Try and read LeafTriangles.
             // Data is packed inside a UInt32.
-            uint NumLeafTriangles = stream.ReadUInt32(bIsBigEndian);
+            numLeaves = stream.ReadUInt32(bIsBigEndian);
             bool bHasLeafTriangles = stream.ReadBoolean();
             if(bHasLeafTriangles)
             {
-                leafTriangles = new List<LeafTriangles>((int)NumLeafTriangles);
-                for(int i = 0; i < NumLeafTriangles; i++)
+                leafTriangles = new List<LeafTriangles>((int)numLeaves);
+                for(int i = 0; i < numLeaves; i++)
                 {
                     LeafTriangles NewLeafTri = (LeafTriangles)stream.ReadUInt32(bIsBigEndian);
                     leafTriangles.Add(NewLeafTri);
@@ -161,18 +168,19 @@ namespace ThirdParty.OPCODE
 
             bool bIsBigEndian = (endian == Endian.Big);
 
-            // Quantization flag?
             // Save the AABB tree (should be quantized here)
-            bool bIsQuantized = stream.ReadBoolean();
+            bool bIsQuantized = (modelCode.HasFlag(ModelFlag.OPC_QUANTIZED) == true);
+            stream.Write(bIsQuantized);
             if (bIsQuantized)
             {
                 tree.Save_FrameRes(stream, endian);
             }
 
             // Try and save LeafTriangles.
-            stream.Write(leafTriangles.Count, bIsBigEndian);
-            stream.Write(leafTriangles.Count > 0);
-            if (leafTriangles.Count > 0)
+            bool bHasLeafs = (modelCode.HasFlag(ModelFlag.OPC_SINGLE_NODE) == false);
+            stream.Write(numLeaves, bIsBigEndian);
+            stream.Write(bHasLeafs);
+            if (bHasLeafs)
             {
                 foreach(LeafTriangles LeafTri in leafTriangles)
                 {
@@ -181,9 +189,10 @@ namespace ThirdParty.OPCODE
             }
 
             // Try and save Primitive indices
+            bool bHasPrimitives = primitiveIndices.Count > 0;
             stream.Write(primitiveIndices.Count, bIsBigEndian);
-            stream.Write(primitiveIndices.Count > 0);
-            if (primitiveIndices.Count > 0)
+            stream.Write(bHasPrimitives);
+            if (bHasPrimitives)
             {
                 foreach (uint index in primitiveIndices)
                 {

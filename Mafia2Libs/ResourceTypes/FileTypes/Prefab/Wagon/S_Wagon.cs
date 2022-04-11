@@ -43,6 +43,11 @@ namespace ResourceTypes.Prefab.Wagon
     {
         public S_WagonInitData_Unk0[] WagonData { get; set; }
 
+        public S_WagonInitData()
+        {
+            WagonData = new S_WagonInitData_Unk0[0];
+        }
+
         public override void Load(BitStream MemStream)
         {
             base.Load(MemStream);

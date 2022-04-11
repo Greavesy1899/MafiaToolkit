@@ -66,6 +66,22 @@ namespace ResourceTypes.Materials
         {
             return MaterialName.Hash;
         }
+
+        // TODO: Only setup for Mafia II and Mafia II DE, 
+        // I think we need some system to do Material.SetTextureByKey().
+        // Then this goes into each override and check enum -> convert to ID?
+        public virtual void SetTextureFor(string SamplerOrTextureID, string NewTextureName) { }
+
+        public virtual void SetupFromPreset(MaterialPreset Preset)
+        {
+            if(Preset == MaterialPreset.Default)
+            {
+                ShaderHash = 3388704532;
+                ShaderID = 4894707398632176459;
+                Flags = (MaterialFlags)31461376;
+            }
+        }
+
         public virtual HashName GetTextureByID(string SamplerName)
         {
             return null;
@@ -89,9 +105,19 @@ namespace ResourceTypes.Materials
             return null;
         }
 
+        public virtual IMaterialSampler GetSamplerByKey(string SamplerKey)
+        {
+            return null;
+        }
+
         public virtual VersionsEnumerator GetMTLVersion()
         {
             return VersionsEnumerator.Nill;
+        }
+
+        public bool IsVersion(VersionsEnumerator InVersion)
+        {
+            return GetMTLVersion() == InVersion;
         }
 
         public override string ToString()

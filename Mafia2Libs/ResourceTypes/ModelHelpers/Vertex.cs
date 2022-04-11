@@ -96,24 +96,32 @@ namespace Utils.Models
             }
         }
 
+        private ushort ConvertFloatToUInt16(float Factorised)
+        {
+            float Rounded = MathF.Floor(Factorised);
+            ushort Value = Convert.ToUInt16(Rounded);
+            return Value;
+        }
+
         public void WritePositionData(byte[] data, int i, float factor, Vector3 offset)
         {
+            Vector3 PosToWrite = position;
             float tempBinormal = 0.0f;
-            position -= offset;
-            position /= factor;
+            Vector3 MinusOffset = PosToWrite - offset;
+            Vector3 Factorised = MinusOffset / factor;
             byte[] tempPosData;
 
             //Do X
-            tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.X));
+            tempPosData = BitConverter.GetBytes(ConvertFloatToUInt16(Factorised.X));
             Array.Copy(tempPosData, 0, data, i, 2);
 
             //Do Y
-            tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.Y));
+            tempPosData = BitConverter.GetBytes(ConvertFloatToUInt16(Factorised.Y));
             Array.Copy(tempPosData, 0, data, i + 2, 2);
 
             //Do Z
             // We have to make space for the binormal data (this is stored in the highest bit).
-            ushort z = Convert.ToUInt16(position.Z);
+            ushort z = ConvertFloatToUInt16(Factorised.Z);
             z &= 0x7FFF;
             if (tempBinormal < 0.0f)
             {
@@ -176,7 +184,7 @@ namespace Utils.Models
             Array.Copy(tempPosData, 0, data, i, 2);
 
             //Do Y
-            UVs[uvNum] = new Half2(UVs[uvNum].X, (Vortice.Mathematics.Half)(-UVs[uvNum].Y));
+            //UVs[uvNum] = new Half2(UVs[uvNum].X, (Vortice.Mathematics.Half)(1.0f - UVs[uvNum].Y));
             tempPosData = HalfExtenders.GetBytes(UVs[uvNum].Y);
             Array.Copy(tempPosData, 0, data, i + 2, 2);
         }

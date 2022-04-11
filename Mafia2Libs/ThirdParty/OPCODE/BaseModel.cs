@@ -16,6 +16,7 @@ namespace ThirdParty.OPCODE
 
     public interface IOpcodeSerializable
     {
+        void BuildDefault();
         /* Load the serializable data whilst respecting Collision format */
         void Load_Collision(BinaryReader reader);
         /* Save the serializable data whilst respecting Collision format */
@@ -28,7 +29,7 @@ namespace ThirdParty.OPCODE
     /// <summary>
     /// The base class for collision models
     /// </summary>
-    abstract class ModelBase : IOpcodeSerializable
+    public abstract class ModelBase : IOpcodeSerializable
     {
         [Flags]
         protected enum ModelFlag
@@ -53,6 +54,12 @@ namespace ThirdParty.OPCODE
 
         protected ModelFlag modelCode = ModelFlag.OPC_SINGLE_NODE;
         protected AABBOptimizedTree tree = new DummyTree();
+
+        public virtual void BuildDefault()
+        {
+            modelCode = ModelFlag.OPC_SINGLE_NODE;
+            tree = new DummyTree();
+        }
 
         public virtual void Load_Collision(BinaryReader reader)
         {

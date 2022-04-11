@@ -2,6 +2,8 @@
 using Vortice;
 using Utils.Models;
 using System.Numerics;
+using ResourceTypes.Materials;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -155,6 +157,60 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 NewDeclaration |= (ImportColour0 ? VertexFlags.Color : 0);
                 NewDeclaration |= (ImportColour1 ? VertexFlags.Color1 : 0);
                 OwningObject.VertexDeclaration = NewDeclaration;
+            }
+        }
+    }
+
+    public class MT_MaterialHelper : IImportHelper
+    {
+        public ulong Hash { get { return FNV64.Hash(Instance.Name); } }
+        public MT_MaterialInstance Instance { get; private set; }
+        public MaterialPreset Preset { get; private set; }
+        public int LibraryIndex { get; set; }
+        public IMaterial Material { get; private set; }
+
+        public MT_MaterialHelper(MT_MaterialInstance InInstance)
+        {
+            Instance = InInstance;
+
+            Preset = MaterialPreset.Default;
+            LibraryIndex = 0;
+        }
+
+        public void Setup()
+        {
+            // We've been selected, so make sure we have a material to represent
+            if (Material == null)
+            {
+                // Not really changed but does the same thing
+                OnMaterialPresetChanged();
+            }
+        }
+
+        public void Store()
+        {
+
+        }
+
+        // NB: Not using properties here as I've had the problem of not functions not being called.
+        // Just safer with a good old fashioned approach.
+        public void SetPreset(MaterialPreset NewPreset)
+        {
+            if(Preset != NewPreset)
+            {
+                OnMaterialPresetChanged();
+                Preset = NewPreset;
+            }
+        }
+
+        private void OnMaterialPresetChanged()
+        {
+            Material = MaterialsManager.CreateMaterialNoStore(Hash, Instance.Name, Preset);
+
+            // Only check if we have a diffuse.
+            if (Instance.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.HasDiffuse))
+            {
+                Material.SetTextureFor("S000", Instance.DiffuseTexture);
             }
         }
     }

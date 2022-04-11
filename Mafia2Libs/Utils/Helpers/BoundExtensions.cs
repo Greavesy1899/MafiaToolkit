@@ -3,6 +3,7 @@ using System.IO;
 using System.Numerics;
 using Vortice.Mathematics;
 using Utils.Models;
+using System;
 
 namespace Utils.VorticeUtils
 {
@@ -71,49 +72,24 @@ namespace Utils.VorticeUtils
 
         public static BoundingBox CalculateBounds(List<Vertex[]> data)
         {
-            Vector3 Min = Vector3.Zero;
-            Vector3 Max = Vector3.Zero;
+            Vector3 Min = new Vector3(1.0f / float.MinValue);
+            Vector3 Max = new Vector3(1.0f / float.MaxValue);
 
-            for (int p = 0; p != data.Count; p++)
+            for (int p = 0; p < data.Count; p++)
             {
-                for (int i = 0; i != data[p].Length; i++)
+                for (int i = 0; i < data[p].Length; i++)
                 {
                     Vector3 pos = data[p][i].Position;
-
-                    if (pos.X < Min.X)
-                    {
-                        Min.X = pos.X;
-                    }
-
-                    if (pos.X > Max.X)
-                    {
-                        Max.X = pos.X;
-                    }
-
-                    if (pos.Y < Min.Y)
-                    {
-                        Min.Y = pos.Y;
-                    }
-
-                    if (pos.Y > Max.Y)
-                    {
-                        Max.Y = pos.Y;
-                    }
-
-                    if (pos.Z < Min.Z)
-                    {
-                        Min.Z = pos.Z;
-                    }
-
-                    if (pos.Z > Max.Z)
-                    {
-                        Max.Z = pos.Z;
-                    }
+                    Min.X = MathF.Min(pos.X, Min.X);
+                    Max.X = MathF.Max(pos.X, Max.X);
+                    Min.Y = MathF.Min(pos.Y, Min.Y);
+                    Max.Y = MathF.Max(pos.Y, Max.Y);
+                    Min.Z = MathF.Min(pos.Z, Min.Z);
+                    Max.Z = MathF.Max(pos.Z, Max.Z);
                 }
             }
 
-            BoundingBox bbox = new BoundingBox(Min, Max);
-            return bbox;
+            return new BoundingBox(Min, Max);
         }
     }
 }

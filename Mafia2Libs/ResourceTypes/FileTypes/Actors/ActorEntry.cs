@@ -1,5 +1,6 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
 using System.ComponentModel;
+using System;
 using System.IO;
 using System.Numerics;
 using Utils.StringHelpers;
@@ -23,7 +24,7 @@ namespace ResourceTypes.Actors
         Vector3 position;
         Quaternion rotation;
         Vector3 scale;
-        ushort unk3;
+        bool ActivateOnInit;
         ushort dataID;
         ActorExtraData data;
 
@@ -84,9 +85,9 @@ namespace ResourceTypes.Actors
             get { return scale; }
             set { scale = value; }
         }
-        public ushort Unk3 {
-            get { return unk3; }
-            set { unk3 = value; }
+        public bool bActivateOnInit {
+            get { return ActivateOnInit; }
+            set { ActivateOnInit = value; }
         }
         public ushort DataID {
             get { return dataID; }
@@ -131,7 +132,7 @@ namespace ResourceTypes.Actors
             position = Vector3Utils.ReadFromFile(reader);
             rotation = QuaternionExtensions.ReadFromFile(reader);
             scale = Vector3Utils.ReadFromFile(reader);
-            unk3 = reader.ReadUInt16();
+            ActivateOnInit = Convert.ToBoolean(reader.ReadUInt16());
             dataID = reader.ReadUInt16();
         }
 
@@ -164,7 +165,7 @@ namespace ResourceTypes.Actors
             position.WriteToFile(writer);
             rotation.WriteToFile(writer);
             scale.WriteToFile(writer);
-            writer.Write(unk3);
+            writer.Write(Convert.ToUInt16(ActivateOnInit));
             writer.Write(dataID);
             long pos2 = writer.BaseStream.Position;
             writer.BaseStream.Position = pos;

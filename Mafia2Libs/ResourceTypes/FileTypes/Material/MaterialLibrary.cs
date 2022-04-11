@@ -55,6 +55,11 @@ namespace ResourceTypes.Materials
             }
         }
 
+        public void Save()
+        {
+            WriteMatFile(Name);
+        }
+
         public void WriteMatFile(string name)
         {
             this.name = name;
@@ -93,6 +98,18 @@ namespace ResourceTypes.Materials
                     Material.WriteToFile(writer, version);
                 }
             }
+        }
+
+        public bool AddMaterial(IMaterial InMaterial)
+        {
+            // Make sure same version
+            if(InMaterial.IsVersion(Version))
+            {
+                // Add new material
+                return Materials.TryAdd(InMaterial.GetMaterialHash(), InMaterial);
+            }
+
+            return false;
         }
 
         public void BuildMaterialLibrary(List<IMaterial> Materials, VersionsEnumerator InVersion)
