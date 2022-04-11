@@ -21,6 +21,7 @@ namespace Mafia2Tool
         private DirectoryInfo pcDirectory;
         private FileInfo launcher;
         private Game game;
+        private FileFrameResource CachedFrameResourceFile;
 
         private FileSystemWatcher DirectoryWatcher;
 
@@ -196,6 +197,7 @@ namespace Mafia2Tool
             // Make sure toolstrip buttons are reset
             SetPackUnpackButtonEnabled(false);
             Button_OpenMapEditor.Enabled = false;
+            CachedFrameResourceFile = null;
 
             infoText.Text = "Loading Directory..";
             fileListView.Items.Clear();
@@ -207,11 +209,6 @@ namespace Mafia2Tool
                 MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 OpenDirectory(rootDirectory, false);
                 return;
-            }
-
-            if (Directory.GetFiles(directory.FullName, "*.fr", SearchOption.TopDirectoryOnly).Length != 0)
-            {
-                Button_OpenMapEditor.Enabled = true;
             }
 
             DirectoryBase directoryInfo = new DirectoryBase(directory);
@@ -259,6 +256,12 @@ namespace Mafia2Tool
                 }
 
                 var file = FileFactory.ConstructFromFileInfo(info);
+
+                if(file is FileFrameResource)
+                {
+                    CachedFrameResourceFile = file as FileFrameResource;
+                    Button_OpenMapEditor.Enabled = true;
+                }
 
                 item = new ListViewItem(info.Name, imageBank.Images.IndexOfKey(info.Extension));
                 item.Tag = file;
@@ -463,13 +466,12 @@ namespace Mafia2Tool
 
         private void ContextOpenMapEditor_Click(object sender, EventArgs e)
         {
-            if (fileListView.Items.Count > 0)
+            if (CachedFrameResourceFile != null)
             {
-                string[] FrameResourceFile = System.IO.Directory.GetFiles(currentDirectory.FullName, "*.fr", SearchOption.TopDirectoryOnly);
-                FileFrameResource FileFrameResource = new FileFrameResource(new FileInfo(FrameResourceFile[0]));
-                FileFrameResource.Open();
+                CachedFrameResourceFile.Open();
             }
         }
+
         private void onPathChange(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '\r')
