@@ -59,6 +59,42 @@ namespace Mafia2Tool.Forms
             }
 
             DialogResult = DialogResult.OK;
+
+            string[] MaterialFileNames = { "default.mtl", "default50.mtl", "default60.mtl" };
+            switch (GameStorage.Instance.GetSelectedGame().GameType)
+            {
+                case GamesEnumerator.MafiaII:
+                    string Mafia2MaterialsPath = System.IO.Directory.GetParent(ToolkitSettings.ReadDirectoryKey("M2_Directory")).ToString() + "\\edit\\materials\\";
+                    string Mafia2MaterialsValue =
+                        Mafia2MaterialsPath + MaterialFileNames[0] + "," +
+                        Mafia2MaterialsPath + MaterialFileNames[1] + "," +
+                        Mafia2MaterialsPath + MaterialFileNames[2] + ",";
+                    GameStorage.Instance.GetSelectedGame().Materials = Mafia2MaterialsValue;
+                    break;
+                case GamesEnumerator.MafiaII_DE:
+                    string Mafia2DeMaterialsPath = System.IO.Directory.GetParent(ToolkitSettings.ReadDirectoryKey("M2DE_Directory")).ToString() + "\\edit\\materials\\";
+                    string Mafia2DeMaterialsValue =
+                        Mafia2DeMaterialsPath + MaterialFileNames[0] + "," +
+                        Mafia2DeMaterialsPath + MaterialFileNames[1] + "," +
+                        Mafia2DeMaterialsPath + MaterialFileNames[2] + ",";
+                    GameStorage.Instance.GetSelectedGame().Materials = Mafia2DeMaterialsValue;
+                    break;
+                case GamesEnumerator.MafiaI_DE:
+                    string Mafia1DeMaterialsPath = ToolkitSettings.ReadDirectoryKey("M1DE_Directory") + "\\edit\\materials\\";
+                    string Mafia1DeMaterialsValue =
+                    Mafia1DeMaterialsPath + MaterialFileNames[0] + ",";
+                    GameStorage.Instance.GetSelectedGame().Materials = Mafia1DeMaterialsValue;
+                    break;
+                case GamesEnumerator.MafiaIII:
+                    string Mafia3MaterialsPath = ToolkitSettings.ReadDirectoryKey("M3_Directory") + "\\edit\\materials\\";
+                    string Mafia3MaterialsValue =
+                    Mafia3MaterialsPath + MaterialFileNames[0] + ",";
+                    GameStorage.Instance.GetSelectedGame().Materials = Mafia3MaterialsValue;
+                    break;
+                default:
+                    break;
+            }
+
             Close();
         }
 

@@ -22,20 +22,51 @@ namespace Forms.OptionControls
             MTLsToLoadText.Text = Language.GetString("$MATERIAL_LIB_SELECTED");
         }
 
+        private void AddMaterial(string MaterialPath, bool CheckExists = false)
+        {
+            if (!MTLListBox.Items.Contains(MaterialPath))
+            {
+                if (CheckExists == true)
+                {
+                    if (System.IO.File.Exists(MaterialPath))
+                    {
+                        MTLListBox.Items.Add(MaterialPath);
+                    }
+                    else
+                    {
+                        MessageBox.Show("The Material: " + MaterialPath + " is missing.");
+                    }
+                }
+                else
+                {
+                    MTLListBox.Items.Add(MaterialPath);
+                }
+            }
+        }
+
         private void LoadSettings()
         {
             string[] files = GameStorage.Instance.GetSelectedGame().Materials.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach(string file in files)
+            foreach (string file in files)
             {
+                //Avoiding adding duplicate materials
+                if (MTLListBox.Items.Contains(file) == true)
+                {
+                    break;
+                }
+
                 MTLListBox.Items.Add(file);
             }
+
+            //Saving the loaded settings
+            UpdateINIKey();
         }
 
         private void AddLibrary_Click(object sender, EventArgs e)
         {
             if (MTLBrowser.ShowDialog() == DialogResult.OK)
             {
-                foreach(string file in MTLBrowser.FileNames)
+                foreach (string file in MTLBrowser.FileNames)
                 {
                     MTLListBox.Items.Add(file);
                 }
@@ -57,7 +88,7 @@ namespace Forms.OptionControls
         {
             string value = "";
 
-            foreach(string file in MTLListBox.Items)
+            foreach (string file in MTLListBox.Items)
             {
                 value += file;
                 value += ",";
