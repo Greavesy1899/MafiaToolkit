@@ -202,6 +202,7 @@ namespace ResourceTypes.Speech
                 get { return unk4; }
                 set { unk4 = value; }
             }
+            public byte[] Unk4_Data { get; private set; }
             public int Unk5 {
                 get { return unk5; }
                 set { unk5 = value; }
@@ -224,6 +225,7 @@ namespace ResourceTypes.Speech
                 itemName = StringHelpers.ReadString32(reader);
                 unk3 = reader.ReadInt32();
                 unk4 = reader.ReadInt32();
+                Unk4_Data = reader.ReadBytes(unk4);
                 unk5 = reader.ReadInt32();
                 unk6 = reader.ReadInt32();
             }

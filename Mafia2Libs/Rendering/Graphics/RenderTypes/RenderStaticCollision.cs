@@ -27,8 +27,8 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
-            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
-            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+            vertexBuffer = d3d.CreateBuffer<VertexLayouts.CollisionLayout.Vertex>(BindFlags.VertexBuffer, Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+            indexBuffer = d3d.CreateBuffer<uint>(BindFlags.IndexBuffer, Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[2];
         }
 
@@ -144,38 +144,32 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        public override void Render(DirectX11Class Dx11Object, Camera camera)
         {
             if (!DoRender)
             {
                 return;
             }
 
-            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0);
-            deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
-            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+            Dx11Object.DeviceContext.IASetVertexBuffer(0, vertexBuffer, Unsafe.SizeOf<VertexLayouts.CollisionLayout.Vertex>());
+            Dx11Object.DeviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+            Dx11Object.SetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
-            Shader.SetSceneVariables(deviceContext, Transform, camera);
-            Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(null, SelectionColour.Normalize()));
+            var MatParams = new BaseShader.MaterialParameters(null, SelectionColour.Normalize());
+            Shader.SetSceneVariables(Dx11Object.DeviceContext, Transform, camera);
+            Shader.SetShaderParameters(Dx11Object.Device, Dx11Object.DeviceContext, MatParams);
+            Shader.SetEditorParameters(Dx11Object.Device, Dx11Object.DeviceContext, MatParams);
 
-            Shader.Render(deviceContext, PrimitiveTopology.TriangleList, Indices.Length, 0);
-        }
-
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            Transform = matrix;
+            Shader.Render(Dx11Object, PrimitiveTopology.TriangleList, Indices.Length, 0);
         }
 
         public override void Shutdown()
         {
+            base.Shutdown();
+
             Indices = null;
             Vertices = null;
             materials = null;
-            vertexBuffer?.Dispose();
-            vertexBuffer = null;
-            indexBuffer?.Dispose();
-            indexBuffer = null;
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)

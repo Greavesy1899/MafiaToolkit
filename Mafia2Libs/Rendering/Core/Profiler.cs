@@ -14,7 +14,6 @@ namespace Rendering.Core
         private Stopwatch Timer;
         private int NumFrames;
         private TimeSpan FrameStart;
-        private float TickPerMs;
         private long LastFrameTime;
         private float CumulativeFrameTime;
 
@@ -27,7 +26,6 @@ namespace Rendering.Core
         public void Init()
         {
             NumFrames = 0;
-            TickPerMs = Stopwatch.Frequency / 1000.0f;
             Timer.Start();
         }
 
@@ -45,7 +43,7 @@ namespace Rendering.Core
         {
             long currentTime = Timer.ElapsedTicks;
             float TimeDifference = currentTime - LastFrameTime;
-            FrameTime = TimeDifference / TickPerMs;
+            FrameTime = 1000.0f / FramesPerSecond;
             CumulativeFrameTime += FrameTime;
             LastFrameTime = currentTime;
         }

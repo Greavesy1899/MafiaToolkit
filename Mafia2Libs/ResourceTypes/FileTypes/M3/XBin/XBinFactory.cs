@@ -105,7 +105,6 @@ namespace ResourceTypes.M3.XBin
                 //    break;
                 default:
                     throw new Exception("We lack the support for this type.");
-                    break;
             }
 
             ToolkitAssert.Ensure(XBinData != null, "XBinData is null, but we should have actually read this.");

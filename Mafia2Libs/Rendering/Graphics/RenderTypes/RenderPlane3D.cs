@@ -105,43 +105,35 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
-            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            vertexBuffer = d3d.CreateBuffer<VertexLayouts.BasicLayout.Vertex>(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            indexBuffer = d3d.CreateBuffer<ushort>(BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        public override void Render(DirectX11Class Dx11Object, Camera camera)
         {
             if (!DoRender)
             {
                 return;
             }
 
-            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
-            deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
+            Dx11Object.DeviceContext.IASetVertexBuffer(0, vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>());
+            Dx11Object.DeviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
 
-            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+            Dx11Object.SetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
-            shader.SetSceneVariables(deviceContext, Transform, camera);
-            shader.Render(deviceContext, PrimitiveTopology.TriangleList, indices.Length, 0);
+            shader.SetSceneVariables(Dx11Object.DeviceContext, Transform, camera);
+            shader.Render(Dx11Object, PrimitiveTopology.TriangleList, indices.Length, 0);
         }
 
         public override void Select()
         {
         }
 
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            this.Transform = matrix;
-        }
-
         public override void Shutdown()
         {
+            base.Shutdown();
+
             vertices = null;
-            indexBuffer = null;
-            vertexBuffer?.Dispose();
-            vertexBuffer = null;
-            indexBuffer?.Dispose();
             indexBuffer = null;
         }
 

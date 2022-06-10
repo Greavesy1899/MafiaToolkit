@@ -2,6 +2,7 @@
 using System.Numerics;
 using Vortice.Mathematics;
 using Utils.VorticeUtils;
+using Vortice.Mathematics.PackedVector;
 
 namespace Utils.Models
 {

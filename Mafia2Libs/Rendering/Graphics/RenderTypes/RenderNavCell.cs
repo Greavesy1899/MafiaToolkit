@@ -39,7 +39,7 @@ namespace Rendering.Graphics
                 {
                     RenderLine line = new RenderLine();
                     line.SetUnselectedColour(System.Drawing.Color.Turquoise);
-                    line.InitSwap(new Vector3[2] { unk10.B1.Maximum, unk10.B1.Minimum });
+                    line.InitSwap(new Vector3[2] { unk10.B1.Max, unk10.B1.Min });
                     Lines.Add(line);
                 }
 
@@ -47,7 +47,7 @@ namespace Rendering.Graphics
                 {
                     RenderLine line = new RenderLine();
                     line.SetUnselectedColour(System.Drawing.Color.Green);
-                    line.InitSwap(new Vector3[2] { unk12.B1.Maximum, unk12.B1.Minimum });
+                    line.InitSwap(new Vector3[2] { unk12.B1.Max, unk12.B1.Min });
                     Lines.Add(line);
                 }
 
@@ -63,7 +63,7 @@ namespace Rendering.Graphics
                 {
                     RenderLine line = new RenderLine();
                     line.SetUnselectedColour(System.Drawing.Color.Brown);
-                    line.InitSwap(new Vector3[2] { unk16.Maximum, unk16.Minimum });
+                    line.InitSwap(new Vector3[2] { unk16.Max, unk16.Min });
                     Lines.Add(line);
                 }
 
@@ -81,20 +81,17 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext) { }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera) { }
+        public override void Render(DirectX11Class Dx11Object, Camera camera) { }
 
         public override void Select()
         {
             throw new NotImplementedException();
         }
 
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            Transform = matrix;
-        }
-
         public override void Shutdown()
         {
+            base.Shutdown();
+
             if (LineBatch != null)
             {
                 OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(LineBatch);
@@ -109,9 +106,10 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext) { }
 
-        public void SetVisibility(bool bNewVisibility)
+        public override void SetVisibility(bool bNewVisibility)
         {
-            DoRender = bNewVisibility;
+            base.SetVisibility(bNewVisibility);
+
             Update();
         }
 

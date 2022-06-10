@@ -22,6 +22,7 @@ namespace Rendering.Graphics
 
     public struct PickOutParams
     {
+        public float LowestDistance { get; set; }
         public int LowestRefID { get; set; }
         public Vector3 WorldPosition { get; set; }
     }
@@ -52,10 +53,14 @@ namespace Rendering.Graphics
         private PrimitiveBatch LineBatch = null;
         private PrimitiveBatch BBoxBatch = null;
         public PrimitiveManager OurPrimitiveManager { get; private set; }
-
+        public ProxyRenderManager OurProxyRenderManager { get; private set; }
+        public BufferManager OurBufferManager { get; private set; }
+        public RuntimeCollisionManager OurCollisionManager { get; private set; }
 
         public GraphicsClass()
         {
+            D3D = new DirectX11Class();
+
             InitObjectStack = new Dictionary<int, IRenderer>();
             Profile = new Profiler();
             Assets = new Dictionary<int, IRenderer>();
@@ -63,6 +68,9 @@ namespace Rendering.Graphics
             translokatorGrid = new SpatialGrid();
             navigationGrids = new SpatialGrid[0];
             OurPrimitiveManager = new PrimitiveManager();
+            OurProxyRenderManager = new ProxyRenderManager(this);
+            OurBufferManager = new BufferManager(this, D3D);
+            OurCollisionManager = new RuntimeCollisionManager(this, D3D);
 
             OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
 
@@ -79,7 +87,6 @@ namespace Rendering.Graphics
 
         public bool PreInit(IntPtr WindowHandle)
         {
-            D3D = new DirectX11Class();
             if (!D3D.Init(WindowHandle))
             {
                 MessageBox.Show("Failed to initialize DirectX11!");
@@ -90,30 +97,33 @@ namespace Rendering.Graphics
                 bool result = RenderStorageSingleton.Instance.Initialise(D3D);
                 var structure = new M2TStructure();
                 //import gizmo
-                RenderModel gizmo = new RenderModel();
+                RenderModel gizmo = new RenderModel(-1);
+                gizmo.CachedGraphics = this;
                 structure.ReadFromM2T("Resources/GizmoModel.m2t");
                 gizmo.ConvertMTKToRenderModel(structure);
                 gizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
-                gizmo.DoRender = true;
+                gizmo.SetVisibility(true);
                 TranslationGizmo = new GizmoTool(gizmo);
 
-                sky = new RenderModel();
-                structure = new M2TStructure();
-                structure.ReadFromM2T("Resources/sky_backdrop.m2t");
-                sky.ConvertMTKToRenderModel(structure);
-                sky.InitBuffers(D3D.Device, D3D.DeviceContext);
+                //sky = new RenderModel(-1);
+                //sky.CachedGraphics = this;
+                //structure = new M2TStructure();
+                //structure.ReadFromM2T("Resources/sky_backdrop.m2t");
+                //sky.ConvertMTKToRenderModel(structure);
+                //sky.InitBuffers(D3D.Device, D3D.DeviceContext);
 
-                clouds = new RenderModel();
-                structure = new M2TStructure();
-                structure.ReadFromM2T("Resources/weather_clouds.m2t");
-                clouds.ConvertMTKToRenderModel(structure);
-                clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
-                clouds.DoRender = false;
+                //clouds = new RenderModel(-1);
+                //clouds.CachedGraphics = this;
+                //structure = new M2TStructure();
+                //structure.ReadFromM2T("Resources/weather_clouds.m2t");
+                //clouds.ConvertMTKToRenderModel(structure);
+                //clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
+               // clouds.SetVisibility(false);
             }
 
             selectionBox.SetColour(System.Drawing.Color.Red);
             selectionBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(-0.5f)));          
-            selectionBox.DoRender = false;
+            selectionBox.SetVisibility(false);
             return true;
         }
 
@@ -127,9 +137,9 @@ namespace Rendering.Graphics
             ClearRenderStack();
             selectionBox.InitBuffers(D3D.Device, D3D.DeviceContext);
             TranslationGizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
-            sky.InitBuffers(D3D.Device, D3D.DeviceContext);
-            sky.DoRender = WorldSettings.RenderSky;
-            clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
+            //sky.InitBuffers(D3D.Device, D3D.DeviceContext);
+            //sky.SetVisibility(false);
+            //clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
             Input = new InputClass();
             Input.Init();
             return true;
@@ -167,8 +177,11 @@ namespace Rendering.Graphics
             Vector3 WorldPosIntersect = Vector3.Zero;
 
             Ray ray = Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(Width, Height));
+            PickOutParams ProxyOutParams = OurProxyRenderManager.Pick(ray);
+            lowest = ProxyOutParams.LowestDistance;
+            lowestRefID = ProxyOutParams.LowestRefID;
+            WorldPosIntersect = ProxyOutParams.WorldPosition;
 
-            int index = 0;
             foreach (KeyValuePair<int, IRenderer> model in Assets)
             {
                 if (!model.Value.DoRender)
@@ -183,42 +196,6 @@ namespace Rendering.Graphics
                     Vector3.TransformNormal(ray.Direction, vWM)
                 );
 
-                if (model.Value is RenderModel)
-                {
-                    RenderModel mesh = (model.Value as RenderModel);
-                    var bbox = mesh.BoundingBox;
-
-                    if (localRay.Intersects(bbox) == 0.0f) continue;
-
-                    for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
-                    {
-                        var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
-                        var v1 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position;
-                        var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
-                        float t;
-
-                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
-
-                        if (t < 0.0f || float.IsNaN(t))
-                        {
-                            // TODO: Remove this from Graphics class. This should be an ambiguous class - 
-                            // Maybe we can send this to another class which handles erroneous requests
-                            if (SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
-                            {
-                                var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
-                                Utils.Logging.Log.WriteLine(string.Format("The toolkit has failed to analyse a model: {0} {1}", frame.Name, t));
-                            }
-                        }
-
-                        var worldPosition = ray.Position + t * ray.Direction;
-                        var distance = (worldPosition - ray.Position).LengthSquared();
-                        if (distance < lowest)
-                        {
-                            lowest = distance;
-                            lowestRefID = model.Key;
-                        }
-                    }
-                }
                 if (model.Value is RenderInstance)
                 {
                     RenderInstance instance = (model.Value as RenderInstance);
@@ -256,8 +233,6 @@ namespace Rendering.Graphics
                         }
                     }
                 }
-
-                index++;
             }
 
             PickOutParams OutputParams = new PickOutParams();
@@ -338,7 +313,7 @@ namespace Rendering.Graphics
             foreach (IRenderer RenderEntry in Assets.Values)
             {
                 RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);
+                RenderEntry.Render(D3D, Camera);
             }
 
             //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);
@@ -347,18 +322,19 @@ namespace Rendering.Graphics
                 grid.Render(D3D.Device, D3D.DeviceContext, Camera);
             }
 
-            OurPrimitiveManager.RenderPrimitives(D3D.Device, D3D.DeviceContext, Camera);
+            OurPrimitiveManager.RenderPrimitives(D3D, Camera);
+            OurProxyRenderManager.RenderProxies(D3D, Camera);
 
             translokatorGrid.Render(D3D.Device, D3D.DeviceContext, Camera);
             selectionBox.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-            selectionBox.Render(D3D.Device, D3D.DeviceContext, Camera);
-            TranslationGizmo.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-            TranslationGizmo.Render(D3D.Device, D3D.DeviceContext, Camera);
-            clouds.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-            clouds.Render(D3D.Device, D3D.DeviceContext, Camera);
-            sky.DoRender = WorldSettings.RenderSky;
-            sky.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-            sky.Render(D3D.Device, D3D.DeviceContext, Camera);
+            selectionBox.Render(D3D, Camera);
+            //TranslationGizmo.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            TranslationGizmo.Render(D3D, Camera);
+            //clouds.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            //clouds.Render(D3D.Device, D3D.DeviceContext, Camera);
+            //sky.SetVisibility(false);
+            //sky.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            //sky.Render(D3D.Device, D3D.DeviceContext, Camera);
 
             D3D.EndScene();
             return true;
@@ -368,6 +344,7 @@ namespace Rendering.Graphics
         {
             foreach (KeyValuePair<int, IRenderer> asset in InitObjectStack)
             {
+                asset.Value.CachedGraphics = this;
                 asset.Value.InitBuffers(D3D.Device, D3D.DeviceContext);
 
                 if (asset.Value is RenderBoundingBox)
@@ -406,7 +383,7 @@ namespace Rendering.Graphics
 
                 TranslationGizmo.OnSelectEntry(NewObject.Transform, true);
                 NewObject.Select();
-                selectionBox.DoRender = true;
+                selectionBox.SetVisibility(true);
                 selectionBox.SetTransform(NewObject.Transform);
                 selectionBox.Update(NewObject.BoundingBox);
                 selectedID = id;
@@ -418,6 +395,12 @@ namespace Rendering.Graphics
             if (Assets.ContainsKey(RefID))
             {
                 return Assets[RefID];
+            }
+
+            IRenderer ProxyObject = OurProxyRenderManager.GetObject(RefID);
+            if(ProxyObject != null)
+            {
+                return ProxyObject;
             }
 
             IRenderer ObjectInPrimitive = OurPrimitiveManager.GetObject(RefID);
@@ -445,7 +428,7 @@ namespace Rendering.Graphics
             IRenderer ObjectAsset = GetAsset(RefID);
             if (ObjectAsset != null)
             {
-                ObjectAsset.DoRender = bVisibility;
+                ObjectAsset.SetVisibility(bVisibility);
             }
         }
 
@@ -494,11 +477,9 @@ namespace Rendering.Graphics
 
             foreach (SpatialGrid grid in navigationGrids)
             {
-                grid?.Shutdown();
+                grid.Shutdown();
             }
 
-            OurPrimitiveManager?.Shutdown();
-            OurPrimitiveManager = null;
             navigationGrids = null;
             translokatorGrid?.Shutdown();
             translokatorGrid = null;
@@ -506,11 +487,21 @@ namespace Rendering.Graphics
             selectionBox = null;
             TranslationGizmo.Shutdown();
             TranslationGizmo = null;
-            clouds.Shutdown();
+            clouds?.Shutdown();
             clouds = null;
-            sky.Shutdown();
+            sky?.Shutdown();
             sky = null;
+
             Assets = null;
+            OurPrimitiveManager?.Shutdown();
+            OurPrimitiveManager = null;
+            OurProxyRenderManager?.Shutdown();
+            OurProxyRenderManager = null;
+            OurBufferManager?.Shutdown();
+            OurBufferManager = null;
+            OurCollisionManager?.Shutdown();
+            OurCollisionManager = null;
+
             D3D?.Shutdown();
             D3D = null;
         }

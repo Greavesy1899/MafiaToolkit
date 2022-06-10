@@ -5,7 +5,7 @@ namespace Rendering.Graphics
 {
     public class CollisionShader : BaseShader
     {
-        public CollisionShader(ID3D11Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
+        public CollisionShader(DirectX11Class Dx11Object, ShaderInitParams InitParams) : base(Dx11Object, InitParams) { }
 
         public override void InitCBuffersFrame(ID3D11DeviceContext context, Camera camera, WorldSettings settings)
         {

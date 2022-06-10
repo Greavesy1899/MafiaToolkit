@@ -103,8 +103,6 @@ namespace Gibbed.Mafia2.FileFormats
                 Extension = FileExtensionLookupFusion[Typename];
                 return Extension;
             }
-
-            return Extension;
         }
 
         private XPathDocument CheckForCrySDS()

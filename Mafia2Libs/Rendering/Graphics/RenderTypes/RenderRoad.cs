@@ -89,28 +89,25 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        public override void Render(DirectX11Class Dx11Object, Camera camera)
         {
             if (!DoRender)
             {
                 return;
             }
 
-            Spline.Render(device, deviceContext, camera);
+            Spline.Render(Dx11Object, camera);
 
             foreach (Render2DPlane plane in Planes)
             {
-                plane.Render(device, deviceContext, camera);
+                plane.Render(Dx11Object, camera);
             }
-        }
-
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            this.Transform = matrix;
         }
 
         public override void Shutdown()
         {
+            base.Shutdown();
+
             Spline.Shutdown();
 
             foreach (Render2DPlane plane in Planes)

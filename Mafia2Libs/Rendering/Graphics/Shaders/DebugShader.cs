@@ -6,27 +6,27 @@ namespace Rendering.Graphics
 {
     public class DebugShader : BaseShader
     {
-        public DebugShader(ID3D11Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
+        public DebugShader(DirectX11Class DxObject, ShaderInitParams InitParams) : base(DxObject, InitParams) { }
 
         public override void InitCBuffersFrame(ID3D11DeviceContext context, Camera camera, WorldSettings settings)
         {
             //throw new System.NotImplementedException();
         }
 
-        public override void Render(ID3D11DeviceContext deviceContext, PrimitiveTopology type, int size, uint offset)
+        public override void Render(DirectX11Class Dx11Object, PrimitiveTopology type, int size, uint offset)
         {
-            deviceContext.IASetInputLayout(Layout);
-            deviceContext.VSSetShader(OurVertexShader);
-            deviceContext.PSSetShader(OurPixelShader);
+            Dx11Object.SetInputLayout(Layout);
+            Dx11Object.SetPixelShader(OurPixelShader);
+            Dx11Object.SetVertexShader(OurVertexShader);
 
             switch (type)
             {
                 case PrimitiveTopology.LineList:
                 case PrimitiveTopology.TriangleList:
-                    deviceContext.DrawIndexed(size, (int)offset, 0);
+                    Dx11Object.DeviceContext.DrawIndexed(size, (int)offset, 0);
                     break;
                 case PrimitiveTopology.LineStrip:
-                    deviceContext.Draw(size, 0);
+                    Dx11Object.DeviceContext.Draw(size, 0);
                     break;
                 default:
                     break;

@@ -496,9 +496,9 @@ namespace ResourceTypes.Translokator
             for (int i = 0; i < Grids.Length; i++)
             {
                 var grid = Grids[i];
-                grid.CellSize = new Vector2(bounds.GetWidth() / grid.Width, bounds.GetHeight() / grid.Height);
+                grid.CellSize = new Vector2(bounds.Width / grid.Width, bounds.Height / grid.Height);
                 grid.Data = new ushort[grid.Width * grid.Height];
-                grid.Origin = bounds.Minimum;
+                grid.Origin = bounds.Min;
             }
             #endregion rebuild grid bounds
 
@@ -521,7 +521,7 @@ namespace ResourceTypes.Translokator
                         instance.W1 = 0;
                         instance.W2 = 0;
                         instance.ID = numInstance;
-                        CompressPosition(instance, bounds.Minimum, bounds.Maximum);
+                        CompressPosition(instance, bounds.Min, bounds.Max);
                         CompressScale(instance);
                         CompressRotation(instance);
 
@@ -622,7 +622,7 @@ namespace ResourceTypes.Translokator
                         instance.D4 = BitConverter.ToUInt16(packed, 12);
                         DecompressScale(instance);
                         DecompressRotation(instance);                    
-                        instance.Position = DecompressPosition(packed, instance, bounds.Minimum, bounds.Maximum);
+                        instance.Position = DecompressPosition(packed, instance, bounds.Min, bounds.Max);
                         obj.Instances[y] = instance;
 
 

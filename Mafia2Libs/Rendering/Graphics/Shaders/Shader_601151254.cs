@@ -15,16 +15,16 @@ namespace Rendering.Graphics
         protected ID3D11Buffer ConstantShaderParamBuffer { get; set; }
         protected Shader_601151254Params ShaderParams { get; private set; }
 
-        public Shader_601151254(ID3D11Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
+        public Shader_601151254(DirectX11Class Dx11Object, ShaderInitParams InitParams) : base(Dx11Object, InitParams) { }
 
-        public override bool Init(ID3D11Device Dx11Device, ShaderInitParams InitParams)
+        public override bool Init(DirectX11Class Dx11Object, ShaderInitParams InitParams)
         {
-            if (!base.Init(Dx11Device, InitParams))
+            if (!base.Init(Dx11Object, InitParams))
             {
                 return false;
             }
 
-            ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_601151254Params>(Dx11Device, "ShaderParamBuffer");
+            ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_601151254Params>(Dx11Object.Device, "ShaderParamBuffer");
 
             return true;
         }
@@ -38,12 +38,12 @@ namespace Rendering.Graphics
             base.SetShaderParameters(device, deviceContext, matParams);
 
             Shader_601151254Params parameters = new Shader_601151254Params();
-            var material = matParams.MaterialData;
+            var material = matParams.RuntimeMaterialData;
 
-            var param = material.GetParameterByKey("C002");
+            var param = material.GetParamtersFor(2562079590);
             if (param != null)
             {
-                parameters.C002_MaterialColor = new Vector4(param.Paramaters[0], param.Paramaters[1], param.Paramaters[2], param.Paramaters[3]);
+                parameters.C002_MaterialColor = new Vector4(param[0], param[1], param[2], param[3]);
             }
 
             ShaderParams = parameters;

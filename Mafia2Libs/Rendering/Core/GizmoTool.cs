@@ -38,16 +38,16 @@ namespace Rendering.Core
             GizmoModel.UpdateBuffers(d3d, d3dContext);
         }
 
-        public void Render(ID3D11Device d3d, ID3D11DeviceContext d3dContext, Camera camera)
+        public void Render(DirectX11Class Dx11Object, Camera camera)
         {
-            GizmoModel.Render(d3d, d3dContext, camera);
+            GizmoModel.Render(Dx11Object, camera);
         }
         
         // TODO: Consider this as an event?
         public void OnSelectEntry(Matrix4x4 newTransform, bool bDoRender)
         {
             GizmoModel.SetTransform(newTransform);
-            GizmoModel.DoRender = bDoRender;
+            GizmoModel.SetVisibility(bDoRender);
         }
 
         public void Shutdown()

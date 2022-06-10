@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -70,7 +71,7 @@ namespace Utils.Settings
             games.Clear();
 
             // TODO: Maybe we should ask to create a new one if this file does not exist?
-            string ExePath = Assembly.GetExecutingAssembly().Location;
+            string ExePath = Process.GetCurrentProcess().MainModule.FileName;
             FileInfo Exe = new FileInfo(ExePath);
             string GamesFile = Path.Combine(Exe.Directory.FullName, "games.xml");
             if(!File.Exists(GamesFile))

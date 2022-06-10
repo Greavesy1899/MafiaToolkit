@@ -79,14 +79,14 @@ namespace Rendering.Graphics
 
         public struct MaterialParameters
         {
-            public MaterialParameters(IMaterial material, Vector3 vector)
+            public MaterialParameters(RuntimeMaterialInstance InRuntimeData, Vector3 InSelectionColour)
             {
-                MaterialData = material;
-                SelectionColour = vector;
+                SelectionColour = InSelectionColour;
+                RuntimeMaterialData = InRuntimeData;
             }
 
-            public IMaterial MaterialData { get; set; }
             public Vector3 SelectionColour { get; set; }
+            public RuntimeMaterialInstance RuntimeMaterialData { get; set; }
         }
         protected ID3D11VertexShader OurVertexShader { get; set; }
         protected ID3D11PixelShader OurPixelShader { get; set; }
@@ -105,16 +105,19 @@ namespace Rendering.Graphics
 
         private const string ShaderPath = @"Shaders\";
 
-        public BaseShader(ID3D11Device Dx11Device, ShaderInitParams InitParams)
+        public BaseShader(DirectX11Class Dx11Object, ShaderInitParams InitParams)
         {
-            if (!Init(Dx11Device, InitParams))
+            if (!Init(Dx11Object, InitParams))
             {
                 MessageBox.Show("Failed to construct shader!", "Toolkit");
             }
         }
 
-        public virtual bool Init(ID3D11Device device, ShaderInitParams InitParams)
+        public virtual bool Init(DirectX11Class Dx11Object, ShaderInitParams InitParams)
         {
+            // Cache the ID3D11Device
+            ID3D11Device device = Dx11Object.Device;
+
             // Attempt to construct pixel shader
             if (InitParams.PixelShaderFile.IsValid())
             {
@@ -203,17 +206,6 @@ namespace Rendering.Graphics
 
         public virtual void SetShaderParameters(ID3D11Device device, ID3D11DeviceContext deviceContext, MaterialParameters matParams)
         {
-            if (!previousEditorParams.Equals(matParams.SelectionColour))
-            {
-                var editorParams = new EditorParameterBuffer()
-                { 
-                    selectionColour = matParams.SelectionColour
-                };
-
-                ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantEditorParamsBuffer, 1, editorParams);
-                previousEditorParams = editorParams.selectionColour;
-            }
-
             //experiments with samplers; currently the toolkit doesn't not support any types.
             /*SamplerStateDescription samplerDesc = new SamplerStateDescription()
             {
@@ -232,28 +224,43 @@ namespace Rendering.Graphics
             SamplerState = new SamplerState(device, samplerDesc);*/
         }
 
-        public virtual void Render(ID3D11DeviceContext context, PrimitiveTopology type, int size, uint offset)
+        public virtual void SetEditorParameters(ID3D11Device device, ID3D11DeviceContext deviceContext, MaterialParameters matParams)
         {
-            context.IASetInputLayout(Layout);
+            if (!previousEditorParams.Equals(matParams.SelectionColour))
+            {
+                var editorParams = new EditorParameterBuffer()
+                {
+                    selectionColour = matParams.SelectionColour
+                };
+
+                ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantEditorParamsBuffer, 1, editorParams);
+                previousEditorParams = editorParams.selectionColour;
+            }
+        }
+
+        public virtual void Render(DirectX11Class Dx11Object, PrimitiveTopology type, int size, uint offset)
+        {
+            Dx11Object.SetInputLayout(Layout);
 
             // set shaders only if available
             if(OurVertexShader != null)
             {
-                context.VSSetShader(OurVertexShader);
+                Dx11Object.SetVertexShader(OurVertexShader);
             }
 
             if (OurVertexShader != null)
             {
-                context.PSSetShader(OurPixelShader);
-                context.PSSetSampler(0, SamplerState);
+                Dx11Object.SetPixelShader(OurPixelShader);
+                Dx11Object.SetSamplerState(SamplerState);
+
             }
 
-            if (OurVertexShader != null)
+            if (OurGeometryShader != null)
             {
-                context.GSSetShader(OurGeometryShader);
+                //context.GSSetShader(OurGeometryShader);
             }
 
-            context.DrawIndexed(size, (int)offset, 0);
+            Dx11Object.DeviceContext.DrawIndexed(size, (int)offset, 0);
 
             Profiler.NumDrawCallsThisFrame++;
         }
@@ -290,7 +297,7 @@ namespace Rendering.Graphics
             Compiler.CompileFromFile(ShaderFileName, ShaderFileData.EntryPoint, ShaderFileData.Target, out OurBytecode, out OurErrorcode);
             if(OurErrorcode != null)
             {
-                string Error = OurErrorcode.ConvertToString();
+                string Error = OurErrorcode.ToString();
             }
 
             return OurBytecode;

@@ -68,11 +68,11 @@ namespace Rendering.Core
             }
         }
 
-        public void RenderPrimitives(ID3D11Device InDevice, ID3D11DeviceContext InDeviceContext, Camera InCamera)
+        public void RenderPrimitives(DirectX11Class Dx11Object, Camera InCamera)
         {
             foreach (PrimitiveBatch Batch in Batches.Values)
             {
-                Batch.RenderBatch(InDevice, InDeviceContext, InCamera);
+                Batch.RenderBatch(Dx11Object, InCamera);
             }
         }
 

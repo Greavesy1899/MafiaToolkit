@@ -27,6 +27,15 @@ namespace Rendering.Graphics
         private RasterizerDescription m_RSDesc;
         private FillMode m_FillMode = FillMode.Solid;
         private CullMode m_CullMode = CullMode.Back;
+
+        private PrimitiveTopology CurrentTopology = PrimitiveTopology.Undefined;
+        private ID3D11InputLayout CurrentInputLayout = null;
+        private ID3D11VertexShader CurrentVertexShader = null;
+        private ID3D11PixelShader CurrentPixelShader = null;
+        private ID3D11SamplerState CurrentSamplerState = null;
+        private ID3D11Buffer CurrentVertexBuffer = null;
+        private ID3D11Buffer CurrentIndexBuffer = null;
+
         public DirectX11Class()
         { }
 
@@ -47,10 +56,10 @@ namespace Rendering.Graphics
             {
                 BufferCount = 2,
                 BufferDescription = new ModeDescription(1920, 1080, rational, Format.R8G8B8A8_UNorm),
-                Usage = Usage.RenderTargetOutput,
+                BufferUsage = Usage.RenderTargetOutput,
                 OutputWindow = WindowHandle,
                 SampleDescription = new SampleDescription(1, 0),
-                IsWindowed = true,
+                Windowed = true,
                 Flags = SwapChainFlags.None,
                 SwapEffect = SwapEffect.Discard
             };
@@ -98,7 +107,7 @@ namespace Rendering.Graphics
             // Create rasterizers
             m_RSDesc = new RasterizerDescription()
             {
-                AntialiasedLineEnable = false,
+                AntialiasedLineEnable = true,
                 CullMode = CullMode.Front,
                 DepthBias = 0,
                 DepthBiasClamp = .0f,
@@ -163,14 +172,14 @@ namespace Rendering.Graphics
                 FrontFace = new DepthStencilOperationDescription()
                 {
                     StencilFailOp = StencilOperation.Keep,
-                    StencilDepthFailOp = StencilOperation.Incr,
+                    StencilDepthFailOp = StencilOperation.Increment,
                     StencilPassOp = StencilOperation.Keep,
                     StencilFunc = ComparisonFunction.Always,
                 },
                 BackFace = new DepthStencilOperationDescription()
                 {
                     StencilFailOp = StencilOperation.Keep,
-                    StencilDepthFailOp = StencilOperation.Decr,
+                    StencilDepthFailOp = StencilOperation.Decrement,
                     StencilPassOp = StencilOperation.Keep,
                     StencilFunc = ComparisonFunction.Always,
                 }
@@ -285,6 +294,67 @@ namespace Rendering.Graphics
             else
             {
                 SwapChain.Present(0, 0);
+            }
+        }
+
+        public void SetPrimitiveTopology(PrimitiveTopology NewPrimitiveTopology)
+        {
+            if(CurrentTopology != NewPrimitiveTopology)
+            {
+                DeviceContext.IASetPrimitiveTopology(NewPrimitiveTopology);
+                CurrentTopology = NewPrimitiveTopology;
+            }
+        }
+
+        public void SetInputLayout(ID3D11InputLayout NewInputLayout)
+        {
+            if(CurrentInputLayout != NewInputLayout)
+            {
+                DeviceContext.IASetInputLayout(NewInputLayout);
+                CurrentInputLayout = NewInputLayout;
+            }
+        }
+
+        public void SetPixelShader(ID3D11PixelShader NewPixelShader)
+        {
+            if(CurrentPixelShader != NewPixelShader)
+            {
+                DeviceContext.PSSetShader(NewPixelShader);
+                CurrentPixelShader = NewPixelShader;
+            }
+        }
+
+        public void SetVertexShader(ID3D11VertexShader NewVertexShader)
+        {
+            if (CurrentVertexShader != NewVertexShader)
+            {
+                DeviceContext.VSSetShader(NewVertexShader);
+                CurrentVertexShader = NewVertexShader;
+            }
+        }
+
+        public void SetSamplerState(ID3D11SamplerState NewSamplerState)
+        {
+            if(CurrentSamplerState != NewSamplerState)
+            {
+                DeviceContext.PSSetSampler(0, NewSamplerState);
+                CurrentSamplerState = NewSamplerState;
+            }
+        }
+
+        public void SetVertexBuffer(int Slot, ID3D11Buffer NewVertexBuffer, int Stride)
+        {
+            if (CurrentVertexBuffer != NewVertexBuffer)
+            {
+                DeviceContext.IASetVertexBuffer(Slot, NewVertexBuffer, Stride);
+            }
+        }
+
+        public void SetIndexBuffer(ID3D11Buffer NewIndexBuffer, Format InFormat, int Offset)
+        {
+            if (CurrentIndexBuffer != NewIndexBuffer)
+            {
+                DeviceContext.IASetIndexBuffer(NewIndexBuffer, InFormat, Offset);
             }
         }
     }

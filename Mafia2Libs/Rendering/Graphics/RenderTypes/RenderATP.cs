@@ -37,12 +37,12 @@ namespace Rendering.Graphics
             Path.InitBuffers(d3d, deviceContext);
         }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        public override void Render(DirectX11Class Dx11Object, Camera camera)
         {
             if (DoRender != false)
             {
-                BBox.Render(device, deviceContext, camera);
-                Path.Render(device, deviceContext, camera);
+                BBox.Render(Dx11Object, camera);
+                Path.Render(Dx11Object, camera);
             }
         }
 
@@ -51,13 +51,11 @@ namespace Rendering.Graphics
             BBox.Select();
             Path.Select();
         }
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            this.Transform = matrix;
-        }
 
         public override void Shutdown()
         {
+            base.Shutdown();
+
             BBox.Shutdown();
             Path.Shutdown();
         }

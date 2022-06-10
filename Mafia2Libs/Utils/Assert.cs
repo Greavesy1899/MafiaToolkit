@@ -28,7 +28,7 @@ namespace Utils.Logging
             if(!bCondition)
             {
                 string FinalMessage = string.Format(MessageFormat, MessageArgs);
-                MessageBox.Show(FinalMessage, "Toolkit", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(String.Format("ASSERT: {0}", FinalMessage), "Toolkit", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

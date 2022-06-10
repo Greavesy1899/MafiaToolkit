@@ -49,7 +49,7 @@ namespace Rendering.Factories
             {
                 return null;
             }
-            RenderModel model = new RenderModel();
+            RenderModel model = new RenderModel(Mesh.RefID);
             model.ConvertFrameToRenderModel(Mesh, geom, mat, indexBuffers, vertexBuffers);
             return model;
         }

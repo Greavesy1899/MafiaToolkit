@@ -35,12 +35,12 @@ namespace Rendering.Graphics
 
         public bool InitSwap(BoundingBox bbox)
         {
-            Vector3 NewMax = bbox.Maximum;
+            Vector3 NewMax = bbox.Max;
             float y = NewMax.Y;
             NewMax.Y = -NewMax.Z;
             NewMax.Z = y;
 
-            Vector3 NewMin = bbox.Minimum;
+            Vector3 NewMin = bbox.Min;
             y = NewMin.Y;
             NewMin.Y = -NewMin.Z;
             NewMin.Z = y;
@@ -73,8 +73,8 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
-            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, Indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            vertexBuffer = d3d.CreateBuffer<VertexLayouts.BasicLayout.Vertex>(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            indexBuffer = d3d.CreateBuffer<uint>(BindFlags.IndexBuffer, Indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
         public void SetColour(Color newColour, bool update = false)
@@ -85,34 +85,26 @@ namespace Rendering.Graphics
             bIsUpdatedNeeded = update;
         }
 
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            this.Transform = matrix;
-        }
-
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        public override void Render(DirectX11Class Dx11Object, Camera camera)
         {
             if (!DoRender)
             {
                 return;
             }
 
-            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
-            deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
-            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineList);
+            Dx11Object.DeviceContext.IASetVertexBuffer(0, vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>());
+            Dx11Object.DeviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+            Dx11Object.SetPrimitiveTopology(PrimitiveTopology.LineList);
 
-            shader.SetSceneVariables(deviceContext, Transform, camera);
-            shader.Render(deviceContext, PrimitiveTopology.LineList, ReadOnlyIndices.Length, 0);
+            shader.SetSceneVariables(Dx11Object.DeviceContext, Transform, camera);
+            shader.Render(Dx11Object, PrimitiveTopology.LineList, ReadOnlyIndices.Length, 0);
         }
 
         public override void Shutdown()
         {
+            base.Shutdown();
+
             vertices = null;
-            indexBuffer?.Dispose();
-            indexBuffer = null;
-            vertexBuffer?.Dispose();
-            vertexBuffer = null;
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)

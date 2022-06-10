@@ -818,13 +818,13 @@ namespace ResourceTypes.Actors
         }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMinimum {
-            get { return boundingBox.Minimum; }
-            set { boundingBox.SetMinimum(value); }
+            get { return boundingBox.Min; }
+            set { boundingBox.Min = value; }
         }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMaximum {
-            get { return boundingBox.Maximum; }
-            set { boundingBox.SetMaximum(value); }
+            get { return boundingBox.Max; }
+            set { boundingBox.Max = value; }
         }
         public byte UnkByte3 {
             get { return unk_byte3; }
@@ -1823,19 +1823,15 @@ namespace ResourceTypes.Actors
                     break;
                 case 3:
                     throw new Exception();
-                    break;
                 case 7:
                     throw new Exception();
-                    break;
                 case 8:
                     throw new Exception();
-                    break;
                 case 9:
                     reader.Seek(108, SeekOrigin.Current);
                     break;
                 default:
                     throw new Exception();
-                    break;
             }
 
             testPrimitive = reader.ReadInt32(isBigEndian);
@@ -1868,19 +1864,15 @@ namespace ResourceTypes.Actors
                     break;
                 case 3:
                     throw new Exception();
-                    break;
                 case 7:
                     throw new Exception();
-                    break;
                 case 8:
                     throw new Exception();
-                    break;
                 case 9:
                     writer.Write(new byte[108]);
                     break;
                 default:
                     throw new Exception();
-                    break;
             }
 
             writer.Write(testPrimitive, isBigEndian);

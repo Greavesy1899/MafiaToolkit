@@ -20,14 +20,14 @@ namespace ResourceTypes.FrameResource
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMinimum
         {
-            get { return bounds.Minimum; }
-            set { bounds.SetMinimum(value); }
+            get { return bounds.Min; }
+            set { bounds.Min = value; }
         }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMaximum
         {
-            get { return bounds.Maximum; }
-            set { bounds.SetMaximum(value); }
+            get { return bounds.Max; }
+            set { bounds.Max = value; }
         }
 
         public FrameObjectDummy(FrameObjectDummy other) : base(other)

@@ -107,7 +107,7 @@ namespace Mafia2Tool
                             act.Add(new Actor(NewFileInfo));
                         }              
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         Console.WriteLine("Failed to read actor {0}", item);
                     }

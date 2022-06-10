@@ -94,7 +94,7 @@ namespace Toolkit.Mathematics
             //Same thing as RayIntersectsSphere except that the radius of the sphere (point)
             //is the epsilon for zero.
             float b = Vector3.Dot(m, ray.Direction);
-            float c = Vector3.Dot(m, m) - MathHelper.ZeroTolerance;
+            float c = Vector3.Dot(m, m) - MathHelper.NearZeroEpsilon;
 
             if (c > 0f && b > 0f)
                 return false;
@@ -137,9 +137,9 @@ namespace Toolkit.Mathematics
             if (MathHelper.IsZero(denominator))
             {
                 //Lines are parallel and on top of each other.
-                if (MathHelper.NearEqual(ray2.Position.X, ray1.Position.X) &&
-                    MathHelper.NearEqual(ray2.Position.Y, ray1.Position.Y) &&
-                    MathHelper.NearEqual(ray2.Position.Z, ray1.Position.Z))
+                if (MathHelper.CompareEqual(ray2.Position.X, ray1.Position.X) &&
+                    MathHelper.CompareEqual(ray2.Position.Y, ray1.Position.Y) &&
+                    MathHelper.CompareEqual(ray2.Position.Z, ray1.Position.Z))
                 {
                     point = Vector3.Zero;
                     return true;
@@ -191,9 +191,9 @@ namespace Toolkit.Mathematics
             Vector3 point2 = ray2.Position + (t * ray2.Direction);
 
             //If the points are not equal, no intersection has occurred.
-            if (!MathHelper.NearEqual(point2.X, point1.X) ||
-                !MathHelper.NearEqual(point2.Y, point1.Y) ||
-                !MathHelper.NearEqual(point2.Z, point1.Z))
+            if (!MathHelper.CompareEqual(point2.X, point1.X) ||
+                !MathHelper.CompareEqual(point2.Y, point1.Y) ||
+                !MathHelper.CompareEqual(point2.Z, point1.Z))
             {
                 point = Vector3.Zero;
                 return false;

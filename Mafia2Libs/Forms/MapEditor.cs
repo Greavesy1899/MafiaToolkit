@@ -15,6 +15,7 @@ using ResourceTypes.Navigation;
 using ResourceTypes.Navigation.Traffic;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -60,6 +61,10 @@ namespace Mafia2Tool
         private bool bSelectMode = false;
         private float selectTimer = 0.0f;
         private bool bHideChildren = false;
+
+        private bool bWasCameraMovingLastFrame = false;
+        // Debug
+        private bool bShowMemoryDebug = false;
 
         private Dictionary<string, int> NamesAndDuplicationStore;
 
@@ -238,17 +243,16 @@ namespace Mafia2Tool
             {
                 SaveFileDialog.Reset();
             }
+
             SaveFileDialog.FileName = Model.ModelObject.ObjectName;
             SaveFileDialog.RestoreDirectory = true;
             SaveFileDialog.Filter = "FBX File (Binary) (*.fbx)|*.fbx|FBX File (ASCII) (*.fbx)|*.fbx|MTB File(*.mtb)|*.mtb*";
             SaveFileDialog.FilterIndex = ToolkitSettings.Format + 1;
 
-            if (SaveFileDialog.ShowDialog() != DialogResult.OK)
+            if (SaveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                return;
-            }
-
-            Model.ExportObject(SaveFileDialog.FileName, SaveFileDialog.FilterIndex);
+                Model.ExportObject(SaveFileDialog.FileName, SaveFileDialog.FilterIndex);
+            }       
         }
 
         private void ExportFrame_Click(object sender, EventArgs e)
@@ -256,34 +260,25 @@ namespace Mafia2Tool
             var node = dSceneTree.SelectedNode;
 
             FrameObjectBase frame = (node.Tag as FrameObjectBase);
-
-            if (node != null)
+            if (node != null && frame != null)
             {
-                if(node.Tag != null)
+                if (SaveFileDialog != null)
                 {
-                    if (SaveFileDialog != null) 
-                    { 
-                        SaveFileDialog.Reset(); 
-                    }
-                    string ExportName = null;
-                    SaveFileDialog.FileName = frame.Name.String;
-                    SaveFileDialog.RestoreDirectory = true;
-                    SaveFileDialog.Filter = "FrameData File (*.framedata)|*.framedata*";
-                    SaveFileDialog.FilterIndex = 1;
-                    SaveFileDialog.DefaultExt = "framedata";
+                    SaveFileDialog.Reset();
+                }
+                string ExportName = String.Empty;
+                SaveFileDialog.FileName = frame.Name.String;
+                SaveFileDialog.RestoreDirectory = true;
+                SaveFileDialog.Filter = "FrameData File (*.framedata)|*.framedata*";
+                SaveFileDialog.FilterIndex = 1;
+                SaveFileDialog.DefaultExt = "framedata";
 
-                    if (SaveFileDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        ExportName = SaveFileDialog.FileName;
-                    }
-                    else
-                    {
-                        return;
-                    }
-
+                if (SaveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ExportName = SaveFileDialog.FileName;
                     SceneData.FrameResource.SaveFramesToFile(ExportName, frame);
                 }
-            }        
+            }
         }
 
         private void UpdateAssetVisualisation(TreeNode node, TreeNode parent)
@@ -351,6 +346,8 @@ namespace Mafia2Tool
             {
                 Input = Graphics.Input;
             }
+
+            Label_MemoryUsage.Text = String.Empty;
 
             return result;
         }
@@ -437,7 +434,7 @@ namespace Mafia2Tool
                     var dy = -0.25f * (mousePos.Y - lastMousePos.Y);
                     Graphics.RotateCamera(dx, dy);
                     bCameraUpdated = true;
-                    
+
                 }
                 else if (Input.IsButtonDown(MouseButtons.Left) && selectTimer <= 0.0f)
                 {
@@ -448,12 +445,12 @@ namespace Mafia2Tool
                     }
                     else
                     {
-                        if(dSceneTree.SelectedNode != null)
+                        if (dSceneTree.SelectedNode != null)
                         {
                             var node = dSceneTree.SelectedNode;
                             var tag = dSceneTree.SelectedNode.Tag;
-                            
-                            if(FrameResource.IsFrameType(tag))
+
+                            if (FrameResource.IsFrameType(tag))
                             {
                                 FrameObjectBase fObject = (tag as FrameObjectBase);
                                 var translation = MoveObjectWithMouse(fObject.LocalTransform.Translation.Z, mousePos.X, mousePos.Y);
@@ -463,7 +460,7 @@ namespace Mafia2Tool
                                 TreeViewUpdateSelected();
                                 ApplyChangesToRenderable(fObject);
                             }
-                            else if(tag is Collision.Placement)
+                            else if (tag is Collision.Placement)
                             {
                                 Collision.Placement placement = (tag as Collision.Placement);
                                 var translation = MoveObjectWithMouse(placement.Position.Z, mousePos.X, mousePos.Y);
@@ -481,7 +478,7 @@ namespace Mafia2Tool
                                 }
                             }
                         }
-                        
+
                     }
                 }
 
@@ -496,14 +493,24 @@ namespace Mafia2Tool
             lastMousePos = mousePos;
             Graphics.Frame();
 
-            if (bCameraUpdated)
+            if (bCameraUpdated == false && bWasCameraMovingLastFrame)
             {
                 UpdatePositionElement(Graphics.Camera.Position);
+                bWasCameraMovingLastFrame = bCameraUpdated;
             }
 
-            Process process = Process.GetCurrentProcess();
-            Label_MemoryUsage.Text = string.Format("Usage: {0}", process.WorkingSet64.ConvertToMemorySize());
+            bWasCameraMovingLastFrame = bCameraUpdated;
+
+            // If MemoryDebug is active, Update Usage label.
+            if(bShowMemoryDebug)
+            {
+                Process process = Process.GetCurrentProcess();
+                Label_MemoryUsage.Text = string.Format("Usage: {0}", process.WorkingSet64.ConvertToMemorySize());
+            }
+
+            // Update FPS label.
             Label_FPS.Text = Graphics.Profile.ToString();
+
             return true;
         }
 
@@ -2091,6 +2098,15 @@ namespace Mafia2Tool
                 {
                     ConstructFrameFromImportedObject(Child, FrameNode);
                 }
+            }
+        }
+
+        private void Button_PresentMemoryDebugPressed(object sender, EventArgs e)
+        {
+            bShowMemoryDebug = !bShowMemoryDebug;
+            if(!bShowMemoryDebug)
+            {
+                Label_MemoryUsage.Text = String.Empty;
             }
         }
     }

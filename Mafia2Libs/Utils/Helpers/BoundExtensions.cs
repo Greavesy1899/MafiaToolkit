@@ -9,31 +9,6 @@ namespace Utils.VorticeUtils
 {
     public static class BoundingBoxExtenders
     {
-        public static float GetWidth(this BoundingBox BBox)
-        {
-            return (BBox.Maximum.X - BBox.Minimum.X);
-        }
-
-        public static float GetHeight(this BoundingBox BBox)
-        {
-            return (BBox.Maximum.Y - BBox.Minimum.Y);
-        }
-
-        public static float GetDepth(this BoundingBox BBox)
-        {
-            return (BBox.Maximum.Z - BBox.Minimum.Z);
-        }
-
-        public static void SetMinimum(ref this BoundingBox BBox, Vector3 min)
-        {
-            BBox = new BoundingBox(min, BBox.Maximum);
-        }
-
-        public static void SetMaximum(ref this BoundingBox BBox, Vector3 max)
-        {
-            BBox = new BoundingBox(BBox.Minimum, max);
-        }
-
         public static BoundingBox ReadFromFile(BinaryReader reader)
         {
             Vector3 Min = Vector3Utils.ReadFromFile(reader);
@@ -54,19 +29,19 @@ namespace Utils.VorticeUtils
 
         public static void WriteToFile(this BoundingBox bbox, BinaryWriter writer)
         {
-            bbox.Minimum.WriteToFile(writer);
-            bbox.Maximum.WriteToFile(writer);
+            bbox.Min.WriteToFile(writer);
+            bbox.Max.WriteToFile(writer);
         }
 
         public static void WriteToFile(this BoundingBox bbox, MemoryStream writer, bool isBigEndian)
         {
-            bbox.Minimum.WriteToFile(writer, isBigEndian);
-            bbox.Maximum.WriteToFile(writer, isBigEndian);
+            bbox.Min.WriteToFile(writer, isBigEndian);
+            bbox.Max.WriteToFile(writer, isBigEndian);
         }
 
         public static BoundingBox Swap(this BoundingBox box)
         {
-            box = new BoundingBox(Vector3Utils.Swap(box.Minimum), Vector3Utils.Swap(box.Maximum));
+            box = new BoundingBox(Vector3Utils.Swap(box.Min), Vector3Utils.Swap(box.Max));
             return box;
         }
 

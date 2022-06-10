@@ -85,23 +85,22 @@ namespace Rendering.Graphics
         {
             if (vertices.Length != 0)
             {
-                vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+                vertexBuffer = d3d.CreateBuffer<VertexLayouts.BasicLayout.Vertex>(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
             }
         }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        public override void Render(DirectX11Class Dx11Object, Camera camera)
         {
             if (!DoRender)
             {
                 return;
             }
 
-            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
-            deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineStrip);
+            Dx11Object.DeviceContext.IASetVertexBuffer(0, vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>());
+            Dx11Object.SetPrimitiveTopology(PrimitiveTopology.LineStrip);
 
-            shader.SetSceneVariables(deviceContext, Transform, camera);
-            shader.Render(deviceContext, PrimitiveTopology.LineStrip, vertices.Length, 0);
+            shader.SetSceneVariables(Dx11Object.DeviceContext, Transform, camera);
+            shader.Render(Dx11Object, PrimitiveTopology.LineStrip, vertices.Length, 0);
         }
 
         public ushort[] InternalGetStrippedIndices()
@@ -115,16 +114,11 @@ namespace Rendering.Graphics
             return Indices;
         }
 
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            this.Transform = matrix;
-        }
-
         public override void Shutdown()
         {
+            base.Shutdown();
+
             vertices = null;
-            vertexBuffer?.Dispose();
-            vertexBuffer = null;
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)

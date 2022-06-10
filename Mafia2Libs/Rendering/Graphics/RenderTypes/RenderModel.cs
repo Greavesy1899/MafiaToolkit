@@ -1,4 +1,5 @@
-﻿using ResourceTypes.BufferPools;
+﻿using Rendering.Core;
+using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using System;
@@ -7,12 +8,13 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using Utils.Extensions;
+using Utils.Logging;
 using Utils.Models;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
-using static Rendering.Graphics.BaseShader;
+using Vortice.Mathematics;
 using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
@@ -25,11 +27,10 @@ namespace Rendering.Graphics
             public ulong MaterialHash;
             public uint StartIndex;
             public uint NumFaces;
-            public BaseShader Shader;
         }
 
         private HashName aoHash;
-        public ID3D11ShaderResourceView AOTexture { get; set; }
+        public ID3D11ShaderResourceView AOTexture { get; private set; }
         public Color SelectionColour { get; private set; }
 
         public struct LOD
@@ -37,16 +38,33 @@ namespace Rendering.Graphics
             public ModelPart[] ModelParts { get; set; }
             public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
             public uint[] Indices { get; set; }
+            public ulong VertexBufferHash { get; set; }
+            public ulong IndexBufferHash { get; set; }
         }
 
         public LOD[] LODs { get; private set; }
 
-        public RenderModel()
+        private int[] ProxyPartIDs;
+
+        private enum UpdateRequest
         {
+            None,
+            Model,
+            Visibility
+        }
+
+        private UpdateRequest UpdateRequestType = UpdateRequest.None;
+
+        public RenderModel(int InRefID)
+        {
+            RefID = InRefID;
+
             DoRender = true;
             bIsUpdatedNeeded = false;
             Transform = Matrix4x4.Identity;
             SelectionColour = Color.White;
+
+            ProxyPartIDs = new int[0];
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -100,13 +118,14 @@ namespace Rendering.Graphics
                 LODs[i] = lod2;
             }
             BoundingBox = BoundingBoxExtenders.CalculateBounds(vertices);
-            SetupShaders();
         }
 
         public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             if (mesh == null || geom == null || mats == null || indexBuffers[0] == null || vertexBuffers[0] == null)
+            {
                 return false;
+            }
 
             aoHash = mesh.OMTextureHash;
             SetTransform(mesh.WorldTransform);
@@ -119,6 +138,8 @@ namespace Rendering.Graphics
                 LOD lod = new LOD();
                 lod.Indices = indexBuffers[i].GetData();
                 lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
+                lod.IndexBufferHash = geom.LOD[i].IndexBufferRef.Hash;
+                lod.VertexBufferHash = geom.LOD[i].VertexBufferRef.Hash;
 
                 for (int z = 0; z != mats.Materials[i].Length; z++)
                 {
@@ -162,40 +183,75 @@ namespace Rendering.Graphics
                 LODs[i] = lod;
             }
 
-            SetupShaders();
             return true;
         }
 
         public void UpdateMaterials(FrameMaterial mats)
         {
-            for (int i = 0; i != LODs.Length; i++)
+            for (int i = 0; i < LODs.Length; i++)
             {
-                for (int z = 0; z != LODs[i].ModelParts.Length; z++)
+                for (int z = 0; z < LODs[i].ModelParts.Length; z++)
                 {
                     ulong hash = mats.Materials[i][z].MaterialHash;
                     LODs[i].ModelParts[z].MaterialHash = hash;
                     LODs[i].ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(hash);
                 }
             }
+
             bIsUpdatedNeeded = true;
+            UpdateRequestType = UpdateRequest.Model;
         }
 
-        private void SetupShaders()
+        public override bool IsRayIntersecting(Ray PickingRay, out PickOutParams OutParams)
         {
-            for (int x = 0; x != LODs[0].ModelParts.Length; x++)
+            float lowest = float.MaxValue;
+            int lowestRefID = -1;
+            Vector3 WorldPosIntersect = Vector3.Zero;
+
+            // Convert to Model world space
+            Matrix4x4 vWM = Matrix4x4.Identity;
+            Matrix4x4.Invert(Transform, out vWM);
+            var localRay = new Ray(
+                Vector3Utils.TransformCoordinate(PickingRay.Position, vWM),
+                Vector3.TransformNormal(PickingRay.Direction, vWM)
+            );
+
+            if (localRay.Intersects(BoundingBox) == 0.0f)
             {
-                ModelPart part = LODs[0].ModelParts[x];
-                if (part.Material == null)
-                    part.Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[0];
-                else
-                {
-                    //Debug.WriteLine(LODs[0].ModelParts[x].Material.MaterialName + "\t" + LODs[0].ModelParts[x].Material.ShaderHash);
-                    part.Shader = (RenderStorageSingleton.Instance.ShaderManager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash)
-                        ? RenderStorageSingleton.Instance.ShaderManager.shaders[LODs[0].ModelParts[x].Material.ShaderHash]
-                        : RenderStorageSingleton.Instance.ShaderManager.shaders[0]);
-                }
-                LODs[0].ModelParts[x] = part;
+                // We're not intersecting with this mesh
+                OutParams = new PickOutParams();
+                return false;
             }
+
+            for (var i = 0; i < LODs[0].Indices.Length / 3; i++)
+            {
+                var v0 = LODs[0].Vertices[LODs[0].Indices[i * 3]].Position;
+                var v1 = LODs[0].Vertices[LODs[0].Indices[i * 3 + 1]].Position;
+                var v2 = LODs[0].Vertices[LODs[0].Indices[i * 3 + 2]].Position;
+                float t = 0.0f;
+
+                // Check if ray is intersecting triangle
+                if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t))
+                {
+                    continue;
+                }
+
+                var worldPosition = PickingRay.Position + t * PickingRay.Direction;
+                var distance = (worldPosition - PickingRay.Position).LengthSquared();
+                if (distance < lowest)
+                {
+                    lowest = distance;
+                    lowestRefID = RefID;
+                    WorldPosIntersect = worldPosition;
+                }
+            }
+
+            OutParams = new PickOutParams();
+            OutParams.LowestDistance = lowest;
+            OutParams.LowestRefID = lowestRefID;
+            OutParams.WorldPosition = WorldPosIntersect;
+
+            return true;
         }
 
         private void InitTextures(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
@@ -238,71 +294,105 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
-            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
-            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+            // Ask BufferManager to create ID3D11 buffers
+            CachedGraphics.OurBufferManager.CreateIndexBuffer<uint>(LODs[0].IndexBufferHash, LODs[0].Indices);
+            CachedGraphics.OurBufferManager.CreateVertexBuffer<VertexLayouts.NormalLayout.Vertex>(LODs[0].VertexBufferHash, LODs[0].Vertices);
 
             InitTextures(d3d, d3dContext);
+            RequestProxies(d3d, d3dContext);
         }
 
-        public override void SetTransform(Matrix4x4 matrix)
+        private void RequestProxies(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
-            Transform = matrix;
+            ProxyPartIDs = new int[LODs[0].ModelParts.Length];
+            for (int i = 0; i < ProxyPartIDs.Length; i++)
+            {
+                ModelPart Part = LODs[0].ModelParts[i];
+
+                ProxyRenderRequest ProxyRequest = new ProxyRenderRequest();
+                ProxyRequest.IndexBufferHash = LODs[0].IndexBufferHash;
+                ProxyRequest.VertexBufferHash = LODs[0].VertexBufferHash;
+                ProxyRequest.Material = Part.Material;
+                ProxyRequest.NumFaces = Part.NumFaces;
+                ProxyRequest.StartIndex = Part.StartIndex;
+                ProxyRequest.ParentRenderer = this;
+
+                ProxyPartIDs[i] = CachedGraphics.OurProxyRenderManager.AddProxyRenderRequest(ProxyRequest);
+            }
         }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        private void RemoveProxies()
         {
-            if (!DoRender)
+            for (int i = 0; i < ProxyPartIDs.Length; i++)
             {
-                return;
+                bool bHasBeenRemoved = CachedGraphics.OurProxyRenderManager.RemoveProxyRenderRequest(ProxyPartIDs[i]);
+                ToolkitAssert.Ensure(bHasBeenRemoved, "Should have removed this ProxyMesh from the Manager");
             }
+        }
 
-            //if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
-            //     return;
+        public override void SetVisibility(bool bIsVisible)
+        {
+            base.SetVisibility(bIsVisible);
 
-            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
-            deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
-            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
-            deviceContext.PSSetShaderResource(2, AOTexture);
-
-            for (int i = 0; i != LODs[0].ModelParts.Length; i++)
-            {
-                ModelPart Segment = LODs[0].ModelParts[i];
-                Segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(Segment.Material, SelectionColour.Normalize()));
-                Segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
-                Segment.Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(Segment.NumFaces * 3), Segment.StartIndex);
-            }
+            bIsUpdatedNeeded = true;
+            UpdateRequestType = UpdateRequest.Visibility;
         }
 
         public override void Shutdown()
         {
+            base.Shutdown();
+
+            foreach(int RefID in ProxyPartIDs)
+            {
+                CachedGraphics.OurProxyRenderManager.RemoveProxyRenderRequest(RefID);
+            }
+
+            ProxyPartIDs = new int[0];
             LODs[0].Vertices = null;
             LODs[0].Indices = null;
             AOTexture?.Dispose();
             AOTexture = null;
-            vertexBuffer?.Dispose();
-            vertexBuffer = null;
-            indexBuffer?.Dispose();
-            indexBuffer = null;
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             if(bIsUpdatedNeeded)
             {
-                SetupShaders();
-                InitTextures(device, deviceContext);
+                if (UpdateRequestType == UpdateRequest.Visibility)
+                {
+                    if (DoRender == true)
+                    {
+                        RequestProxies(device, deviceContext);
+                    }
+                    else
+                    {
+                        RemoveProxies();
+                    }
+                }
+                else if (UpdateRequestType == UpdateRequest.Model)
+                {
+                    InitTextures(device, deviceContext);
+
+                    RemoveProxies();
+                    RequestProxies(device, deviceContext);
+                }
+
+                UpdateRequestType = UpdateRequest.None;
                 bIsUpdatedNeeded = false;
             }
         }
 
         public override void Select()
         {
+            base.Select();
+
             SelectionColour = Color.Red;
         }
 
         public override void Unselect()
         {
+            base.Unselect();
+
             SelectionColour = Color.White;
         }
 

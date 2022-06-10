@@ -32,7 +32,7 @@ namespace Rendering.Graphics
 
         public bool Initialise(DirectX11Class D3D)
         {
-            if (!ShaderManager.Init(D3D.Device))
+            if (!ShaderManager.Init(D3D))
             {
                 MessageBox.Show("Failed to initialize Shader Manager!");
                 return false;

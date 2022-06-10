@@ -20,24 +20,22 @@ namespace Rendering.Graphics
             instance.InitBuffers(d3d, context);
         }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        public override void Render(DirectX11Class Dx11Object, Camera camera)
         {
             if (!DoRender)
+            {
                 return;
+            }
 
             instance.SetTransform(Transform);
-            instance.Render(device, deviceContext, camera);   
+            instance.Render(Dx11Object, camera);   
         }
 
         public override void SetTransform(Matrix4x4 matrix)
         {
-            Transform = matrix;
-            instance.SetTransform(matrix);
-        }
+            base.SetTransform(matrix);
 
-        public override void Shutdown()
-        {
-            //not required
+            instance.SetTransform(matrix);
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)

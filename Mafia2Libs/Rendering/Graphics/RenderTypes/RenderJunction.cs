@@ -73,7 +73,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        public override void Render(DirectX11Class Dx11Object, Camera camera)
         {
             if (!DoRender)
             {
@@ -82,7 +82,7 @@ namespace Rendering.Graphics
 
             if (Boundary != null)
             {
-                Boundary.Render(device, deviceContext, camera);
+                Boundary.Render(Dx11Object, camera);
             }
         }
 
@@ -95,13 +95,10 @@ namespace Rendering.Graphics
             bIsUpdatedNeeded = true;
         }
 
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            this.Transform = matrix;
-        }
-
         public override void Shutdown()
         {
+            base.Shutdown();
+
             if (Boundary != null)
             {
                 Boundary.Shutdown();

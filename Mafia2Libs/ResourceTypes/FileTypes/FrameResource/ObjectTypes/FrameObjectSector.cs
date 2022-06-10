@@ -42,14 +42,14 @@ namespace ResourceTypes.FrameResource
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMinimum
         {
-            get { return bounds.Minimum; }
-            set { bounds.SetMinimum(value); }
+            get { return bounds.Min; }
+            set { bounds.Min = value; }
         }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMaximum
         {
-            get { return bounds.Maximum; }
-            set { bounds.SetMaximum(value); }
+            get { return bounds.Max; }
+            set { bounds.Max = value; }
         }
         public Vector3 Unk13 {
             get { return unk_13_vector3; }
@@ -126,12 +126,12 @@ namespace ResourceTypes.FrameResource
         public void FillPlanesArray()
         {
             planes = new Vector4[6];
-            planes[0] = new Vector4(0, 0, 1, Math.Abs(bounds.Minimum.Z));
-            planes[1] = new Vector4(1, 0, 0, Math.Abs(bounds.Maximum.X));
-            planes[2] = new Vector4(0, -1, 0, Math.Abs(bounds.Maximum.Y));
-            planes[3] = new Vector4(0, 1, 0, Math.Abs(bounds.Maximum.Y));
-            planes[4] = new Vector4(0, 0, -1, Math.Abs(bounds.Maximum.Z));
-            planes[5] = new Vector4(-1, 0, 0, Math.Abs(bounds.Maximum.X));
+            planes[0] = new Vector4(0, 0, 1, Math.Abs(bounds.Max.Z));
+            planes[1] = new Vector4(1, 0, 0, Math.Abs(bounds.Max.X));
+            planes[2] = new Vector4(0, -1, 0, Math.Abs(bounds.Max.Y));
+            planes[3] = new Vector4(0, 1, 0, Math.Abs(bounds.Max.Y));
+            planes[4] = new Vector4(0, 0, -1, Math.Abs(bounds.Max.Z));
+            planes[5] = new Vector4(-1, 0, 0, Math.Abs(bounds.Max.X));
             //planes[0] = new Vector4(-1, 0, 0, bounds.Maximum.X);
             //planes[1] = new Vector4(1, 0, 0, bounds.Maximum.X);
             //planes[2] = new Vector4(0, -1, 0, bounds.Maximum.Y);

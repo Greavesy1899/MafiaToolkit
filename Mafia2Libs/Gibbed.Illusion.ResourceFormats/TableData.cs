@@ -117,7 +117,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                             break;
                         default:
                             throw new FormatException();
-                            break;
+  
                     }
                 }
             }
@@ -230,7 +230,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             {
                 Output = (T)Convert.ChangeType(ObjectToConvert, TypeOfObject);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Type TypeOfPassedObject = ObjectToConvert.GetType();
                 string ErrorMessage = string.Format("Failed to cast object of type {0} to {1}", TypeOfObject.Name, TypeOfPassedObject.Name);

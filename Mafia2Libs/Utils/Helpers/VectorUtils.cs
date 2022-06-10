@@ -3,6 +3,7 @@ using System.IO;
 using System.Numerics;
 using Vortice.Mathematics;
 using Utils.Extensions;
+using Vortice.Mathematics.PackedVector;
 
 namespace Utils.VorticeUtils
 {
@@ -137,9 +138,9 @@ namespace Utils.VorticeUtils
 
     public static class HalfExtenders
     {
-        public static byte[] GetBytes(this Vortice.Mathematics.Half value)
+        public static byte[] GetBytes(this Half value)
         {
-            return BitConverter.GetBytes(value.PackedValue);
+            return BitConverter.GetBytes(((float)value));
         }
     }
     public static class Half2Extenders
@@ -155,8 +156,8 @@ namespace Utils.VorticeUtils
 
         public static void WriteToFile(this Half2 half, BinaryWriter writer)
         {
-            writer.Write(half.X);
-            writer.Write(half.Y);
+            writer.Write((float)half.X);
+            writer.Write((float)half.Y);
         }
 
     }

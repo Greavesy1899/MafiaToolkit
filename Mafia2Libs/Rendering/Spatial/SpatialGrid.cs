@@ -47,12 +47,12 @@ namespace Rendering.Core
 
             width = mesh.CellSizeY;
             height = mesh.CellSizeX;
-            origin = new Vector3(gridBounds.Minimum.X, gridBounds.Minimum.Y, 0.0f);
-            cellSize = new Vector2(gridBounds.GetWidth() / width, gridBounds.GetHeight() / height);
+            origin = new Vector3(gridBounds.Min.X, gridBounds.Min.Y, 0.0f);
+            cellSize = new Vector2(gridBounds.Width / width, gridBounds.Height / height);
             cells = new SpatialCell[width * height];
 
-            Vector3 TempMin = gridBounds.Minimum;
-            Vector3 TempMax = gridBounds.Maximum;
+            Vector3 TempMin = gridBounds.Min;
+            Vector3 TempMax = gridBounds.Max;
 
             var index = 0;
             for (int i = 0; i < width; i++)
@@ -63,11 +63,11 @@ namespace Rendering.Core
 
                     foreach (var set in cell.Sets)
                     {
-                        if (gridBounds.Minimum.Z < set.X)
+                        if (gridBounds.Min.Z < set.X)
                         {
                             TempMin.Z = set.X;
                         }
-                        if (gridBounds.Maximum.Z > set.Y)
+                        if (gridBounds.Max.Z > set.Y)
                         {
                             TempMax.Z = set.Y;
                         }
@@ -102,9 +102,9 @@ namespace Rendering.Core
             gridBounds = translokator.Bounds;
             width = translokator.Grids[0].Width;
             height = translokator.Grids[0].Height;
-            cellSize = new Vector2(gridBounds.GetWidth() / width, gridBounds.GetHeight() / height);
+            cellSize = new Vector2(gridBounds.Width / width, gridBounds.Height / height);
             cells = new SpatialCell[width * height];
-            origin = gridBounds.Minimum;
+            origin = gridBounds.Min;
 
             var index = 0;
             /*for (int i = 0; i < width; i++)

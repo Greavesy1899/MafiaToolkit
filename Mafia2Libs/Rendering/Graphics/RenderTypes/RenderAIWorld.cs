@@ -40,22 +40,12 @@ namespace Rendering.Graphics
             OwnGraphics.OurPrimitiveManager.AddPrimitiveBatch(AIWorldBatch);
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext) { }
-
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera) { }
-
-        public override void Select() { }
-
-        public override void SetTransform(Matrix4x4 matrix) { }
-
         public override void Shutdown()
         {
+            base.Shutdown();
+
             OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(AIWorldBatch);
             AIWorldBatch = null;
         }
-
-        public override void Unselect() { }
-
-        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext) { }
     }
 }

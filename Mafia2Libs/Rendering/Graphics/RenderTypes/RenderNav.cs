@@ -109,22 +109,5 @@ namespace Rendering.Graphics
 
             return navigationLine;
         }
-
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext) { }
-
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera) { }
-
-        public override void Select() { }
-
-        public override void SetTransform(Matrix4x4 matrix)
-        {
-            Transform = matrix;
-        }
-
-        public override void Shutdown() { }
-
-        public override void Unselect() { }
-
-        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext) { }
     }
 }
