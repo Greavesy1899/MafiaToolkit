@@ -173,10 +173,19 @@ namespace Gibbed.Mafia2.FileFormats
 
             foreach (var Line in DatabaseLines)
             {
+                if(Line == String.Empty)
+                {
+                    continue;
+                }
+
                 string[] SplitLine = Line.Split(' ');
                 ulong NameHash = ulong.Parse(SplitLine[0]);
                 string Name = SplitLine[1];
-                DictionaryDB.Add(NameHash, Name);
+
+                if (!DictionaryDB.ContainsKey(NameHash))
+                {
+                    DictionaryDB.Add(NameHash, Name);
+                }
             }
 
             return DictionaryDB;

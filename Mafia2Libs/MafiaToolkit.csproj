@@ -138,6 +138,9 @@
     <Compile Update="Controls\SDSOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Forms\ATPEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="build.cmd">
@@ -209,6 +212,9 @@
     <Content Include="Resources\GameData\XBin_Hashes.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Update="Resources\GameData\M2_Textures.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\GizmoModel.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

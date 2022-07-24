@@ -56,11 +56,11 @@
             this.PropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.PropertyGrid.Location = new System.Drawing.Point(450, 32);
+            this.PropertyGrid.Location = new System.Drawing.Point(451, 32);
             this.PropertyGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.PropertyGrid.Name = "PropertyGrid";
             this.PropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.PropertyGrid.Size = new System.Drawing.Size(469, 480);
+            this.PropertyGrid.Size = new System.Drawing.Size(468, 480);
             this.PropertyGrid.TabIndex = 16;
             this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_PropertyValueChanged);
             // 

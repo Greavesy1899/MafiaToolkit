@@ -147,18 +147,18 @@ namespace Mafia2Tool
 
             //~ENABLE THIS SECTION AT YOUR OWN RISK
             //AnimalTrafficPaths
-            //if (!isBigEndian && sdsContent.HasResource("AnimalTrafficPaths"))
-            //{
-            //    var name = sdsContent.GetResourceFiles("AnimalTrafficPaths", true)[0];
-            //    try
-            //    {
-            //        ATLoader = new AnimalTrafficLoader(new FileInfo(name));
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
-            //    }
-            //}
+            if (!isBigEndian && sdsContent.HasResource("AnimalTrafficPaths"))
+            {
+                var name = sdsContent.GetResourceFiles("AnimalTrafficPaths", true)[0];
+                try
+                {
+                    ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
+                }
+            }
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
 #if DEBUG

@@ -315,6 +315,11 @@
 	<String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
 	<String ID="$IMPORT_XBIN">Import from .xml</String>
 	<String ID="$EXPORT_XBIN">Export to .xml</String>
+	
+	<!-- ATP Editor Strings -->
+	<String ID="$ATP_EDITOR_TITLE">AnimalTrafficPaths Editor</String>
+	<String ID="$ADD_ATP">Add</String>
+	<String ID="$DELETE_ATP">Delete</String>
 
 	<!-- Exception Form-->
 	<String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>

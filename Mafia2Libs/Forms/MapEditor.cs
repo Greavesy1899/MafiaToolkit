@@ -120,6 +120,7 @@ namespace Mafia2Tool
             dViewProperties = new DockViewProperties();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
+            dSceneTree.Select();
             dSceneTree.SetEventHandler("AfterSelect", new TreeViewEventHandler(OnAfterSelect));
             dSceneTree.ExportFrameButton.Click += new EventHandler(ExportFrame_Click);
             dSceneTree.Export3DButton.Click += new EventHandler(Export3DButton_Click);
@@ -376,8 +377,9 @@ namespace Mafia2Tool
         private void SaveButton_Click(object sender, EventArgs e) => Save();
         private void PropertyGridOnClicked(object sender, EventArgs e) => dPropertyGrid.Show(dockPanel1, DockState.DockRight);
         private void SceneTreeOnClicked(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
-        private void ViewOptionProperties_Click(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
         private void CurrentModeButton_ButtonClick(object sender, EventArgs e) => SwitchMode(!bSelectMode);
+        private void ViewOptionProperties_Click(object sender, EventArgs e) => dViewProperties.Show(dockPanel1, DockState.DockRight);
+
         private void UpdateParent_Click(object sender, EventArgs e)
         {
             string name = (sender as ToolStripMenuItem).Name;
@@ -1187,6 +1189,8 @@ namespace Mafia2Tool
         private void Pick(int sx, int sy)
         {
             PickOutParams OutParams = Graphics.Pick(sx, sy, RenderPanel.Size.Width, RenderPanel.Size.Height);
+            dViewProperties.SetPickInfo(OutParams);
+
             TreeNode[] nodes = dSceneTree.Find(OutParams.LowestRefID.ToString(), true);
 
             if (nodes.Length > 0)

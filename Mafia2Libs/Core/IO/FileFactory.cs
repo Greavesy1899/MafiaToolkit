@@ -66,6 +66,8 @@ namespace Core.IO
                     return new FileBNK(info);
                 case "STBL":
                     return new FileSoundTable(info);
+                case "ATP":
+                    return new FileATP(info);
                 default:
                     return new FileBase(info);
             }

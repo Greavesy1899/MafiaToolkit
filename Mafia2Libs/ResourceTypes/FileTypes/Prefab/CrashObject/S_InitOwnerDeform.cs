@@ -46,6 +46,7 @@ namespace ResourceTypes.Prefab.CrashObject
             Unk11 = new C_Vector3();
             Unk12 = new C_Vector3();
             Unk4 = new ushort[0];
+            Unk6 = new ushort[0];
             Unk9 = new DataPacket[0];
             Unk10 = new C_Transform();
         }

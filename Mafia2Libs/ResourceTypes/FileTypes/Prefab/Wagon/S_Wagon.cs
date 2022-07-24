@@ -54,6 +54,7 @@ namespace ResourceTypes.Prefab.Wagon
 
             // Not present in any game
             uint NumData = MemStream.ReadUInt32();
+            WagonData = new S_WagonInitData_Unk0[NumData];
             for(int i = 0; i < NumData; i++)
             {
                 S_WagonInitData_Unk0 InitData_Unk0 = new S_WagonInitData_Unk0();
