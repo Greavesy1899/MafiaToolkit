@@ -216,6 +216,7 @@ namespace Rendering.Graphics
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
+                            WorldPosIntersect = worldPosition;
                         }
                     }
                 }

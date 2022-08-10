@@ -9,6 +9,7 @@ using Utils.VorticeUtils;
 using Utils.StringHelpers;
 using Utils.Types;
 using Utils.Logging;
+using ResourceTypes.Actors;
 
 namespace ResourceTypes.Translokator
 {
@@ -196,24 +197,21 @@ namespace ResourceTypes.Translokator
 
     public class ObjectGroup
     {
-        short unk01;
-        int numObjects;
-        Object[] objects;
+        public ActorTypes ActorType { get; set; }
+        public short Unk01 { get; set; }
+        public Object[] Objects { get; set; }
 
-        public short Unk01 {
-            get { return unk01; }
-            set { unk01 = value; }
+        public ObjectGroup()
+        {
+            Objects = new Object[0];
+            ActorType = ActorTypes.None;
         }
-        [Browsable(false)]
-        public int NumObjects {
-            get { return numObjects; }
-            set { numObjects = value; }
-        }
-        [Browsable(false)]
-        public Object[] Objects {
-            get { return objects; }
-            set { objects = value; }
-        }
+    }
+
+    public struct ObjectGroupMetaInfo
+    {
+        public ActorTypes ActorTypeID { get; set; }
+        public short Unk0 { get; set; }
     }
 
     public class TranslokatorLoader
@@ -225,10 +223,6 @@ namespace ResourceTypes.Translokator
         int unk1;
         short unk2;
         BoundingBox bounds;
-        int numGrids;
-        int numUnk3;
-        short[] unk3;
-        int numObjectGroups;
 
         public int Version {
             get { return version; }
@@ -245,10 +239,6 @@ namespace ResourceTypes.Translokator
         public BoundingBox Bounds {
             get { return bounds; }
             set { bounds = value; }
-        }
-        public short[] Unk3 {
-            get { return unk3; }
-            set { unk3 = value; }
         }
 
         public TranslokatorLoader(FileInfo info)
@@ -439,11 +429,11 @@ namespace ResourceTypes.Translokator
             Vector3 Maximum = Vector3.Zero;
             ushort numInstance = 0;
 
-            for (int i = 0; i != ObjectGroups.Length; i++)
+            for (int i = 0; i < ObjectGroups.Length; i++)
             {
                 ObjectGroup objectGroup = ObjectGroups[i];
 
-                for (int x = 0; x != objectGroup.NumObjects; x++)
+                for (int x = 0; x < objectGroup.Objects.Length; x++)
                 {
                     Object obj = objectGroup.Objects[x];
 
@@ -503,11 +493,11 @@ namespace ResourceTypes.Translokator
             #endregion rebuild grid bounds
 
             #region encode instance data / build grid
-            for (int i = 0; i != ObjectGroups.Length; i++)
+            for (int i = 0; i < ObjectGroups.Length; i++)
             {
                 ObjectGroup objectGroup = ObjectGroups[i];
 
-                for (int x = 0; x != objectGroup.NumObjects; x++)
+                for (int x = 0; x < objectGroup.Objects.Length; x++)
                 {
                     Object obj = objectGroup.Objects[x];
 
@@ -556,11 +546,11 @@ namespace ResourceTypes.Translokator
             unk1 = reader.ReadInt32();
             unk2 = reader.ReadInt16();
             bounds = BoundingBoxExtenders.ReadFromFile(reader);
-            numGrids = reader.ReadInt32();
+            int NumGroups = reader.ReadInt32();
             
-            Grids = new Grid[numGrids];
-
-            for (int i = 0; i < numGrids; i++)
+            // Load Grids
+            Grids = new Grid[NumGroups];
+            for (int i = 0; i < NumGroups; i++)
             {
                 Grid grid = new Grid();
                 grid.Key = reader.ReadInt16();
@@ -570,29 +560,40 @@ namespace ResourceTypes.Translokator
                 grid.Height = reader.ReadInt32();
                 grid.Data = new ushort[grid.Width * grid.Height];
 
-                for (int y = 0; y != grid.Data.Length; y++)
+                for (int y = 0; y < grid.Data.Length; y++)
+                {
                     grid.Data[y] = reader.ReadUInt16();
+                }
 
                 Grids[i] = grid;
             }
 
-            numUnk3 = reader.ReadInt32();
-            unk3 = new short[numUnk3 * 2];
+            // Load MetaInfo, pushed into ObjectGroup when loading
+            int NumMetaInfos = (reader.ReadInt32());
+            ObjectGroupMetaInfo[] MetaInfo = new ObjectGroupMetaInfo[NumMetaInfos];
+            for (int i = 0; i < MetaInfo.Length; i++)
+            {
+                MetaInfo[i].ActorTypeID = (ActorTypes)reader.ReadInt16();
+                MetaInfo[i].Unk0 = reader.ReadInt16();
+            }
 
-            for (int i = 0; i < numUnk3 * 2; i++)
-                unk3[i] = reader.ReadInt16();
-
-            numObjectGroups = reader.ReadInt32();
-            ObjectGroups = new ObjectGroup[numObjectGroups];
-
-            for (int i = 0; i != numObjectGroups; i++)
+            // Now load the groups
+            int NumObjectGroups = reader.ReadInt32();
+            ObjectGroups = new ObjectGroup[NumObjectGroups];
+            for (int i = 0; i < NumObjectGroups; i++)
             {
                 ObjectGroup objectGroup = new ObjectGroup();
-                objectGroup.Unk01 = reader.ReadInt16();
-                objectGroup.NumObjects = reader.ReadInt32();
-                objectGroup.Objects = new Object[objectGroup.NumObjects];
+                objectGroup.ActorType = (ActorTypes)reader.ReadInt16();
+                objectGroup.Unk01 = MetaInfo[i].Unk0;
 
-                for (int x = 0; x != objectGroup.NumObjects; x++)
+                // Should be identical
+                ActorTypes MetaInfoActorType = MetaInfo[i].ActorTypeID;
+                ToolkitAssert.Ensure(objectGroup.ActorType == MetaInfoActorType, "The ActorType for the ObjectGroup must be identical");
+
+                // Load the group objects.
+                int NumObjects = reader.ReadInt32();
+                objectGroup.Objects = new Object[NumObjects];
+                for (int x = 0; x < NumObjects; x++)
                 {
                     Object obj = new Object();
                     obj.NumInstance2 = reader.ReadInt16();
@@ -644,13 +645,13 @@ namespace ResourceTypes.Translokator
         }
         private void InternalWriteToFile(BinaryWriter writer)
         {
-
             writer.Write(version);
             writer.Write(unk1);
             writer.Write(unk2);
             BoundingBoxExtenders.WriteToFile(bounds, writer);
             writer.Write(Grids.Length);
 
+            // Save grids
             for (int i = 0; i < Grids.Length; i++)
             {
                 Grid grid = Grids[i];
@@ -661,21 +662,28 @@ namespace ResourceTypes.Translokator
                 writer.Write(grid.Height);
 
                 for (int y = 0; y != grid.Data.Length; y++)
+                {
                     writer.Write(grid.Data[y]);
+                }
             }
 
-            writer.Write(unk3.Length/2);
-            for (int i = 0; i < unk3.Length; i++)
-                writer.Write(unk3[i]);
-
+            // Save ObjectGroup MetaInfo
             writer.Write(ObjectGroups.Length);
-            for (int i = 0; i != ObjectGroups.Length; i++)
+            for(int i = 0; i < ObjectGroups.Length; i++)
+            {
+                writer.Write((short)ObjectGroups[i].ActorType);
+                writer.Write(ObjectGroups[i].Unk01);
+            }
+
+            // Save ObjectGroups
+            writer.Write(ObjectGroups.Length);
+            for (int i = 0; i < ObjectGroups.Length; i++)
             {
                 ObjectGroup objectGroup = ObjectGroups[i];
-                writer.Write(objectGroup.Unk01);
+                writer.Write((short)objectGroup.ActorType);
                 writer.Write(objectGroup.Objects.Length);
 
-                for (int x = 0; x != objectGroup.NumObjects; x++)
+                for (int x = 0; x < objectGroup.Objects.Length; x++)
                 {
                     Object obj = objectGroup.Objects[x];
                     writer.Write(obj.NumInstance2);
@@ -699,6 +707,7 @@ namespace ResourceTypes.Translokator
                     }
                     objectGroup.Objects[x] = obj;
                 }
+
                 ObjectGroups[i] = objectGroup;
             }
         }

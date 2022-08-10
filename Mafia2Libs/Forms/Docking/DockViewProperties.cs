@@ -1,4 +1,6 @@
 ﻿using Rendering.Graphics;
+using System;
+using System.Numerics;
 using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -6,11 +8,14 @@ namespace Forms.Docking
 {
     public partial class DockViewProperties : DockContent
     {
-        public bool[] VisibleProperties;
+        private Vector3 Offset = Vector3.Zero;
 
         public DockViewProperties()
         {
             InitializeComponent();
+
+            TextBox_PickWSLocation.Text = String.Format("0.0 0.0 0.0");
+            TextBox_WithOffset.Text = String.Format("0.0 0.0 0.0");
         }
 
         public void SetPickInfo(PickOutParams InPickParams)
@@ -21,10 +26,33 @@ namespace Forms.Docking
                 InPickParams.WorldPosition.Y,
                 InPickParams.WorldPosition.Z);
 
+            // Create Offset vector
+            Vector3 WithOffset = InPickParams.WorldPosition + Offset;
+            TextBox_WithOffset.Text = string.Format("{0} {1} {2}",
+                WithOffset.X,
+                WithOffset.Y,
+                WithOffset.Z);
+
         }
 
         private void OnResize(object sender, System.EventArgs e)
         {
+        }
+
+        private void Numeric_OnValueChanged(object sender, System.EventArgs e)
+        {
+            if(sender == Numeric_PosX)
+            {
+                Offset.X = Convert.ToSingle(Numeric_PosX.Value);
+            }
+            else if(sender == Numeric_PosY)
+            {
+                Offset.Y = Convert.ToSingle(Numeric_PosY.Value);
+            }
+            else if(sender == Numeric_PosZ)
+            {
+                Offset.Z = Convert.ToSingle(Numeric_PosZ.Value);
+            }
         }
     }
 }

@@ -34,6 +34,7 @@
             this.TranslokatorTree = new Mafia2Tool.Controls.MTreeView();
             this.TranslokatorContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AddInstance = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddGroup = new System.Windows.Forms.ToolStripMenuItem();
             this.AddObject = new System.Windows.Forms.ToolStripMenuItem();
             this.Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.CopyButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,7 +46,6 @@
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewNumInstButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.LHFunctionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.TranslokatorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -82,25 +82,36 @@
             // 
             this.TranslokatorContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddInstance,
+            this.AddGroup,
             this.AddObject,
             this.Delete,
             this.CopyButton,
             this.PasteButton});
             this.TranslokatorContext.Name = "SDSContext";
-            this.TranslokatorContext.Size = new System.Drawing.Size(170, 114);
+            this.TranslokatorContext.Size = new System.Drawing.Size(212, 136);
             this.TranslokatorContext.Opening += new System.ComponentModel.CancelEventHandler(this.TranslokatorContext_Opening);
             // 
             // AddInstance
             // 
             this.AddInstance.Name = "AddInstance";
-            this.AddInstance.Size = new System.Drawing.Size(169, 22);
+            this.AddInstance.ShortcutKeyDisplayString = "Ctrl + A";
+            this.AddInstance.Size = new System.Drawing.Size(211, 22);
             this.AddInstance.Text = "$ADD_INSTANCE";
             this.AddInstance.Click += new System.EventHandler(this.AddInstance_Click);
+            // 
+            // AddGroup
+            // 
+            this.AddGroup.Name = "AddGroup";
+            this.AddGroup.ShortcutKeyDisplayString = "Ctrl + A";
+            this.AddGroup.Size = new System.Drawing.Size(211, 22);
+            this.AddGroup.Text = "$ADD_GROUP";
+            this.AddGroup.Click += new System.EventHandler(this.OnAddGroupPressed);
             // 
             // AddObject
             // 
             this.AddObject.Name = "AddObject";
-            this.AddObject.Size = new System.Drawing.Size(169, 22);
+            this.AddObject.ShortcutKeyDisplayString = "Ctrl + A";
+            this.AddObject.Size = new System.Drawing.Size(211, 22);
             this.AddObject.Text = "$ADD_OBJECT";
             this.AddObject.Click += new System.EventHandler(this.AddObjectOnClick);
             // 
@@ -109,7 +120,7 @@
             this.Delete.Name = "Delete";
             this.Delete.ShortcutKeyDisplayString = "";
             this.Delete.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.Delete.Size = new System.Drawing.Size(169, 22);
+            this.Delete.Size = new System.Drawing.Size(211, 22);
             this.Delete.Text = "$DELETE";
             this.Delete.Click += new System.EventHandler(this.Delete_Click);
             // 
@@ -117,7 +128,7 @@
             // 
             this.CopyButton.Name = "CopyButton";
             this.CopyButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.CopyButton.Size = new System.Drawing.Size(169, 22);
+            this.CopyButton.Size = new System.Drawing.Size(211, 22);
             this.CopyButton.Text = "$COPY";
             this.CopyButton.Click += new System.EventHandler(this.CopyButton_Click);
             // 
@@ -125,7 +136,7 @@
             // 
             this.PasteButton.Name = "PasteButton";
             this.PasteButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.PasteButton.Size = new System.Drawing.Size(169, 22);
+            this.PasteButton.Size = new System.Drawing.Size(211, 22);
             this.PasteButton.Text = "$PASTE";
             this.PasteButton.Click += new System.EventHandler(this.PasteButton_Click);
             // 
@@ -180,8 +191,7 @@
             // 
             this.ToolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ToolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ViewNumInstButton,
-            this.LHFunctionButton});
+            this.ViewNumInstButton});
             this.ToolsButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsButton.Image")));
             this.ToolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolsButton.Name = "ToolsButton";
@@ -191,16 +201,9 @@
             // ViewNumInstButton
             // 
             this.ViewNumInstButton.Name = "ViewNumInstButton";
-            this.ViewNumInstButton.Size = new System.Drawing.Size(169, 22);
+            this.ViewNumInstButton.Size = new System.Drawing.Size(180, 22);
             this.ViewNumInstButton.Text = "$VIEW_NUM_INST";
             this.ViewNumInstButton.Click += new System.EventHandler(this.ViewNumInstButton_Click);
-            // 
-            // LHFunctionButton
-            // 
-            this.LHFunctionButton.Name = "LHFunctionButton";
-            this.LHFunctionButton.Size = new System.Drawing.Size(169, 22);
-            this.LHFunctionButton.Text = "$LH_FUNCTION";
-            this.LHFunctionButton.Click += new System.EventHandler(this.LHFunctionButton_Click);
             // 
             // openFileDialog1
             // 
@@ -243,8 +246,8 @@
         private System.Windows.Forms.ToolStripMenuItem PasteButton;
         private System.Windows.Forms.ToolStripDropDownButton ToolsButton;
         private System.Windows.Forms.ToolStripMenuItem ViewNumInstButton;
-        private System.Windows.Forms.ToolStripMenuItem LHFunctionButton;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private Controls.MTreeView TranslokatorTree;
+        private System.Windows.Forms.ToolStripMenuItem AddGroup;
     }
 }

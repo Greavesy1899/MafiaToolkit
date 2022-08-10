@@ -99,7 +99,7 @@ namespace Mafia2Tool
             SceneTreeButton.Text = Language.GetString("$VIEW_SCENE_TREE");
             ObjectPropertiesButton.Text = Language.GetString("$VIEW_PROPERTY_GRID");
             WindowButton.Text = Language.GetString("$VIEW_OPTIONS");
-            ViewOptionProperties.Text = Language.GetString("$VIEW_VIS_OPTIONS");
+            ViewOptionProperties.Text = Language.GetString("$VIEW_UTILITIES");
             AddButton.Text = Language.GetString("$ADD");
             Button_ImportFrame.Text = Language.GetString("$IMPORT_FRAME");
             Button_ImportBundle.Text = Language.GetString("$IMPORT_BUNDLE");
