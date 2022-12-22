@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResourceTypes.Prefab.Vehicle;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
@@ -58,20 +59,39 @@ namespace Utils.Helpers.Reflection
 
                     // TODO: Not spectacular, as this will probably copy references from one object to another.
                     // Particularly problematic with strings. 
+                    if (Info.CanWrite)
+                    {
+                        Info.SetValue(ToObject, Info.GetValue(FromObject));
+                    }
+                }
+                else if (Info.CanWrite)
+                {
                     Info.SetValue(ToObject, Info.GetValue(FromObject));
                 }
                 else
                 {
-                    Info.SetValue(ToObject, Info.GetValue(FromObject));
+                    object ToCopy = Info.GetValue(FromObject);
+                    object NewObject = Info.GetValue(ToObject);
+                    FieldInfo[] Fields = Info.PropertyType.GetFields();
+                    for(int i = 0; i < Fields.Length; i++)
+                    {
+                        FieldInfo ThisField = Fields[i];
+                        if (!ThisField.Attributes.HasFlag(FieldAttributes.Static))
+                        {
+                            ThisField.SetValue(NewObject, ThisField.GetValue(ToCopy));
+                        }
+                    }
                 }
             }
         }
 
         public static T ConvertToPropertyFromXML<T>(XElement Node)
         {
-            T TypedObject = Activator.CreateInstance<T>();
+            Type XMLType = GetTypeByName(Node.Name.LocalName);
+            T TypedObject = (T)Activator.CreateInstance(XMLType);
 
-            foreach (PropertyInfo Info in TypedObject.GetType().GetProperties())
+            PropertyInfo[] Properties = TypedObject.GetType().GetProperties();
+            foreach (PropertyInfo Info in Properties)
             {
                 // Check if this Property has been flagged to be ignored.
                 if (!AllowPropertyToReflect(Info))
@@ -81,7 +101,6 @@ namespace Utils.Helpers.Reflection
 
                 // Should this property be read from an Attribute.
                 bool bForceAsAttribute = ForcePropertyAsAttribute(Info);
-
                 if (Info.PropertyType.IsArray)
                 {
                     // Get Element.
@@ -101,21 +120,28 @@ namespace Utils.Helpers.Reflection
                     TypedObject.GetType().GetProperty(Info.Name).SetValue(TypedObject, ArrayObject);
                     continue;
                 }
-
-                // Arrays CANNOT be arrays. So we first check if it is an array, and then try and parts this parts which can be an attribute.
-                string NodeContent = bForceAsAttribute ?  Node.Attribute(Info.Name).Value : Node.Element(Info.Name).Value;
-                if (!string.IsNullOrEmpty(NodeContent))
+                else if (Info.PropertyType.IsClass)
                 {
-                    if (Info.PropertyType.IsEnum)
+                    object ClassObject = InternalConvertProperty(Node.Element(Info.Name), Info.PropertyType);
+                    Info.SetValue(TypedObject, Convert.ChangeType(ClassObject, Info.PropertyType));
+                    continue;
+                }
+                else
+                {
+                    string NodeContent = bForceAsAttribute ? Node.Attribute(Info.Name).Value : Node.Element(Info.Name).Value;
+                    if (!string.IsNullOrEmpty(NodeContent))
                     {
-                        object Value = Enum.Parse(Info.PropertyType, NodeContent);
-                        Info.SetValue(TypedObject, Value);
-                        continue;
+                        if (Info.PropertyType.IsEnum)
+                        {
+                            object Value = Enum.Parse(Info.PropertyType, NodeContent);
+                            Info.SetValue(TypedObject, Value);
+                            continue;
+                        }
+                        else
+                        {
+                            Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
+                        }
                     }
-                    else
-                    {
-                        Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
-                    }               
                 }
             }
 
@@ -164,6 +190,25 @@ namespace Utils.Helpers.Reflection
                     Info.SetValue(TypedObject, ClassObject);
                     continue;
                 }
+                else if (Info.PropertyType.IsArray)
+                {
+                    // Get Element.
+                    XElement Element = Node.Element(Info.Name);
+
+                    // Create an Array using the element type of the array, with the number of elements to set the length.
+                    Array ArrayObject = Array.CreateInstance(Info.PropertyType.GetElementType(), Element.Elements().Count());
+
+                    // Iterate through the elements, construct the object using our reflection system and push them into the array.
+                    for (int i = 0; i < ArrayObject.Length; i++)
+                    {
+                        object ElementObject = InternalConvertProperty(Element.Elements().ElementAt(i), Info.PropertyType.GetElementType());
+                        ArrayObject.SetValue(ElementObject, i);
+                    }
+
+                    // Finally, replace the array on our TypedObject.
+                    TypedObject.GetType().GetProperty(Info.Name).SetValue(TypedObject, ArrayObject);
+                    continue;
+                }
 
                 string NodeContent = bForceAsAttribute ? Node.Attribute(Info.Name).Value : Node.Element(Info.Name).Value;
 
@@ -173,25 +218,6 @@ namespace Utils.Helpers.Reflection
                     {
                         object Value = Enum.Parse(Info.PropertyType, NodeContent);
                         Info.SetValue(TypedObject, Value);
-                        continue;
-                    }
-                    else if(Info.PropertyType.IsArray)
-                    {
-                        // Get Element.
-                        XElement Element = Node.Element(Info.Name);
-
-                        // Create an Array using the element type of the array, with the number of elements to set the length.
-                        Array ArrayObject = Array.CreateInstance(Info.PropertyType.GetElementType(), Element.Elements().Count());
-
-                        // Iterate through the elements, construct the object using our reflection system and push them into the array.
-                        for (int i = 0; i < ArrayObject.Length; i++)
-                        {
-                            object ElementObject = InternalConvertProperty(Element.Elements().ElementAt(i), Info.PropertyType.GetElementType());
-                            ArrayObject.SetValue(ElementObject, i);
-                        }
-
-                        // Finally, replace the array on our TypedObject.
-                        TypedObject.GetType().GetProperty(Info.Name).SetValue(TypedObject, ArrayObject);
                         continue;
                     }
                     else if(Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
@@ -322,7 +348,7 @@ namespace Utils.Helpers.Reflection
                 PropertyInfo[] PropertyInfos = Info.PropertyType.GetProperties();
 
                 // Check if this property has nested properties.
-                //Debug.Assert(PropertyInfos.Length == 0, "ERROR: Cannot save property with nested properties as attribute.",
+                //ToolkitAssert.Ensure(PropertyInfos.Length == 0, "ERROR: Cannot save property with nested properties as attribute.",
                  //   "We cannot save a property with more child properties. Please remove the attribute from this property: " + Info.Name);
 
                 return true;
@@ -343,6 +369,22 @@ namespace Utils.Helpers.Reflection
             // Is our Class allowed to reflect?
             Attribute PropertyAttritbute = Info.GetCustomAttribute(typeof(PropertyClassAllowReflection));
             return PropertyAttritbute != null;
+        }
+
+        // Unsafe. Ignores namespaces, assembly and qualified names.
+        // Use with caution, it is also very expensive.
+        private static Type GetTypeByName(string Name)
+        {
+            Assembly OurAssembly = Assembly.GetExecutingAssembly();
+            foreach(TypeInfo DefinedType in OurAssembly.DefinedTypes)
+            {
+                if(DefinedType.Name.Equals(Name))
+                {
+                    return DefinedType;
+                }
+            }
+
+            return null;
         }
     }
 }

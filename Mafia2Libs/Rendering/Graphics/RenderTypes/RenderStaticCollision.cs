@@ -1,5 +1,4 @@
 ﻿using ResourceTypes.Collisions;
-using ResourceTypes.Collisions.Opcode;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -51,7 +50,7 @@ namespace Rendering.Graphics
             }
             CalculateNormals();
         }
-        public void ConvertCollisionToRender(TriangleMesh triangleMesh)
+        public void ConvertCollisionToRender(ulong CollisionName, TriangleMesh triangleMesh)
         { 
             DoRender = true;
             BoundingBox = triangleMesh.BoundingBox;

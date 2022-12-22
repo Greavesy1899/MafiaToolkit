@@ -70,7 +70,7 @@ namespace ResourceTypes.Actors
                 case ActorEDSTypes.C_ActionPointScript:
                     return new ActorActionPointScript(stream, isBigEndian);
                 case ActorEDSTypes.C_Train:
-                    throw new NotImplementedException();
+                    return new ActorTrain(stream, isBigEndian);
                 default:
                     return null;
             }
@@ -136,17 +136,6 @@ namespace ResourceTypes.Actors
                     return new ActorCleanEntity(stream, isBigEndian);
                 default:
                     Console.WriteLine("Cannot read type: " + type);
-                    return null;
-            }
-        }
-
-        public static IActorExtraDataInterface CreateDuplicateExtraData(ActorTypes type, IActorExtraDataInterface extraData)
-        {
-            switch(type)
-            {
-                case ActorTypes.C_Sound:
-                    return new ActorSoundEntity(extraData);
-                default:
                     return null;
             }
         }

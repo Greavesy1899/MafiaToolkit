@@ -30,12 +30,6 @@ namespace ResourceTypes.EntityDataStorage
             {
                 EntityType = (ActorEDSTypes)fileStream.ReadInt32(isBigEndian);
 
-                if(EntityType == ActorEDSTypes.C_Train)
-                {
-                    MessageBox.Show(string.Format("Detected unsupported entity. The EntityStorageData will not load."), "Toolkit", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
                 Hash = fileStream.ReadUInt64(isBigEndian);
                 TableSize = fileStream.ReadInt32(isBigEndian);
 

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Utils.Extensions;
+using ResourceTypes.Misc;
+using Utils.Logging;
 
 namespace ResourceTypes.FrameResource
 {
@@ -18,6 +20,8 @@ namespace ResourceTypes.FrameResource
         Dictionary<int, FrameSkeleton> frameSkeletons = new Dictionary<int, FrameSkeleton>();
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
+
+        private FrameProps FramePropContents;
 
         public FrameHeader Header {
             get { return header; }
@@ -71,17 +75,9 @@ namespace ResourceTypes.FrameResource
             return (frameObjects.ElementAt(index).Value as FrameObjectBase);
         }
 
-        public FrameResource(string file, bool isBigEndian = false)
-        {
-            using (MemoryStream reader = new MemoryStream(File.ReadAllBytes(file), false))
-            {
-                ReadFromFile(reader, isBigEndian);
-            }
-        }
-
         public FrameResource()
         {
-            header = new FrameHeader();
+            header = new FrameHeader(this);
             frameScenes = new Dictionary<int, FrameHeaderScene>();
             frameGeometries = new Dictionary<int, FrameGeometry>();
             frameMaterials = new Dictionary<int, FrameMaterial>();
@@ -91,71 +87,81 @@ namespace ResourceTypes.FrameResource
             frameObjects = new Dictionary<int, object>();
         }
 
+        public FrameResource(string file, bool isBigEndian = false) : this()
+        {
+            if (File.Exists("FrameProps.bin"))
+            {
+                FramePropContents = new FrameProps(new FileInfo("FrameProps.bin"));
+            }
+
+            using (MemoryStream reader = new MemoryStream(File.ReadAllBytes(file), false))
+            {
+                ReadFromFile(reader, isBigEndian);
+            }
+        }
+
         public FrameHeaderScene AddSceneFolder(string name)
         {
-            FrameHeaderScene scene = new FrameHeaderScene();
+            FrameHeaderScene scene = ConstructFrameAssetOfType<FrameHeaderScene>();
             scene.Name = new Utils.Types.HashName(name);
-            header.SceneFolders.Add(scene);
-            frameScenes.Add(scene.RefID, scene);
             return scene;
         }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            header = new FrameHeader();
+            header = new FrameHeader(this);
             header.ReadFromFile(reader, isBigEndian);
             List<int> refs = new List<int>();
 
             for (int i = 0; i < header.SceneFolders.Count; i++)
             {
-                frameScenes.Add(header.SceneFolders[i].RefID, header.SceneFolders[i]);
                 refs.Add(header.SceneFolders[i].RefID);
             }
             for (int i = 0; i < header.NumGeometries; i++)
             {
-                FrameGeometry geo = new FrameGeometry(reader, isBigEndian);
-                frameGeometries.Add(geo.RefID, geo);
+                FrameGeometry geo = ConstructFrameAssetOfType<FrameGeometry>();
+                geo.ReadFromFile(reader, isBigEndian);
                 refs.Add(geo.RefID);
             }
             for (int i = 0; i < header.NumMaterialResources; i++)
             {
-                FrameMaterial mat = new FrameMaterial(reader, isBigEndian);
-                frameMaterials.Add(mat.RefID, mat);
+                FrameMaterial mat = ConstructFrameAssetOfType<FrameMaterial>();
+                mat.ReadFromFile(reader, isBigEndian);
                 refs.Add(mat.RefID);
             }
             for (int i = 0; i < header.NumBlendInfos; i++)
             {
-                FrameBlendInfo blendInfo = new FrameBlendInfo(reader, isBigEndian);
-                frameBlendInfos.Add(blendInfo.RefID, blendInfo);
+                FrameBlendInfo blendInfo = ConstructFrameAssetOfType<FrameBlendInfo>();
+                blendInfo.ReadFromFile(reader, isBigEndian);
                 refs.Add(blendInfo.RefID);
             }
             for (int i = 0; i < header.NumSkeletons; i++)
             {
-                FrameSkeleton skeleton = new FrameSkeleton(reader, isBigEndian);
-                frameSkeletons.Add(skeleton.RefID, skeleton);
+                FrameSkeleton skeleton = ConstructFrameAssetOfType<FrameSkeleton>();
+                skeleton.ReadFromFile(reader, isBigEndian);
                 refs.Add(skeleton.RefID);
             }
             for (int i = 0; i < header.NumSkelHierachies; i++)
             {
-                FrameSkeletonHierachy skeletonHierachy = new FrameSkeletonHierachy(reader, isBigEndian);
-                frameSkeletonHierachies.Add(skeletonHierachy.RefID, skeletonHierachy);
+                FrameSkeletonHierachy skeletonHierachy = ConstructFrameAssetOfType<FrameSkeletonHierachy>();
+                skeletonHierachy.ReadFromFile(reader, isBigEndian);
                 refs.Add(skeletonHierachy.RefID);
             }
 
-            int[] objectTypes = new int[header.NumObjects];
+            FrameResourceObjectType[] objectTypes = new FrameResourceObjectType[header.NumObjects];
 
             if (header.NumObjects > 0)
             {
                 for (int i = 0; i < header.NumObjects; i++)
                 {
-                    objectTypes[i] = reader.ReadInt32(isBigEndian);
+                    objectTypes[i] = (FrameResourceObjectType)reader.ReadInt32(isBigEndian);
                 }
 
                 for (int i = 0; i < header.NumObjects; i++)
                 {
-                    FrameObjectBase newObject = FrameFactory.ReadFrameByObjectID(reader, (ObjectType)objectTypes[i], isBigEndian);
+                    FrameObjectBase newObject = FrameFactory.ReadFrameByObjectID(reader, isBigEndian, this, objectTypes[i]);
 
-                    if (objectTypes[i] == (int)ObjectType.SingleMesh)
+                    if (objectTypes[i] == FrameResourceObjectType.SingleMesh)
                     {
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
 
@@ -171,7 +177,7 @@ namespace ResourceTypes.FrameResource
                             mesh.Material = frameMaterials[mesh.Refs[FrameEntryRefTypes.Material]];
                         }
                     }
-                    else if (objectTypes[i] == (int)ObjectType.Model)
+                    else if (objectTypes[i] == FrameResourceObjectType.Model)
                     {
                         FrameObjectModel mesh = newObject as FrameObjectModel;
                         mesh.AddRef(FrameEntryRefTypes.Geometry, refs[mesh.MeshIndex]);
@@ -189,8 +195,6 @@ namespace ResourceTypes.FrameResource
 
                         newObject = mesh;
                     }
-
-                    frameObjects.Add(newObject.RefID, newObject);
                 }
             }
             objectTypes = null;
@@ -240,31 +244,31 @@ namespace ResourceTypes.FrameResource
             {
                 FrameObjectBase entry = (FObject as FrameObjectBase);
                 if (entry.GetType() == typeof(FrameObjectJoint))
-                    writer.Write((int)ObjectType.Joint);
+                    writer.Write((int)FrameResourceObjectType.Joint);
                 else if (entry.GetType() == typeof(FrameObjectSingleMesh))
-                    writer.Write((int)ObjectType.SingleMesh);
+                    writer.Write((int)FrameResourceObjectType.SingleMesh);
                 else if (entry.GetType() == typeof(FrameObjectFrame))
-                    writer.Write((int)ObjectType.Frame);
+                    writer.Write((int)FrameResourceObjectType.Frame);
                 else if (entry.GetType() == typeof(FrameObjectLight))
-                    writer.Write((int)ObjectType.Light);
+                    writer.Write((int)FrameResourceObjectType.Light);
                 else if (entry.GetType() == typeof(FrameObjectCamera))
-                    writer.Write((int)ObjectType.Camera);
+                    writer.Write((int)FrameResourceObjectType.Camera);
                 else if (entry.GetType() == typeof(FrameObjectComponent_U005))
-                    writer.Write((int)ObjectType.Component_U00000005);
+                    writer.Write((int)FrameResourceObjectType.Component_U00000005);
                 else if (entry.GetType() == typeof(FrameObjectSector))
-                    writer.Write((int)ObjectType.Sector);
+                    writer.Write((int)FrameResourceObjectType.Sector);
                 else if (entry.GetType() == typeof(FrameObjectDummy))
-                    writer.Write((int)ObjectType.Dummy);
+                    writer.Write((int)FrameResourceObjectType.Dummy);
                 else if (entry.GetType() == typeof(FrameObjectDeflector))
-                    writer.Write((int)ObjectType.ParticleDeflector);
+                    writer.Write((int)FrameResourceObjectType.ParticleDeflector);
                 else if (entry.GetType() == typeof(FrameObjectArea))
-                    writer.Write((int)ObjectType.Area);
+                    writer.Write((int)FrameResourceObjectType.Area);
                 else if (entry.GetType() == typeof(FrameObjectTarget))
-                    writer.Write((int)ObjectType.Target);
+                    writer.Write((int)FrameResourceObjectType.Target);
                 else if (entry.GetType() == typeof(FrameObjectModel))
-                    writer.Write((int)ObjectType.Model);
+                    writer.Write((int)FrameResourceObjectType.Model);
                 else if (entry.GetType() == typeof(FrameObjectCollision))
-                    writer.Write((int)ObjectType.Collision);
+                    writer.Write((int)FrameResourceObjectType.Collision);
             }
 
             foreach (var FObject in frameObjects.Values)
@@ -303,7 +307,7 @@ namespace ResourceTypes.FrameResource
                 if(ParentObject != null)
                 {
                     bool bDeleted = ParentObject.Children.Remove(BaseObject);
-                    Debug.Assert(bDeleted, "Failed to delete an object which should be in the child array.");
+                    ToolkitAssert.Ensure(bDeleted, "Failed to delete an object which should be in the child array.");
 
                     BaseObject.Parent = null;
                 }
@@ -312,55 +316,56 @@ namespace ResourceTypes.FrameResource
             return FrameObjects.Remove(EntryToDelete.RefID);
         }
 
-        public void SetParentOfObject(int parentId, FrameEntry childEntry, FrameEntry parentEntry)
+        public T ConstructFrameAssetOfType<T>() where T : FrameEntry
+        {
+            T NewFrame = (T)Activator.CreateInstance(typeof(T), this);
+
+            if (NewFrame is FrameObjectBase)
+            {
+                FrameObjects.Add(NewFrame.RefID, NewFrame);
+            }
+
+            if (NewFrame is FrameMaterial)
+            {
+                frameMaterials.Add(NewFrame.RefID, NewFrame as FrameMaterial);
+            }
+
+            if (NewFrame is FrameGeometry)
+            {
+                frameGeometries.Add(NewFrame.RefID, NewFrame as FrameGeometry);
+            }
+
+            if (NewFrame is FrameBlendInfo)
+            {
+                frameBlendInfos.Add(NewFrame.RefID, NewFrame as FrameBlendInfo);
+            }
+
+            if (NewFrame is FrameSkeletonHierachy)
+            {
+                frameSkeletonHierachies.Add(NewFrame.RefID, NewFrame as FrameSkeletonHierachy);
+            }
+
+            if (NewFrame is FrameSkeleton)
+            {
+                frameSkeletons.Add(NewFrame.RefID, NewFrame as FrameSkeleton);
+            }
+
+            if(NewFrame is FrameHeaderScene)
+            {
+                frameScenes.Add(NewFrame.RefID, NewFrame as FrameHeaderScene);
+                header.SceneFolders.Add(NewFrame as FrameHeaderScene);
+            }
+
+            return NewFrame;
+        }
+
+        public void SetParentOfObject(ParentInfo.ParentType ParentType, FrameEntry childEntry, FrameEntry parentEntry)
         {
             //get the index and child object
             FrameObjectBase obj = (childEntry as FrameObjectBase);
+            obj.SetParent(ParentType, parentEntry);
 
-            //fix any parent-children relationships.
-            if (obj.Parent != null)
-            {
-                obj.Parent.Children.Remove(obj);
-                obj.Parent = null;
-            }
-
-            if (parentEntry != null) //this is if the user wants to change parent
-            {
-                int index = (parentEntry is FrameHeaderScene) ? frameScenes.IndexOfValue(parentEntry.RefID) : GetIndexOfObject(parentEntry.RefID);
-                FrameObjectBase parentObj = (parentEntry as FrameObjectBase);
-
-                //fix any parent relationships only if ParentObj is not null.
-                if (parentObj != null)
-                {
-                    parentObj.Children.Add(obj);
-                    obj.Parent = parentObj;
-                }
-
-                //set parent indexes.
-                if (parentId == 0)
-                {
-                    obj.ParentIndex1.SetParent(index, parentEntry);
-                    obj.ReplaceRef(FrameEntryRefTypes.Parent1, parentEntry.RefID);
-                }
-                else if (parentId == 1)
-                {
-                    obj.ParentIndex2.SetParent(index, parentEntry);
-                    obj.ReplaceRef(FrameEntryRefTypes.Parent2, parentEntry.RefID);
-                }
-            }
-            else //this is if the user wants to remove the parent relationship, therefore -1 = root.
-            {
-                if (parentId == 0)
-                {
-                    obj.ParentIndex1.SetParent(-1, "root", 0);
-                    obj.SubRef(FrameEntryRefTypes.Parent1);
-                }
-                else if (parentId == 1)
-                {
-                    obj.ParentIndex2.SetParent(-1, "root", 0);
-                    obj.SubRef(FrameEntryRefTypes.Parent2);
-                }
-            }
+            // Update world transform
             foreach (var pair in frameObjects)
             {
                 (pair.Value as FrameObjectBase).SetWorldTransform();
@@ -369,16 +374,16 @@ namespace ResourceTypes.FrameResource
 
         public TreeNode ReadFramesFromFile(string filename)
         {
-            FramePack Packet = new FramePack();
+            FramePack Packet = new FramePack(this);
             Packet.ReadFramesFromFile(filename);
-            Packet.PushPacketIntoFrameResource(this);
+            Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }
 
-        public void SaveFramesToFile(FrameObjectBase frame)
+        public void SaveFramesToFile(string FileName, FrameObjectBase frame)
         {
-            FramePack Packet = new FramePack();
-            Packet.WriteToFile(frame);
+            FramePack Packet = new FramePack(this);
+            Packet.WriteToFile(FileName, frame);
         }
 
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)
@@ -489,6 +494,11 @@ namespace ResourceTypes.FrameResource
                 if (obj == null)
                 {
                     continue;
+                }
+
+                if(FramePropContents != null)
+                {
+                    obj.OurFrameProps = FramePropContents.GetFramePropsFor(obj.Name.Hash);
                 }
 
                 if (obj is FrameObjectModel)

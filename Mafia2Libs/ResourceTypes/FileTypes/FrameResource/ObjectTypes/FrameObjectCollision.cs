@@ -26,12 +26,7 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public FrameObjectCollision(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
-        public FrameObjectCollision() : base()
+        public FrameObjectCollision(FrameResource OwningResource) : base(OwningResource)
         {
             _Hash = 0;
             ItemDesc = null;

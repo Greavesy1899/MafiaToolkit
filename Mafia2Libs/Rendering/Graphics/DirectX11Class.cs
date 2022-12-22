@@ -22,6 +22,7 @@ namespace Rendering.Graphics
         private ID3D11RasterizerState m_RSWireFrame { get; set; }
         private ID3D11RasterizerState m_RSCullSolid { get; set; }
         private ID3D11RasterizerState m_RSCullWireFrame { get; set; }
+        private ID3D11SamplerState m_SamplerState { get; set; }
 
         private RasterizerDescription m_RSDesc;
         private FillMode m_FillMode = FillMode.Solid;
@@ -98,16 +99,28 @@ namespace Rendering.Graphics
             m_RSDesc = new RasterizerDescription()
             {
                 AntialiasedLineEnable = false,
-                CullMode = CullMode.Back,
+                CullMode = CullMode.Front,
                 DepthBias = 0,
                 DepthBiasClamp = .0f,
-                DepthClipEnable = false,
+                DepthClipEnable = true,
                 FillMode = FillMode.Solid,
-                FrontCounterClockwise = true,
+                FrontCounterClockwise = false,
                 MultisampleEnable = true,
                 ScissorEnable = false,
                 SlopeScaledDepthBias = .0f
             };
+
+            SamplerDescription SamplerDesc = new SamplerDescription();
+            SamplerDesc.Filter = Filter.Anisotropic;
+            SamplerDesc.AddressU = TextureAddressMode.Wrap;
+            SamplerDesc.AddressV = TextureAddressMode.Wrap;
+            SamplerDesc.AddressW = TextureAddressMode.Wrap;
+            SamplerDesc.MipLODBias = 0.0f;
+            SamplerDesc.MaxAnisotropy = 4;
+            SamplerDesc.ComparisonFunction = ComparisonFunction.Always;
+            SamplerDesc.MinLOD = 0.0f;
+            SamplerDesc.MaxLOD = float.MaxValue;
+            m_SamplerState = Device.CreateSamplerState(SamplerDesc);
 
             m_RSCullSolid = Device.CreateRasterizerState(m_RSDesc);
             m_RSDesc.CullMode = CullMode.None;

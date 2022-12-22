@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MafiaToolkit": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

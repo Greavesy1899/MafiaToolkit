@@ -68,7 +68,7 @@ namespace ResourceTypes.FrameResource
             set { mappingForBlendingInfos = value; }
         }
 
-        public FrameSkeleton() : base()
+        public FrameSkeleton(FrameResource OwningResource) : base(OwningResource)
         {
             numBones = new int[4];
             unkLodData = new int[0];
@@ -76,11 +76,6 @@ namespace ResourceTypes.FrameResource
             jointTransforms = new Matrix4x4[0];
             worldTransforms = new Matrix4x4[0];
             mappingForBlendingInfos = new MappingForBlendingInfo[0];
-        }
-
-        public FrameSkeleton(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)

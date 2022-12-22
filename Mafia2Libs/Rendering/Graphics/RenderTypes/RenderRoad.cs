@@ -1,8 +1,11 @@
-﻿using ResourceTypes.Navigation;
+﻿using ResourceTypes.Navigation.Traffic;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Numerics;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
+using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -11,94 +14,94 @@ namespace Rendering.Graphics
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public RenderLine Spline { get; set; }
         public BoundingBox BBox { get; set; }
-        public int IndexOffset { get; set; }
-        Render2DPlane[] towardLanes;
-        Render2DPlane[] backwardLanes;
-
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public SplineProperties Toward { get { return toward; } set { toward = value; } }
-        public bool HasToward;
-        private SplineProperties toward;
-
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public SplineProperties Backward { get { return backward; } set { backward = value; } }
-        public bool HasBackward;
-        private SplineProperties backward;
+        Render2DPlane[] Planes;
 
         public RenderRoad()
         {
             DoRender = true;
             Transform = Matrix4x4.Identity;
-            towardLanes = new Render2DPlane[0];
-            backwardLanes = new Render2DPlane[0];
+            Planes = new Render2DPlane[0];
             Spline = new RenderLine();
         }
 
-        public void Init(SplineDefinition data)
+        public void Init(IRoadDefinition RoadDefinition, IRoadSpline RoadSpline)
         {
+            float LeftLanesWidth = 0.0f;
+            for(int i = 0; i < RoadDefinition.OppositeLanesCount; i++)
+            {
+                LeftLanesWidth += RoadDefinition.Lanes[i].Width;
+            }
+
+            Planes = new Render2DPlane[RoadDefinition.Lanes.Count];
+            float CurrentOffset = -LeftLanesWidth;
+            for(int i = 0; i < RoadDefinition.Lanes.Count; i++)
+            {
+                ILaneDefinition LaneDefinition = RoadDefinition.Lanes[i];
+
+                Color LaneColour = Color.White;
+                switch (LaneDefinition.LaneType)
+                {
+                    case LaneType.MainRoad:
+                        LaneColour = Color.Chartreuse;
+                        break;
+                    case LaneType.Byroad:
+                        LaneColour = Color.Fuchsia;
+                        break;
+                    case LaneType.ExclImpassable:
+                        LaneColour = Color.DimGray;
+                        break;
+                    case LaneType.EmptyRoad:
+                        LaneColour = Color.Yellow;
+                        break;
+                    case LaneType.Parking:
+                        LaneColour = Color.CornflowerBlue;
+                        break;
+                }
+
+                float zOffset = RoadDefinition.Direction == RoadDirection.Backwards ? -0.5f : -1.0f;
+
+                Vector3[] Points = RoadSpline.Points.Select(v => new Vector3(v.X, v.Y, v.Z + zOffset)).ToArray();
+                if (RoadDefinition.Direction == RoadDirection.Towards)
+                {               
+                    Points = Points.Reverse().ToArray();
+                }    
+
+                Render2DPlane Lane = new Render2DPlane();
+                Lane.Init(LaneDefinition, Points, LaneDefinition.Width, CurrentOffset, zOffset, LaneColour);
+                Planes[i] = Lane;
+
+                CurrentOffset += LaneDefinition.Width;
+            }
+
+            Spline = new RenderLine();
             Spline.SetUnselectedColour(System.Drawing.Color.White);
-            Spline.Init(data.Points);
-            Vector3[] editPoints = (Vector3[])data.Points.Clone();
-
-            if (data.HasToward)
-            {
-                towardLanes = new Render2DPlane[data.Toward.LaneSize0];
-
-                for (int i = 0; i != data.Toward.LaneSize0; i++)
-                {
-                    Render2DPlane lane = new Render2DPlane();
-                    lane.Init(ref editPoints, data.Toward.Lanes[i], data.Toward.Flags);
-                    towardLanes[i] = lane;
-                }
-
-                Toward = data.Toward;
-                HasToward = data.HasToward;
-            }
-
-            editPoints = (Vector3[])data.Points.Clone();
-
-            if (data.HasBackward)
-            {
-                backwardLanes = new Render2DPlane[data.Backward.LaneSize0];
-
-                for (int i = 0; i != data.Backward.LaneSize0; i++)
-                {
-                    Render2DPlane lane = new Render2DPlane();
-                    lane.Init(ref editPoints, data.Backward.Lanes[i], data.Backward.Flags);
-                    backwardLanes[i] = lane;
-                }
-
-                Backward = data.Backward;
-                HasBackward = data.HasBackward;
-            }
-
-            BBox = BoundingBox.CreateFromPoints(editPoints);
-            IndexOffset = data.IndexOffset;
+            Spline.Init(RoadSpline.Points.ToArray());
+            BBox = BoundingBox.CreateFromPoints(RoadSpline.Points.ToArray());
         }
 
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
             Spline.InitBuffers(d3d, context);
 
-            foreach (Render2DPlane plane in towardLanes)
+            foreach (Render2DPlane plane in Planes)
+            {
                 plane.InitBuffers(d3d, context);
-
-            foreach (Render2DPlane plane in backwardLanes)
-                plane.InitBuffers(d3d, context);
+            }
         }
 
         public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
+            {
                 return;
+            }
 
             Spline.Render(device, deviceContext, camera);
 
-            foreach (Render2DPlane plane in towardLanes)
+            foreach (Render2DPlane plane in Planes)
+            {
                 plane.Render(device, deviceContext, camera);
-
-            foreach (Render2DPlane plane in backwardLanes)
-                plane.Render(device, deviceContext, camera);
+            }
         }
 
         public override void SetTransform(Matrix4x4 matrix)
@@ -110,22 +113,20 @@ namespace Rendering.Graphics
         {
             Spline.Shutdown();
 
-            foreach (Render2DPlane plane in towardLanes)
+            foreach (Render2DPlane plane in Planes)
+            {
                 plane.Shutdown();
-
-            foreach (Render2DPlane plane in backwardLanes)
-                plane.Shutdown();
+            }
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             Spline.UpdateBuffers(device, deviceContext);
 
-            foreach (Render2DPlane plane in towardLanes)
+            foreach (Render2DPlane plane in Planes)
+            {
                 plane.UpdateBuffers(device, deviceContext);
-
-            foreach (Render2DPlane plane in backwardLanes)
-                plane.UpdateBuffers(device, deviceContext);
+            }
         }
 
         public override void Select()

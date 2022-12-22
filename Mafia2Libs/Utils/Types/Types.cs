@@ -83,10 +83,10 @@ namespace Utils.Types
             byte[] RightHand = new byte[4];
             Array.Copy(GuidBytes, 4, RightHand, 0, 4);
 
-            string SLeftHand = BitConverter.ToString(LeftHand).Replace("-", "");
-            string SRightHand = BitConverter.ToString(RightHand).Replace("-", "");
-            string FormattedGUID = string.Format("0x{0:x8}, 0x{1:x8}", SLeftHand, SRightHand);
-            return FormattedGUID;
+            uint GuidLeft = BitConverter.ToUInt32(LeftHand, 0);
+            uint GuidRight = BitConverter.ToUInt32(RightHand, 0);
+
+            return string.Format("[{0}, {1}]", GuidLeft, GuidRight);
         }
 
         public void Set(string value)
@@ -115,63 +115,6 @@ namespace Utils.Types
             }
 
             return name;
-        }
-    }
-
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class ParentStruct
-    {
-        int index;
-        string name;
-        int refID;
-
-        public int Index {
-            get { return index; }
-            set { index = value; }
-        }
-
-        public string Name {
-            get { return name; }
-            set { name = value; }
-        }
-
-        public int RefID {
-            get { return refID; }
-            set { refID = value; }
-        }
-
-        public ParentStruct(int index)
-        {
-            this.index = index;
-        }
-
-        public ParentStruct(ParentStruct other)
-        {
-            index = other.index;
-            name = other.name;
-            refID = other.refID;
-        }
-
-        public void SetParent(int index, FrameEntry entry)
-        {
-            SetParent(index, entry.ToString(), entry.RefID);
-        }
-
-        public void SetParent(int index, string name, int refID)
-        {
-            this.index = index;
-            this.name = name;
-            this.refID = refID;
-        }
-
-        public override string ToString()
-        {
-            if (index == -1)
-            {
-                return string.Format("{0}, root", index);
-            }
-            
-            return string.Format("{0}, {1}", index, name);
         }
     }
 

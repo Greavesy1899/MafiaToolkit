@@ -167,16 +167,16 @@
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
         LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAmU3lzdGVtLldpbmRvd3MuRm9ybXMu
-        SW1hZ2VMaXN0U3RyZWFtZXIBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAACAIAAAJNU0Z0AUkBTAIBAQIC
-        AAEDAQABAwEQAQABEAEABP8BIQEACP8BQgFNATYHAAE2AwABKAMAAUADAAEQAwABAQEAASAGAAEQ/wD/
-        AC4AAv8CAAL/AgAC/wIAAv8uAAL/AgAC/wIAAv8CAAL/AgAC/wIAAv8CAAL/pgAC/wIAAv8KAAL/AgAC
-        /yoAAv8CAAL/zgAC/wIAAv8mAAL/AgAC/84AAv8CAAL/JgAC/wIAAv/KAAL/AgAC/wIAAv8mAAL/AgAC
-        /8YAAv8CAAL/AgAC/yoAAv8CAAL/vgAC/wIAAv8CAAL/AgAC/y4AAv8CAAL/ugAC/wIAAv8CAAL/NgAC
-        /wIAAv+6AAL/AgAC/zoAAv8CAAL/ugAC/wIAAv86AAL/AgAC/74AAv8CAAL/CgAC/wIAAv8mAAL/AgAC
-        /8IAAv8CAAL/AgAC/wIAAv8qAAL/AgAC//8A/wCmAAFCAU0BPgcAAT4DAAEoAwABQAMAARADAAEBAQAB
-        AQUAAYAXAAP/AQAE/wQABP8EAAH8AT8B+AEPBAAB+QGfAfkB/wQAAf8BzwH5Af8EAAH/Ac8B+QH/BAAB
-        /wGPAfkB/wQAAf8BHwH5Af8EAAH8AT8B+QH/BAAB+AH/AfkB/wQAAfkB/wH5Af8EAAH5Af8B+QH/BAAB
-        /AHPAfkB/wQAAf4BHwH5Af8EAAT/BAAE/wQACw==
+        SW1hZ2VMaXN0U3RyZWFtZXIBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAACgIAAAJNU0Z0AUkBTAIBAQIB
+        AAEoAQMBKAEDARABAAEQAQAE/wEhAQAI/wFCAU0BNgcAATYDAAEoAwABQAMAARADAAEBAQABIAYAARD/
+        AP8ALgAC/wIAAv8CAAL/AgAC/y4AAv8CAAL/AgAC/wIAAv8CAAL/AgAC/wIAAv+mAAL/AgAC/woAAv8C
+        AAL/KgAC/wIAAv/OAAL/AgAC/yYAAv8CAAL/zgAC/wIAAv8mAAL/AgAC/8oAAv8CAAL/AgAC/yYAAv8C
+        AAL/xgAC/wIAAv8CAAL/KgAC/wIAAv++AAL/AgAC/wIAAv8CAAL/LgAC/wIAAv+6AAL/AgAC/wIAAv82
+        AAL/AgAC/7oAAv8CAAL/OgAC/wIAAv+6AAL/AgAC/zoAAv8CAAL/vgAC/wIAAv8KAAL/AgAC/yYAAv8C
+        AAL/wgAC/wIAAv8CAAL/AgAC/yoAAv8CAAL//wD/AKYAAUIBTQE+BwABPgMAASgDAAFAAwABEAMAAQEB
+        AAEBBQABgBcAA/8BAAT/BAAE/wQAAfwBPwH4AQ8EAAH5AZ8B+QH/BAAB/wHPAfkB/wQAAf8BzwH5Af8E
+        AAH/AY8B+QH/BAAB/wEfAfkB/wQAAfwBPwH5Af8EAAH4Af8B+QH/BAAB+QH/AfkB/wQAAfkB/wH5Af8E
+        AAH8Ac8B+QH/BAAB/gEfAfkB/wQABP8EAAT/BAAL
 </value>
   </data>
   <metadata name="MeshBrowser.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -187,6 +187,9 @@
   </metadata>
   <metadata name="FrameBrowser.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>548, 23</value>
+  </metadata>
+  <metadata name="SaveFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>677, 23</value>
   </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

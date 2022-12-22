@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Numerics;
+using ThirdParty.OPCODE;
 using Utils.Extensions;
+using Utils.Logging;
 using Utils.Models;
 using Utils.Types;
-using Utils.VorticeUtils;
 
 namespace ResourceTypes.FrameResource
 {
@@ -37,8 +37,6 @@ namespace ResourceTypes.FrameResource
         int numVerts;
         int nZero1;
         int zeroTail;
-        int nPartition;
-        PartitionInfo partitionInfo = new PartitionInfo();
         int matSplitType;
         MaterialSplitInfo splitInfo = new MaterialSplitInfo();
 
@@ -63,13 +61,13 @@ namespace ResourceTypes.FrameResource
             get { return vertexDeclaration; }
             set { vertexDeclaration = value; }
         }
+        public uint OpcodeType { get; private set; }
+        public uint MemRequireA { get; private set; }
+        public uint MemRequireB { get; private set; }
+        public HybridModel OpcodeModel { get; private set; }
         public MaterialSplitInfo SplitInfo {
             get { return splitInfo; }
             set { splitInfo = value; }
-        }
-        public PartitionInfo Partition {
-            get { return partitionInfo; }
-            set { partitionInfo = value; }
         }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
@@ -81,16 +79,27 @@ namespace ResourceTypes.FrameResource
             numVerts = reader.ReadInt32(isBigEndian);
             nZero1 = reader.ReadInt32(isBigEndian);
 
-            nPartition = reader.ReadInt32(isBigEndian);
-            if (nPartition != 0)
-                partitionInfo.ReadFromFile(reader, isBigEndian);
+            // If present, read OPCODE data of this mesh
+            OpcodeType = reader.ReadUInt32(isBigEndian);
+            if (OpcodeType != 0)
+            {
+                MemRequireA = reader.ReadUInt32(isBigEndian);
+                MemRequireB = reader.ReadUInt32(isBigEndian);
+                ToolkitAssert.Ensure(MemRequireA == MemRequireB, "MemRequireA [{0}] and MemRequireB [{1}] should be the same.", MemRequireA, MemRequireB);
 
+                OpcodeModel = new HybridModel();
+                OpcodeModel.Load_FrameRes(reader, isBigEndian ? Endian.Big : Endian.Little);
+            }
+
+            // Read C_BPASubDiv object
             matSplitType = reader.ReadInt32(isBigEndian);
-
             if (matSplitType != 0)
+            {
                 splitInfo.ReadFromFile(reader, isBigEndian, matSplitType);
+            }
 
             zeroTail = reader.ReadInt32(isBigEndian);
+            ToolkitAssert.Ensure(zeroTail == 0, "This object should end with zero. It has ended with: [{0}]", zeroTail);
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -102,23 +111,47 @@ namespace ResourceTypes.FrameResource
             writer.Write(numVerts);
             writer.Write(nZero1);
 
-            writer.Write(nPartition);
-            if (nPartition != 0)
-                partitionInfo.WriteToFile(writer);
+            // Write Opcode data (if present) for this mesh
+            writer.Write(OpcodeType);
+            if(OpcodeType != 0)
+            {
+                // TODO: Figure out MemRequreA + MemRequireB
+                // see if we can compute from HybridModel.
+                writer.Write(MemRequireA);
+                writer.Write(MemRequireB);
+
+                // TODO: When FrameResource saves as big endian, 
+                // make sure to pass endianess into this function.
+                using (MemoryStream OpcodeStream = new MemoryStream())
+                {
+                    OpcodeModel.Save_FrameRes(OpcodeStream);
+                    writer.Write(OpcodeStream.ToArray());
+                }
+            }
 
             writer.Write(matSplitType);
 
             if (matSplitType != 0)
+            {
                 splitInfo.WriteToFile(writer, matSplitType);
+            }
 
             writer.Write(zeroTail);
         }
 
         public void BuildNewPartition()
         {
-            nPartition = 1;
-            partitionInfo.BuildBlankPartition();
+            // TODO: When saving an M2DE mesh, should this be 96?
+            // I think MemRequireA and MemRequireB is affected by
+            // whether the game is 32 or 64 bit.
+            OpcodeType = 1;
+            MemRequireA = 0x44; // 68
+            MemRequireB = 0x44; // 68
+
+            OpcodeModel = new HybridModel();
+            OpcodeModel.BuildDefault();
         }
+
         public void BuildNewMaterialSplit()
         {
             matSplitType = 0xC;
@@ -211,250 +244,7 @@ namespace ResourceTypes.FrameResource
                 writer.Write(nrightIndex);
             }
         }
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public struct Descriptor
-        {
-            int num1;
-            int num2;
-            short[] p0;
-            short[] p1;
 
-            Vector3 unpackedP0;
-            Vector3 unpackedP1;
-
-            public int Num1 {
-                get { return num1; }
-                set { num1 = value; }
-            }
-            public int Num2 {
-                get { return num2; }
-                set { num2 = value; }
-            }
-            public short[] P0 {
-                get { return p0; }
-                set { p0 = value; }
-            }
-            public short[] P1 {
-                get { return p1; }
-                set { p1 = value; }
-            }
-
-            //public Vector3 UnpackedP0 {
-            //    get { return unpackedP0; }
-            //    set { unpackedP0 = value; }
-            //}
-
-            //public Vector3 UnpackedP1 {
-            //    get { return unpackedP1; }
-            //    set { unpackedP1 = value; }
-            //}
-
-            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
-            {
-                num1 = reader.ReadInt32(isBigEndian);
-                p0 = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
-                p1 = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
-                num2 = reader.ReadInt32(isBigEndian);
-            }
-
-            public void WriteToFile(BinaryWriter writer)
-            {
-                writer.Write(num1);
-                for (int i = 0; i != p0.Length; i++)
-                    writer.Write(p0[i]);
-                for (int i = 0; i != p1.Length; i++)
-                    writer.Write(p1[i]);
-                writer.Write(num2);
-            }
-
-            public void Unpack(Vector3 factor1, Vector3 factor2)
-            {
-                unpackedP0 = new Vector3(p0[0] * factor1.X, p0[1] * factor1.Y, p0[2] * factor1.Z);
-                unpackedP1 = new Vector3(p1[0] * factor2.X, p1[1] * factor2.Y, p1[2] * factor2.Z);
-            }
-        }
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class PartitionInfo
-        {
-            int memRequireA;
-            int memRequireB;
-            int partitionType;
-            Vector3 offsetVector;
-            Vector3 scaleVector;
-            int numDesc1Length;
-            Descriptor[] numDesc1;
-            bool isAvailB;
-            int numLongs1Length;
-            int[] numLongs1;
-            int numLongs2Length;
-            bool isAvailC;
-            int[] numLongs2;
-            bool isBone;
-
-            public bool IsBone {
-                get { return isBone; }
-                set { isBone = value; }
-            }
-            public bool IsAvailB {
-                get { return isAvailB; }
-                set { isAvailB = value; }
-            }
-            public bool IsAvailC {
-                get { return isAvailC; }
-                set { isAvailC = value; }
-            }
-            public int MemRequiredA {
-                get { return memRequireA; }
-                set { memRequireA = value; }
-            }
-            public int MemRequiredB {
-                get { return memRequireB; }
-                set { memRequireB = value; }
-            }
-            public int Type {
-                get { return partitionType; }
-                set { partitionType = value; }
-            }
-            public int numLong1 {
-                get { return numLongs1Length; }
-                set { numLongs1Length = value; }
-            }
-            public int[] Longs1 {
-                get { return numLongs1; }
-                set {
-                    numLongs1Length = value.Length;
-                    numLongs1 = value;
-                }
-            }
-            public int numLong2 {
-                get { return numLongs2Length; }
-                set { numLongs2Length = value; }
-            }
-            public int[] Longs2 {
-                get { return numLongs2; }
-                set {
-                    numLongs2Length = value.Length;
-                    numLongs2 = value;
-                }
-            }
-            public int NumDesc1Length {
-                get { return numDesc1Length; }
-                set { numDesc1Length = value; }
-            }
-            public Descriptor[] Descriptors {
-                get { return numDesc1; }
-                set { numDesc1 = value; }
-            }
-            public Vector3 OffsetVector {
-                get { return offsetVector; }
-                set { offsetVector = value; }
-            }
-            public Vector3 ScaleVector {
-                get { return scaleVector; }
-                set { scaleVector = value; }
-            }
-
-            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
-            {
-                memRequireA = reader.ReadInt32(isBigEndian);
-                memRequireB = reader.ReadInt32(isBigEndian);
-                partitionType = reader.ReadInt32(isBigEndian);
-                isBone = reader.ReadBoolean();
-
-                if (isBone)
-                {
-                    offsetVector = new Vector3(reader.ReadSingle(isBigEndian), reader.ReadSingle(isBigEndian), reader.ReadSingle(isBigEndian));
-                    scaleVector = new Vector3(reader.ReadSingle(isBigEndian), reader.ReadSingle(isBigEndian), reader.ReadSingle(isBigEndian));
-
-                    numDesc1Length = reader.ReadInt32(isBigEndian);
-                    numDesc1 = new Descriptor[numDesc1Length];
-                    for (int i = 0; i != numDesc1.Length; i++)
-                    {
-                        numDesc1[i] = new Descriptor();
-                        numDesc1[i].ReadFromFile(reader, isBigEndian);
-                        //numDesc1[i].Unpack(offsetVector, scaleVector);
-                    }
-                }
-                numLongs1Length = reader.ReadInt32(isBigEndian);
-                isAvailB = reader.ReadBoolean();
-                if (isAvailB)
-                {
-
-                    numLongs1 = new int[numLongs1Length];
-                    for (int i = 0; i != numLongs1.Length; i++)
-                    {
-                        numLongs1[i] = reader.ReadInt32(isBigEndian);
-                    }
-                }
-                numLongs2Length = reader.ReadInt32(isBigEndian);
-                isAvailC = reader.ReadBoolean();
-                if(isAvailC)
-                { 
-                    numLongs2 = new int[numLongs2Length];
-                    for (int i = 0; i != numLongs2.Length; i++)
-                    {
-                        numLongs2[i] = reader.ReadInt32(isBigEndian);
-                    }
-                }
-            }
-
-            public void WriteToFile(BinaryWriter writer)
-            {
-                writer.Write(memRequireA);
-                writer.Write(memRequireB);
-                writer.Write(partitionType);
-                writer.Write(isBone);
-
-                if (isBone)
-                {
-                    offsetVector.WriteToFile(writer);
-                    scaleVector.WriteToFile(writer);
-
-                    writer.Write(numDesc1Length);
-                    for (int i = 0; i != numDesc1.Length; i++)
-                    {
-                        numDesc1[i].WriteToFile(writer);
-                    }
-                }
-                writer.Write(numLongs1Length);
-                writer.Write(isAvailB);
-                if (isAvailB)
-                {
-                    for (int i = 0; i != numLongs1.Length; i++)
-                    {
-                        writer.Write(numLongs1[i]);
-                    }
-
-                }
-                writer.Write(numLongs2Length);
-                writer.Write(isAvailC);
-                if (isAvailC)
-                {
-                    for (int i = 0; i != numLongs2.Length; i++)
-                    {
-                        writer.Write(numLongs2[i]);
-                    }
-                }
-            }
-
-            public void BuildBlankPartition()
-            {
-                isBone = false;
-                isAvailB = false;
-                isAvailC = false;
-                memRequireA = 0x44;
-                memRequireB = 0x44;
-                partitionType = 4;
-                Longs1 = new int[0];
-                Longs2 = new int[0];
-                Descriptors = new Descriptor[0];
-                numDesc1Length = 0;
-                numLongs1Length = numDesc1Length + 1;
-                numLongs2Length = 0;
-                offsetVector = new Vector3(0.0f, 0.0f, 0.0f);
-                scaleVector = new Vector3(1.0f, 1.0f, 1.0f);
-            }
-        }
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class MaterialSplitInfo
         {

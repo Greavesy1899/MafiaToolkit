@@ -1,4 +1,4 @@
-﻿using ResourceTypes.Collisions.Opcode;
+﻿using ResourceTypes.Collisions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using Utils.Helpers;
+using Utils.Logging;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 
@@ -202,7 +203,7 @@ namespace ResourceTypes.Collisions
                     //vec.X = ((vec.X + vec.Y) * -1);
                     vec.Y = ((vec.X + vec.Y) * -1);
                     vec.X = 0.0f;
-                    vec.Z = /*Unk5 != 128 ? MathUtil.RadiansToDegrees(Rotation.Z) : */-MathHelper.ToRadians(Rotation.Z);
+                    vec.Z = /*Unk5 != 128 ? MathUtil.RadiansToDegrees(Rotation.Z) : */-MathHelper.ToDegrees(Rotation.Z);
                     return vec;
                 }
                 set {
@@ -223,7 +224,7 @@ namespace ResourceTypes.Collisions
                 get {
 
                     Matrix4x4 transform = MatrixUtils.SetMatrix(RotationDegrees, Vector3.One, Position);
-                    Debug.Assert(!transform.IsNaN());
+                    ToolkitAssert.Ensure(!transform.IsNaN(), "Transform is NaN");
                     transform.Translation = Position;
                     return transform;
                 }

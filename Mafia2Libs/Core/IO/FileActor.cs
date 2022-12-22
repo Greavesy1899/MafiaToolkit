@@ -16,7 +16,7 @@ namespace Core.IO
         {
             try
             {
-                Actor actors = new Actor(file.FullName);
+                Actor actors = new Actor(file);
 
                 List<string> definitions = new List<string>();
 

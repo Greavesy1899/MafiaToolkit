@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -375,7 +376,7 @@ namespace Utils.Extensions
         #endregion
 
         // Adds an integer value and its associated description
-        public FlagCheckedListBoxItem Add(int v, string c)
+        public FlagCheckedListBoxItem Add(uint v, string c)
         {
             FlagCheckedListBoxItem item = new FlagCheckedListBoxItem(v, c);
             Items.Add(item);
@@ -402,7 +403,7 @@ namespace Utils.Extensions
         }
 
         // Checks/Unchecks items depending on the give bitvalue
-        protected void UpdateCheckedItems(int value)
+        protected void UpdateCheckedItems(uint value)
         {
 
             isUpdatingCheckStates = true;
@@ -444,14 +445,16 @@ namespace Utils.Extensions
 
 
             // Get the total value of all checked items
-            int sum = 0;
+            uint sum = 0;
             for (int i = 0; i < Items.Count; i++)
             {
                 FlagCheckedListBoxItem item = Items[i] as FlagCheckedListBoxItem;
 
                 // If item is checked, add its value to the sum.
                 if (GetItemChecked(i))
+                {
                     sum |= item.value;
+                }
             }
 
             // If the item has been unchecked, remove its bits from the sum
@@ -469,16 +472,18 @@ namespace Utils.Extensions
         private bool isUpdatingCheckStates = false;
 
         // Gets the current bit value corresponding to all checked items
-        public int GetCurrentValue()
+        public uint GetCurrentValue()
         {
-            int sum = 0;
+            uint sum = 0;
 
             for (int i = 0; i < Items.Count; i++)
             {
                 FlagCheckedListBoxItem item = Items[i] as FlagCheckedListBoxItem;
 
                 if (GetItemChecked(i))
+                {
                     sum |= item.value;
+                }
             }
 
             return sum;
@@ -493,7 +498,7 @@ namespace Utils.Extensions
             foreach (string name in Enum.GetNames(enumType))
             {
                 object val = Enum.Parse(enumType, name);
-                int intVal = (int)Convert.ChangeType(val, typeof(int));
+                uint intVal = (uint)Convert.ChangeType(val, typeof(uint));
 
                 Add(intVal, name);
             }
@@ -502,7 +507,7 @@ namespace Utils.Extensions
         // Checks/unchecks items based on the current value of the enum variable
         private void ApplyEnumValue()
         {
-            int intVal = (int)Convert.ChangeType(enumValue, typeof(int));
+            uint intVal = (uint)Convert.ChangeType(enumValue, typeof(uint));
             UpdateCheckedItems(intVal);
 
         }
@@ -530,7 +535,7 @@ namespace Utils.Extensions
     // Represents an item in the checklistbox
     public class FlagCheckedListBoxItem
     {
-        public FlagCheckedListBoxItem(int v, string c)
+        public FlagCheckedListBoxItem(uint v, string c)
         {
             value = v;
             caption = c;
@@ -554,7 +559,7 @@ namespace Utils.Extensions
             return (IsFlag && ((value & composite.value) == value));
         }
 
-        public int value;
+        public uint value;
         public string caption;
     }
 

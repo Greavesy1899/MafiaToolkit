@@ -21,13 +21,9 @@ namespace Rendering.Graphics
         public void Init(AnimalTrafficLoader.AnimalTrafficPath path)
         {
             ATP = path;
-            BBox.Init(path.BoundingBox);
+            BBox.Init(path.BoundingBox0);
 
-            Vector3[] points = new Vector3[path.Vectors.Length];
-            for(int i = 0; i != path.Vectors.Length; i++)
-            {
-                points[i] = path.Vectors[i].Position;
-            }
+            Vector3[] points = path.GetPoints();
             Path.Init(points);
         }
 

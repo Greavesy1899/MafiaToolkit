@@ -1,6 +1,5 @@
 ﻿using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
-using ResourceTypes.Collisions.Opcode;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using System;
@@ -53,8 +52,11 @@ namespace Utils.Models
         /// <summary>
         /// Build Lods from retrieved data.
         /// </summary>
-        public void BuildLods(FrameGeometry frameGeometry, FrameMaterial frameMaterial, VertexBuffer[] vertexBuffers, IndexBuffer[] indexBuffers)
+        public void BuildLods(FrameObjectSingleMesh Mesh, VertexBuffer[] vertexBuffers, IndexBuffer[] indexBuffers)
         {
+            FrameGeometry frameGeometry = Mesh.GetGeometry();
+            FrameMaterial frameMaterial = Mesh.GetMaterial();
+
             lods = new Lod[frameGeometry.NumLods];
             for (int i = 0; i != lods.Length; i++)
             {
@@ -102,7 +104,7 @@ namespace Utils.Models
 
         public void BuildLods(FrameObjectModel model, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
-            BuildLods(model.Geometry, model.Material, vertexBuffers, indexBuffers);
+            BuildLods(model, vertexBuffers, indexBuffers);
 
             if(model.Skeleton != null && model.SkeletonHierarchy != null && model.BlendInfo != null)
             {
@@ -374,11 +376,6 @@ namespace Utils.Models
                     }
                 }
             }
-        }
-
-        public void ExportToFbx(string path, bool saveBinary)
-        {
-            FBXHelper.ConvertM2T(path + "\\" + name + ".m2t", path + "\\" + name + ".fbx");
         }
 
         public void ReadFromM2T(string file)

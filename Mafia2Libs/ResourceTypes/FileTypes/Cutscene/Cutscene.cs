@@ -1,8 +1,8 @@
 ﻿using ResourceTypes.Cutscene.AnimEntities;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
+using Utils.Logging;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene
@@ -225,7 +225,7 @@ namespace ResourceTypes.Cutscene
                     for(int i = 0; i < numEntities; i++)
                     {
                         int Header = reader.ReadInt32();
-                        Debug.Assert(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
+                        ToolkitAssert.Ensure(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
 
                         int Size = reader.ReadInt32();
                         int RawAnimEntityType = reader.ReadInt32();
@@ -258,7 +258,7 @@ namespace ResourceTypes.Cutscene
                         using(MemoryStream stream = new MemoryStream(dataBytes))
                         {
                             entities[z].AnimEntityData.ReadFromFile(stream, false);
-                            Debug.Assert(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
+                            ToolkitAssert.Ensure(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
                         }
                     }
 
@@ -357,7 +357,7 @@ namespace ResourceTypes.Cutscene
                             for (int i = 0; i < NumEntities; i++)
                             {
                                 int Header = reader.ReadInt32();
-                                Debug.Assert(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
+                                ToolkitAssert.Ensure(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
 
                                 int Size = reader.ReadInt32();
                                 int RawAnimEntityType = reader.ReadInt32();
@@ -368,7 +368,7 @@ namespace ResourceTypes.Cutscene
                                 {
                                     AnimEntityWrapper Entity = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
 
-                                    if (Debugger.IsAttached)
+                                    if (System.Diagnostics.Debugger.IsAttached)
                                     {
                                         // Debugging: If the AnimEntity is null and a debugger is attached, we should save it to the disc.
                                         string format = string.Format("CutsceneInfo/{0}/Entity_SPD_{1}_{2}.bin", CutsceneName, AnimEntityType, i);
@@ -387,7 +387,7 @@ namespace ResourceTypes.Cutscene
                                 reader.BaseStream.Position -= 8;
                                 byte[] dataBytes = reader.ReadBytes(entitySize);
 
-                                if (Debugger.IsAttached)
+                                if (System.Diagnostics.Debugger.IsAttached)
                                 {
                                     string format = string.Format("CutsceneInfo/{2}/{0}_SPD_{1}.bin", EntityDefinitions[z], z, CutsceneName);
                                     File.WriteAllBytes(format, dataBytes);
@@ -470,7 +470,7 @@ namespace ResourceTypes.Cutscene
                     //Data = reader.ReadBytes(size-8);
                     Data = reader.ReadBytes(size);
 
-                    if (Debugger.IsAttached)
+                    if (System.Diagnostics.Debugger.IsAttached)
                     {
                         File.WriteAllBytes("CutsceneInfo/" + Name + ".gcr", Data);
                     }

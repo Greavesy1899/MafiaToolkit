@@ -26,6 +26,8 @@ namespace ResourceTypes.FrameResource
         bool unk3;
         float[] unkData = new float[4 * 3];
 
+        private FrameResource OwningResource;
+
         public bool IsScene {
             get { return isScene; }
             set { isScene = value; }
@@ -91,11 +93,13 @@ namespace ResourceTypes.FrameResource
             set { sceneFolders = value; }
         }
 
-        public FrameHeader()
+        public FrameHeader(FrameResource OwningResource)
         {
             sceneFolders = new List<FrameHeaderScene>();
             sceneName = new HashName();
             unkData = new float[4 * 3];
+
+            this.OwningResource = OwningResource;
         }
 
         /// <summary>
@@ -128,9 +132,8 @@ namespace ResourceTypes.FrameResource
         
             for (int i = 0; i != numFolderNames; i++)
             {
-                FrameHeaderScene scene = new FrameHeaderScene();
+                FrameHeaderScene scene = OwningResource.ConstructFrameAssetOfType<FrameHeaderScene>();
                 scene.ReadFromFile(reader, isBigEndian);
-                sceneFolders.Add(scene);
             }
         }
 

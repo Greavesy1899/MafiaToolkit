@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Utils.Extensions;
+using Utils.Logging;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -53,8 +54,8 @@ namespace ResourceTypes.M3.XBin
 
         public override void Close()
         {
-            Debug.Assert(PtrsToFix.Count == 0, "Should have no StringPtrs to fix!");
-            Debug.Assert(ObjectPtrsToFix.Count == 0, "Should have no ObjectPtrs to fix!");
+            ToolkitAssert.Ensure(PtrsToFix.Count == 0, "Should have no StringPtrs to fix!");
+            ToolkitAssert.Ensure(ObjectPtrsToFix.Count == 0, "Should have no ObjectPtrs to fix!");
             base.Close();
         }
 

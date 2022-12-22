@@ -28,16 +28,11 @@ namespace ResourceTypes.FrameResource
             set { unkData = value; }
         }
 
-        public FrameSkeletonHierachy() : base()
+        public FrameSkeletonHierachy(FrameResource OwningResource) : base(OwningResource)
         {
             parentIndices = new byte[0];
             lastChildIndices = new byte[0];
             unkData = new byte[0];
-        }
-
-        public FrameSkeletonHierachy(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
@@ -60,7 +55,7 @@ namespace ResourceTypes.FrameResource
 
         public override string ToString()
         {
-            return $"Skeleton Hierachy Block";
+            return $"Skeleton Hierarchy Block";
         }
     }
 }

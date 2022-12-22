@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using Utils.Logging;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Misc
@@ -425,7 +426,7 @@ namespace ResourceTypes.Misc
             int poolSize = reader.ReadInt32();
             int poolOffset = reader.ReadInt32();
 
-            Debug.Assert(reader.BaseStream.Position == groupOffset, "Failed to reach the starting offset for group declaration!");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == groupOffset, "Failed to reach the starting offset for group declaration!");
 
             groups = new StreamGroup[numGroups];
             for (int i = 0; i < numGroups; i++)
@@ -441,7 +442,7 @@ namespace ResourceTypes.Misc
                 groups[i] = map;
             }
 
-            Debug.Assert(reader.BaseStream.Position == headerOffset, "Did not reach the header starting offset");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == headerOffset, "Did not reach the header starting offset");
 
             groupHeaders = new string[numHeaders];
             ulong[] ulongHeaders = new ulong[numHeaders];
@@ -452,7 +453,7 @@ namespace ResourceTypes.Misc
                 groupHeaders[i] = ReadFromBuffer((long)(ulongHeaders[i] + (ulong)poolOffset), reader.BaseStream.Position, reader);
             }
 
-            Debug.Assert(reader.BaseStream.Position == lineOffset, "Did not reach the line data starting offset!");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == lineOffset, "Did not reach the line data starting offset!");
 
             lines = new StreamLine[numLines];
 
@@ -477,7 +478,7 @@ namespace ResourceTypes.Misc
                 lines[i] = map;
             }
 
-            Debug.Assert(reader.BaseStream.Position == loadersOffset, "Did not reach the loader data starting offset!");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == loadersOffset, "Did not reach the loader data starting offset!");
 
             loaders = new StreamLoader[numLoaders];
 
@@ -498,7 +499,7 @@ namespace ResourceTypes.Misc
                 loaders[i] = map;
             }
 
-            Debug.Assert(reader.BaseStream.Position == blockOffset, "Did not reach the block declaration starting offset!");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == blockOffset, "Did not reach the block declaration starting offset!");
 
             blocks = new StreamBlock[numBlocks];
             for (int i = 0; i < numBlocks; i++)
@@ -510,7 +511,7 @@ namespace ResourceTypes.Misc
                 blocks[i] = map;
             }
 
-            Debug.Assert(reader.BaseStream.Position == hashOffset, "Did not reach the block hashes starting offset!");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == hashOffset, "Did not reach the block hashes starting offset!");
 
             hashes = new ulong[numHashes];
 
@@ -525,11 +526,11 @@ namespace ResourceTypes.Misc
                 Array.Copy(hashes, block.startOffset, block.Hashes, 0, block.Hashes.Length);
             }
 
-            Debug.Assert(reader.BaseStream.Position == poolOffset, "Did not reach the buffer pool starting offset!");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == poolOffset, "Did not reach the buffer pool starting offset!");
 
             reader.BaseStream.Seek(poolSize, SeekOrigin.Current);
 
-            Debug.Assert(reader.BaseStream.Position == reader.BaseStream.Length, "Did not reach the end of the file!");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == reader.BaseStream.Length, "Did not reach the end of the file!");
         }
 
         private void Update()

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
+using Utils.Models;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
@@ -67,19 +68,14 @@ namespace ResourceTypes.FrameResource
 
         [TypeConverter(typeof(ExpandableObjectConverter)), Category("Linked Blocks"), Description("Avoid editing!")]
         public FrameGeometry Geometry {
-            get { return geometry; }
+            get { return GetGeometry(); }
             set { geometry = value; }
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter)), Category("Linked Blocks"), Description("Avoid editing!")]
         public FrameMaterial Material {
-            get { return material; }
+            get { return GetMaterial(); }
             set { material = value; }
-        }
-
-        public FrameObjectSingleMesh(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectSingleMesh(FrameObjectSingleMesh other) : base(other)
@@ -97,14 +93,13 @@ namespace ResourceTypes.FrameResource
             geometry = other.geometry;
         }
 
-        public FrameObjectSingleMesh() : base()
+        public FrameObjectSingleMesh(FrameResource OwningResource) : base(OwningResource)
         {
             flags = SingleMeshFlags.Unk14_Flag | SingleMeshFlags.flag_32 | SingleMeshFlags.flag_67108864;
             bounds = new BoundingBox();
             unk14 = 255;
             meshIndex = 0;
             materialIndex = 0;
-            localTransform = new Matrix4x4();
             omTextureHash = new HashName();
             unk18_1 = 0;
             unk18_2 = 0;
@@ -167,9 +162,47 @@ namespace ResourceTypes.FrameResource
             /* End check regarding OM Flag */
         }
 
-        public override string ToString()
+        protected FrameMaterial ConstructMaterialObject()
         {
-            return string.Format("{0}", Name);
+            Material = OwningResource.ConstructFrameAssetOfType<FrameMaterial>();
+            AddRef(FrameEntryRefTypes.Material, Material.RefID);
+            return Material;
+        }
+
+        protected FrameGeometry ConstructGeometryObject()
+        {
+            geometry = OwningResource.ConstructFrameAssetOfType<FrameGeometry>();
+            AddRef(FrameEntryRefTypes.Geometry, geometry.RefID);
+            return geometry;
+        }
+
+        public FrameMaterial GetMaterial()
+        {
+            if(material == null)
+            {
+                return ConstructMaterialObject();
+            }
+
+            return material;
+        }
+
+        public FrameGeometry GetGeometry()
+        {
+            if(geometry == null)
+            {
+                return ConstructGeometryObject();
+            }
+
+            return geometry;
+        }
+
+        public virtual void CreateMeshFromRawModel(ModelWrapper NewModel)
+        {
+            ConstructMaterialObject();
+            ConstructGeometryObject();
+
+            NewModel.SetFrameMesh(this);
+            NewModel.CreateObjectsFromModel();
         }
 
         public override void ConstructRenderable()
@@ -177,6 +210,11 @@ namespace ResourceTypes.FrameResource
             RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this);
             RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}", Name);
         }
     }
 }

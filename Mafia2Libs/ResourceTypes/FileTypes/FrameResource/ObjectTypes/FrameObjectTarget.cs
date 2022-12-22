@@ -18,19 +18,12 @@ namespace ResourceTypes.FrameResource
             set { unk02 = value; }
         }
 
-        public FrameObjectTarget() : base()
-        {
-        }
+        public FrameObjectTarget(FrameResource OwningResource) : base(OwningResource) { }
 
         public FrameObjectTarget(FrameObjectTarget other) : base(other)
         {
             unk01 = other.unk01;
             unk02 = other.unk02;
-        }
-
-        public FrameObjectTarget(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public override void ReadFromFile(MemoryStream reader, bool isBigEndian)

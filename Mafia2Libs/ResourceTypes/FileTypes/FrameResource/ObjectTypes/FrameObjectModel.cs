@@ -2,6 +2,7 @@
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
+using Utils.Models;
 using Utils.Types;
 using Utils.VorticeUtils;
 
@@ -67,29 +68,22 @@ namespace ResourceTypes.FrameResource
         }
         [Category("Linked Blocks")]
         public FrameSkeleton Skeleton {
-            get { return skeleton; }
+            get { return GetSkeletonObject(); }
             set { skeleton = value; }
         }
         [Category("Linked Blocks")]
         public FrameBlendInfo BlendInfo {
-            get { return blendInfo; }
+            get { return GetBlendInfoObject(); }
             set { blendInfo = value; }
         }
 
         [Category("Linked Blocks"), TypeConverter(typeof(ExpandableObjectConverter))]
         public FrameSkeletonHierachy SkeletonHierarchy {
-            get { return hierachy; }
+            get { return GetSkeletonHierarchyObject(); }
             set { hierachy = value; }
         }
 
-        public FrameObjectModel() : base()
-        {
-
-
-        }
-        public FrameObjectModel (MemoryStream reader, bool isBigEndian)
-        {
-        }
+        public FrameObjectModel(FrameResource OwningResource) : base(OwningResource) { }
 
         public FrameObjectModel(FrameObjectSingleMesh other) : base(other)
         {
@@ -246,6 +240,67 @@ namespace ResourceTypes.FrameResource
             }
         }
 
+        protected FrameBlendInfo ConstructBlendInfoObject()
+        {
+            blendInfo = OwningResource.ConstructFrameAssetOfType<FrameBlendInfo>();
+            AddRef(FrameEntryRefTypes.BlendInfo, blendInfo.RefID);
+            return blendInfo;
+        }
+        protected FrameSkeletonHierachy ConstructSkeletonHierarchyObject()
+        {
+            SkeletonHierarchy = OwningResource.ConstructFrameAssetOfType<FrameSkeletonHierachy>();
+            AddRef(FrameEntryRefTypes.SkeletonHierachy, SkeletonHierarchy.RefID);
+            return SkeletonHierarchy;
+        }
+
+        protected FrameSkeleton ConstructSkeletonObject()
+        {
+            skeleton = OwningResource.ConstructFrameAssetOfType<FrameSkeleton>();
+            AddRef(FrameEntryRefTypes.Skeleton, skeleton.RefID);
+            return skeleton;
+        }
+
+        public FrameBlendInfo GetBlendInfoObject()
+        {
+            if(blendInfo == null)
+            {
+                return ConstructBlendInfoObject();
+            }
+
+            return blendInfo;
+        }
+
+        public FrameSkeletonHierachy GetSkeletonHierarchyObject()
+        {
+            if (hierachy == null)
+            {
+                return ConstructSkeletonHierarchyObject();
+            }
+
+            return hierachy;
+        }
+
+        public FrameSkeleton GetSkeletonObject()
+        {
+            if (skeleton == null)
+            {
+                return ConstructSkeletonObject();
+            }
+
+            return skeleton;
+        }
+
+        public override void CreateMeshFromRawModel(ModelWrapper NewModel)
+        {
+            base.CreateMeshFromRawModel(NewModel);
+
+            ConstructBlendInfoObject();
+            ConstructGeometryObject();
+            ConstructMaterialObject();
+
+            NewModel.CreateObjectsFromModel();
+        }
+
         public override string ToString()
         {
             return string.Format("{0}", Name.ToString());
@@ -260,21 +315,33 @@ namespace ResourceTypes.FrameResource
             string jointName;
             FrameObjectBase attachment;
 
+            [Description("Assumed to be Frame Index")]
             public int AttachmentIndex {
                 get { return attachmentIndex; }
                 set { attachmentIndex = value; }
             }
+            [Description("Assumed to be Joint Index in skeleton")]
             public byte JointIndex {
                 get { return jointIndex; }
                 set { jointIndex = value; }
             }
+            [Description("NOT SAVED IN FRAME RESOURCE. FILLED IN AT RUNTIME")]
             public string JointName {
                 get { return jointName; }
                 set { jointName = value; }
             }
+            [Description("NOT SAVED IN FRAME RESOURCE. FILLED IN AT RUNTIME")]
             public FrameObjectBase Attachment {
                 get { return attachment; }
                 set { attachment = value; }
+            }
+
+            public AttachmentReference()
+            {
+                attachmentIndex = -1;
+                jointIndex = 0;
+                jointName = string.Empty;
+                attachment = null;
             }
 
             public AttachmentReference(MemoryStream reader, bool isBigEndian)

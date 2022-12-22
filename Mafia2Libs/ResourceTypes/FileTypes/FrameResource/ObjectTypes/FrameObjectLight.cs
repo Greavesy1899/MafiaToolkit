@@ -115,7 +115,7 @@ namespace ResourceTypes.FrameResource
         [Category("Lights")]
         public Matrix4x4 UnknownMatrix { get; set; }
 
-        public FrameObjectLight() : base()
+        public FrameObjectLight(FrameResource OwningResource) : base(OwningResource)
         {
             Flags = 0;
             UnkVector_0 = new Vector3();

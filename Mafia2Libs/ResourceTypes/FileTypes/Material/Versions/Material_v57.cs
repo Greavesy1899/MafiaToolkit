@@ -31,6 +31,14 @@ namespace ResourceTypes.Materials
                 Unk3 = CastedMaterial.Unk3;
                 Unk4 = CastedMaterial.Unk4;
                 Unk5 = CastedMaterial.Unk5;
+
+                // Copy over samplers
+                Samplers = new List<MaterialSampler_v57>();
+                foreach (var Sampler in CastedMaterial.Samplers)
+                {
+                    MaterialSampler_v57 NewSampler = new MaterialSampler_v57(Sampler);
+                    Samplers.Add(NewSampler);
+                }
             }
             else if (OtherMaterial.GetMTLVersion() == VersionsEnumerator.V_58)
             {
@@ -40,6 +48,14 @@ namespace ResourceTypes.Materials
                 Unk3 = CastedMaterial.Unk3;
                 Unk4 = CastedMaterial.Unk4;
                 Unk5 = CastedMaterial.Unk5;
+
+                // Copy over samplers
+                Samplers = new List<MaterialSampler_v57>();
+                foreach (var Sampler in CastedMaterial.Samplers)
+                {
+                    MaterialSampler_v57 NewSampler = new MaterialSampler_v57(Sampler);
+                    Samplers.Add(NewSampler);
+                }
             }
             else
             {
@@ -48,12 +64,6 @@ namespace ResourceTypes.Materials
                 return;
             }
 
-            Samplers = new List<MaterialSampler_v57>();
-            foreach (var Sampler in Samplers)
-            {
-                MaterialSampler_v57 NewSampler = new MaterialSampler_v57(Sampler);
-                Samplers.Add(Sampler);
-            }
         }
 
         public override void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
@@ -125,6 +135,33 @@ namespace ResourceTypes.Materials
             }
         }
 
+        public override void SetTextureFor(string SamplerOrTextureID, string NewTextureName)
+        {
+            foreach (IMaterialSampler Sampler in Samplers)
+            {
+                if(Sampler.ID.Equals(SamplerOrTextureID))
+                {
+                    // Don't check the cast so we crash on purpose because this 
+                    // should never cause an error.
+                    MaterialSampler_v57 CastedSampler = (Sampler as MaterialSampler_v57);
+                    CastedSampler.TextureName.Set(NewTextureName);
+                }
+            }
+        }
+
+        public override void SetupFromPreset(MaterialPreset Preset)
+        {
+            base.SetupFromPreset(Preset);
+
+            if(Preset == MaterialPreset.Default)
+            {
+                MaterialSampler_v57 NewSampler = new MaterialSampler_v57();
+                NewSampler.ID = "S000";
+
+                Samplers.Add(NewSampler);
+            }
+        }
+
         public override HashName GetTextureByID(string SamplerName)
         {
             foreach (var sampler in Samplers)
@@ -161,6 +198,19 @@ namespace ResourceTypes.Materials
             }
 
             return FoundTextures;
+        }
+
+        public override IMaterialSampler GetSamplerByKey(string SamplerKey)
+        {
+            foreach (IMaterialSampler Sampler in Samplers)
+            {
+                if (Sampler.ID.Equals(SamplerKey))
+                {
+                    return Sampler;
+                }
+            }
+
+            return null;
         }
 
         public override VersionsEnumerator GetMTLVersion()

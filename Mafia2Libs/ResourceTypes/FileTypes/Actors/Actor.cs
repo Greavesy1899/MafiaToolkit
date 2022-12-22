@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Utils.Logging;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
@@ -36,10 +37,26 @@ namespace ResourceTypes.Actors
             set { extraData = value; }
         }
 
-        public Actor(string file)
+        public Actor() : base()
         {
-            fileName = file;
-            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            definitions = new List<ActorDefinition>();
+            items = new List<ActorEntry>();
+            extraData = new List<ActorExtraData>();
+        }
+
+        public Actor(string InFilename) : this()
+        {
+            fileName = InFilename;
+
+            const16 = 16;
+            const2 = 2;
+            const6 = 6;
+        }
+
+        public Actor(FileInfo InFileInfo)
+        {
+            fileName = InFileInfo.FullName;
+            using (BinaryReader reader = new BinaryReader(File.Open(InFileInfo.FullName, FileMode.Open)))
             {
                 ReadFromFile(reader);
             }
@@ -47,30 +64,36 @@ namespace ResourceTypes.Actors
 
         private string BuildDefinitions()
         {
-            string bufferPool = "";
-            bufferPool += "<scene>\0";
-            Dictionary<string, int> names = new Dictionary<string, int>();
-            for(int i = 0; i < definitions.Count; i++)
+            // Only fill buffer if we have definitions.
+            // If we have no definitions we leave the pool empty.
+            string bufferPool = String.Empty;
+            if (definitions.Count > 0)
             {
-                int startPos = 0;
-
-                if(!string.IsNullOrEmpty(definitions[i].Name))
+                bufferPool += "<scene>\0";
+                Dictionary<string, int> names = new Dictionary<string, int>();
+                for (int i = 0; i < definitions.Count; i++)
                 {
-                    if(!names.ContainsKey(definitions[i].Name))
+                    int startPos = 0;
+
+                    if (!string.IsNullOrEmpty(definitions[i].Name))
                     {
-                        startPos = bufferPool.Length;
-                        bufferPool += definitions[i].Name;
-                        bufferPool += '\0';
-                        names.Add(definitions[i].Name, startPos);
-                        definitions[i].NamePos = (ushort)startPos;
-                    }
-                    else
-                    {
-                        names.TryGetValue(definitions[i].Name, out startPos);
-                        definitions[i].NamePos = (ushort)startPos;
+                        if (!names.ContainsKey(definitions[i].Name))
+                        {
+                            startPos = bufferPool.Length;
+                            bufferPool += definitions[i].Name;
+                            bufferPool += '\0';
+                            names.Add(definitions[i].Name, startPos);
+                            definitions[i].NamePos = (ushort)startPos;
+                        }
+                        else
+                        {
+                            names.TryGetValue(definitions[i].Name, out startPos);
+                            definitions[i].NamePos = (ushort)startPos;
+                        }
                     }
                 }
             }
+            
             return bufferPool;
         }
 
@@ -219,14 +242,16 @@ namespace ResourceTypes.Actors
                 reader.BaseStream.Position = endPosition;
             }
 
-            Debug.Assert(reader.BaseStream.Position == reader.BaseStream.Length, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
+            ToolkitAssert.Ensure(reader.BaseStream.Position == reader.BaseStream.Length, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
         }
 
         public void WriteToFile()
         {
             Sanitize();
             pool = BuildDefinitions();
-            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Open)))
+
+            // Write the file
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Create)))
             {
                 WriteToFile(writer);
             }

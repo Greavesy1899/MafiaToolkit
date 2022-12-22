@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
+using Utils.Logging;
 using Vortice.Mathematics;
 
 namespace Utils.VorticeUtils
@@ -16,7 +17,7 @@ namespace Utils.VorticeUtils
             else if (Index == 1) { matrix.M12 = NewColumn.X; matrix.M22 = NewColumn.Y; matrix.M32 = NewColumn.Z; matrix.M42 = NewColumn.W; }
             else if (Index == 2) { matrix.M13 = NewColumn.X; matrix.M23 = NewColumn.Y; matrix.M33 = NewColumn.Z; matrix.M43 = NewColumn.W; }
             else if (Index == 3) { matrix.M14 = NewColumn.X; matrix.M24 = NewColumn.Y; matrix.M34 = NewColumn.Z; matrix.M44 = NewColumn.W; }
-            else { Debug.Assert(false, "Invalid Index passed into Matrix4x4.GetColumn"); }
+            else { ToolkitAssert.Ensure(false, "Invalid Index passed into Matrix4x4.GetColumn"); }
         }
 
         public static Vector4 GetColumn(this Matrix4x4 matrix, int Index)
@@ -25,7 +26,7 @@ namespace Utils.VorticeUtils
             else if (Index == 1) { return new Vector4(matrix.M12, matrix.M22, matrix.M32, matrix.M42); }
             else if (Index == 2) { return new Vector4(matrix.M13, matrix.M23, matrix.M33, matrix.M43); }
             else if (Index == 3) { return new Vector4(matrix.M14, matrix.M24, matrix.M34, matrix.M44); }
-            else { Debug.Assert(false, "Invalid Index passed into Matrix4x4.GetColumn"); }
+            else { ToolkitAssert.Ensure(false, "Invalid Index passed into Matrix4x4.GetColumn"); }
 
             return Vector4.Zero;
         }
@@ -36,7 +37,7 @@ namespace Utils.VorticeUtils
             else if (Index == 1) { matrix.M21 = NewRow.X; matrix.M22 = NewRow.Y; matrix.M23 = NewRow.Z; matrix.M24 = NewRow.W; }
             else if (Index == 2) { matrix.M31 = NewRow.X; matrix.M32 = NewRow.Y; matrix.M33 = NewRow.Z; matrix.M34 = NewRow.W; }
             else if (Index == 3) { matrix.M41 = NewRow.X; matrix.M42 = NewRow.Y; matrix.M43 = NewRow.Z; matrix.M44 = NewRow.W; }
-            else { Debug.Assert(false, "Invalid Index passed into Matrix4x4.GetColumn"); }
+            else { ToolkitAssert.Ensure(false, "Invalid Index passed into Matrix4x4.GetColumn"); }
         }
 
         public static Vector4 GetRow(this Matrix4x4 matrix, int Index)
@@ -45,7 +46,7 @@ namespace Utils.VorticeUtils
             else if (Index == 1) { return new Vector4(matrix.M21, matrix.M22, matrix.M23, matrix.M24); }
             else if (Index == 2) { return new Vector4(matrix.M31, matrix.M32, matrix.M33, matrix.M34); }
             else if (Index == 3) { return new Vector4(matrix.M41, matrix.M42, matrix.M43, matrix.M44); }
-            else { Debug.Assert(false, "Invalid Index passed into Matrix4x4.GetRow"); }
+            else { ToolkitAssert.Ensure(false, "Invalid Index passed into Matrix4x4.GetRow"); }
 
             return Vector4.Zero;
         }
@@ -85,7 +86,7 @@ namespace Utils.VorticeUtils
 
             if (matrix.IsNaN())
             {
-                Debug.Assert(matrix.IsNaN(), "Matrix.IsNan() during ReadFromFile");
+                ToolkitAssert.Ensure(matrix.IsNaN(), "Matrix.IsNan() during ReadFromFile");
                 matrix = Matrix4x4.Identity;
             }
 
@@ -123,6 +124,21 @@ namespace Utils.VorticeUtils
             other.Translation = position;
 
             return matrix;
+        }
+
+        public static Matrix4x4 CreateFromDirection(Vector3 Direction)
+        {
+            Vector3 UpDirection = new Vector3(0.0f, 0.0f, 1.0f);
+
+            Matrix4x4 NewMatrix = Matrix4x4.Identity;
+
+            Vector3 XAxis = Vector3.Normalize(Vector3.Cross(UpDirection, Direction));
+            Vector3 YAxis = Vector3.Normalize(Vector3.Cross(Direction, XAxis));
+
+            NewMatrix.SetColumn(0, new Vector4(XAxis.X, YAxis.X, Direction.X, 1.0f));
+            NewMatrix.SetColumn(1, new Vector4(XAxis.Y, YAxis.Y, Direction.Y, 1.0f));
+            NewMatrix.SetColumn(2, new Vector4(XAxis.Z, YAxis.Z, Direction.Z, 1.0f));
+            return NewMatrix;
         }
 
         public static Matrix4x4 SetMatrix(Vector3 rotation, Vector3 scale, Vector3 position)

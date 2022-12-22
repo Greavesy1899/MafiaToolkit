@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net5.0-windows7.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mafia2Tool</RootNamespace>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -32,7 +32,7 @@
     </DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>6</LangVersion>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -41,7 +41,7 @@
     </DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.0</LangVersion>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
@@ -114,16 +114,10 @@
     <Compile Update="Controls\MListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Controls\MTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="Controls\RenderOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Controls\TextureEntry.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Controls\FrameResourceAddSceneOption.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Controls\ControlOptionFrameAdd.cs">
@@ -143,6 +137,9 @@
     </Compile>
     <Compile Update="Controls\SDSOptions.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Forms\ATPEditor.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +212,9 @@
     <Content Include="Resources\GameData\XBin_Hashes.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Update="Resources\GameData\M2_Textures.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\GizmoModel.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -320,5 +320,7 @@ del *.py
 del *.cmd</PostBuildEvent>
     <LangVersion>7.3</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>2.24</AssemblyVersion>
+    <FileVersion>2.24</FileVersion>
   </PropertyGroup>
 </Project>

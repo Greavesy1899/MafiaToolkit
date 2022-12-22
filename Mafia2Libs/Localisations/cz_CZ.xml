@@ -46,6 +46,7 @@
   <String ID="$FOLDER_PATH_TOOLTIP">Umístění složky</String>
   <String ID="$UP_TOOLTIP">Nahoru</String>
   <String ID="$M1DE_OODLEERROR">Could not find Oodle DLL which is required for compression/decompression. Please make sure 'oo2core_8_win64.dll' exists in game directory.</String>
+  <String ID="$OPEN_MAP_EDITOR">Open Map Editor</String>
 	
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Zapnout Toolkit</String>

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using Utils.Logging;
 
 namespace ResourceTypes.Materials
 {
@@ -27,7 +28,7 @@ namespace ResourceTypes.Materials
                     break;
             }
 
-            Debug.Assert(Material != null, string.Format("Failed to read Material Type: {0}", version));
+            ToolkitAssert.Ensure(Material != null, string.Format("Failed to read Material Type: {0}", version));
             return Material;
         }
 
@@ -50,7 +51,7 @@ namespace ResourceTypes.Materials
                     break;
             }
 
-            Debug.Assert(Material != null, string.Format("Failed to read Construct Material Type: {0}", Version));
+            ToolkitAssert.Ensure(Material != null, string.Format("Failed to read Construct Material Type: {0}", Version));
             return Material;
         }
 
@@ -73,8 +74,19 @@ namespace ResourceTypes.Materials
                     break;
             }
 
-            Debug.Assert(Material != null, string.Format("Failed to read Construct Material Type: {0}", Version));
+            ToolkitAssert.Ensure(Material != null, string.Format("Failed to read Construct Material Type: {0}", Version));
             return Material;
+        }
+
+        // TODO:
+        // Not really version agnostic, no presets exist yet.
+        // Will just default to whatever the material can construct.
+        public static IMaterial ConstructMaterialWithPreset(VersionsEnumerator Version, MaterialPreset Preset)
+        {
+            IMaterial NewMaterial = ConstructMaterial(Version);
+            NewMaterial.SetupFromPreset(Preset);
+
+            return NewMaterial;
         }
     }
 }

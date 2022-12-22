@@ -53,8 +53,7 @@ namespace Utils.Settings
 
         // Update vars
         public static float CurrentVersion = 1.0f;
-
-        public static readonly float Version = 2.222f;
+        public static readonly float Version = 2.24f;
 
         public static void ReadINI()
         {
@@ -74,7 +73,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("UseMIPS", "ModelViewer", "True"), out UseMIPS);
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
-            float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "1"), out CameraSpeed);
+            float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "100"), out CameraSpeed);
             bool.TryParse(ReadKey("EnableExperimental", "ModelViewer", "0"), out Experimental);
             float.TryParse(ReadKey("FieldOfView", "ModelViewer", "60"), out FieldOfView);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
@@ -85,13 +84,13 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("AddTimeDataBackup", "SDS", "True"), out AddTimeDataBackup);
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
-            bool.TryParse(ReadKey("CookCollisions", "SDS", "False"), out CookCollisions);
+            bool.TryParse(ReadKey("CookCollisions", "SDS", "True"), out CookCollisions);
             bool.TryParse(ReadKey("CheckForUpdates", "Misc", "True"), out CheckForUpdates);
             bool.TryParse(ReadKey("SkipGameSelector", "Misc", "False"), out SkipGameSelector);
             int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);
             int.TryParse(ReadKey("VertexMemorySizePerBuffer", "SDS", "6000000 "), out VertexMemorySizePerBuffer);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
-            float.TryParse(ReadKey("CurrentVersion", "Update", "2.22"), out CurrentVersion);
+            float.TryParse(ReadKey("CurrentVersion", "Update", Version.ToString()), out CurrentVersion);
 
             Log.LoggingEnabled = LoggingEnabled;
 

@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using ResourceTypes.M3.XBin.GuiContainers;
+using Utils.Logging;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -107,7 +108,7 @@ namespace ResourceTypes.M3.XBin
                     break;
             }
 
-            Debug.Assert(XBinData != null, "XBinData is null, but we should have actually read this.");
+            ToolkitAssert.Ensure(XBinData != null, "XBinData is null, but we should have actually read this.");
             return XBinData;
         }
     }

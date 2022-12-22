@@ -27,6 +27,7 @@ using System.IO;
 using System.Linq;
 using Gibbed.IO;
 using OodleSharp;
+using Utils.Logging;
 using ZLibNet;
 
 namespace Gibbed.Illusion.FileFormats
@@ -390,7 +391,7 @@ namespace Gibbed.Illusion.FileFormats
                     // TODO: Consider if we can check if this is still a valid header.
                     var compressedBlockHeader = CompressedBlockHeader.Read(baseStream, endian);
                     int HeaderSize = (int)compressedBlockHeader.HeaderSize;
-                    Debug.Assert(HeaderSize != 32 || HeaderSize != 128, "The CompressedBlockheader did not equal 32 or 128.");
+                    ToolkitAssert.Ensure(HeaderSize != 32 || HeaderSize != 128, "The CompressedBlockheader did not equal 32 or 128.");
 
                     // Make sure the Size equals CompressedSize on the block header.
                     if (size - HeaderSize != compressedBlockHeader.CompressedSize)

@@ -6,6 +6,7 @@ using ResourceTypes.Actors;
 using ResourceTypes.EntityDataStorage;
 using Utils.Helpers.Reflection;
 using Utils.Language;
+using Utils.Logging;
 using Utils.Settings;
 
 namespace Toolkit.Forms
@@ -245,7 +246,7 @@ namespace Toolkit.Forms
                     EntityDataStorageLoader EDSLoader = (PropertyGrid_Item.SelectedObject as EntityDataStorageLoader);
                     string NewEntityName = string.Format("Entity [{0}]", EDSLoader.Hash);
 
-                    Debug.Assert(EDSLoader.TableHashes.Length == TreeView_Tables.SelectedNode.Nodes.Count, "WARNING: This editor does not support deleting/adding new tables. " +
+                    ToolkitAssert.Ensure(EDSLoader.TableHashes.Length == TreeView_Tables.SelectedNode.Nodes.Count, "WARNING: This editor does not support deleting/adding new tables. " +
                         "The length of 'TableHashes' NEEDS to equal the same amount of child nodes attached to " + NewEntityName);
 
                     int Index = 0;

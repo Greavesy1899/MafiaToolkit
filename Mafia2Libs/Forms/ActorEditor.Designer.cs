@@ -217,6 +217,6 @@
         private System.Windows.Forms.ToolStripMenuItem AddDefinitionButton;
         private System.Windows.Forms.ToolStripMenuItem ContextCopy;
         private System.Windows.Forms.ToolStripMenuItem ContextPaste;
-        private Controls.MTreeView ActorTreeView;
+        private Mafia2Tool.Controls.MTreeView ActorTreeView;
     }
 }

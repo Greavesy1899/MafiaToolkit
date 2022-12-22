@@ -101,6 +101,7 @@ namespace ResourceTypes.Collisions
     //water = gravel track
     public enum CollisionMaterials
     {
+        Undefined = -1,
         OBSOLETE_Road,
         OBSOLETE_Road_Dusty,
         OBSOLETE_Pedestrian_Crossing,
@@ -163,5 +164,29 @@ namespace ResourceTypes.Collisions
         OBSOLETE_Railing_Concrete,
         OBSOLETE_Railing_Wood,
         OBSOLETE_Cartoon
+    }
+
+    public static class CollisionEnumUtils
+    {
+        public static ushort MaterialNameToIndex(string material)
+        {
+            return (ushort)ConvertStringToEnum(material);
+        }
+
+        public static CollisionMaterials MaterialNameToEnumValue(string material)
+        {
+            return ConvertStringToEnum(material);
+        }
+
+        private static CollisionMaterials ConvertStringToEnum(string Material)
+        {
+            CollisionMaterials parsedMaterial = CollisionMaterials.Undefined;
+            if (!Enum.TryParse(Material, true, out parsedMaterial))
+            {
+                parsedMaterial = CollisionMaterials.Concrete; // fallback material
+            }
+
+            return parsedMaterial;
+        }
     }
 }

@@ -57,10 +57,11 @@ namespace Mafia2Tool.Forms
                 gridNode.Nodes.Add(child);
             }
             TreeNode ogNode = new TreeNode("Objects Groups");
+            ogNode.Tag = "OBJ_GROUPS";
             for (int i = 0; i < translokator.ObjectGroups.Length; i++)
             {
                 ObjectGroup objectGroup = translokator.ObjectGroups[i];
-                TreeNode objectGroupNode = new TreeNode("Object Group " + i);
+                TreeNode objectGroupNode = new TreeNode(String.Format("Object Group: [{0}]", objectGroup.ActorType));
                 objectGroupNode.Tag = objectGroup;
 
                 for (int y = 0; y < objectGroup.Objects.Length; y++)
@@ -103,7 +104,6 @@ namespace Mafia2Tool.Forms
             {
                 ObjectGroup objectGroup = (TranslokatorTree.Nodes[2].Nodes[i].Tag as ObjectGroup);
                 objectGroup.Objects = new ResourceTypes.Translokator.Object[TranslokatorTree.Nodes[2].Nodes[i].GetNodeCount(false)];
-                objectGroup.NumObjects = objectGroup.Objects.Length;
                 for (int y = 0; y < objectGroup.Objects.Length; y++)
                 {
                     ResourceTypes.Translokator.Object obj = (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].Tag as ResourceTypes.Translokator.Object);
@@ -150,6 +150,7 @@ namespace Mafia2Tool.Forms
                 bIsFileEdited = true;
             }
         }
+
         private void AddObjectNode()
         {
             if (TranslokatorTree.SelectedNode.Tag is ObjectGroup)
@@ -165,6 +166,22 @@ namespace Mafia2Tool.Forms
                 bIsFileEdited = true;
             }
         }
+        private void AddObjectGroupNode()
+        {
+            // If not correct node, leave early.
+            string AsString = TranslokatorTree.SelectedNode.Tag.ToString();
+            if(AsString.Equals("OBJ_GROUPS") == false)
+            {
+                return;
+            }
+
+            ObjectGroup NewObjectGroup = new ObjectGroup();
+            TreeNode NewNode = new TreeNode(String.Format("Object Group: [{0}]", NewObjectGroup.ActorType));
+            NewNode.Tag = NewObjectGroup;
+
+            TranslokatorTree.Nodes[2].Nodes.Add(NewNode);
+        }
+
         private void DeleteNode()
         {
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
@@ -175,6 +192,7 @@ namespace Mafia2Tool.Forms
                 bIsFileEdited = true;
             }
         }
+
         private void Copy()
         {
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
@@ -182,6 +200,7 @@ namespace Mafia2Tool.Forms
                 clipboard = TranslokatorTree.SelectedNode.Tag;
             }
         }
+
         private void Paste()
         {
             var data = clipboard;
@@ -190,7 +209,7 @@ namespace Mafia2Tool.Forms
                 if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
                 {
                     var tag = TranslokatorTree.SelectedNode.Tag;
-                    if (tag is ResourceTypes.Translokator.Object && data is ResourceTypes.Translokator.Object)
+                    if (tag is ResourceTypes.Translokator.Object)
                     {
                         TranslokatorTree.SelectedNode.Tag = new ResourceTypes.Translokator.Object((ResourceTypes.Translokator.Object)clipboard);
                     }
@@ -216,45 +235,83 @@ namespace Mafia2Tool.Forms
 
         private void TranslokatorContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            for (int i = 0; i != TranslokatorContext.Items.Count; i++)
-                TranslokatorContext.Items[i].Visible = false;
+            // Clear state
+            AddInstance.Enabled = false;
+            AddObject.Enabled = false;
+            AddGroup.Enabled = false;
+            Delete.Enabled = false;
+            CopyButton.Enabled = false;
+            PasteButton.Enabled = false;
 
+            // Update state
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
             {
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
-                    TranslokatorContext.Items[0].Visible = true;
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ObjectGroup))
-                    TranslokatorContext.Items[1].Visible = true;
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance) || TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
-                    TranslokatorContext.Items[2].Visible = true;
-
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object) ||
-                    TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance))
+                object Tag = TranslokatorTree.SelectedNode.Tag;
+                if (Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
                 {
-                    TranslokatorContext.Items[3].Visible = true;
-                    TranslokatorContext.Items[4].Visible = true;
+                    AddInstance.Enabled = true;
+                }
+                if (Tag.GetType() == typeof(ObjectGroup))
+                {
+                    AddObject.Enabled = true;
+                }
+                if (Tag.GetType() == typeof(Instance) 
+                    || Tag.GetType() == typeof(ResourceTypes.Translokator.Object)
+                    || Tag.GetType() == typeof(ObjectGroup))
+                {
+                    Delete.Enabled = true;
+                }
+                if(Tag.GetType() == typeof(string))
+                {
+                    string AsString = (Tag as string);
+                    AddGroup.Enabled = AsString.Equals("OBJ_GROUPS");
+                }
+                if (Tag.GetType() == typeof(ResourceTypes.Translokator.Object) ||
+                    Tag.GetType() == typeof(Instance))
+                {
+                    CopyButton.Enabled = true;
+                    PasteButton.Enabled = true;
                 }
             }
 
-            bool nonVisible = true;
+            // Need to hide context if none are visible
+            bool bAnyEnabled = false;
             for (int i = 0; i != TranslokatorContext.Items.Count; i++)
             {
-                if (!TranslokatorContext.Items[i].Visible)
-                    nonVisible = false;
+                if (TranslokatorContext.Items[i].Enabled)
+                {
+                    bAnyEnabled = true;
+                    break;
+                }
             }
 
-            if(nonVisible)
+            if(!bAnyEnabled)
+            {
                 e.Cancel = true;
+            }
         }
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
             if(e.Control && e.KeyCode == Keys.A)
             {
-                if (TranslokatorTree.SelectedNode.Tag is ObjectGroup)
+                object Tag = TranslokatorTree.SelectedNode.Tag;
+                if (Tag is ObjectGroup)
+                {
                     AddObjectNode();
-                else if (TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object || TranslokatorTree.SelectedNode.Tag is Instance)
+                }
+                else if (Tag is ResourceTypes.Translokator.Object || TranslokatorTree.SelectedNode.Tag is Instance)
+                {
                     AddInstanceNode();
+                }
+                else if(Tag is string)
+                {
+                    string AsString = Tag.ToString();
+                    if(AsString.Equals("OBJ_GROUPS"))
+                    {
+                        AddObjectGroupNode();
+                    }
+                }
             }
         }
 
@@ -272,6 +329,17 @@ namespace Mafia2Tool.Forms
                     {
                         selected.Nodes[i].Text = selected.Text + " " + i;
                     }
+                }
+            }
+            else if(e.ChangedItem.Label == "ActorType")
+            {
+                TreeNode selected = TranslokatorTree.SelectedNode;
+                if(selected.Tag is ObjectGroup)
+                {
+                    ObjectGroup AsObjectGroup = (selected.Tag as ObjectGroup);
+                    string NewName = String.Format("Object Group: [{0}]", AsObjectGroup.ActorType);
+                    selected.Name = NewName;
+                    selected.Text = NewName;
                 }
             }
 
@@ -299,88 +367,6 @@ namespace Mafia2Tool.Forms
                 }
             }
             MessageBox.Show(string.Format("Number of Instances: {0}", num), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void LHFunctionButton_Click(object sender, EventArgs e)
-        {
-            if(openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                FileInfo info = new FileInfo(openFileDialog1.FileName);
-                TranslokatorLoader loader2 = new TranslokatorLoader(info);
-
-                for (int i = 0; i < loader2.ObjectGroups.Length; i++)
-                {
-                    ObjectGroup objectGroup = loader2.ObjectGroups[i];
-                    ObjectGroup transGroup = translokator.ObjectGroups[i];
-
-                    for (int y = 0; y < objectGroup.Objects.Length; y++)
-                    {
-                        ResourceTypes.Translokator.Object loaderObj = objectGroup.Objects[y];
-
-                        for (int z = 0; z < transGroup.Objects.Length; z++)
-                        {
-                            ResourceTypes.Translokator.Object transObj = transGroup.Objects[z];
-
-                            if (loaderObj.Name == transObj.Name)
-                            {
-                                int size = transObj.Instances.Length - loaderObj.Instances.Length;
-
-                                if (size > 0)
-                                {
-                                    Instance[] newArray = new Instance[size];
-                                    Array.Copy(transObj.Instances, loaderObj.Instances.Length, newArray, 0, newArray.Length);
-                                    transObj.Instances = newArray;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                TranslokatorTree.Nodes.Clear();
-
-                TreeNode headerData = new TreeNode("Header Data");
-                headerData.Tag = translokator;
-
-                TreeNode gridNode = new TreeNode("Grids");
-                for (int i = 0; i < translokator.Grids.Length; i++)
-                {
-                    Grid grid = translokator.Grids[i];
-                    TreeNode child = new TreeNode("Grid " + i);
-                    child.Tag = grid;
-                    gridNode.Nodes.Add(child);
-                }
-                TreeNode ogNode = new TreeNode("Objects Groups");
-                for (int i = 0; i < translokator.ObjectGroups.Length; i++)
-                {
-                    ObjectGroup objectGroup = translokator.ObjectGroups[i];
-                    TreeNode objectGroupNode = new TreeNode("Object Group " + i);
-                    objectGroupNode.Tag = objectGroup;
-
-                    for (int y = 0; y < objectGroup.Objects.Length; y++)
-                    {
-                        ResourceTypes.Translokator.Object obj = objectGroup.Objects[y];
-                        TreeNode objNode = new TreeNode(obj.Name.ToString());
-                        objNode.Tag = obj;
-                        objectGroupNode.Nodes.Add(objNode);
-
-                        for (int x = 0; x < obj.Instances.Length; x++)
-                        {
-                            Instance instance = obj.Instances[x];
-                            TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
-                            instanceNode.Tag = instance;
-                            objNode.Nodes.Add(instanceNode);
-                        }
-                    }
-
-                    ogNode.Nodes.Add(objectGroupNode);
-                }
-                TranslokatorTree.Nodes.Add(headerData);
-                TranslokatorTree.Nodes.Add(gridNode);
-                TranslokatorTree.Nodes.Add(ogNode);
-
-                Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
-                bIsFileEdited = true;
-            }
         }
 
         private void TranslocatorEditor_Closing(object sender, FormClosingEventArgs e)
@@ -411,10 +397,11 @@ namespace Mafia2Tool.Forms
 
         private void AddObjectOnClick(object sender, EventArgs e) => AddObjectNode();
         private void AddInstance_Click(object sender, EventArgs e) => AddInstanceNode();
+        private void OnAddGroupPressed(object sender, EventArgs e) => AddObjectGroupNode();
         private void Delete_Click(object sender, EventArgs e) => DeleteNode();
         private void CopyButton_Click(object sender, EventArgs e) => Copy();
         private void PasteButton_Click(object sender, EventArgs e) => Paste();
         private void SaveToolButton_Click(object sender, EventArgs e) => SaveFile();
-        private void ExitButton_Click(object sender, EventArgs e) => Close();
+        private void ExitButton_Click(object sender, EventArgs e) => Close();    
     }
 }

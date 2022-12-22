@@ -2,6 +2,7 @@
 using Mafia2Tool.Forms;
 using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -21,6 +22,7 @@ namespace Mafia2Tool
         private DirectoryInfo pcDirectory;
         private FileInfo launcher;
         private Game game;
+        private FileFrameResource CachedFrameResourceFile;
 
         private FileSystemWatcher DirectoryWatcher;
 
@@ -106,6 +108,8 @@ namespace Mafia2Tool
             Button_PackSDS.ToolTipText = Language.GetString("$PACK");
             Button_Settings.Text = Language.GetString("$OPTIONS");
             Button_Settings.ToolTipText = Language.GetString("$OPTIONS");
+            Button_OpenMapEditor.Text = Language.GetString("$OPEN_MAP_EDITOR");
+            Button_OpenMapEditor.ToolTipText = Language.GetString("$OPEN_MAP_EDITOR");
         }
 
         public void InitExplorerSettings()
@@ -193,6 +197,8 @@ namespace Mafia2Tool
         {
             // Make sure toolstrip buttons are reset
             SetPackUnpackButtonEnabled(false);
+            Button_OpenMapEditor.Enabled = false;
+            CachedFrameResourceFile = null;
 
             infoText.Text = "Loading Directory..";
             fileListView.Items.Clear();
@@ -200,10 +206,26 @@ namespace Mafia2Tool
             ListViewItem item = null;
 
             if (!directory.Exists)
-            {
-                MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                OpenDirectory(rootDirectory, false);
-                return;
+            {               
+                string FolderPath = directory.FullName;
+                int Index = FolderPath.LastIndexOf('\\');
+                List<string> NewPath = new List<string>();
+                while (Index != -1)
+                {
+                    NewPath.Add(FolderPath.Substring(0, Index));
+                    FolderPath = FolderPath.Substring(0, Index);
+                    Index = FolderPath.LastIndexOf('\\');
+                }
+                for (int i = 0; i < NewPath.Count; i++)
+                {
+                    if (Directory.Exists(NewPath[i]) == true)
+                    {
+                        DirectoryInfo NewDirectoryInfo = new DirectoryInfo(NewPath[i]);
+                        OpenDirectory(NewDirectoryInfo);
+                        infoText.Text = "Returned to the previous folder.";
+                        return;
+                    }
+                }
             }
 
             DirectoryBase directoryInfo = new DirectoryBase(directory);
@@ -251,6 +273,12 @@ namespace Mafia2Tool
                 }
 
                 var file = FileFactory.ConstructFromFileInfo(info);
+
+                if(file is FileFrameResource)
+                {
+                    CachedFrameResourceFile = file as FileFrameResource;
+                    Button_OpenMapEditor.Enabled = true;
+                }
 
                 item = new ListViewItem(info.Name, imageBank.Images.IndexOfKey(info.Extension));
                 item.Tag = file;
@@ -450,6 +478,14 @@ namespace Mafia2Tool
                     SDSFile.Open();
                     OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo());
                 }
+            }
+        }
+
+        private void ContextOpenMapEditor_Click(object sender, EventArgs e)
+        {
+            if (CachedFrameResourceFile != null)
+            {
+                CachedFrameResourceFile.Open();
             }
         }
 

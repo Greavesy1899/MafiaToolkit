@@ -207,18 +207,18 @@ namespace Forms.Docking
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
-                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || 
-                    TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) ||                   
-                    TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
+
+                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
                 {
                     EntryMenuStrip.Items[3].Visible = true;
                 }
 
                 if (FrameResource.IsFrameType(TreeView_Explorer.SelectedNode.Tag))
                 {
+                    EntryMenuStrip.Items[3].Visible = true;
                     EntryMenuStrip.Items[4].Visible = true;
 
-                    if(TreeView_Explorer.SelectedNode.Tag is FrameObjectFrame)
+                    if (TreeView_Explorer.SelectedNode.Tag is FrameObjectFrame)
                     {
                         FrameActions.DropDownItems[3].Visible = true;
                     }
@@ -234,20 +234,20 @@ namespace Forms.Docking
             {
                 return (data as FrameObjectBase).WorldTransform.Translation;
             }
-
-            if(data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
+            else if (data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
+            {
                 return (data as ResourceTypes.Collisions.Collision.Placement).Position;
-
-            if(data.GetType() == typeof(Rendering.Graphics.RenderJunction))
-                return (data as Rendering.Graphics.RenderJunction).Data.Position;
-
-            if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
+            }
+            else if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
+            {
                 return (data as Rendering.Graphics.RenderNav).Transform.Translation;
-
-            if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
+            }
+            else if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
+            {
                 return (data as ResourceTypes.Actors.ActorEntry).Position;
+            }
 
-            return new Vector3(0, 0, 0);
+            return Vector3.Zero;
         }
 
         private void OnDoubleClick(object sender, EventArgs e)

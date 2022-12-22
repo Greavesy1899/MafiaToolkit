@@ -1,6 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using Utils.Extensions;
+using Utils.Helpers;
+using Utils.Logging;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
@@ -11,103 +16,179 @@ namespace ResourceTypes.Navigation
     {
         private FileInfo file;
 
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class PathVectors
-        {
-            //sometimes a path can have three vectors with one byte; this is just helpful i guess.
-            Vector3 position;
-            Vector3 rotation;
-            byte unk0;
+        // hardcoded
+        private const short Magic = 0x5441;
+        private const int Version = 0x5F1B1EC9;
 
-            public Vector3 Position {
-                get { return position; }
-                set { position = value; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class PathPoint
+        {
+            // Flags for the point
+            [Flags]
+            public enum PathPointFlags
+            {
+                None = 0,
+                CanSpawn = 1,
+                CanDespawn = 2,
+                CanIdle = 4,
             }
-            public Vector3 Rotation {
-                get { return rotation; }
-                set { rotation = value; }
-            }
-            public byte Unk0 {
-                get { return unk0; }
-                set { unk0 = value; }
-            }
+
+            // Worldspace position of the point
+            [LocalisedDescription("The Position of this point along the path.")]
+            public Vector3 Position { get; set; }
+
+            // Could be direction of point?
+            [LocalisedDescription("The rotation (of what?) of the point. STORED IN RADIANS.")]
+            public Vector3 Rotation { get; set; }
+
+            // 7 for dove, 5 for idle?, 2 for despawn?, 0 for transition?
+            [LocalisedDescription("The flags for this point in the path."), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+            public PathPointFlags Flags { get; set; } 
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2}", Position, Rotation, unk0);
+                return string.Format("{0} {1} {2}", Position, Rotation, Flags);
             }
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class AnimalTrafficPath
         {
-            private byte numPaths;
-            private byte[] data0;
-            private byte[] data1;
-            private byte[] data2;
-            private BoundingBox bbox;
-            private HashName hash;
-            private float unk0;
-            private float unk1;
-            private byte unk2;
-            private byte[] unk3;
-            private PathVectors[] vectors;
+            // Points where the animal can despawn
+            [Browsable(false), LocalisedDescription("Points in the path where the animal can despawn at. They will travel to one of these points to DESPAWN.")]
+            public byte[] SpawnPoints { get; set; }
 
-            public byte[] Data0 {
-                get { return data0; }
-                set { data0 = value; }
+            // Points where the animal can spawn at
+            [Browsable(false), LocalisedDescription("Points in the path where the animal can SPAWN at. They will SPAWN at one of these points.")]
+            public byte[] DespawnPoints { get; set; }
+
+            // Points where the animal can idle at
+            [Browsable(false), LocalisedDescription("Points in the path where the animal can IDLE. They will move to this point (and from) from spawn and to despawn.")]
+            public byte[] IdlePoints { get; set; }
+
+            // Always empty might as well remove from view
+            [Browsable(false)] 
+            public HashName Hash0 { get; set; }
+
+            // Automatically calculated by program, remove from view
+            [Browsable(false)] 
+            public BoundingBox BoundingBox0 { get; set; }
+
+            // Unknown
+            [LocalisedDescription("Unknown. Defaults to 5.0f")]
+            public float Unk00 { get; set; }
+
+            // Unknown
+            [LocalisedDescription("Unknown. Defaults to 15.0f")]
+            public float Unk10 { get; set; }
+            
+            // Has an "Easy to use" property, remove from view
+            [Browsable(false)]
+            public byte[] Unk30 { get; set; } // direct index to animal types array
+
+            // A list of points on the AnimalTraffic path.
+            [LocalisedDescription("Points which form this path. Needs at least ONE point.")]
+            public PathPoint[] Points { get; set; }
+
+            // "Easy to use" properties
+            [LocalisedDescription("The Animal type this path should use. Use the 'AnimalTypes' in the AnimalTraffic file for a list.")]
+            public byte AnimalTypeIdx
+            {
+                get { return Unk30[0]; }
+                set { Unk30[0] = value; }
             }
-            public byte[] Data1 {
-                get { return data1; }
-                set { data1 = value; }
+
+            public AnimalTrafficPath()
+            {
+                Hash0 = new HashName();
+
+                // Always appears to have ATLEAST one element
+                SpawnPoints = new byte[1];
+                DespawnPoints = new byte[1];
+                IdlePoints = new byte[1];
+
+                Unk30 = new byte[1]; // One because of the AnimalTypeIdx
+                Points = new PathPoint[1]; // Probably need ATLEAST one to be valid...
+                Points[0] = new PathPoint();
+
+                // Appear to be default
+                Unk00 = 5.0f;
+                Unk10 = 15.0f;
             }
-            public byte[] Data2 {
-                get { return data2; }
-                set { data2 = value; }
+
+            public void PreWriteFixup()
+            {
+                // Compute from points, then add do a stretch on the extents of the BBox.
+                BoundingBox NewBBox = BoundingBox.CreateFromPoints(GetPoints());
+                NewBBox.SetMinimum(NewBBox.Minimum - new Vector3(0.01f));
+                NewBBox.SetMaximum(NewBBox.Maximum + new Vector3(0.01f));
+                BoundingBox0 = NewBBox;
+
+                // Generate lookups for points - use flags to determine list
+                List<byte> SpawnPointsList = new List<byte>();
+                List<byte> IdlePointsList = new List<byte>();
+                List<byte> DespawnPointsList = new List<byte>();
+
+                // Iterate through all points
+                for(int i = 0; i < Points.Length; i++)
+                {
+                    PathPoint PPoint = Points[i];
+                    byte IndexAsByte = (byte)i;
+
+                    // Add to correct lists
+                    if(PPoint.Flags.HasFlag(PathPoint.PathPointFlags.CanSpawn))
+                    {
+                        SpawnPointsList.Add(IndexAsByte);
+                    }
+
+                    if (PPoint.Flags.HasFlag(PathPoint.PathPointFlags.CanDespawn))
+                    {
+                        DespawnPointsList.Add(IndexAsByte);
+                    }
+
+                    if (PPoint.Flags.HasFlag(PathPoint.PathPointFlags.CanIdle))
+                    {
+                        IdlePointsList.Add(IndexAsByte);
+                    }
+                }
+
+                // Then apply new lists
+                SpawnPoints = SpawnPointsList.ToArray();
+                DespawnPoints = DespawnPointsList.ToArray();
+                IdlePoints = IdlePointsList.ToArray();
             }
-            public HashName Hash {
-                get { return hash; }
-                set { hash = value; }
-            }
-            public BoundingBox BoundingBox {
-                get { return bbox; }
-                set { bbox = value; }
-            }
-            public float Unk0 {
-                get { return unk0; }
-                set { unk0 = value; }
-            }
-            public float Unk1 {
-                get { return unk1; }
-                set { unk1 = value; }
-            }
-            public byte Unk2 {
-                get { return unk2; }
-                set { unk2 = value; }
-            }
-            public byte[] Unk3 {
-                get { return unk3; }
-                set { unk3 = value; }
-            }
-            public PathVectors[] Vectors {
-                get { return vectors; }
-                set { vectors = value; }
+
+            public Vector3[] GetPoints()
+            {
+                // TODO: Probably could do Array.ForEach<T> here.
+                Vector3[] OutPoints = new Vector3[Points.Length];
+                for(int i = 0; i < OutPoints.Length; i++)
+                {
+                    OutPoints[i] = Points[i].Position;
+                }
+
+                return OutPoints;
             }
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4}, {5}", hash.ToString(), Unk0, Unk1, Unk2, Unk2, bbox);
+                return string.Format("{0} {1} {2} {3}", Hash0.ToString(), Unk00, Unk10, AnimalTypeIdx);
             }
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class AnimalTrafficInstance
+        public class AnimalTrafficType
         {
             private HashName name;
 
+            [LocalisedDescription("The Hash found in AnimalTraffic.xml.")]
             public HashName Name {
                 get { return name; }
                 set { name = value; }
+            }
+            public AnimalTrafficType()
+            {
+                Name = new HashName();
             }
 
             public override string ToString()
@@ -116,20 +197,12 @@ namespace ResourceTypes.Navigation
             }
         }
 
-        private AnimalTrafficInstance[] instances;
-        private AnimalTrafficPath[] paths;
+        // The type of animals this AnimalTrafficPath file can use
+        public AnimalTrafficType[] AnimalTypes { get; set; }
 
-        public AnimalTrafficInstance[] Instances {
-            get { return instances; }
-            set { instances = value; }
-        }
-        public AnimalTrafficPath[] Paths {
-            get { return paths; }
-            set { paths = value; }
-        }
+        // The list of paths to load (and can be chosen) at runtime
+        public AnimalTrafficPath[] Paths { get; set; }
 
-        private const short Magic = 0x5441;
-        private const int Version = 0x5F1B1EC9;
         public AnimalTrafficLoader(FileInfo info)
         {
             file = info;
@@ -137,30 +210,33 @@ namespace ResourceTypes.Navigation
             {
                 ReadFromFile(reader);
             }
-            //WriteToFile();
         }
 
         public void ReadFromFile(BinaryReader reader)
         {
             if (reader.ReadInt16() != Magic)
+            {
                 return;
+            }
 
-            ushort animalInsCount = reader.ReadUInt16();
-            instances = new AnimalTrafficInstance[animalInsCount];
+            ushort AnimalTypeCount = reader.ReadUInt16();
+            AnimalTypes = new AnimalTrafficType[AnimalTypeCount];
 
             if (reader.ReadInt32() != Version)
-                return;
-
-            for (int i = 0; i < animalInsCount; i++)
             {
-                AnimalTrafficInstance instance = new AnimalTrafficInstance();
-                instance.Name = new HashName();
-                instance.Name.ReadFromFile(reader);
-                instances[i] = instance;
+                return;
+            }
+
+            for (int i = 0; i < AnimalTypeCount; i++)
+            {
+                AnimalTrafficType NewAnimalType = new AnimalTrafficType();
+                NewAnimalType.Name = new HashName();
+                NewAnimalType.Name.ReadFromFile(reader);
+                AnimalTypes[i] = NewAnimalType;
             }
 
             ushort pathCount = reader.ReadUInt16();
-            paths = new AnimalTrafficPath[pathCount];
+            Paths = new AnimalTrafficPath[pathCount];
 
             for (int i = 0; i < pathCount; i++)
             {
@@ -169,69 +245,86 @@ namespace ResourceTypes.Navigation
                 byte count1 = reader.ReadByte();
                 byte count2 = reader.ReadByte();
                 byte count3 = reader.ReadByte();
-                path.Data0 = reader.ReadBytes(count1);
-                path.Data1 = reader.ReadBytes(count2);
-                path.Data2 = reader.ReadBytes(count3);
-                path.BoundingBox = BoundingBoxExtenders.ReadFromFile(reader);
-                path.Hash = new HashName();
-                path.Hash.ReadFromFile(reader); //decompiled exe says this is a hash but its always empty
-                path.Unk0 = reader.ReadSingle(); //5
-                path.Unk1 = reader.ReadSingle(); //15
-                path.Unk2 = reader.ReadByte(); //1 257 or 513.
-                path.Unk3 = reader.ReadBytes(path.Unk2);
-                path.Vectors = new PathVectors[pathSize];
+                path.SpawnPoints = reader.ReadBytes(count1);
+                path.DespawnPoints = reader.ReadBytes(count2); // Data[0] The point where the animal should despawn
+                path.IdlePoints = reader.ReadBytes(count3);
+                path.BoundingBox0 = BoundingBoxExtenders.ReadFromFile(reader);
+                path.Hash0 = new HashName();
+                path.Hash0.ReadFromFile(reader); //decompiled exe says this is a hashbut its always empty
+                path.Unk00 = reader.ReadSingle(); //5
+                path.Unk10 = reader.ReadSingle(); //15
+                byte count4 = reader.ReadByte();
+                path.Unk30 = reader.ReadBytes(count4);
 
+                //ToolkitAssert.Ensure(path.Unk00 == 5.0f, "Unk00 is expected to be 5, but it is [0]", path.Unk00);
+                //ToolkitAssert.Ensure(path.Unk10 == 15.0f, "Unk00 is expected to be 15, but it is [0]", path.Unk10);
+                ToolkitAssert.Ensure(count4 == 1, "Unk30 is supposed to have the size of 1. It is: [0]", path.Unk30.Length);
+
+                // Load Path points
+                path.Points = new PathPoint[pathSize];
                 for(int x = 0; x < pathSize; x++)
                 {
-                    PathVectors vector = new PathVectors();
+                    PathPoint vector = new PathPoint();
                     vector.Position = Vector3Utils.ReadFromFile(reader); //Very large differences between these two
                     vector.Rotation = Vector3Utils.ReadFromFile(reader); //2nd one could be rotation, in radians.
-                    vector.Unk0 = reader.ReadByte(); //7 or 4
-                    path.Vectors[x] = vector;
+                    vector.Flags = (PathPoint.PathPointFlags)reader.ReadByte();
+                    path.Points[x] = vector;
                 }
- 
 
-                paths[i] = path;
+                Paths[i] = path;
             }
         }
 
         public void WriteToFile()
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName+"1", FileMode.Create)))
+            // Make sure the paths have a chance of updating data
+            HandlePreSave();
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create)))
             {
                 writer.Write(Magic); //magic
-                writer.Write((ushort)instances.Length);
+                writer.Write((ushort)AnimalTypes.Length);
                 writer.Write(Version);
 
-                for(int i = 0; i < instances.Length; i++)
-                    instances[i].Name.WriteToFile(writer);
-
-                writer.Write((ushort)paths.Length);
-
-                for (int i = 0; i < paths.Length; i++)
+                foreach(AnimalTrafficType Instance in AnimalTypes)
                 {
-                    AnimalTrafficPath path = paths[i];
-                    writer.Write((byte)path.Vectors.Length);
-                    writer.Write((byte)path.Data0.Length);
-                    writer.Write((byte)path.Data1.Length);
-                    writer.Write((byte)path.Data2.Length);
-                    writer.Write(path.Data0);
-                    writer.Write(path.Data1);
-                    writer.Write(path.Data2);
-                    BoundingBoxExtenders.WriteToFile(path.BoundingBox, writer);
-                    path.Hash.WriteToFile(writer);
-                    writer.Write(path.Unk0);
-                    writer.Write(path.Unk1);
-                    writer.Write(path.Unk2);
-                    writer.Write(path.Unk3);
+                    Instance.Name.WriteToFile(writer);
+                }
 
-                    for (int x = 0; x < path.Vectors.Length; x++)
+                // Write paths
+                writer.Write((ushort)Paths.Length);
+                foreach(AnimalTrafficPath path in Paths)
+                {
+                    writer.Write((byte)path.Points.Length);
+                    writer.Write((byte)path.SpawnPoints.Length);
+                    writer.Write((byte)path.DespawnPoints.Length);
+                    writer.Write((byte)path.IdlePoints.Length);
+                    writer.Write(path.SpawnPoints);
+                    writer.Write(path.DespawnPoints);
+                    writer.Write(path.IdlePoints);
+                    BoundingBoxExtenders.WriteToFile(path.BoundingBox0, writer);
+                    path.Hash0.WriteToFile(writer);
+                    writer.Write(path.Unk00);
+                    writer.Write(path.Unk10);
+                    writer.Write((byte)path.Unk30.Length);
+                    writer.Write(path.Unk30);
+
+                    // Write Path Points
+                    foreach(PathPoint PathVect in path.Points)
                     {
-                        Vector3Utils.WriteToFile(path.Vectors[x].Position, writer);
-                        Vector3Utils.WriteToFile(path.Vectors[x].Rotation, writer);
-                        writer.Write(path.Vectors[x].Unk0);
+                        Vector3Utils.WriteToFile(PathVect.Position, writer);
+                        Vector3Utils.WriteToFile(PathVect.Rotation, writer);
+                        writer.Write((byte)PathVect.Flags);
                     }
                 }
+            }
+        }
+
+        private void HandlePreSave()
+        {
+            foreach (AnimalTrafficPath Path in Paths)
+            {
+                Path.PreWriteFixup();
             }
         }
     }

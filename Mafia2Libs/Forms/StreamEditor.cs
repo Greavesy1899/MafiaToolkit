@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using ResourceTypes.Misc;
 using Utils.Language;
+using Utils.Logging;
 using Utils.Settings;
 using static ResourceTypes.Misc.StreamMapLoader;
 
@@ -69,7 +70,7 @@ namespace Mafia2Tool
             foreach (TreeNode node in linesTree.Nodes)
             {
                 StreamHeaderGroup HeaderGroup = (StreamHeaderGroup)node.Tag;
-                Debug.Assert(HeaderGroup != null, "We expect to be looking at a valid HeaderGroup.");
+                ToolkitAssert.Ensure(HeaderGroup != null, "We expect to be looking at a valid HeaderGroup.");
 
                 foreach (TreeNode child in node.Nodes)
                 {

@@ -14,12 +14,15 @@ using ResourceTypes.Sound;
 using ResourceTypes.Actors;
 using ResourceTypes.Collisions;
 using ResourceTypes.Navigation;
+using ResourceTypes.Navigation.Traffic;
 using ResourceTypes.Translokator;
 using ResourceTypes.Prefab;
 using ResourceTypes.Misc;
 using Utils.Types;
 using System.Diagnostics;
 using Utils.Models;
+using System.Linq;
+using Utils.Logging;
 
 namespace Mafia2Tool
 {
@@ -35,7 +38,7 @@ namespace Mafia2Tool
         public static Collision Collisions;
         public static CityAreas CityAreas;
         public static CityShops CityShops;
-        public static Roadmap roadMap;
+        public static IRoadmap roadMap;
         public static AnimalTrafficLoader ATLoader;
         public static NAVData[] AIWorlds;
         public static NAVData[] OBJData;
@@ -51,7 +54,7 @@ namespace Mafia2Tool
         {
             var file = name;
             var info = new FileInfo(file);
-            Debug.Assert(info.Exists);
+            ToolkitAssert.Ensure(info.Exists, "File [{0}] does not exist!", name);
             return info;
         }
 
@@ -98,7 +101,11 @@ namespace Mafia2Tool
                 {
                     try
                     {
-                        act.Add(new Actor(item));
+                        if(File.Exists(item))
+                        {
+                            FileInfo NewFileInfo = new FileInfo(item);
+                            act.Add(new Actor(NewFileInfo));
+                        }              
                     }
                     catch (Exception ex)
                     {
@@ -140,39 +147,47 @@ namespace Mafia2Tool
 
             //~ENABLE THIS SECTION AT YOUR OWN RISK
             //AnimalTrafficPaths
-            //if (!isBigEndian && sdsContent.HasResource("AnimalTrafficPaths"))
-            //{
-            //    var name = sdsContent.GetResourceFiles("AnimalTrafficPaths", true)[0];
-            //    try
-            //    {
-            //        ATLoader = new AnimalTrafficLoader(new FileInfo(name));
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
-            //    }
-            //}
+            if (!isBigEndian && sdsContent.HasResource("AnimalTrafficPaths"))
+            {
+                var name = sdsContent.GetResourceFiles("AnimalTrafficPaths", true)[0];
+                try
+                {
+                    ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
+                }
+            }
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
+#if DEBUG
             if (!isBigEndian && sdsContent.HasResource("PREFAB"))
             {
                 var name = sdsContent.GetResourceFiles("PREFAB", true)[0];
                 PrefabLoader loader = new PrefabLoader(new FileInfo(name));
                 Prefabs = loader;
             }
+#endif // DEBUG
 
             //RoadMap
-            if (!isBigEndian)
-            {
-                paths = sdsContent.GetResourceFiles("MemFile", true);
-                foreach (var item in paths)
-                {
-                    if (item.Contains("RoadMap") || item.Contains("roadmap"))
-                    {
-                        roadMap = new Roadmap(new FileInfo(item));
-                    }
-                }
-            }
+#if DEBUG
+            //if (!isBigEndian)
+            //{
+            //    paths = sdsContent.GetResourceFiles("MemFile", true);
+            //    foreach (var item in paths)
+            //    {
+            //        if (item.Contains("RoadMap") || item.Contains("roadmap"))
+            //        {
+            //            using (FileStream RoadmapStream = File.Open(item, FileMode.Open))
+            //            {
+            //                roadMap = new RoadmapCe();
+            //                roadMap.Read(RoadmapStream);
+            //            }
+            //        }
+            //    }
+            //}
+#endif // DEBUG
 
             //~ENABLE THIS SECTION AT YOUR OWN RISK
             //Translokator
@@ -184,54 +199,67 @@ namespace Mafia2Tool
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
             //~ENABLE THIS SECTION AT YOUR OWN RISK
-            /* Kynapse OBJ_DATA
-            if (!isBigEndian)
-            {
-                tis' broken for now
-                paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
-                foreach (var item in paths)
-                {
-                    obj.Add(new NAVData(new FileInfo(item)));
-                }
+            // Kynapse OBJ_DATA
+#if DEBUG
+            //if (!isBigEndian)
+            //{
+            //    paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
+            //    foreach (var item in paths)
+            //    {
+            //        obj.Add(new NAVData(new FileInfo(item)));
+            //    }
 
-                for (int i = 0; i < obj.Count; i++)
-                {
-                    obj[i].WriteToFile();
-                }
-            }
+            //    for (int i = 0; i < obj.Count; i++)
+            //    {
+            //        obj[i].WriteToFile();
+            //    }
+            //}
 
-            AI WORLD
-            if (!isBigEndian)
-            {
-                paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
-                foreach (var Item in paths)
-                {
-                    aiw.Add(new NAVData(new FileInfo(Item)));
-                }
-            }
+            //AI WORLD
+            //if (!isBigEndian)
+            //{
+            //    paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
+            //    foreach (var Item in paths)
+            //    {
+            //        aiw.Add(new NAVData(new FileInfo(Item)));
+            //    }
+            //}
 
-            if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
-            {
-                var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
-                var data = new NAVData(new FileInfo(name));
-                HPDData = (data.data as HPDData);
-                data.WriteToFile();
-            }
-            */
+            //if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
+            //{
+            //    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
+            //    var data = new NAVData(new FileInfo(name));
+            //    //HPDData = (data.data as HPDData);
+            //    //data.WriteToFile();
+            //}
+#endif // DEBUG
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
             IndexBufferPool = new IndexBufferManager(ibps, dirInfo, isBigEndian);
             VertexBufferPool = new VertexBufferManager(vbps, dirInfo, isBigEndian);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
-            OBJData = obj.ToArray();
-            AIWorlds = aiw.ToArray();
+            //OBJData = obj.ToArray();
+            //AIWorlds = aiw.ToArray();
         }
 
         public static void UpdateResourceType()
         {
             sdsContent.CreateFileFromFolder();
             sdsContent.WriteToFile();
+        }
+
+        public static Actor CreateNewActor()
+        {
+            string DirectoryAndName = string.Format("{0}/Actors_{1}.act", ScenePath, Actors.Length);
+            Actor NewActorFile = new Actor(DirectoryAndName);
+
+            // TODO: Terrible code, but this whole class is going to be re-written anyway.
+            List<Actor> ActorFiles = Actors.ToList();
+            ActorFiles.Add(NewActorFile);
+            Actors = ActorFiles.ToArray();
+
+            return NewActorFile;
         }
 
         public static void CleanData()
@@ -252,6 +280,7 @@ namespace Mafia2Tool
             OBJData = null;
         }
     }
+
     public static class MaterialData
     {
         public static bool HasLoaded = false;

@@ -23,6 +23,7 @@ using SharpGen.Runtime;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Utils.Logging;
 using Vortice;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -641,7 +642,6 @@ namespace Rendering.Graphics
                             tdepth = d;
                         }
 
-                        System.Diagnostics.Debug.Assert(index < mipCount * arraySize);
                         initData[index] = new SubresourceData(pSrcBits, RowBytes, NumBytes);
                         ++index;
                     }
@@ -1033,8 +1033,6 @@ namespace Rendering.Graphics
 
                     // Note there's no way for a legacy Direct3D 9 DDS to express a '1D' texture
                 }
-
-                System.Diagnostics.Debug.Assert(BitsPerPixel(format) != 0);
             }
 
             // Bound sizes (for security purposes we don't trust DDS file metadata larger than the Direct3D hardware requirements)

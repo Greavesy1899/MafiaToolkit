@@ -189,7 +189,7 @@ namespace Utils.Models
             Toolkit.Mathematics.Half X = Toolkit.Mathematics.Half.ToHalf(xData, 0);
             Toolkit.Mathematics.Half Y = Toolkit.Mathematics.Half.ToHalf(yData, 0);
 
-            Y = -Y;
+            Y = (Toolkit.Mathematics.Half)(1.0f - Y);
             return new Vector2(X, Y);
         }
 
