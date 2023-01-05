@@ -1,5 +1,6 @@
 ﻿using ResourceTypes.Prefab.Vehicle;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
@@ -137,6 +138,14 @@ namespace Utils.Helpers.Reflection
                             Info.SetValue(TypedObject, Value);
                             continue;
                         }
+                        else if (Info.PropertyType == typeof(float))
+                        {
+                            Info.SetValue(TypedObject, ToSingle(NodeContent));
+                        }
+                        else if (Info.PropertyType == typeof(double))
+                        {
+                            Info.SetValue(TypedObject, ToDouble(NodeContent));
+                        }
                         else
                         {
                             Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
@@ -163,6 +172,18 @@ namespace Utils.Helpers.Reflection
 
             // Construct the new object
             object TypedObject = Activator.CreateInstance(ElementType);
+
+            if (ElementType == typeof(float))
+            {
+                TypedObject = ToSingle(Node.Value);
+                return TypedObject;
+            }
+            
+            if (ElementType == typeof(double))
+            {
+                TypedObject = ToDouble(Node.Value);
+                return TypedObject;
+            }
 
             if (ElementType.GetProperties().Length == 0)
             {
@@ -219,6 +240,14 @@ namespace Utils.Helpers.Reflection
                         object Value = Enum.Parse(Info.PropertyType, NodeContent);
                         Info.SetValue(TypedObject, Value);
                         continue;
+                    }
+                    else if (Info.PropertyType == typeof(float))
+                    {
+                        Info.SetValue(TypedObject, ToSingle(NodeContent));
+                    }
+                    else if (Info.PropertyType == typeof(double))
+                    {
+                        Info.SetValue(TypedObject, ToDouble(NodeContent));
                     }
                     else if(Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
                     {
@@ -385,6 +414,40 @@ namespace Utils.Helpers.Reflection
             }
 
             return null;
+        }
+
+        internal static readonly char[] WhitespaceChars = new char[] { ' ', '\t', '\n', '\r' };
+        internal static string TrimString(string value)
+        {
+            return value.Trim(WhitespaceChars);
+        }
+
+        private static float ToSingle(string s)
+        {
+            s = TrimString(s);
+            s = s.Replace(',', '.');
+            if (s == "-INF") return Single.NegativeInfinity;
+            if (s == "INF") return Single.PositiveInfinity;
+            float f = float.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture);
+            if (f == 0 && s[0] == '-')
+            {
+                return -0f;
+            }
+            return f;
+        }
+
+        private static double ToDouble(string s)
+        {
+            s = TrimString(s);
+            s = s.Replace(',', '.');
+            if (s == "-INF") return Double.NegativeInfinity;
+            if (s == "INF") return Double.PositiveInfinity;
+            double dVal = double.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture);
+            if (dVal == 0 && s[0] == '-')
+            {
+                return -0d;
+            }
+            return dVal;
         }
     }
 }

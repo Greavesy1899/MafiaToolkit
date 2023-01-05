@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ResourceTypes.EntityDataStorage;
+using System;
 using System.IO;
+using System.Security.Policy;
 using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
@@ -386,6 +388,33 @@ namespace ResourceTypes.SoundTable
             OutStream.Position = SizeOffset;
             uint Size = (uint)(OutStream.Length - OutStream.Position);
             OutStream.Write(Size - 4, bIsBigEndian); // NB: Exlude this UInt32
+        }
+
+        public void WriteToFile(string FileName, bool bIsBigEndian)
+        {
+            using (MemoryStream outStream = new MemoryStream())
+            {
+                WriteToFile(outStream, bIsBigEndian);
+                File.WriteAllBytes(FileName, outStream.ToArray());
+            }
+        }
+
+        public void ConvertToXML(string Filename)
+        {
+            XElement Root = ReflectionHelpers.ConvertPropertyToXML(this);
+            Root.Save(Filename);
+        }
+
+        public void ConvertFromXML(string Filename)
+        {
+            XElement LoadedDoc = XElement.Load(Filename);
+            SoundTable FileContents = ReflectionHelpers.ConvertToPropertyFromXML<SoundTable>(LoadedDoc);
+
+            // Copy data taken from loaded XML
+            Entry0s = FileContents.Entry0s;
+            Entry1s = FileContents.Entry1s;
+            Entry2s = FileContents.Entry2s;
+            FSBGroups = FileContents.FSBGroups;
         }
     }
 }

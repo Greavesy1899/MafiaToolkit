@@ -2,8 +2,12 @@
 using ResourceTypes.Actors;
 using ResourceTypes.SoundTable;
 using System;
+using Microsoft.Win32;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using static ResourceTypes.FrameNameTable.FrameNameTable;
+using Gibbed.Squish;
 
 namespace Core.IO
 {
@@ -21,13 +25,46 @@ namespace Core.IO
         public override bool Open()
         {
             // TODO: Make editor
-            using (MemoryStream ReaderStream = new MemoryStream(File.ReadAllBytes(file.FullName)))
+
+            SaveFileDialog saveFile = new SaveFileDialog()
+            {
+                InitialDirectory = Path.GetDirectoryName(file.FullName),
+                FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                Filter = "XML (*.xml)|*.xml"
+            };
+
+            if (saveFile.ShowDialog() == true)
             {
                 SoundTable Table = new SoundTable();
-                Table.ReadFromFile(ReaderStream, false);
+
+                using (MemoryStream ReaderStream = new MemoryStream(File.ReadAllBytes(file.FullName)))
+                {
+                    Table.ReadFromFile(ReaderStream, false);
+                }
+
+                Table.ConvertToXML(saveFile.FileName);
             }
 
             return true;
+        }
+
+        public override void Save()
+        {
+            OpenFileDialog openFile = new OpenFileDialog()
+            {
+                InitialDirectory = Path.GetDirectoryName(file.FullName),
+                FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                Filter = "XML (*.xml)|*.xml"
+            };
+
+            if (openFile.ShowDialog() == true)
+            {
+                SoundTable Table = new SoundTable();
+                Table.ConvertFromXML(openFile.FileName);
+
+                File.Copy(file.FullName, file.FullName + "_old", true);
+                Table.WriteToFile(file.FullName, false);
+            }
         }
     }
 }
