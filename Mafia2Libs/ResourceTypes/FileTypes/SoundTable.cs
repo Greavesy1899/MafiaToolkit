@@ -1,4 +1,5 @@
-﻿using ResourceTypes.EntityDataStorage;
+﻿using BitStreams;
+using ResourceTypes.EntityDataStorage;
 using System;
 using System.IO;
 using System.Security.Policy;
@@ -415,6 +416,17 @@ namespace ResourceTypes.SoundTable
             Entry1s = FileContents.Entry1s;
             Entry2s = FileContents.Entry2s;
             FSBGroups = FileContents.FSBGroups;
+
+            foreach (FSBGroup Group in FSBGroups)
+            {
+                foreach (FSBFile File in Group.Variants)
+                {
+                    if (File.Name == null)
+                    {
+                        File.Name = "";
+                    }
+                }
+            }
         }
     }
 }
