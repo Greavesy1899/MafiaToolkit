@@ -525,6 +525,8 @@ namespace Mafia2Tool
         {
             ContextSDSUnpack.Visible = false;
             ContextSDSPack.Visible = false;
+            ContextSTBLExport.Visible = false;
+            ContextSTBLImport.Visible = false;
             ContextForceBigEndian.Visible = false;
             ContextDeleteSelectedFiles.Visible = false;
             ContextUnpackSelectedSDS.Visible = false;
@@ -547,6 +549,11 @@ namespace Mafia2Tool
                 else if(Tag is FileFrameResource)
                 {
                     ContextForceBigEndian.Visible = true;
+                }
+                else if (Tag is FileSoundTable)
+                {
+                    ContextSTBLExport.Visible = true;
+                    ContextSTBLImport.Visible = true;
                 }
             }
 
@@ -853,6 +860,32 @@ namespace Mafia2Tool
                 if (ActualObject is FileSDS)
                 {
                     (ActualObject as FileSDS).Save();
+                }
+            }
+        }
+
+        private void ContextSTBLExport_OnClick(object sender, EventArgs e)
+        {
+            foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
+            {
+                object ActualObject = SelectedObject.Tag;
+
+                if (ActualObject is FileSoundTable)
+                {
+                    (ActualObject as FileSoundTable).Open();
+                }
+            }
+        }
+
+        private void ContextSTBLImport_OnClick(object sender, EventArgs e)
+        {
+            foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
+            {
+                object ActualObject = SelectedObject.Tag;
+
+                if (ActualObject is FileSoundTable)
+                {
+                    (ActualObject as FileSoundTable).Save();
                 }
             }
         }
