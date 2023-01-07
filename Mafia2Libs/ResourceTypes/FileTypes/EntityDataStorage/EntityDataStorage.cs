@@ -5,9 +5,29 @@ using Utils.Extensions;
 using ResourceTypes.Actors;
 using Utils.Helpers.Reflection;
 using System.Xml.Linq;
+using System.Collections.Generic;
+using UnluacNET;
 
 namespace ResourceTypes.EntityDataStorage
 {
+    public static class EDSHashes
+    {
+        private static Dictionary<ulong, string> Hashes = new Dictionary<ulong, string>()
+        {
+            { 15612227391441882417, "plr" },
+            { 10074354998178438286, "trfc" },
+            { 17374058875421798942, "hunt" },
+            { 12442775612479247440, "pt01" },
+            { 12442775612479247443, "pt02" },
+            { 12442775612479247442, "pt03" },
+        };
+
+        public static string GetHashName(ulong Hash)
+        {
+            return Hashes.ContainsKey(Hash) ? Hashes[Hash] : Hash.ToString();
+        }
+    }
+
     public class EntityDataStorageLoader
     {
         [ReadOnly(true)]
@@ -15,6 +35,7 @@ namespace ResourceTypes.EntityDataStorage
         [ReadOnly(true)]
         public int TableSize { get; set; }
         public ulong Hash { get; set; }
+        public string Name { get => EDSHashes.GetHashName(Hash); }
         public ulong[] TableHashes { get; set; }
         [Browsable(false)]
         public IActorExtraDataInterface[] Tables { get; set; }
