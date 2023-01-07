@@ -124,6 +124,7 @@ namespace ResourceTypes.SoundTable
 
     public class Entry3
     {
+        [PropertyForceAsAttributeAttribute]
         public uint ID { get; set; }
         public float Unk0 { get; set; }
         public uint Count { get; set; }
@@ -146,44 +147,45 @@ namespace ResourceTypes.SoundTable
 
     public class Entry3_1
     {
+        [PropertyForceAsAttributeAttribute]
         public uint ID { get; set; } // (ID starts at 1)
-        public ushort Unk2 { get; set; } // The Entry1 to use
-        public Entry4[] FSBs { get; set; }
+        public ushort Entry1ToUse { get; set; } // The Entry1 to use
+        public SoundFile[] FSBs { get; set; }
 
         public void ReadFromFile(MemoryStream Stream, bool bIsBigEndian)
         {
             ID = Stream.ReadUInt32(bIsBigEndian);
-            Unk2 = Stream.ReadUInt16(bIsBigEndian);
+            Entry1ToUse = Stream.ReadUInt16(bIsBigEndian);
 
             byte FSBCount = Stream.ReadByte8();
-            FSBs = new Entry4[FSBCount];
+            FSBs = new SoundFile[FSBCount];
             for (int i = 0; i < FSBCount; i++)
             {
-                Entry4 FSBEntry = new Entry4();
+                SoundFile FSBEntry = new SoundFile();
                 FSBEntry.ReadFromFile(Stream, bIsBigEndian);
                 FSBs[i] = FSBEntry;
             }
         }
     }
 
-    public class Entry4
+    public class SoundFile
     {
-        public string FSBName { get; set; }
+        public string FSBPath { get; set; }
         public byte Unk0 { get; set; }  // 255?
-        public float Unk1 { get; set; }
+        public float Volume { get; set; }
 
         public void ReadFromFile(MemoryStream Stream, bool bIsBigEndian)
         {
-            FSBName = Stream.ReadString8(bIsBigEndian);
+            FSBPath = Stream.ReadString8(bIsBigEndian);
             Unk0 = Stream.ReadByte8();
-            Unk1 = Stream.ReadSingle(bIsBigEndian);
+            Volume = Stream.ReadSingle(bIsBigEndian);
         }
 
         public void WriteToFile(MemoryStream OutStream, bool bIsBigEndian)
         {
-            OutStream.WriteString8(FSBName, bIsBigEndian);
+            OutStream.WriteString8(FSBPath, bIsBigEndian);
             OutStream.WriteByte(Unk0);
-            OutStream.Write(Unk1, bIsBigEndian);
+            OutStream.Write(Volume, bIsBigEndian);
         }
     }
 
@@ -210,20 +212,22 @@ namespace ResourceTypes.SoundTable
         }
     }
 
-    public class FSBGroup
+    public class SoundCategory
     {
+        [PropertyForceAsAttributeAttribute]
         public uint ID { get; set; }
         public string Name { get; set; }
         public float Unk0 { get; set; }
-        public FSBFile[] Variants { get; set; }
+        public Sound[] Variants { get; set; }
     }
 
-    public class FSBFile
+    public class Sound
     {
         public string Name { get; set; }
-        public Entry4[] Files { get; set; }
+        public SoundFile[] Files { get; set; }
+        [PropertyForceAsAttributeAttribute]
         public uint ID { get; set; } // (ID starts at 1)
-        public ushort Unk2 { get; set; } // The Entry1 to use
+        public ushort Entry1ToUse { get; set; } // The Entry1 to use
     }
 
     public class SoundTable
@@ -231,7 +235,7 @@ namespace ResourceTypes.SoundTable
         public Entry0[] Entry0s { get; set; }
         public Entry1[] Entry1s { get; set; }
         public Entry2[] Entry2s { get; set; }
-        public FSBGroup[] FSBGroups { get; set; }
+        public SoundCategory[] FSBGroups { get; set; }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
@@ -291,22 +295,22 @@ namespace ResourceTypes.SoundTable
             }
 
             // Build groups
-            FSBGroups = new FSBGroup[Entry5s.Length];
+            FSBGroups = new SoundCategory[Entry5s.Length];
             for(int i = 0; i < FSBGroups.Length; i++)
             {
-                FSBGroup NewGroup = new FSBGroup();
+                SoundCategory NewGroup = new SoundCategory();
                 NewGroup.ID = Entry3s[i].ID;
                 NewGroup.Unk0 = Entry3s[i].Unk0;
                 NewGroup.Name = Entry5s[i].Name;
-                NewGroup.Variants = new FSBFile[Entry5s[i].FSBList.Length];
+                NewGroup.Variants = new Sound[Entry5s[i].FSBList.Length];
 
                 // TODO: These files 
                 for(int z = 0; z < NewGroup.Variants.Length; z++)
                 {
-                    FSBFile NewFile = new FSBFile();
+                    Sound NewFile = new Sound();
                     NewFile.Name = Entry5s[i].FSBList[z];
                     NewFile.ID = Entry3s[i].FSBGroup[z].ID;
-                    NewFile.Unk2 = Entry3s[i].FSBGroup[z].Unk2;
+                    NewFile.Entry1ToUse = Entry3s[i].FSBGroup[z].Entry1ToUse;
                     NewFile.Files = Entry3s[i].FSBGroup[z].FSBs;
 
                     NewGroup.Variants[z] = NewFile;
@@ -349,19 +353,19 @@ namespace ResourceTypes.SoundTable
 
             // Write group data and variant data
             OutStream.Write(FSBGroups.Length, bIsBigEndian);
-            foreach(FSBGroup Group in FSBGroups)
+            foreach(SoundCategory Group in FSBGroups)
             {
                 OutStream.Write(Group.ID, bIsBigEndian);
                 OutStream.Write(Group.Unk0, bIsBigEndian);
 
                 OutStream.Write(Group.Variants.Length, bIsBigEndian);
-                foreach(FSBFile File in Group.Variants)
+                foreach(Sound File in Group.Variants)
                 {
                     OutStream.Write(File.ID, bIsBigEndian);
-                    OutStream.Write(File.Unk2, bIsBigEndian);
+                    OutStream.Write(File.Entry1ToUse, bIsBigEndian);
 
                     OutStream.WriteByte((byte)File.Files.Length);
-                    foreach(Entry4 Entry in File.Files)
+                    foreach(SoundFile Entry in File.Files)
                     {
                         Entry.WriteToFile(OutStream, bIsBigEndian);
                     }
@@ -374,12 +378,12 @@ namespace ResourceTypes.SoundTable
 
             // Write strings, group names and variant names
             OutStream.Write(FSBGroups.Length, bIsBigEndian);
-            foreach (FSBGroup Group in FSBGroups)
+            foreach (SoundCategory Group in FSBGroups)
             {
                 OutStream.WriteString8(Group.Name, bIsBigEndian);
 
                 OutStream.Write(Group.Variants.Length, bIsBigEndian);
-                foreach(FSBFile File in Group.Variants)
+                foreach(Sound File in Group.Variants)
                 {
                     OutStream.WriteString8(File.Name, bIsBigEndian);
                 }
@@ -417,9 +421,9 @@ namespace ResourceTypes.SoundTable
             Entry2s = FileContents.Entry2s;
             FSBGroups = FileContents.FSBGroups;
 
-            foreach (FSBGroup Group in FSBGroups)
+            foreach (SoundCategory Group in FSBGroups)
             {
-                foreach (FSBFile File in Group.Variants)
+                foreach (Sound File in Group.Variants)
                 {
                     if (File.Name == null)
                     {
