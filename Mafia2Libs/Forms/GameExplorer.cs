@@ -525,8 +525,8 @@ namespace Mafia2Tool
         {
             ContextSDSUnpack.Visible = false;
             ContextSDSPack.Visible = false;
-            ContextSTBLExport.Visible = false;
-            ContextSTBLImport.Visible = false;
+            ContextFileExport.Visible = false;
+            ContextFileImport.Visible = false;
             ContextForceBigEndian.Visible = false;
             ContextDeleteSelectedFiles.Visible = false;
             ContextUnpackSelectedSDS.Visible = false;
@@ -550,10 +550,20 @@ namespace Mafia2Tool
                 {
                     ContextForceBigEndian.Visible = true;
                 }
-                else if (Tag is FileSoundTable)
+                else if(Tag is FileBase)
                 {
-                    ContextSTBLExport.Visible = true;
-                    ContextSTBLImport.Visible = true;
+                    FileBase CurrentFile = (Tag as FileBase);
+                    if(CurrentFile.CanContextMenuOpen())
+                    {
+                        ContextFileExport.Text = CurrentFile.GetContextMenuOpenTitle();
+                        ContextFileExport.Visible = true;
+                    }
+
+                    if (CurrentFile.CanContextMenuSave())
+                    {
+                        ContextFileImport.Text = CurrentFile.GetContextMenuSaveTitle();
+                        ContextFileImport.Visible = true;
+                    }
                 }
             }
 
@@ -864,28 +874,28 @@ namespace Mafia2Tool
             }
         }
 
-        private void ContextSTBLExport_OnClick(object sender, EventArgs e)
+        private void ContextFileExport_OnClick(object sender, EventArgs e)
         {
             foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
             {
                 object ActualObject = SelectedObject.Tag;
 
-                if (ActualObject is FileSoundTable)
+                if (ActualObject is FileBase)
                 {
-                    (ActualObject as FileSoundTable).Open();
+                    (ActualObject as FileBase).Open();
                 }
             }
         }
 
-        private void ContextSTBLImport_OnClick(object sender, EventArgs e)
+        private void ContextFileImport_OnClick(object sender, EventArgs e)
         {
             foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
             {
                 object ActualObject = SelectedObject.Tag;
 
-                if (ActualObject is FileSoundTable)
+                if (ActualObject is FileBase)
                 {
-                    (ActualObject as FileSoundTable).Save();
+                    (ActualObject as FileBase).Save();
                 }
             }
         }

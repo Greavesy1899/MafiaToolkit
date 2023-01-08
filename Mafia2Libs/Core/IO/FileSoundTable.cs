@@ -66,5 +66,25 @@ namespace Core.IO
                 Table.WriteToFile(file.FullName, false);
             }
         }
+
+        public override bool CanContextMenuOpen()
+        {
+            return true;
+        }
+
+        public override string GetContextMenuOpenTitle()
+        {
+            return "Convert To (.xml)";
+        }
+
+        public override bool CanContextMenuSave()
+        {
+            return true;
+        }
+
+        public override string GetContextMenuSaveTitle()
+        {
+            return "Convert From (.xml)";
+        }
     }
 }

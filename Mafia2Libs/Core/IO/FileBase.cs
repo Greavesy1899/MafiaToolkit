@@ -69,6 +69,26 @@ namespace Core.IO
             throw new NotImplementedException("Override the base class for this method to function");
         }
 
+        public virtual bool CanContextMenuOpen()
+        {
+            return false;
+        }
+
+        public virtual bool CanContextMenuSave()
+        {
+            return false;
+        }
+
+        public virtual string GetContextMenuOpenTitle()
+        {
+            return string.Empty;
+        }
+
+        public virtual string GetContextMenuSaveTitle()
+        {
+            return string.Empty;
+        }
+
         public virtual void Delete()
         {
             if(file != null)
