@@ -86,17 +86,14 @@ namespace Mafia2Tool
 
         private static void CheckLatestRelease()
         {
-            if (ToolkitSettings.CheckForUpdates)
+            try
             {
-                try
-                {
-                    Octokit.GitHubClient client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("ToolkitUpdater", "1"));
-                    GetLatest(client).Wait();
-                }
-                catch(Exception)
-                {
-                    MessageBox.Show(Language.GetString("$FAILED_UPDATE_CHECK"), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                Octokit.GitHubClient client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("ToolkitUpdater", "1"));
+                GetLatest(client).Wait();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(Language.GetString("$FAILED_UPDATE_CHECK"), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -114,7 +111,11 @@ namespace Mafia2Tool
                 var result = MessageBox.Show(message, "Toolkit update", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 if (result == DialogResult.OK)
                 {
-                    Process.Start("https://github.com/Greavesy1899/MafiaToolkit/releases");
+                    ProcessStartInfo StartInfo = new ProcessStartInfo();
+                    StartInfo.UseShellExecute = true;
+                    StartInfo.FileName = "https://github.com/Greavesy1899/MafiaToolkit/releases";
+
+                    Process.Start(StartInfo);
                 }
             }
         }

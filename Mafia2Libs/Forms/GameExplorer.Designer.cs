@@ -50,8 +50,8 @@ namespace Mafia2Tool
             this.GEContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextSDSUnpack = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextSDSPack = new System.Windows.Forms.ToolStripMenuItem();
-            this.ContextSTBLExport = new System.Windows.Forms.ToolStripMenuItem();
-            this.ContextSTBLImport = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextFileExport = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextFileImport = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextSDSUnpackAll = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextView = new System.Windows.Forms.ToolStripMenuItem();
@@ -242,7 +242,7 @@ namespace Mafia2Tool
             this.fileListView.Location = new System.Drawing.Point(4, 35);
             this.fileListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(610, 391);
+            this.fileListView.Size = new System.Drawing.Size(609, 391);
             this.fileListView.SmallImageList = this.imageBank;
             this.fileListView.TabIndex = 0;
             this.fileListView.UseCompatibleStateImageBehavior = false;
@@ -278,8 +278,8 @@ namespace Mafia2Tool
             this.GEContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ContextSDSUnpack,
             this.ContextSDSPack,
-            this.ContextSTBLExport,
-            this.ContextSTBLImport,
+            this.ContextFileExport,
+            this.ContextFileImport,
             this.ContextOpenFolder,
             this.ContextSDSUnpackAll,
             this.ContextView,
@@ -289,7 +289,7 @@ namespace Mafia2Tool
             this.ContextUnpackSelectedSDS,
             this.ContextPackSelectedSDS});
             this.GEContext.Name = "SDSContext";
-            this.GEContext.Size = new System.Drawing.Size(294, 252);
+            this.GEContext.Size = new System.Drawing.Size(294, 274);
             this.GEContext.Text = "$VIEW";
             this.GEContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
             // 
@@ -313,17 +313,17 @@ namespace Mafia2Tool
             // 
             // ContextSTBLExport
             // 
-            this.ContextSTBLExport.Name = "ContextSTBLExport";
-            this.ContextSTBLExport.Size = new System.Drawing.Size(293, 22);
-            this.ContextSTBLExport.Text = "$STBL_EXPORT";
-            this.ContextSTBLExport.Click += new System.EventHandler(this.ContextSTBLExport_OnClick);
+            this.ContextFileExport.Name = "ContextSTBLExport";
+            this.ContextFileExport.Size = new System.Drawing.Size(293, 22);
+            this.ContextFileExport.Text = "$FILE_EXPORT";
+            this.ContextFileExport.Click += new System.EventHandler(this.ContextFileExport_OnClick);
             // 
             // ContextSTBLImport
             // 
-            this.ContextSTBLImport.Name = "ContextSTBLImport";
-            this.ContextSTBLImport.Size = new System.Drawing.Size(293, 22);
-            this.ContextSTBLImport.Text = "$STBL_IMPORT";
-            this.ContextSTBLImport.Click += new System.EventHandler(this.ContextSTBLImport_OnClick);
+            this.ContextFileImport.Name = "ContextSTBLImport";
+            this.ContextFileImport.Size = new System.Drawing.Size(293, 22);
+            this.ContextFileImport.Text = "$FILE_IMPORT";
+            this.ContextFileImport.Click += new System.EventHandler(this.ContextFileImport_OnClick);
             // 
             // ContextOpenFolder
             // 
@@ -844,7 +844,7 @@ namespace Mafia2Tool
         private ToolStripMenuItem PackCurrentSDSButton;
         private ToolStripMenuItem UnpackCurrentSDSButton;
         private ToolStripButton Button_OpenMapEditor;
-        private ToolStripMenuItem ContextSTBLExport;
-        private ToolStripMenuItem ContextSTBLImport;
+        private ToolStripMenuItem ContextFileExport;
+        private ToolStripMenuItem ContextFileImport;
     }
 }

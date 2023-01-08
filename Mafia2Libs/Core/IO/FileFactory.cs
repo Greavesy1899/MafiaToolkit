@@ -68,6 +68,10 @@ namespace Core.IO
                     return new FileSoundTable(info);
                 case "ATP":
                     return new FileATP(info);
+                case "GAME":
+                    return new FileRoadmapDE(info);
+                case "GSD":
+                    return new FileRoadmapClassic(info);
                 default:
                     return new FileBase(info);
             }

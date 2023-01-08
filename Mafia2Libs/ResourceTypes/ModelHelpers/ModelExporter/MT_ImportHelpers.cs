@@ -110,6 +110,12 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public bool ImportColour0 { get; set; }
         public bool ImportColour1 { get; set; }
 
+        // Flip utilities
+        public bool FlipDiffuseUV { get; set; }
+        public bool FlipUV0 { get; set; }
+        public bool FlipUV1 { get; set; }
+        public bool FlipOMUV { get; set; }
+
         public MT_LodHelper(MT_Lod LodObject)
         {
             OwningObject = LodObject;
@@ -157,6 +163,50 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 NewDeclaration |= (ImportColour0 ? VertexFlags.Color : 0);
                 NewDeclaration |= (ImportColour1 ? VertexFlags.Color1 : 0);
                 OwningObject.VertexDeclaration = NewDeclaration;
+
+                // Update lods
+                if(FlipDiffuseUV)
+                {
+                    FlipChannel(0);
+                }
+                if (FlipUV0)
+                {
+                    FlipChannel(1);
+                }
+                if (FlipUV1)
+                {
+                    FlipChannel(2);
+                }
+                if (FlipOMUV)
+                {
+                    FlipChannel(3);
+                }
+            }
+        }
+
+        private void FlipChannel(int TexIndex)
+        {
+            foreach(Vertex CurVertex in OwningObject.Vertices)
+            {
+               if(OwningObject.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                {
+                    CurVertex.UVs[0] = new Vector2(CurVertex.UVs[0].X, 1f - CurVertex.UVs[0].Y);
+                }
+
+                if (OwningObject.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                {
+                    CurVertex.UVs[1] = new Vector2(CurVertex.UVs[1].X, 1f - CurVertex.UVs[1].Y);
+                }
+
+                if (OwningObject.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                {
+                    CurVertex.UVs[2] = new Vector2(CurVertex.UVs[2].X, 1f - CurVertex.UVs[2].Y);
+                }
+
+                if (OwningObject.VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
+                {
+                    CurVertex.UVs[3] = new Vector2(CurVertex.UVs[3].X, 1f - CurVertex.UVs[3].Y);
+                }
             }
         }
     }
