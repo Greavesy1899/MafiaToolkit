@@ -287,7 +287,7 @@ namespace Utils.Helpers.Reflection
             }
             else if(AllowClassReflection(ObjectType))
             {
-                XElement Element = new XElement(PropertyName);
+                XElement Element = new XElement(PropertyName, new XAttribute("Type", ObjectType.Name));
                 ConvertObject(Element, PropertyData, ObjectType);
                 return Element;
             }
@@ -356,7 +356,7 @@ namespace Utils.Helpers.Reflection
                     }
                     else
                     {
-                        Element.Add(new XElement(Info.Name, info));
+                        Element.Add(new XElement(Info.Name, new XAttribute("Type", Info.PropertyType.Name), info));
                     }
                 }
             }
