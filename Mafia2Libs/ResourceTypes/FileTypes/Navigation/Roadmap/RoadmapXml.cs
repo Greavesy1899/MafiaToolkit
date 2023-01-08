@@ -419,9 +419,9 @@ namespace ResourceTypes.Navigation.Traffic
         private Vector3 ReadPoint(XmlNode node)
         {
             Vector3 point = new Vector3();
-            point.X = float.Parse(node.GetAttrValue("x"));
-            point.Y = float.Parse(node.GetAttrValue("y"));
-            point.Z = float.Parse(node.GetAttrValue("z"));
+            point.X = float.Parse(node.GetAttrValue("x"), NumberStyles.Any, CultureInfo.InvariantCulture);
+            point.Y = float.Parse(node.GetAttrValue("y"), NumberStyles.Any, CultureInfo.InvariantCulture);
+            point.Z = float.Parse(node.GetAttrValue("z"), NumberStyles.Any, CultureInfo.InvariantCulture);
             return point;
         }
 
@@ -434,7 +434,7 @@ namespace ResourceTypes.Navigation.Traffic
                 spline.Points.Add(point);
             }
 
-            spline.Length = float.Parse(splineNode.GetFieldValue("length"));
+            spline.Length = float.Parse(splineNode.GetFieldValue("length"), NumberStyles.Any, CultureInfo.InvariantCulture);
         }
         
         private void ReadRoad(IRoadDefinition road, IRoadmapFactory roadmapFactory, XmlNode roadNode)
@@ -476,7 +476,7 @@ namespace ResourceTypes.Navigation.Traffic
 
         private void ReadLane(ILaneDefinition lane, IRoadmapFactory roadmapFactory, XmlNode laneNode)
         {
-            var width = float.Parse(laneNode.GetFieldValue("width"));
+            var width = float.Parse(laneNode.GetFieldValue("width"), NumberStyles.Any, CultureInfo.InvariantCulture);
             var type = (LaneType) Enum.Parse(typeof(LaneType), laneNode.GetFieldValue("type"));
             var flags = (LaneFlags) Enum.Parse(typeof(LaneFlags), laneNode.GetFieldValue("flags"));
             var centerOffset = ushort.Parse(laneNode.GetFieldValue("centerOffset"));
@@ -513,9 +513,9 @@ namespace ResourceTypes.Navigation.Traffic
                 case RangeFlagType.Parking:
                 case RangeFlagType.BusStop:
                 case RangeFlagType.TrainStation:
-                    var from = float.Parse(rangeFlagNode.GetFieldValue("from"));
-                    var distance = float.Parse(rangeFlagNode.GetFieldValue("distance"));
-                    var unkn5 = float.Parse(rangeFlagNode.GetFieldValue("unkn5"));
+                    var from = float.Parse(rangeFlagNode.GetFieldValue("from"), NumberStyles.Any, CultureInfo.InvariantCulture);
+                    var distance = float.Parse(rangeFlagNode.GetFieldValue("distance"), NumberStyles.Any, CultureInfo.InvariantCulture);
+                    var unkn5 = float.Parse(rangeFlagNode.GetFieldValue("unkn5"), NumberStyles.Any, CultureInfo.InvariantCulture);
                     rangeFlag.From = from;
                     rangeFlag.Distance = distance;
                     rangeFlag.Unkn5 = unkn5;
