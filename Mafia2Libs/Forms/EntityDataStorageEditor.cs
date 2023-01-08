@@ -68,7 +68,7 @@ namespace Toolkit.Forms
             {
                 for (int i = 0; i < tables.Tables.Length; i++)
                 {
-                    string TableName = string.Format("Table [{0}]", tables.TableHashes[i]);
+                    string TableName = string.Format("Table [{0}]", EDSHashes.GetHashName(tables.TableHashes[i]));
                     TreeNode node = new TreeNode(TableName);
                     node.Tag = tables.Tables[i];
                     entityNode.Nodes.Add(node);
