@@ -77,6 +77,13 @@ namespace Utils.Models
             modelObject.BuildStandardObject(FrameObject);
         }
 
+        public ModelWrapper(FrameHeaderScene FrameScene)
+        {
+            modelObject = new MT_Object();
+            modelObject.ObjectName = FrameScene.Name.ToString();
+            ModelObject.BuildFromScene(FrameScene);
+        }
+
         /// <summary>
         /// Construct an empty model.
         /// </summary>

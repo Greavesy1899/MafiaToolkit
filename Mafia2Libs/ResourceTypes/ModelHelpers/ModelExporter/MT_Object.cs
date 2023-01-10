@@ -300,50 +300,26 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             // Convert type to enumerator
             ObjectType = MT_ObjectUtils.GetTypeFromFrame(FrameObject);
 
-            // Export Children
-            ObjectFlags |= MT_ObjectFlags.HasChildren;
-            Children = new MT_Object[FrameObject.Children.Count];
-            for (int i = 0; i < Children.Length; i++)
+            // Avoid calling if we have no children
+            if (FrameObject.Children.Count > 0)
             {
-                // Cache child object
-                FrameObjectBase ChildFrameObject = FrameObject.Children[i];
+                AddFrameChildrenToObject(FrameObject.Children);
+            }
+        }
 
-                // Construct new MT_Object
-                MT_Object ChildObject = new MT_Object();
-                ChildObject.ObjectName = ChildFrameObject.Name.ToString();
+        public void BuildFromScene(FrameHeaderScene Scene)
+        {
+            Position = Vector3.Zero;
+            Rotation = Vector3.Zero;
+            Scale = Vector3.One;
 
-                // Check if this is a single mesh. If not, build as standard.
-                FrameObjectSingleMesh CastedMesh = (FrameObject.Children[i] as FrameObjectSingleMesh);
-                if (CastedMesh != null)
-                {
-                    // TODO: Remove access of SceneData, Accessing buffer pools will end up becoming deprecated.
-                    IndexBuffer[] ChildIBuffers = new IndexBuffer[CastedMesh.Geometry.LOD.Length];
-                    VertexBuffer[] ChildVBuffers = new VertexBuffer[CastedMesh.Geometry.LOD.Length];
+            // Force a dummy
+            ObjectType = MT_ObjectType.Dummy;
 
-                    //we need to retrieve buffers first.
-                    for (int c = 0; c < CastedMesh.Geometry.LOD.Length; c++)
-                    {
-                        ChildIBuffers[c] = SceneData.IndexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].IndexBufferRef.Hash);
-                        ChildVBuffers[c] = SceneData.VertexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].VertexBufferRef.Hash);
-                    }
-
-                    ChildObject.BuildFromCooked(CastedMesh, ChildVBuffers, ChildIBuffers);
-                }
-                else
-                {
-                    ChildObject.BuildStandardObject(FrameObject.Children[i]);
-                }
-
-                Vector3 Position;
-                Vector3 Scale;
-                Quaternion Rotation;
-                Matrix4x4.Decompose(ChildFrameObject.LocalTransform, out Scale, out Rotation, out Position);
-                ChildObject.Position = Position;
-                ChildObject.Scale = Vector3.One;
-                ChildObject.Rotation = Rotation.ToEuler();
-
-                // Slot into array
-                Children[i] = ChildObject;
+            // Avoid calling if we have no children
+            if(Scene.Children.Count > 0)
+            {
+                AddFrameChildrenToObject(Scene.Children);
             }
         }
 
@@ -552,6 +528,56 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
 
             return bValidity;
+        }
+
+        /** Internal functions */
+        private void AddFrameChildrenToObject(List<FrameObjectBase> InChildren)
+        {
+            // Export Children
+            ObjectFlags |= MT_ObjectFlags.HasChildren;
+            Children = new MT_Object[InChildren.Count];
+            for (int i = 0; i < Children.Length; i++)
+            {
+                // Cache child object
+                FrameObjectBase ChildFrameObject = InChildren[i];
+
+                // Construct new MT_Object
+                MT_Object ChildObject = new MT_Object();
+                ChildObject.ObjectName = ChildFrameObject.Name.ToString();
+
+                // Check if this is a single mesh. If not, build as standard.
+                FrameObjectSingleMesh CastedMesh = (InChildren[i] as FrameObjectSingleMesh);
+                if (CastedMesh != null)
+                {
+                    // TODO: Remove access of SceneData, Accessing buffer pools will end up becoming deprecated.
+                    IndexBuffer[] ChildIBuffers = new IndexBuffer[CastedMesh.Geometry.LOD.Length];
+                    VertexBuffer[] ChildVBuffers = new VertexBuffer[CastedMesh.Geometry.LOD.Length];
+
+                    //we need to retrieve buffers first.
+                    for (int c = 0; c < CastedMesh.Geometry.LOD.Length; c++)
+                    {
+                        ChildIBuffers[c] = SceneData.IndexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].IndexBufferRef.Hash);
+                        ChildVBuffers[c] = SceneData.VertexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].VertexBufferRef.Hash);
+                    }
+
+                    ChildObject.BuildFromCooked(CastedMesh, ChildVBuffers, ChildIBuffers);
+                }
+                else
+                {
+                    ChildObject.BuildStandardObject(InChildren[i]);
+                }
+
+                Vector3 Position;
+                Vector3 Scale;
+                Quaternion Rotation;
+                Matrix4x4.Decompose(ChildFrameObject.LocalTransform, out Scale, out Rotation, out Position);
+                ChildObject.Position = Position;
+                ChildObject.Scale = Vector3.One;
+                ChildObject.Rotation = Rotation.ToEuler();
+
+                // Slot into array
+                Children[i] = ChildObject;
+            }
         }
 
         public override string ToString()

@@ -191,7 +191,7 @@ namespace Forms.Docking
             EntryMenuStrip.Items[0].Visible = false;
             EntryMenuStrip.Items[1].Visible = false;
             EntryMenuStrip.Items[2].Visible = false;
-            EntryMenuStrip.Items[3].Visible = false;
+            Export3DButton.Visible = false;
             EntryMenuStrip.Items[4].Visible = false;
             FrameActions.DropDownItems[3].Visible = false;
 
@@ -208,9 +208,10 @@ namespace Forms.Docking
                     EntryMenuStrip.Items[0].Visible = true;
                 }
 
-                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
+                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)) ||
+                    (TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.FrameResource.FrameHeaderScene)))
                 {
-                    EntryMenuStrip.Items[3].Visible = true;
+                    Export3DButton.Visible = true;
                 }
 
                 if (FrameResource.IsFrameType(TreeView_Explorer.SelectedNode.Tag))
@@ -220,7 +221,7 @@ namespace Forms.Docking
 
                     if (TreeView_Explorer.SelectedNode.Tag is FrameObjectFrame)
                     {
-                        FrameActions.DropDownItems[3].Visible = true;
+                        Export3DButton.Visible = true;
                     }
                 }
             }

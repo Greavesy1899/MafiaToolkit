@@ -1611,6 +1611,10 @@ namespace Mafia2Tool
             {
                 ExportCollision(dSceneTree.SelectedNode.Tag as Collision.CollisionModel);
             }
+            if (dSceneTree.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
+            {
+                ExportScene(dSceneTree.SelectedNode.Tag as FrameHeaderScene);
+            }
             else
             {
                 Export3DFrame();
@@ -1666,6 +1670,12 @@ namespace Mafia2Tool
             {
                 InternalSaveModelWrapper(ModelWrapperObject);
             }
+        }
+
+        private void ExportScene(FrameHeaderScene Scene)
+        {
+            ModelWrapper ModelWrapperObject = new ModelWrapper(Scene);
+            InternalSaveModelWrapper(ModelWrapperObject);
         }
 
         private void AddButtonOnClick(object sender, EventArgs e)
