@@ -1,268 +1,269 @@
 <Localisation lANG="RU_RU">
-  <!-- Generic String -->
-  <String ID="$CONTINUE">Продолжить</String>
-  <String ID="$CANCEL">Отмена</String>
-  <String ID="$EDIT">Редактировать</String>
-  <String ID="$INDEX">Индекс</String>
-  <String ID="$ENTRY_NAME">Наименование записи</String>
-  
-  <!-- Game Explorer Strings -->
-  <String ID="$ABOUT">About</String>
-  <String ID="$THANKS">Особая благодарность</String>
-  <String ID="$VIEW">Вид</String>
-  <String ID="$FILE">Файл</String>
-  <String ID="$TOOLS">Инструменты</String>
-  <String ID="$BTN_OPEN_MII">Открыть Mafia II</String>
-  <String ID="$BTN_RUN_MII">Запустить Mafia II</String>
-  <String ID="$EXIT">Выход</String>
-  <String ID="$OPTIONS">Настройки</String>
-  <String ID="$SELECT_MII_FOLDER">Выберите папку с MafiaII, содержащей "mafia2.exe" или "mafia II Definitive Edition.exe"</String>
-  <String ID="$ICON">Значок</String>
-  <String ID="$DETAILS">Подробнее</String>
-  <String ID="$SMALL_ICON">Маленький значок</String>
-  <String ID="$LIST">Список</String>
-  <String ID="$TILE">Плитка</String>
-  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: проводник по игровым файлам</String>
-  <String ID="$UNPACK_ALL_SDS">Распаковать все SDS</String>
-  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
-  <String ID="$UNPACK_SELECTED_SDS">Unpack Selected SDS's</String>
-  <String ID="$PACK_SELECTED_SDS">Pack Selected SDS's</String>
-  <String ID="$OPEN_FOLDER_EXPLORER">Открыть папку в Проводнике</String>
-  <String ID="$PACK">Запаковать</String>
-  <String ID="$UNPACK">Распаковать</String>
-  <String ID="$LAST_MODIFIED">Последние изменение</String>
-  <String ID="$NAME">Имя</String>
-  <String ID="$SIZE">Размер</String>
-  <String ID="$TYPE">Тип</String>
-  <String ID="$SEARCH_TOOLTIP">Поиск</String>
-  <String ID="$SEARCH_DOTS">Поиск...</String>
-  <String ID="$REFRESH">Обновить</String>
-  <String ID="$FOLDER_PATH_TOOLTIP">Путь к папке </String>
-  <String ID="$UP_TOOLTIP">Вверх</String>
-  <String ID="$M1DE_OODLEERROR">Не удалось найти библиотеку Oodle, необходимую для сжатия/распаковки архивов. Пожалуйста, убедитесь, что файл 'oo2core_8_win64.dll' присутствует в игровой директории.</String>
-  <String ID="$OPEN_MAP_EDITOR">Open Map Editor</String>
-  
-  <!-- Game Selector -->
-  <String ID="$START_TOOLKIT">Запуск Toolkit</String>
-  <String ID="$FOLDER_PATH_LABEL">Папка с игрой:</String>
-  <String ID="$SELECT_AS_DEFAULT">Пропустить это окно </String>
-  <String ID="$SELECT_FOLDER">Выбранная Папка</String>
-  <String ID="$SELECT_GAME">Выбранная Игра </String>
-  
-  <!-- Map Editor -->
-  <String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>
-  <String ID="$CANNOT_CREATE_COL">Cannot add a collision. No Collision file is present!</String>
-  <String ID="$ADD_COLLISION">Add Collision</String>
-  
-  <!-- Main Options Strings-->
-  <String ID="$GENERAL">Общие</String>
-  <String ID="$SDS_OPTIONS">Настройки SDS</String>
-  <String ID="$MODEL_EXPORTING">Экспорт моделей</String>
-  <String ID="$MATERIAL_LIBS">Библиотека</String>
+	<!-- Generic String -->
+	<String ID="$CONTINUE">Продолжить</String>
+	<String ID="$CANCEL">Отмена</String>
+	<String ID="$EDIT">Редактировать</String>
+	<String ID="$INDEX">Индекс</String>
+	<String ID="$ENTRY_NAME">Наименование записи</String>
 
-  <!-- General Options Strings-->
-  <String ID="$ENABLE_DEBUG_LOGGING">Включить отладочные логи</String>
-  <String ID="$MII_DIRECTORY">Директория Mafia II</String>
-  <String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
-  <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Отображать затраченное время</String>
-  <String ID="$DISCORD_TOGGLE_STATE">Отображать состояние </String>
-  <String ID="$DISCORD_TOGGLE_DETAILS">Отображать подробную информацию </String>
-  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Включить Rich Presence</String>
-  <String ID="$LANGUAGE_ENGLISH">English</String>
-  <String ID="$LANGUAGE_RUSSIAN">русский</String>
-  <String ID="$LANGUAGE_CZECH">čeština</String>
-  <String ID="$LANGUAGE_POLISH">Polish</String>
-  <String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
-  <String ID="$LANGUAGE_OPTION">Язык</String>
-  <String ID="$SAVE_PROMPT">Сохранить перед закрытием?</String>
-  
-  <!-- Model/Exporting Option Strings-->
-  <String ID="$EXPORT_PATH_TITLE">Путь</String>
-  <String ID="$EXPORT_PATH_DESC">Укажите куда экспортировать модели.</String>
-  <String ID="$EXPORT_MODELTYPE_TITLE">Формат экспортируемых моделей.</String>
-  
-  <!-- Material Libs Option Strings-->
-  <String ID="$MATERIAL_LIB_REMOVE">Убрать выбранные библиотеки</String>
-  <String ID="$MATERIAL_LIB_ADD">Добавить библиотеку</String>
-  <String ID="$MATERIAL_LIB_SELECTED">Выбранные библиотеки</String>
-  
-  <!-- SDS Options -->
-  <String ID="$SDS_COMPRESSION_TYPE">Тип сжатия.</String>
-  <String ID="$SDS_UNCOMPRESSED">Несжатый</String>
-  <String ID="$SDS_COMPRESSED">Сжатый</String>
-  <String ID="$SDS_ONEBLOCK">Один блок</String>
-  <String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups.</String>
-  <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
-  <String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
-  <String ID="$COOK_COLLISIONS">Cook collisions when saving.</String>
-  <String ID="$BACKUP_SDS_LABEL">Create SDS Backups when unpacking.</String>
-  <String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
-  <String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
-  
-  <!-- Render Options -->
-  <String ID="$RENDER">Рендеринг</String>
-  <String ID="$RENDER_OPTIONS">Настройки рендера</String>
-  <String ID="$RENDER_SCREENFAR">Дальний Экран</String>
-  <String ID="$RENDER_SCREENEAR">Ближний Экран</String>
-  <String ID="$RENDER_CAMERASPEED">Скорость камеры </String>
-  <String ID="$TEXTURE_DIRECTORY">Каталог Текстур </String>
-  <String ID="$SELECT_TEX_FOLDER">Выберите папку, содержащую текстуры.</String>
-  
-  <!-- Collision Editor Form Strings-->
-  <String ID="$SAVE">Сохранить</String>
-  <String ID="$RELOAD">Перезагрузить</String>
-  <String ID="$COLLISION_DELETE">Удалить Коллизию</String>
-  <String ID="$COLLISION_ADD">Добавить Коллизию</String>
-  <String ID="$PLACEMENT_DELETE">Удалить Экземпляр</String>
-  <String ID="$PLACEMENT_ADD">Добавить Экземпляр </String>
-  <String ID="$SELECT_MODEL_FILE">Выбор модели.</String>
-  <String ID="$COLLISION_EDITOR_TITLE">Редактирование Коллизий</String>
-  
-  <!-- Material Editor Form Strings-->
-  <String ID="$MATERIAL_ADD">Добавить Материал</String>
-  <String ID="$MATERIAL_DELETE">Удалить Материал</String>
-  <String ID="$MATERIAL_UPDATE_LIST">Обновить лист с Материалов </String>
-  <String ID="$MATERIAL_EDITOR_TITLE">Редактор Библиотеки Материалов.</String>
-  <String ID="$OPEN">Открыть</String>
-  <String ID="$QUESTION_NAME_OF_MAT">Пожалуйста, введите название материала:</String>
-  <String ID="$EXPORT_MATS">Export Selected Materials</String>
-  <String ID="$LABEL_SEARCHTYPE">Type of Search:</String>
-  <String ID="$LABEL_MATERIALNAME">Material Name</String>
-  <String ID="$LABEL_TEXTURENAME">Texture Name</String>
-  <String ID="$LABEL_MATERIALHASH">Material Hash</String>
-  <String ID="$LABEL_SHADERID">Shader ID</String>
-  <String ID="$LABEL_SHADERHASH">Shader Hash</String>
-  <String ID="$SEARCH">Поиск</String>
-  <String ID="$LABEL_SEARCHBAR">Search for a Material:</String>
-  <String ID="$LABEL_SELECTMATLIBRARY">Select Material Library:</String>
-  <String ID="$TITLE_MATERIALBROWSER">Material Browser</String>
-  
-  <!-- FrameResource Editor Form Strings-->
-  <String ID="$FRAME_EDITOR_EXPORT_BTN">Экспортируем модели....</String>
-  <String ID="$FRAME_EDITOR_MODELS">Редактор моделей (FrameNameTable)</String>
-  <String ID="$FRAME_EDITOR_ALL">Все модели</String>
-  <String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Переписать Буфер</String>
-  <String ID="$FRAME_EDITOR_ADD_BUTTON">Добавить новую запись</String>
-  <String ID="$FRAME_EDITOR_MODIFY_HEADER">Изменить заголовок</String>
-  <String ID="$FRAME_EDITOR_SWITCH_VIEW">Сменить вид.</String>
-  <String ID="$FRAME_EDITOR_EXTRACT3D">Распаковать модель</String>
-  <String ID="$DELETE">Удалить</String>
-  <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Обновить родителя</String>
-  <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Выберите сцену, в которую добавить как родителя.</String>
-  <String ID="$FRAME_EDITOR_TITLE">Редактор ресурсов</String>
-  <String ID="$FRADD_TYPE">Тип кадра</String>
-  <String ID="$FRADD_NAME_TABLE">Добавить кадр/рамку для имени таблиц ?</String>
-  <String ID="$QUESTION_FRADD">Введите имя и тип кадра.</String>
+	<!-- Game Explorer Strings -->
+	<String ID="$ABOUT">About</String>
+	<String ID="$THANKS">Особая благодарность</String>
+	<String ID="$VIEW">Вид</String>
+	<String ID="$FILE">Файл</String>
+	<String ID="$TOOLS">Инструменты</String>
+	<String ID="$BTN_OPEN_MII">Открыть Mafia II</String>
+	<String ID="$BTN_RUN_MII">Запустить Mafia II</String>
+	<String ID="$EXIT">Выход</String>
+	<String ID="$OPTIONS">Настройки</String>
+	<String ID="$SELECT_MII_FOLDER">Выберите папку с MafiaII, содержащей "mafia2.exe" или "mafia II Definitive Edition.exe"</String>
+	<String ID="$ICON">Значок</String>
+	<String ID="$DETAILS">Подробнее</String>
+	<String ID="$SMALL_ICON">Маленький значок</String>
+	<String ID="$LIST">Список</String>
+	<String ID="$TILE">Плитка</String>
+	<String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: проводник по игровым файлам</String>
+	<String ID="$UNPACK_ALL_SDS">Распаковать все SDS</String>
+	<String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
+	<String ID="$UNPACK_SELECTED_SDS">Unpack Selected SDS's</String>
+	<String ID="$PACK_SELECTED_SDS">Pack Selected SDS's</String>
+	<String ID="$OPEN_FOLDER_EXPLORER">Открыть папку в Проводнике</String>
+	<String ID="$PACK">Запаковать</String>
+	<String ID="$UNPACK">Распаковать</String>
+	<String ID="$LAST_MODIFIED">Последние изменение</String>
+	<String ID="$NAME">Имя</String>
+	<String ID="$SIZE">Размер</String>
+	<String ID="$TYPE">Тип</String>
+	<String ID="$SEARCH_TOOLTIP">Поиск</String>
+	<String ID="$SEARCH_DOTS">Поиск...</String>
+	<String ID="$REFRESH">Обновить</String>
+	<String ID="$FOLDER_PATH_TOOLTIP">Путь к папке </String>
+	<String ID="$UP_TOOLTIP">Вверх</String>
+	<String ID="$M1DE_OODLEERROR">Не удалось найти библиотеку Oodle, необходимую для сжатия/распаковки архивов. Пожалуйста, убедитесь, что файл 'oo2core_8_win64.dll' присутствует в игровой директории.</String>
+	<String ID="$OPEN_MAP_EDITOR">Open Map Editor</String>
 
-  <!-- Scene Outliner Dock Strings-->
-  <String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
-  <String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
-  <String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
-  
-  <!-- Actor Editor -->
-  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
-  <String ID="$ADD_ITEM">Add Item</String>
-  <String ID="$ADD_DEFINITION">Add Definition</String>
+	<!-- Game Selector -->
+	<String ID="$START_TOOLKIT">Запуск Toolkit</String>
+	<String ID="$FOLDER_PATH_LABEL">Папка с игрой:</String>
+	<String ID="$SELECT_AS_DEFAULT">Пропустить это окно </String>
+	<String ID="$SELECT_FOLDER">Выбранная Папка</String>
+	<String ID="$SELECT_GAME">Выбранная Игра </String>
 
-  <!-- EntityDataStorage Editor -->
-  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
-  <String ID="$SAVE_TITLE">Save File</String>
-  <String ID="$OPEN_TITLE">Open File</String>
-  <String ID="$EXPORT_XML">Export To XML</String>
-  <String ID="$IMPORT_XML">Import From XML</String>
-  <String ID="$PHYSICS_RB">Physics/Rigidbody</String>
-  <String ID="$MOTOR_TORQUE">Motor/Torque</String>
-  <String ID="$FUEL">Fuel</String>
-  <String ID="$GEARBOX">Gearbox</String>
-  <String ID="$STEERING">Steering</String>
-  <String ID="$DIFFERENTIAL">Differential</String>
-  <String ID="$BRAKES">Brakes</String>
-  <String ID="$AERODYNAMICS">Aerodynamics</String>
-  <String ID="$EFFECTS">Effects</String>
-  <String ID="$ENGINE">Engine</String>
-  <String ID="$ENVIRONMENT">Environment</String>
-  <String ID="$AIR_PUMP">Air Pump</String>
-  <String ID="$DOORS">Doors</String>
-  <String ID="$BONNET_TRUNK">Bonnet/Trunk</String>
-  <String ID="$WHEELS">Wheels</String>
-  <String ID="$HORN_SIREN">Horn/Siren</String>
-  <String ID="$GLASS_BREAK">Glass Effects</String>
-  <String ID="$EXPLOSION">Explosion Effects</String>
-  <String ID="$FIRE">Fire Effects</String>
-  <String ID="$RAIN_CONTACT">Rain Effects</String>
-  <String ID="$HEDGE_CONTACT">Hedge Collision Effects</String>
-  <String ID="$SKIDDING_SLIDING">Powersliding/Skidding</String>
-  <String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
-  
-  <!-- NewObjForm Form Strings-->
-  <String ID="$NEWOBJFORM_TITLE">Ввод имени</String>
-  <String ID="$QUESTION_NOT_NEEDED">Данный вариант не требует имени</String>
-  <String ID="$SCENE_OPTIONS">Настройки сцены</String>
-  <String ID="$FSCENE_OFFSET">Смещение по координатам </String>
+	<!-- Map Editor -->
+	<String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>
+	<String ID="$CANNOT_CREATE_COL">Cannot add a collision. No Collision file is present!</String>
+	<String ID="$ADD_COLLISION">Add Collision</String>
 
-  <!-- Error strings -->
-  <String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Не удалось найти MafiaII 'launcher.exe', пожалуйста, укажите корректный путь!</String>
-  <String ID="$ERROR_TITLE">Ошибочка!</String>
-  <String ID="$ERROR_SELECT_ITEM">Выбери что-нибудь!!!</String>
-  <String ID="$ERROR_DIDNT_FIND_MTL">Невозможно загрузить материал. Обнаружена ошибка: \n\n</String>
+	<!-- Main Options Strings-->
+	<String ID="$GENERAL">Общие</String>
+	<String ID="$SDS_OPTIONS">Настройки SDS</String>
+	<String ID="$MODEL_EXPORTING">Экспорт моделей</String>
+	<String ID="$MATERIAL_LIBS">Библиотека</String>
 
-  <!-- CityArea Strings -->
-  <String ID="$CITY_AREA_EDITOR_TITLE">Редактор CityArea</String>
-  <String ID="$AREA_DATA">Данные области</String>
-  <String ID="$AREA_1">Область 1</String>
-  <String ID="$AREA_NAME">Название Области</String>
-  <String ID="$AREA_2">Область 2</String>
-  <String ID="$UNK_BYTE">Unk Байт</String>
-  <String ID="$SAVE_AREA">Сохранение Области!</String>
-  <String ID="$RELOAD_AREA">Обновить область..</String>
+	<!-- General Options Strings-->
+	<String ID="$ENABLE_DEBUG_LOGGING">Включить отладочные логи</String>
+	<String ID="$MII_DIRECTORY">Директория Mafia II</String>
+	<String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
+	<String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Отображать затраченное время</String>
+	<String ID="$DISCORD_TOGGLE_STATE">Отображать состояние </String>
+	<String ID="$DISCORD_TOGGLE_DETAILS">Отображать подробную информацию </String>
+	<String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Включить Rich Presence</String>
+	<String ID="$LANGUAGE_ENGLISH">English</String>
+	<String ID="$LANGUAGE_RUSSIAN">русский</String>
+	<String ID="$LANGUAGE_CZECH">čeština</String>
+	<String ID="$LANGUAGE_POLISH">Polish</String>
+	<String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
+	<String ID="$LANGUAGE_OPTION">Язык</String>
+	<String ID="$LANGUAGE_ARABIC">اللغة العربية</String>
+	<String ID="$SAVE_PROMPT">Сохранить перед закрытием?</String>
 
-  <!-- CityShop Strings -->
-  <String ID="$CITY_SHOP_EDITOR_TITLE">Редактор CityShop </String>
-  <String ID="$ADD_AREA">Добавить область</String>
-  <String ID="$ADD_DATA">Добавить данные</String>
-  <String ID="$POPULATE_TRANSLOKATORS">Заполнить Новые Транслокаторы!</String>
+	<!-- Model/Exporting Option Strings-->
+	<String ID="$EXPORT_PATH_TITLE">Путь</String>
+	<String ID="$EXPORT_PATH_DESC">Укажите куда экспортировать модели.</String>
+	<String ID="$EXPORT_MODELTYPE_TITLE">Формат экспортируемых моделей.</String>
 
-  <!-- Table Editor string -->
-  <String ID="$TABLE_EDITOR_TITLE">Редактор Таблицы</String>
-  <String ID="$TABLE_ADD_ROW">Добавить ряд</String>
-  <String ID="$TABLE_ADD_COLUMN">Добавить слолб.</String>
-  
-  <!-- Renderer strings -->
-  <String ID="$CREATE">Создать</String>
-  <String ID="$VIEW_OPTIONS">Настройки Вида </String>
-  <String ID="$VIEW_PROPERTY_GRID">Просмотр сетки свойств </String>
-  <String ID="$VIEW_SCENE_TREE">Просмотор</String>
-  <String ID="$VIEW_VIS_OPTIONS">Просмотр параметров видимости.</String>
-  <String ID="$TOGGLE_MODELS">Переключение моделей  </String>
-  <String ID="$TOGGLE_COLLISIONS">Переключение Коллизий</String>
-  <String ID="$TOGGLE_BOXES">Переключение Боксов </String>
-  <String ID="$ADD">Добавление..</String>
-  <String ID="$ADD_SCENE_FOLDER">Добавить Папку Сцены</String>
-  <String ID="$ADD_ROAD_SPLINE">Добавить Дорожный Сплайн</String>
-  <String ID="$VISIBLE">Видимый</String>
-  <String ID="$HIDDEN">Скрыть</String>
-  <String ID="$EDIT_TRANSFORM">Изменить Преобразование</String>
-  <String ID="$PROPERTY_GRID">Сетка Свойств</String>
-  <String ID="$TOGGLE_WIREFRAME">Переключение визуализации </String>
-  <String ID="$TOGGLE_CULLING">Отключить калибровку  </String>
-  <String ID="$POSITION_X">Позиция X</String>
-  <String ID="$POSITION_Y">Позиция Y</String>
-  <String ID="$POSITION_Z">Позиция Z</String>
-  <String ID="$ROTATION_X">Вращение X</String>
-  <String ID="$ROTATION_Y">Вращение Y</String>
-  <String ID="$ROTATION_Z">Вращение Z</String>
+	<!-- Material Libs Option Strings-->
+	<String ID="$MATERIAL_LIB_REMOVE">Убрать выбранные библиотеки</String>
+	<String ID="$MATERIAL_LIB_ADD">Добавить библиотеку</String>
+	<String ID="$MATERIAL_LIB_SELECTED">Выбранные библиотеки</String>
 
-  <!-- Property Descriptions Strings-->
-  <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+	<!-- SDS Options -->
+	<String ID="$SDS_COMPRESSION_TYPE">Тип сжатия.</String>
+	<String ID="$SDS_UNCOMPRESSED">Несжатый</String>
+	<String ID="$SDS_COMPRESSED">Сжатый</String>
+	<String ID="$SDS_ONEBLOCK">Один блок</String>
+	<String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups.</String>
+	<String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
+	<String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
+	<String ID="$COOK_COLLISIONS">Cook collisions when saving.</String>
+	<String ID="$BACKUP_SDS_LABEL">Create SDS Backups when unpacking.</String>
+	<String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+	<String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
 
-  <!-- XBIN Editor Strings-->
-  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
-  <String ID="$IMPORT_XBIN">Import from .xml</String>
-  <String ID="$EXPORT_XBIN">Export to .xml</String>
+	<!-- Render Options -->
+	<String ID="$RENDER">Рендеринг</String>
+	<String ID="$RENDER_OPTIONS">Настройки рендера</String>
+	<String ID="$RENDER_SCREENFAR">Дальний Экран</String>
+	<String ID="$RENDER_SCREENEAR">Ближний Экран</String>
+	<String ID="$RENDER_CAMERASPEED">Скорость камеры </String>
+	<String ID="$TEXTURE_DIRECTORY">Каталог Текстур </String>
+	<String ID="$SELECT_TEX_FOLDER">Выберите папку, содержащую текстуры.</String>
 
-  <!-- Exception Form-->
-  <String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>
-  <String ID="$EXCEPTION_CONTINUE">Continue</String>
-  <String ID="$EXCEPTION_QUIT">Quit</String>
-  
+	<!-- Collision Editor Form Strings-->
+	<String ID="$SAVE">Сохранить</String>
+	<String ID="$RELOAD">Перезагрузить</String>
+	<String ID="$COLLISION_DELETE">Удалить Коллизию</String>
+	<String ID="$COLLISION_ADD">Добавить Коллизию</String>
+	<String ID="$PLACEMENT_DELETE">Удалить Экземпляр</String>
+	<String ID="$PLACEMENT_ADD">Добавить Экземпляр </String>
+	<String ID="$SELECT_MODEL_FILE">Выбор модели.</String>
+	<String ID="$COLLISION_EDITOR_TITLE">Редактирование Коллизий</String>
+
+	<!-- Material Editor Form Strings-->
+	<String ID="$MATERIAL_ADD">Добавить Материал</String>
+	<String ID="$MATERIAL_DELETE">Удалить Материал</String>
+	<String ID="$MATERIAL_UPDATE_LIST">Обновить лист с Материалов </String>
+	<String ID="$MATERIAL_EDITOR_TITLE">Редактор Библиотеки Материалов.</String>
+	<String ID="$OPEN">Открыть</String>
+	<String ID="$QUESTION_NAME_OF_MAT">Пожалуйста, введите название материала:</String>
+	<String ID="$EXPORT_MATS">Export Selected Materials</String>
+	<String ID="$LABEL_SEARCHTYPE">Type of Search:</String>
+	<String ID="$LABEL_MATERIALNAME">Material Name</String>
+	<String ID="$LABEL_TEXTURENAME">Texture Name</String>
+	<String ID="$LABEL_MATERIALHASH">Material Hash</String>
+	<String ID="$LABEL_SHADERID">Shader ID</String>
+	<String ID="$LABEL_SHADERHASH">Shader Hash</String>
+	<String ID="$SEARCH">Поиск</String>
+	<String ID="$LABEL_SEARCHBAR">Search for a Material:</String>
+	<String ID="$LABEL_SELECTMATLIBRARY">Select Material Library:</String>
+	<String ID="$TITLE_MATERIALBROWSER">Material Browser</String>
+
+	<!-- FrameResource Editor Form Strings-->
+	<String ID="$FRAME_EDITOR_EXPORT_BTN">Экспортируем модели....</String>
+	<String ID="$FRAME_EDITOR_MODELS">Редактор моделей (FrameNameTable)</String>
+	<String ID="$FRAME_EDITOR_ALL">Все модели</String>
+	<String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Переписать Буфер</String>
+	<String ID="$FRAME_EDITOR_ADD_BUTTON">Добавить новую запись</String>
+	<String ID="$FRAME_EDITOR_MODIFY_HEADER">Изменить заголовок</String>
+	<String ID="$FRAME_EDITOR_SWITCH_VIEW">Сменить вид.</String>
+	<String ID="$FRAME_EDITOR_EXTRACT3D">Распаковать модель</String>
+	<String ID="$DELETE">Удалить</String>
+	<String ID="$FRAME_EDITOR_UPDATE_PARENTS">Обновить родителя</String>
+	<String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Выберите сцену, в которую добавить как родителя.</String>
+	<String ID="$FRAME_EDITOR_TITLE">Редактор ресурсов</String>
+	<String ID="$FRADD_TYPE">Тип кадра</String>
+	<String ID="$FRADD_NAME_TABLE">Добавить кадр/рамку для имени таблиц ?</String>
+	<String ID="$QUESTION_FRADD">Введите имя и тип кадра.</String>
+
+	<!-- Scene Outliner Dock Strings-->
+	<String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
+	<String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
+	<String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+
+	<!-- Actor Editor -->
+	<String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+	<String ID="$ADD_ITEM">Add Item</String>
+	<String ID="$ADD_DEFINITION">Add Definition</String>
+
+	<!-- EntityDataStorage Editor -->
+	<String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
+	<String ID="$SAVE_TITLE">Save File</String>
+	<String ID="$OPEN_TITLE">Open File</String>
+	<String ID="$EXPORT_XML">Export To XML</String>
+	<String ID="$IMPORT_XML">Import From XML</String>
+	<String ID="$PHYSICS_RB">Physics/Rigidbody</String>
+	<String ID="$MOTOR_TORQUE">Motor/Torque</String>
+	<String ID="$FUEL">Fuel</String>
+	<String ID="$GEARBOX">Gearbox</String>
+	<String ID="$STEERING">Steering</String>
+	<String ID="$DIFFERENTIAL">Differential</String>
+	<String ID="$BRAKES">Brakes</String>
+	<String ID="$AERODYNAMICS">Aerodynamics</String>
+	<String ID="$EFFECTS">Effects</String>
+	<String ID="$ENGINE">Engine</String>
+	<String ID="$ENVIRONMENT">Environment</String>
+	<String ID="$AIR_PUMP">Air Pump</String>
+	<String ID="$DOORS">Doors</String>
+	<String ID="$BONNET_TRUNK">Bonnet/Trunk</String>
+	<String ID="$WHEELS">Wheels</String>
+	<String ID="$HORN_SIREN">Horn/Siren</String>
+	<String ID="$GLASS_BREAK">Glass Effects</String>
+	<String ID="$EXPLOSION">Explosion Effects</String>
+	<String ID="$FIRE">Fire Effects</String>
+	<String ID="$RAIN_CONTACT">Rain Effects</String>
+	<String ID="$HEDGE_CONTACT">Hedge Collision Effects</String>
+	<String ID="$SKIDDING_SLIDING">Powersliding/Skidding</String>
+	<String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
+
+	<!-- NewObjForm Form Strings-->
+	<String ID="$NEWOBJFORM_TITLE">Ввод имени</String>
+	<String ID="$QUESTION_NOT_NEEDED">Данный вариант не требует имени</String>
+	<String ID="$SCENE_OPTIONS">Настройки сцены</String>
+	<String ID="$FSCENE_OFFSET">Смещение по координатам </String>
+
+	<!-- Error strings -->
+	<String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Не удалось найти MafiaII 'launcher.exe', пожалуйста, укажите корректный путь!</String>
+	<String ID="$ERROR_TITLE">Ошибочка!</String>
+	<String ID="$ERROR_SELECT_ITEM">Выбери что-нибудь!!!</String>
+	<String ID="$ERROR_DIDNT_FIND_MTL">Невозможно загрузить материал. Обнаружена ошибка: \n\n</String>
+
+	<!-- CityArea Strings -->
+	<String ID="$CITY_AREA_EDITOR_TITLE">Редактор CityArea</String>
+	<String ID="$AREA_DATA">Данные области</String>
+	<String ID="$AREA_1">Область 1</String>
+	<String ID="$AREA_NAME">Название Области</String>
+	<String ID="$AREA_2">Область 2</String>
+	<String ID="$UNK_BYTE">Unk Байт</String>
+	<String ID="$SAVE_AREA">Сохранение Области!</String>
+	<String ID="$RELOAD_AREA">Обновить область..</String>
+
+	<!-- CityShop Strings -->
+	<String ID="$CITY_SHOP_EDITOR_TITLE">Редактор CityShop </String>
+	<String ID="$ADD_AREA">Добавить область</String>
+	<String ID="$ADD_DATA">Добавить данные</String>
+	<String ID="$POPULATE_TRANSLOKATORS">Заполнить Новые Транслокаторы!</String>
+
+	<!-- Table Editor string -->
+	<String ID="$TABLE_EDITOR_TITLE">Редактор Таблицы</String>
+	<String ID="$TABLE_ADD_ROW">Добавить ряд</String>
+	<String ID="$TABLE_ADD_COLUMN">Добавить слолб.</String>
+
+	<!-- Renderer strings -->
+	<String ID="$CREATE">Создать</String>
+	<String ID="$VIEW_OPTIONS">Настройки Вида </String>
+	<String ID="$VIEW_PROPERTY_GRID">Просмотр сетки свойств </String>
+	<String ID="$VIEW_SCENE_TREE">Просмотор</String>
+	<String ID="$VIEW_VIS_OPTIONS">Просмотр параметров видимости.</String>
+	<String ID="$TOGGLE_MODELS">Переключение моделей  </String>
+	<String ID="$TOGGLE_COLLISIONS">Переключение Коллизий</String>
+	<String ID="$TOGGLE_BOXES">Переключение Боксов </String>
+	<String ID="$ADD">Добавление..</String>
+	<String ID="$ADD_SCENE_FOLDER">Добавить Папку Сцены</String>
+	<String ID="$ADD_ROAD_SPLINE">Добавить Дорожный Сплайн</String>
+	<String ID="$VISIBLE">Видимый</String>
+	<String ID="$HIDDEN">Скрыть</String>
+	<String ID="$EDIT_TRANSFORM">Изменить Преобразование</String>
+	<String ID="$PROPERTY_GRID">Сетка Свойств</String>
+	<String ID="$TOGGLE_WIREFRAME">Переключение визуализации </String>
+	<String ID="$TOGGLE_CULLING">Отключить калибровку  </String>
+	<String ID="$POSITION_X">Позиция X</String>
+	<String ID="$POSITION_Y">Позиция Y</String>
+	<String ID="$POSITION_Z">Позиция Z</String>
+	<String ID="$ROTATION_X">Вращение X</String>
+	<String ID="$ROTATION_Y">Вращение Y</String>
+	<String ID="$ROTATION_Z">Вращение Z</String>
+
+	<!-- Property Descriptions Strings-->
+	<String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+
+	<!-- XBIN Editor Strings-->
+	<String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+	<String ID="$IMPORT_XBIN">Import from .xml</String>
+	<String ID="$EXPORT_XBIN">Export to .xml</String>
+
+	<!-- Exception Form-->
+	<String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>
+	<String ID="$EXCEPTION_CONTINUE">Continue</String>
+	<String ID="$EXCEPTION_QUIT">Quit</String>
+
 </Localisation>

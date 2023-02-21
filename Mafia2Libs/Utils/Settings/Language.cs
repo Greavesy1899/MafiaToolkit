@@ -34,6 +34,9 @@ namespace Utils.Language
                 case 5:
                     xmlToLoad = "Localisations/sk_SK.xml";
                     break;
+                case 6:
+                    xmlToLoad = "Localisations/ar_ar.xml";
+                    break;
                 default:
                     xmlToLoad = "Localisations/en_GB.xml";
                     break;

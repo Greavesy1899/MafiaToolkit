@@ -1,0 +1,330 @@
+﻿<Localisation lANG="AR_AR">
+	<!-- Generic String -->
+	<String ID="$CONTINUE">مواصلة</String>
+	<String ID="$CANCEL">إلغاء</String>
+	<String ID="$EDIT">تعديل</String>
+	<String ID="$INDEX">Index</String>
+	<String ID="$COPY">نسخ</String>
+	<String ID="$PASTE">لصق</String>
+	<String ID="$STOP">توقف</String>
+	<String ID="$ENTRY_NAME">Entry Name</String>
+	<String ID="$UPDATE_MESSAGE1">!متاح Mafia: Toolkit إصدار جديد من</String>
+	<String ID="$UPDATE_MESSAGE2">للتحميل، يرجى الضغط على موافق</String>
+	<String ID="$UPDATE_MESSAGE3">.لاستخدام الإصدار الحالي، اضغط على إلغاء</String>
+	<String ID="$FAILED_UPDATE_CHECK">فشل في التحقق من وجود تحديثات</String>
+
+	<!-- Game Explorer Strings -->
+	<String ID="$ABOUT">About</String>
+	<String ID="$THANKS">شكر خاص</String>
+	<String ID="$VIEW">عرض</String>
+	<String ID="$FILE">الملف</String>
+	<String ID="$TOOLS">الأدوات</String>
+	<String ID="$BTN_OPEN_MII">فتح مجلد اللعبة</String>
+	<String ID="$BTN_RUN_MII">تشغيل اللعبة</String>
+	<String ID="$EXIT">خروج</String>
+	<String ID="$OPTIONS">الإعدادات</String>
+	<String ID="$SELECT_MII_FOLDER">mafia II Definitive Edition.exe mafia2.exe حدد مجلد لعبة مافيا الخاص بك يجب أن يحتوي المجلد على</String>
+	<String ID="$ICON">أيقونات</String>
+	<String ID="$DETAILS">تفاصيل</String>
+	<String ID="$SMALL_ICON">أيقونات صغيرة</String>
+	<String ID="$LIST">قائمة</String>
+	<String ID="$TILE">لوحات</String>
+	<String ID="$MII_TK_GAME_EXPLORER">Mafia Toolkit: مستكشف اللعبة</String>
+	<String ID="$UNPACK_ALL_SDS">SDS استخراج جميع ملفات</String>
+	<String ID="$DELETE_SELECTED_OBJECTS">حذف الملفات والمجلدات المحددة</String>
+	<String ID="$UNPACK_SELECTED_SDS">المحددة SDS استخراج ملفات</String>
+	<String ID="$PACK_SELECTED_SDS">المحددة SDS حزم ملفات</String>
+	<String ID="$OPEN_FOLDER_EXPLORER">فتح موقع الملف</String>
+	<String ID="$PACK">حزم الملفات</String>
+	<String ID="$UNPACK">استخراج الملفات</String>
+	<String ID="$LAST_MODIFIED">تاريخ التعديل</String>
+	<String ID="$NAME">الاسم</String>
+	<String ID="$SIZE">الحجم</String>
+	<String ID="$TYPE">النوع</String>
+	<String ID="$SEARCH_TOOLTIP">بحث</String>
+	<String ID="$SEARCH_DOTS">...بحث</String>
+	<String ID="$REFRESH">تحديث</String>
+	<String ID="$FOLDER_PATH_TOOLTIP">مسار الملف</String>
+	<String ID="$UP_TOOLTIP">فوق</String>
+	<String ID="$M1DE_OODLEERROR">المطلوب للضغط / إلغاء الضغط. يرجى التأكد من وجوده في مسار اللعبة. oo2core_8_win64.dll تعذر العثور على</String>
+	<String ID="$OPEN_MAP_EDITOR">Map Editor فتح</String>
+
+	<!-- Game Selector -->
+	<String ID="$START_TOOLKIT">فتح الأداة</String>
+	<String ID="$FOLDER_PATH_LABEL">:مسار اللعبة</String>
+	<String ID="$SELECT_AS_DEFAULT">تخطي هذه النافذة في المستقبل</String>
+	<String ID="$SELECT_FOLDER">اختيار المجلد</String>
+	<String ID="$SELECT_GAME">اختيار اللعبة</String>
+
+	<!-- Main Options Strings-->
+	<String ID="$GENERAL">عام</String>
+	<String ID="$SDS_OPTIONS">SDS إعدادات ملفات</String>
+	<String ID="$MODEL_EXPORTING">المجسمات/الاستخراج</String>
+	<String ID="$MATERIAL_LIBS">مكتبات الخامة</String>
+
+	<!-- General Options Strings-->
+	<String ID="$ENABLE_DEBUG_LOGGING">تمكين المسجل</String>
+	<String ID="$MII_DIRECTORY">Mafia مسار لعبة</String>
+	<String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
+	<String ID="$DISCORD_TOGGLE_ELAPSED_TIME">إظهار الوقت المنقضي</String>
+	<String ID="$DISCORD_TOGGLE_STATE">إظهار التعليق</String>
+	<String ID="$DISCORD_TOGGLE_DETAILS">إظهار التفاصيل</String>
+	<String ID="$DISCORD_TOGGLE_RICH_PRESENCE">إظهار نشاط المستخدم</String>
+	<String ID="$LANGUAGE_ENGLISH">English</String>
+	<String ID="$LANGUAGE_RUSSIAN">русский</String>
+	<String ID="$LANGUAGE_CZECH">čeština</String>
+	<String ID="$LANGUAGE_POLISH">Polish</String>
+	<String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
+	<String ID="$LANGUAGE_ARABIC">اللغة العربية</String>
+	<String ID="$LANGUAGE_OPTION">لغة الواجهة</String>
+	<String ID="$DISCORD_STATE_CUSTOM">Discord تعديل التعليق الظاهر على</String>
+	<String ID="$CHECK_FOR_UPDATES">التحقق من وجود تحديثات</String>
+	<String ID="$SAVE_PROMPT">هل تريد الحفظ قبل الإغلاق؟</String>
+
+	<!-- Model/Exporting Option Strings-->
+	<String ID="$EXPORT_PATH_TITLE">:مسار الاستخراج</String>
+	<String ID="$EXPORT_PATH_DESC">حدد مسار استخراج المجسمات.</String>
+	<String ID="$EXPORT_MODELTYPE_TITLE">:امتداد المجسم المستخرج</String>
+
+	<!-- Material Libs Option Strings-->
+	<String ID="$MATERIAL_LIB_REMOVE">حذف المكتبة المحددة</String>
+	<String ID="$MATERIAL_LIB_ADD">إضافة مكتبة</String>
+	<String ID="$MATERIAL_LIB_SELECTED">المكتبات المحددة</String>
+	<String ID="$CONFLICTING_MATS">الخامات المتعارضة</String>
+	<String ID="$NEW_MATS">خامات جديدة</String>
+	<String ID="$MERGE">دمج</String>
+	<String ID="$MERGE_MTL">Merge MTL</String>
+	<String ID="$DELETE_SEL_MAT">حذف الخامة المحددة</String>
+	<String ID="$SELECT_ALL">اختيار الكل</String>
+	<String ID="$SEARCH">بحث</String>
+
+	<!-- SDS Options -->
+	<String ID="$SDS_COMPRESSION_RATIO">نسبة الضغط</String>
+	<String ID="$SDS_TOOLTIP_COMPRESSION_RATIO">القيمة صفر لا تساوي أي ضغط، 1.0 يساوي ضغط كامل، 0.9 هو الافتراضي</String>
+	<String ID="$SDS_TOOLTIP_USE_OODLE">zlib بدلا من Oodle بإستخدام Mafia: Definitive Edition الخاصة بلعبة SDS ضغط ملفات</String>
+	<String ID="$ADD_TIME_DATE_BACKUP">أضف الوقت والتاريخ إلى النسخ الاحتياطية</String>
+	<String ID="$DECOMPILE_LUA_UNPACK">عند الاستخراج lua فك</String>
+	<String ID="$USE_SDS_TOOL_FORMAT">عند الاستخراج SDS استخدم واجهة أداة</String>
+	<String ID="$COOK_COLLISIONS">تجهيز التضاربات عند الحفظ</String>
+	<String ID="$BACKUP_SDS_LABEL">عند الاستخراج SDS إنشاء نسخ احتياطية من ملفات</String>
+	<String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+	<String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
+
+	<!-- Map Editor -->
+	<String ID="$NO_COL_FILE_CREATE_NEW">لا يوجد ملف تضارب موجود. إنشاء ملف تضارب جديد؟</String>
+	<String ID="$CANNOT_CREATE_COL">لا يمكن إضافة ملف تضارب.لا يوجد ملف تضارب موجود</String>
+	<String ID="$ADD_COLLISION">إضافة تضارب</String>
+
+	<!-- Render Options -->
+	<String ID="$RENDER">التجسيم</String>
+	<String ID="$RENDER_OPTIONS">إعدادات التجسيم</String>
+	<String ID="$RENDER_SCREENFAR">بعد الشاشة</String>
+	<String ID="$RENDER_SCREENEAR">قرب الشاشة</String>
+	<String ID="$RENDER_CAMERASPEED">سرعة الكاميرا</String>
+	<String ID="$RENDER_FOV">مجال الرؤية</String>
+	<String ID="$TEXTURE_DIRECTORY">مسار النسيج</String>
+	<String ID="$SELECT_TEX_FOLDER">حدد المجلد الذي يحتوي على الأنسجة</String>
+
+	<!-- Collision Editor Form Strings-->
+	<String ID="$SAVE">حفظ</String>
+	<String ID="$RELOAD">إعادة تحميل</String>
+	<String ID="$COLLISION_DELETE">حذف التضارب</String>
+	<String ID="$COLLISION_ADD">إضافة تضارب</String>
+	<String ID="$PLACEMENT_DELETE">حذف النموذج</String>
+	<String ID="$PLACEMENT_ADD">إضافة نموذج</String>
+	<String ID="$SELECT_MODEL_FILE">تحديد مجسم</String>
+	<String ID="$COLLISION_EDITOR_TITLE">محرر التضارب</String>
+
+	<!-- Material Editor Form Strings-->
+	<String ID="$MATERIAL_ADD">إضافة خامة</String>
+	<String ID="$MATERIAL_DELETE">حذف الخامة</String>
+	<String ID="$MATERIAL_UPDATE_LIST">تحديث قائمة الخامات</String>
+	<String ID="$MATERIAL_EDITOR_TITLE">محرر مكتبة الخامة</String>
+	<String ID="$OPEN">فتح</String>
+	<String ID="$QUESTION_NAME_OF_MAT">يرجى إضافة اسم للخامة</String>
+	<String ID="$EXPORT_MATS">استخراج الخامة المحددة</String>
+	<String ID="$LABEL_SEARCHTYPE">نوع البحث</String>
+	<String ID="$LABEL_MATERIALNAME">Material Name</String>
+	<String ID="$LABEL_MATERIALHASH">Material Hash</String>
+	<String ID="$LABEL_TEXTURENAME">Texture Name</String>
+	<String ID="$LABEL_SHADERID">Shader ID</String>
+	<String ID="$LABEL_SHADERHASH">Shader Hash</String>
+	<String ID="$LABEL_SEARCHBAR">ابحث عن خامة</String>
+	<String ID="$LABEL_SELECTMATLIBRARY">اختيار مكتبة خامة</String>
+	<String ID="$TITLE_MATERIALBROWSER">متصفح الخامات</String>
+
+	<!-- FrameResource Editor Form Strings-->
+	<String ID="$FRAME_EDITOR_EXPORT_BTN">استخراج المجسمات</String>
+	<String ID="$FRAME_EDITOR_MODELS">FrameNameTable Models</String>
+	<String ID="$FRAME_EDITOR_ALL">جميع المجسمات</String>
+	<String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Overwrite Buffer</String>
+	<String ID="$FRAME_EDITOR_ADD_BUTTON">إضافة مدخل جديد</String>
+	<String ID="$FRAME_EDITOR_MODIFY_HEADER">تعديل المقدمة</String>
+	<String ID="$FRAME_EDITOR_SWITCH_VIEW">تبديل المنظر</String>
+	<String ID="$FRAME_EDITOR_EXTRACT3D">استخراج المجسم</String>
+	<String ID="$DELETE">حذف</String>
+	<String ID="$FRAME_EDITOR_UPDATE_PARENTS">Update Parent</String>
+	<String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choose a scene to add as a parent.</String>
+	<String ID="$FRAME_EDITOR_TITLE">FrameResource محرر</String>
+	<String ID="$FRADD_TYPE">نوع الإطار</String>
+	<String ID="$FRADD_NAME_TABLE">هل تريد إضافة إطار إلى جدول الاسم؟</String>
+	<String ID="$QUESTION_FRADD">أدخل اسم ونوع الإطار.</String>
+
+	<!-- Scene Outliner Dock Strings-->
+	<String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
+	<String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
+	<String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+
+	<!-- Actor Editor -->
+	<String ID="$ACTOR_EDITOR_TITLE">Actor محرر</String>
+	<String ID="$ADD_ITEM">Add Item</String>
+	<String ID="$ADD_DEFINITION">Add Definition</String>
+
+	<!-- EntityDataStorage Editor -->
+	<String ID="$EDS_EDITOR_TITLE">EntityDataStorage محرر</String>
+	<String ID="$SAVE_TITLE">حفظ الملف</String>
+	<String ID="$OPEN_TITLE">فتح الملف</String>
+	<String ID="$EXPORT_XML">XML استخرج الملف بامتداد</String>
+	<String ID="$IMPORT_XML">XML إدخال البيانات من ملف</String>
+	<String ID="$PHYSICS_RB">فيزيائية الجسم/ الجسم الصلب</String>
+	<String ID="$MOTOR_TORQUE">المحرك / عزم الدوران</String>
+	<String ID="$FUEL">الوقود</String>
+	<String ID="$GEARBOX">ناقل الحركة</String>
+	<String ID="$STEERING">القيادة</String>
+	<String ID="$DIFFERENTIAL">التفاضل</String>
+	<String ID="$BRAKES">الفرامل</String>
+	<String ID="$AERODYNAMICS">الديناميكا الهوائية</String>
+	<String ID="$EFFECTS">التأثيرات</String>
+	<String ID="$ENGINE">المحرك</String>
+	<String ID="$ENVIRONMENT">البيئة</String>
+	<String ID="$AIR_PUMP">مضخة هواء</String>
+	<String ID="$DOORS">الأبواب</String>
+	<String ID="$BONNET_TRUNK">صندوق السيارة</String>
+	<String ID="$WHEELS">عجلات القيادة</String>
+	<String ID="$HORN_SIREN">صفارة الإنذار</String>
+	<String ID="$GLASS_BREAK">تأثيرات الزجاج</String>
+	<String ID="$EXPLOSION">تأثيرات الانفجارات</String>
+	<String ID="$FIRE">تأثيرات النار</String>
+	<String ID="$RAIN_CONTACT">تأثيرات المطر</String>
+	<String ID="$HEDGE_CONTACT">آثار التصادم</String>
+	<String ID="$SKIDDING_SLIDING">الانزلاق</String>
+	<String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
+
+	<!-- NewObjForm Form Strings-->
+	<String ID="$NEWOBJFORM_TITLE">Input Name</String>
+	<String ID="$QUESTION_NOT_NEEDED">هذا الخيار لا يحتاج إلى اسم</String>
+	<String ID="$SCENE_OPTIONS">إعدادات المشهد</String>
+	<String ID="$FSCENE_OFFSET">Position Offset</String>
+
+	<!-- Error strings -->
+	<String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Could not find MafiaII 'launcher.exe', please correct the path!</String>
+	<String ID="$ERROR_TITLE">خطأ</String>
+	<String ID="$ERROR_SELECT_ITEM">حدد عنصر</String>
+	<String ID="$ERROR_DIDNT_FIND_MTL">Unable to load materials. Error occured: \n\n</String>
+
+	<!-- CityArea Strings -->
+	<String ID="$CITY_AREA_EDITOR_TITLE">CityArea محرر</String>
+	<String ID="$AREA_DATA">بيانات المنطقة</String>
+	<String ID="$AREA_1">المنطقة 1</String>
+	<String ID="$AREA_NAME">اسم المنطقة</String>
+	<String ID="$AREA_2">المنطقة 2</String>
+	<String ID="$UNK_BYTE">Unk Byte</String>
+	<String ID="$SAVE_AREA">حفظ المنطقة</String>
+	<String ID="$RELOAD_AREA">إعادة تحميل المنطقة</String>
+
+	<!-- CityShop Strings -->
+	<String ID="$CITY_SHOP_EDITOR_TITLE">CityShop محرر</String>
+	<String ID="$ADD_AREA">إضافة منطقة</String>
+	<String ID="$ADD_DATA">إضافة بيانات</String>
+	<String ID="$DELETE_AREA">حذف منطفة</String>
+	<String ID="$DELETE_DATA">حذف بيانات</String>
+	<String ID="$DUPLICATE_DATA">نسخ البيانات</String>
+	<String ID="$POPULATE_TRANSLOKATORS">Populate New Translocators</String>
+
+	<!-- Table Editor string -->
+	<String ID="$TABLE_EDITOR_TITLE">Table محرر</String>
+	<String ID="$TABLE_ADD_ROW">إضافة صف</String>
+	<String ID="$TABLE_ADD_COLUMN">إضافة عمود</String>
+
+	<!-- Renderer strings -->
+	<String ID="$CREATE">إنشاء</String>
+	<String ID="$VIEW_OPTIONS">إظهار الخيارات</String>
+	<String ID="$VIEW_PROPERTY_GRID">عرض شبكة الملكية</String>
+	<String ID="$VIEW_SCENE_TREE">إظهار المشاهد</String>
+	<String ID="$VIEW_VIS_OPTIONS">عرض خيارات الرؤية</String>
+	<String ID="$TOGGLE_MODELS">تبديل المجسمات</String>
+	<String ID="$TOGGLE_COLLISIONS">تبديل التضاربات</String>
+	<String ID="$TOGGLE_BOXES">تبديل المربعات</String>
+	<String ID="$ADD">إضافة إطار</String>
+	<String ID="$IMPORT_FRAME">إدخال إطار</String>
+	<String ID="$IMPORT_BUNDLE">Import Model Bundle</String>
+	<String ID="$ADD_SCENE_FOLDER">Add Scene Folder</String>
+	<String ID="$ADD_ROAD_SPLINE">Add Road Spline</String>
+	<String ID="$VISIBLE">مرئي</String>
+	<String ID="$HIDDEN">مخفي</String>
+	<String ID="$EDIT_TRANSFORM">Edit Transform</String>
+	<String ID="$PROPERTY_GRID">شبكة الملكية</String>
+	<String ID="$TOP">Top</String>
+	<String ID="$FRONT">Front</String>
+	<String ID="$TOGGLE_WIREFRAME">Toggle Wireframe</String>
+	<String ID="$TOGGLE_CULLING">Toggle Culling</String>
+	<String ID="$EDIT_LIGHTING">Edit Lighting</String>
+	<String ID="$POSITION_X">Position X</String>
+	<String ID="$POSITION_Y">Position Y</String>
+	<String ID="$POSITION_Z">Position Z</String>
+	<String ID="$ROTATION_X">Rotation X</String>
+	<String ID="$ROTATION_Y">Rotation Y</String>
+	<String ID="$ROTATION_Z">Rotation Z</String>
+	<String ID="$SCALE_X">Scale X</String>
+	<String ID="$SCALE_Y">Scale Y</String>
+	<String ID="$SCALE_Z">Scale Z</String>
+
+	<!-- StreamEditor strings-->
+	<String ID="$STREAM_EDITOR_TITLE">Stream محرر</String>
+	<String ID="$ADD_LINE">Add Line</String>
+	<String ID="$DELETE_LINE">Delete Line</String>
+	<String ID="$MOVE_UP">Move Up</String>
+	<String ID="$MOVE_DOWN">Move Down</String>
+
+	<!-- ListWindow Strings-->
+	<String ID="$SELECT_PARENT">Double click to select the new parent.</String>
+	<String ID="$HOW_TO_SEARCH">To search, type the name of the frame and press the 'enter' key.</String>
+
+	<!-- Bundle Import Form -->
+	<String ID="$Q_IMPORT_MATERIALS">This import will add materials to the libraries you chose or the the first loaded library. This operation will save the libraries after adding them. Are you sure you want to create these materials?</String>
+	<String ID="$VALIDATE">Validate</String>
+	<String ID="$TAB_MATERIALS">Materials</String>
+	<String ID="$TAB_MODELS">Models</String>
+	<String ID="$TAB_VALIDATION">Validation Messages</String>
+	<String ID="$TAB_IMPORT_LOG">Import Messages</String>
+	<String ID="$LABEL_MT_CHOOSE_LIBRARY">Material Library</String>
+	<String ID="$LABEL_MT_CHOOSE_PRESET">Material Preset</String>
+	<String ID="$TITLE_IMPORT_MODEL_BUNDLE">Import Model Bundle</String>
+
+	<!-- Translokator Strings-->
+	<String ID="$TRANSLOKATOR_EDITOR">Translokator محرر</String>
+	<String ID="$ADD_OBJECT">إضافة كائن</String>
+	<String ID="$ADD_INSTANCE">إضافة نموذج</String>
+	<String ID="$DELETE_OBJECT">حذف الكائن</String>
+	<String ID="$DELETE_INSTANCE">حذف النموذج</String>
+	<String ID="$VIEW_NUM_INST">عرض عدد النماذج</String>
+
+	<!-- Property Descriptions Strings-->
+	<String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Hash ملاحظة: هذا ليس مخزن في الملف وتم أخذه من قيمة</String>
+
+	<!-- XBIN Editor Strings-->
+	<String ID="$XBIN_EDITOR_TITLE">XBIN محرر</String>
+	<String ID="$IMPORT_XBIN">xml إدخال البيانات من ملف</String>
+	<String ID="$EXPORT_XBIN">xml استخراج الملف بامتداد</String>
+
+	<!-- ATP Editor Strings -->
+	<String ID="$ATP_EDITOR_TITLE">AnimalTrafficPaths محرر</String>
+	<String ID="$ADD_ATP">إضافة</String>
+	<String ID="$DELETE_ATP">حذف</String>
+
+	<!-- Exception Form-->
+	<String ID="$EXCEPTION_LABEL">حدث خطأ في التطبيق الخاص بك إذا ضغطت (مواصلة)، فسيتجاهل التطبيق هذا الخطأ ويحاول المتابعة. إذا ضغطت (خروج)، فسيتم إغلاق التطبيق على الفور</String>
+	<String ID="$EXCEPTION_CONTINUE">مواصلة</String>
+	<String ID="$EXCEPTION_QUIT">خروج</String>
+
+</Localisation>

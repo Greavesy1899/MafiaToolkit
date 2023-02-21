@@ -82,6 +82,9 @@
     <LangVersion>7.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Localisations\ar_AR.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
     <Reference Include="Gibbed.IO, Version=1.1.6802.1783, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -176,6 +179,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="libs\zlibnet.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Localisations\ar_AR.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Localisations\cz_CZ.xml">

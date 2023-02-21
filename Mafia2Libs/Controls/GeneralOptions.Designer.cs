@@ -64,8 +64,10 @@
             this.groupGeneral.Controls.Add(this.M2Label);
             this.groupGeneral.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupGeneral.Location = new System.Drawing.Point(0, 0);
+            this.groupGeneral.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupGeneral.Name = "groupGeneral";
-            this.groupGeneral.Size = new System.Drawing.Size(506, 157);
+            this.groupGeneral.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupGeneral.Size = new System.Drawing.Size(590, 181);
             this.groupGeneral.TabIndex = 1;
             this.groupGeneral.TabStop = false;
             this.groupGeneral.Text = "$GENERAL";
@@ -73,9 +75,10 @@
             // CheckForUpdatesBox
             // 
             this.CheckForUpdatesBox.AutoSize = true;
-            this.CheckForUpdatesBox.Location = new System.Drawing.Point(9, 126);
+            this.CheckForUpdatesBox.Location = new System.Drawing.Point(10, 145);
+            this.CheckForUpdatesBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.CheckForUpdatesBox.Name = "CheckForUpdatesBox";
-            this.CheckForUpdatesBox.Size = new System.Drawing.Size(153, 17);
+            this.CheckForUpdatesBox.Size = new System.Drawing.Size(150, 19);
             this.CheckForUpdatesBox.TabIndex = 7;
             this.CheckForUpdatesBox.Text = "$CHECK_FOR_UPDATES";
             this.CheckForUpdatesBox.UseVisualStyleBackColor = true;
@@ -84,9 +87,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 60);
+            this.label1.Location = new System.Drawing.Point(9, 69);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(119, 13);
+            this.label1.Size = new System.Drawing.Size(122, 15);
             this.label1.TabIndex = 6;
             this.label1.Text = "$LANGUAGE_OPTION";
             // 
@@ -99,19 +103,22 @@
             "$LANGUAGE_CZECH",
             "$LANGUAGE_POLISH",
             "French",
-            "Slovak"});
-            this.languageComboBox.Location = new System.Drawing.Point(9, 76);
+            "Slovak",
+            "$LANGUAGE_ARABIC"});
+            this.languageComboBox.Location = new System.Drawing.Point(10, 88);
+            this.languageComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.languageComboBox.Name = "languageComboBox";
-            this.languageComboBox.Size = new System.Drawing.Size(121, 21);
+            this.languageComboBox.Size = new System.Drawing.Size(140, 23);
             this.languageComboBox.TabIndex = 5;
             this.languageComboBox.SelectedIndexChanged += new System.EventHandler(this.IndexChange);
             // 
             // debugLoggingCheckbox
             // 
             this.debugLoggingCheckbox.AutoSize = true;
-            this.debugLoggingCheckbox.Location = new System.Drawing.Point(9, 103);
+            this.debugLoggingCheckbox.Location = new System.Drawing.Point(10, 119);
+            this.debugLoggingCheckbox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.debugLoggingCheckbox.Name = "debugLoggingCheckbox";
-            this.debugLoggingCheckbox.Size = new System.Drawing.Size(173, 17);
+            this.debugLoggingCheckbox.Size = new System.Drawing.Size(172, 19);
             this.debugLoggingCheckbox.TabIndex = 4;
             this.debugLoggingCheckbox.Text = "$ENABLE_DEBUG_LOGGING";
             this.debugLoggingCheckbox.UseVisualStyleBackColor = true;
@@ -119,9 +126,10 @@
             // 
             // browseButton
             // 
-            this.browseButton.Location = new System.Drawing.Point(347, 37);
+            this.browseButton.Location = new System.Drawing.Point(405, 43);
+            this.browseButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.browseButton.Name = "browseButton";
-            this.browseButton.Size = new System.Drawing.Size(26, 20);
+            this.browseButton.Size = new System.Drawing.Size(30, 23);
             this.browseButton.TabIndex = 2;
             this.browseButton.Text = "...";
             this.browseButton.UseVisualStyleBackColor = true;
@@ -129,21 +137,22 @@
             // 
             // M2DirectoryBox
             // 
-            this.M2DirectoryBox.Location = new System.Drawing.Point(9, 37);
+            this.M2DirectoryBox.Location = new System.Drawing.Point(10, 43);
+            this.M2DirectoryBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.M2DirectoryBox.Name = "M2DirectoryBox";
-            this.M2DirectoryBox.Size = new System.Drawing.Size(332, 20);
+            this.M2DirectoryBox.Size = new System.Drawing.Size(387, 23);
             this.M2DirectoryBox.TabIndex = 1;
             this.M2DirectoryBox.TextChanged += new System.EventHandler(this.M2Directory_TextChanged);
             // 
             // M2Label
             // 
             this.M2Label.AutoSize = true;
-            this.M2Label.Location = new System.Drawing.Point(6, 21);
+            this.M2Label.Location = new System.Drawing.Point(7, 24);
+            this.M2Label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.M2Label.Name = "M2Label";
-            this.M2Label.Size = new System.Drawing.Size(97, 13);
+            this.M2Label.Size = new System.Drawing.Size(95, 15);
             this.M2Label.TabIndex = 0;
             this.M2Label.Text = "$MII_DIRECTORY";
-            this.M2Label.Click += new System.EventHandler(this.M2Label_Click);
             // 
             // MafiaIIBrowser
             // 
@@ -153,6 +162,7 @@
             // 
             this.groupBoxSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxSplitter.Location = new System.Drawing.Point(0, 0);
+            this.groupBoxSplitter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBoxSplitter.Name = "groupBoxSplitter";
             this.groupBoxSplitter.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -163,8 +173,9 @@
             // groupBoxSplitter.Panel2
             // 
             this.groupBoxSplitter.Panel2.Controls.Add(this.groupDiscordRPC);
-            this.groupBoxSplitter.Size = new System.Drawing.Size(506, 310);
-            this.groupBoxSplitter.SplitterDistance = 157;
+            this.groupBoxSplitter.Size = new System.Drawing.Size(590, 358);
+            this.groupBoxSplitter.SplitterDistance = 181;
+            this.groupBoxSplitter.SplitterWidth = 5;
             this.groupBoxSplitter.TabIndex = 2;
             // 
             // groupDiscordRPC
@@ -177,8 +188,10 @@
             this.groupDiscordRPC.Controls.Add(this.DiscordEnabledCheckBox);
             this.groupDiscordRPC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupDiscordRPC.Location = new System.Drawing.Point(0, 0);
+            this.groupDiscordRPC.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupDiscordRPC.Name = "groupDiscordRPC";
-            this.groupDiscordRPC.Size = new System.Drawing.Size(506, 149);
+            this.groupDiscordRPC.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupDiscordRPC.Size = new System.Drawing.Size(590, 172);
             this.groupDiscordRPC.TabIndex = 0;
             this.groupDiscordRPC.TabStop = false;
             this.groupDiscordRPC.Text = "$DISCORD_RICH_PRESENCE";
@@ -186,26 +199,29 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 107);
+            this.label2.Location = new System.Drawing.Point(7, 123);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(130, 13);
+            this.label2.Size = new System.Drawing.Size(125, 15);
             this.label2.TabIndex = 7;
             this.label2.Text = "$DISCORDSTATELABEL";
             // 
             // DiscordStateTextBox
             // 
-            this.DiscordStateTextBox.Location = new System.Drawing.Point(6, 123);
+            this.DiscordStateTextBox.Location = new System.Drawing.Point(7, 142);
+            this.DiscordStateTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.DiscordStateTextBox.Name = "DiscordStateTextBox";
-            this.DiscordStateTextBox.Size = new System.Drawing.Size(365, 20);
+            this.DiscordStateTextBox.Size = new System.Drawing.Size(425, 23);
             this.DiscordStateTextBox.TabIndex = 7;
             this.DiscordStateTextBox.TextChanged += new System.EventHandler(this.DiscordStateTextBox_TextChanged);
             // 
             // DiscordElapsedCheckBox
             // 
             this.DiscordElapsedCheckBox.AutoSize = true;
-            this.DiscordElapsedCheckBox.Location = new System.Drawing.Point(6, 88);
+            this.DiscordElapsedCheckBox.Location = new System.Drawing.Point(7, 102);
+            this.DiscordElapsedCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.DiscordElapsedCheckBox.Name = "DiscordElapsedCheckBox";
-            this.DiscordElapsedCheckBox.Size = new System.Drawing.Size(218, 17);
+            this.DiscordElapsedCheckBox.Size = new System.Drawing.Size(211, 19);
             this.DiscordElapsedCheckBox.TabIndex = 3;
             this.DiscordElapsedCheckBox.Text = "$DISCORD_TOGGLE_ELAPSED_TIME";
             this.DiscordElapsedCheckBox.UseVisualStyleBackColor = true;
@@ -214,9 +230,10 @@
             // DiscordStateCheckBox
             // 
             this.DiscordStateCheckBox.AutoSize = true;
-            this.DiscordStateCheckBox.Location = new System.Drawing.Point(7, 65);
+            this.DiscordStateCheckBox.Location = new System.Drawing.Point(8, 75);
+            this.DiscordStateCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.DiscordStateCheckBox.Name = "DiscordStateCheckBox";
-            this.DiscordStateCheckBox.Size = new System.Drawing.Size(172, 17);
+            this.DiscordStateCheckBox.Size = new System.Drawing.Size(163, 19);
             this.DiscordStateCheckBox.TabIndex = 2;
             this.DiscordStateCheckBox.Text = "$DISCORD_TOGGLE_STATE";
             this.DiscordStateCheckBox.UseVisualStyleBackColor = true;
@@ -225,9 +242,10 @@
             // DiscordDetailsCheckBox
             // 
             this.DiscordDetailsCheckBox.AutoSize = true;
-            this.DiscordDetailsCheckBox.Location = new System.Drawing.Point(7, 42);
+            this.DiscordDetailsCheckBox.Location = new System.Drawing.Point(8, 48);
+            this.DiscordDetailsCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.DiscordDetailsCheckBox.Name = "DiscordDetailsCheckBox";
-            this.DiscordDetailsCheckBox.Size = new System.Drawing.Size(182, 17);
+            this.DiscordDetailsCheckBox.Size = new System.Drawing.Size(175, 19);
             this.DiscordDetailsCheckBox.TabIndex = 1;
             this.DiscordDetailsCheckBox.Text = "$DISCORD_TOGGLE_DETAILS";
             this.DiscordDetailsCheckBox.UseVisualStyleBackColor = true;
@@ -236,9 +254,10 @@
             // DiscordEnabledCheckBox
             // 
             this.DiscordEnabledCheckBox.AutoSize = true;
-            this.DiscordEnabledCheckBox.Location = new System.Drawing.Point(7, 19);
+            this.DiscordEnabledCheckBox.Location = new System.Drawing.Point(8, 22);
+            this.DiscordEnabledCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.DiscordEnabledCheckBox.Name = "DiscordEnabledCheckBox";
-            this.DiscordEnabledCheckBox.Size = new System.Drawing.Size(227, 17);
+            this.DiscordEnabledCheckBox.Size = new System.Drawing.Size(220, 19);
             this.DiscordEnabledCheckBox.TabIndex = 0;
             this.DiscordEnabledCheckBox.Text = "$DISCORD_TOGGLE_RICH_PRESENCE";
             this.DiscordEnabledCheckBox.UseVisualStyleBackColor = true;
@@ -246,11 +265,12 @@
             // 
             // GeneralOptions
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBoxSplitter);
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "GeneralOptions";
-            this.Size = new System.Drawing.Size(506, 310);
+            this.Size = new System.Drawing.Size(590, 358);
             this.groupGeneral.ResumeLayout(false);
             this.groupGeneral.PerformLayout();
             this.groupBoxSplitter.Panel1.ResumeLayout(false);

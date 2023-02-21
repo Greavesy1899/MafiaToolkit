@@ -32,6 +32,7 @@ namespace Forms.OptionControls
             languageComboBox.Items[2] = Language.GetString("$LANGUAGE_CZECH");
             languageComboBox.Items[3] = Language.GetString("$LANGUAGE_POLISH");
             languageComboBox.Items[5] = Language.GetString("$LANGUAGE_SLOVAK");
+            languageComboBox.Items[6] = Language.GetString("$LANGUAGE_ARABIC");
             label1.Text = Language.GetString("$LANGUAGE_OPTION");
             label2.Text = Language.GetString("$DISCORD_STATE_CUSTOM");
         }
@@ -117,11 +118,6 @@ namespace Forms.OptionControls
             ToolkitSettings.Language = languageComboBox.SelectedIndex;
             ToolkitSettings.WriteKey("Language", "Misc", ToolkitSettings.Language.ToString());
             Language.ReadLanguageXML();
-        }
-
-        private void M2Label_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void DiscordStateTextBox_TextChanged(object sender, EventArgs e)

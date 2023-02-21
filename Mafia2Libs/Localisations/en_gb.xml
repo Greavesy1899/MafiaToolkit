@@ -75,6 +75,7 @@
 	<String ID="$LANGUAGE_CZECH">čeština</String>
 	<String ID="$LANGUAGE_POLISH">Polish</String>
 	<String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
+	<String ID="$LANGUAGE_ARABIC">اللغة العربية</String>
 	<String ID="$LANGUAGE_OPTION">Interface Language</String>
 	<String ID="$DISCORD_STATE_CUSTOM">Use a custom discord state.</String>
 	<String ID="$CHECK_FOR_UPDATES">Check for Updates.</String>
@@ -299,7 +300,7 @@
 	<String ID="$LABEL_MT_CHOOSE_LIBRARY">Material Library</String>
 	<String ID="$LABEL_MT_CHOOSE_PRESET">Material Preset</String>
 	<String ID="$TITLE_IMPORT_MODEL_BUNDLE">Import Model Bundle</String>
-	
+
 	<!-- Translokator Strings-->
 	<String ID="$TRANSLOKATOR_EDITOR">Translokator Editor</String>
 	<String ID="$ADD_OBJECT">Add Object</String>
@@ -315,7 +316,7 @@
 	<String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
 	<String ID="$IMPORT_XBIN">Import from .xml</String>
 	<String ID="$EXPORT_XBIN">Export to .xml</String>
-	
+
 	<!-- ATP Editor Strings -->
 	<String ID="$ATP_EDITOR_TITLE">AnimalTrafficPaths Editor</String>
 	<String ID="$ADD_ATP">Add</String>

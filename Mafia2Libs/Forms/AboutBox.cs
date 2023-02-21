@@ -18,7 +18,7 @@ namespace Mafia2Tool.Forms
                 "- Oleg @ ZModeler 3\r\n" +
                 "- Rick 'Gibbed'\r\n" +
                 "- Fireboyd for developing UnluacNET\r\n" +
-                "- Hurikejnis and Zeuvera for Slovenčina localization\r\n" +
+                "- Hurikejnis, Zeuvera, Segfault, Agens, T3mas1, Kamzik123, Szymon, Aetiüs for localizations\r\n" +
                 "\r\n" +
                 "Thanks to fellow contributors:\r\n" +
                 " - ModdingCode\r\n" +
