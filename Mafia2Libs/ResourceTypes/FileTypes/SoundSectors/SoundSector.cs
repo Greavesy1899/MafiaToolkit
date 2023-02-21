@@ -1,321 +1,454 @@
-﻿using System.Collections.Generic;
+﻿using Gibbed.IO;
+using System;
+using System.ComponentModel;
+using System.Globalization;
 using System.IO;
-using System.Numerics;
+using System.Xml.Linq;
+using Toolkit.Mathematics;
+using Utils.Extensions;
+using Utils.Helpers.Reflection;
+using Utils.StringHelpers;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.Sound
 {
-    struct unkStruct1
+    public class PlaneConverter : TypeConverter
     {
-        public byte unk0;
-        public byte unk1;
-        public byte numFloats;
-        public Vector4[] floats;
-        public short numShorts;
-        public short[] shorts;
-        public int unk2;
-        public float unk3;
-        public string sectorName;
-        public short unk4;
-        public int unk5;
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        {
+            object result = null;
+            string stringValue = value as string;
+
+            if (!string.IsNullOrEmpty(stringValue))
+            {
+                float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 4);
+                result = new Plane(values);
+            }
+
+            return result ?? base.ConvertFrom(context, culture, value);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            object result = null;
+            Plane plane = (Plane)value;
+
+            if (destinationType == typeof(string))
+            {
+                result = plane.ToString();
+            }
+
+            return result ?? base.ConvertTo(context, culture, value, destinationType);
+        }
     }
 
-    struct unkStruct2
+    [TypeConverter(typeof(PlaneConverter)), PropertyClassAllowReflection]
+    public class Plane
     {
-        public string portalName;
-        public float[] floats;
-        public string sectorToLoad;
-        public byte unk01;
-        public string sectorType;
-        public byte unk02;
-        public float unk03;
-        public string doorName;
-        public byte unk04;
-        public byte unk05;
-        public byte unk06;
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float W { get; set; }
+
+        public Plane() { }
+
+        public Plane(float[] Values)
+        {
+            X = Values[0];
+            Y = Values[1];
+            Z = Values[2];
+            W = Values[3];
+        }
+
+        public void ReadFromFile(MemoryStream Stream, bool bIsBigEndian)
+        {
+            X = Stream.ReadSingle(bIsBigEndian);
+            Y = Stream.ReadSingle(bIsBigEndian);
+            Z = Stream.ReadSingle(bIsBigEndian);
+            W = Stream.ReadSingle(bIsBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream Stream, bool bIsBigEndian)
+        {
+            Stream.Write(X, bIsBigEndian);
+            Stream.Write(Y, bIsBigEndian);
+            Stream.Write(Z, bIsBigEndian);
+            Stream.Write(W, bIsBigEndian);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+        }
     }
 
-    public class SoundSectorLoader
+    [PropertyClassCheckInherited]
+    public class SoundSectorBase
     {
-        ulong[] actorHashes;
-        ushort[] unksData2;
-        string fileName;
-        int numActorhashes;
-        int unk01;
-        byte unk02;
-        short count1;
-        int parent;
-        int unk03;
-        string soundPrimary;
-        short parentIdx;
-        short sUnk04;
-        short count2;
-        unkStruct1[] data;
-        byte sUnk06;
-        int sUnk07;
-        unkStruct2[] data1;
+        public ushort[] Unk0 { get; set; }
+        public uint Unk1 { get; set; }
+        public uint Unk2 { get; set; }
+        public string Name { get; set; }
+        public short Unk3 { get; set; }
+        public ushort Unk4 { get; set; }
+        public ushort Unk5 { get; set; }
+        public bool bBasicSceneOnly { get; set; }
 
-        public SoundSectorLoader(FileInfo info)
+        public SoundSectorBase()
         {
-            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            Unk0 = new ushort[0];
+            Unk1 = 0;
+            Unk2 = 0;
+            Name = string.Empty;
+        }
+
+        public virtual void ReadSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
+        {
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
+
+            // Read array of ushorts, I suppsoe they reference big hash list in main file.
+            ushort NumCount = Stream.ReadUInt16(bIsBigEndian);
+            Unk0 = new ushort[NumCount];
+            for(ushort i = 0; i < NumCount; i++)
             {
-                ReadFromFile(reader);
+                Unk0[i] = Stream.ReadUInt16(bIsBigEndian);
+            }
+
+            // The game requires either of these to be valid, otherwise returns null
+            Unk1 = Stream.ReadUInt32(bIsBigEndian);
+            Unk2 = Stream.ReadUInt32(bIsBigEndian);
+            Name = Stream.ReadString8(bIsBigEndian);
+
+            // Between here the game checks if its below 5, if it is return out early
+
+            // Continue
+            Unk3 = Stream.ReadInt16(bIsBigEndian);
+            if (Unk3 != 0xFF)
+            {
+                // TODO:
+                int z = 0;
+            }
+
+            Unk4 = Stream.ReadUInt16(bIsBigEndian);
+            Unk5 = Stream.ReadUInt16(bIsBigEndian);
+            bBasicSceneOnly = Stream.ReadBoolean();
+        }
+
+        public virtual void WriteSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
+        {
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
+
+            // Write lookup list
+            Stream.Write((ushort)Unk0.Length, bIsBigEndian);
+            foreach(ushort Value in Unk0)
+            {
+                Stream.Write(Value, bIsBigEndian);
+            }
+
+            Stream.Write(Unk1, bIsBigEndian);
+            Stream.Write(Unk2, bIsBigEndian);
+            Stream.WriteString8(Name, bIsBigEndian);
+            Stream.Write(Unk3, bIsBigEndian);
+            Stream.Write(Unk4, bIsBigEndian);
+            Stream.Write(Unk5, bIsBigEndian);
+            Stream.WriteByte((byte)(bBasicSceneOnly ? 1 : 0));
+        }
+    }
+
+    class SoundSectorPrimary : SoundSectorBase
+    {
+        public SoundSectorPrimary() : base() { }
+    }
+
+    class SoundSectorNormal : SoundSectorBase
+    {
+        public Plane[] Planes { get; set; }
+
+        public SoundSectorNormal() : base()
+        {
+            Planes = new Plane[0];
+        }
+
+        public override void ReadSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
+        {
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
+
+            // Read floats, yes, before the base class. How odd.
+            byte NumFloats = Stream.ReadByte8(); // Probably vector count
+            Planes = new Plane[NumFloats];
+            for (byte i = 0; i < Planes.Length; i++)
+            {
+                Plane NewPlane = new Plane();
+                NewPlane.ReadFromFile(Stream, bIsBigEndian);
+                Planes[i] = NewPlane;
+            }
+
+            // Read base class!
+            base.ReadSDS(Stream, Endianess);
+        }
+
+        public override void WriteSDS(MemoryStream Stream, Endian Endianess)
+        {
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
+
+            // Write planes
+            Stream.WriteByte((byte)Planes.Length);
+            foreach(Plane CurPlane in Planes)
+            {
+                CurPlane.WriteToFile(Stream, bIsBigEndian);
+            }
+
+            // Write base class
+            base.WriteSDS(Stream, Endianess);
+        }
+    }
+
+    public class PortalSphere
+    { 
+        public string Name { get; set; }
+        public Vec3 Position { get; set; }
+        public float Unk0 { get; set; }
+        public float OpenRatio { get; set; }
+        public string LinkA { get; set; }
+        public byte Unk2 { get; set; }
+        public string LinkB { get; set; }
+        public byte Unk3 { get; set; }
+        public float CostFactor { get; set; }
+        public string EntityName { get; set; }
+        public byte Unk6 { get; set; }
+        public byte bVolumeFactorEnabled { get; set; }
+        public float VolumeFactor { get; set; }
+
+
+        public PortalSphere()
+        {
+            Name = string.Empty;
+            Position = new Vec3();
+            Unk0 = 0.0f;
+            OpenRatio = 0.0f;
+            LinkA = string.Empty;
+            Unk2 = 0;
+            LinkB = string.Empty;
+            Unk3 = 0;
+            CostFactor = 0.0f;
+            EntityName = string.Empty;
+            Unk6 = 0;
+            bVolumeFactorEnabled = 0;
+            VolumeFactor = 0.0f;
+        }
+
+        public void ReadSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
+        {
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
+
+            Name = Stream.ReadString8(bIsBigEndian);
+            Position.ReadFromFile(Stream, bIsBigEndian);
+            Unk0 = Stream.ReadSingle(bIsBigEndian);
+            OpenRatio = Stream.ReadSingle(bIsBigEndian);
+            LinkA = Stream.ReadString8(bIsBigEndian);
+            Unk2 = Stream.ReadByte8();
+            LinkB = Stream.ReadString8(bIsBigEndian);
+            Unk3 = Stream.ReadByte8();
+            CostFactor = Stream.ReadSingle(bIsBigEndian);
+            EntityName = Stream.ReadString8(bIsBigEndian);
+            Unk6 = Stream.ReadByte8();
+            bVolumeFactorEnabled = Stream.ReadByte8();
+
+            if((bVolumeFactorEnabled & 1) != 0) // Guarded at 0x140287126
+            {
+                byte VolumeFactorAsByte = Stream.ReadByte8();
+                VolumeFactor = (VolumeFactorAsByte / 255.0f);
             }
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void WriteSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            fileName = new string(reader.ReadChars(reader.ReadByte()));
-            numActorhashes = reader.ReadInt32();
-            actorHashes = new ulong[numActorhashes];
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
-            for (int i = 0; i != actorHashes.Length; i++)
+            Stream.WriteString8(Name, bIsBigEndian);
+            Position.WriteToFile(Stream, bIsBigEndian);
+            Stream.Write(Unk0, bIsBigEndian);
+            Stream.Write(OpenRatio, bIsBigEndian);
+            Stream.WriteString8(LinkA, bIsBigEndian);
+            Stream.WriteByte(Unk2);
+            Stream.WriteString8(LinkB, bIsBigEndian);
+            Stream.WriteByte(Unk3);
+            Stream.Write(CostFactor, bIsBigEndian);
+            Stream.WriteString8(EntityName, bIsBigEndian);
+            Stream.WriteByte(Unk6);
+            Stream.WriteByte(bVolumeFactorEnabled);
+
+            if((bVolumeFactorEnabled & 1) != 0) // Guarded at 0x140287126
             {
-                actorHashes[i] = reader.ReadUInt64();
+                byte VolumeFactorAsByte = (byte)(VolumeFactor * 255);
+                Stream.WriteByte(VolumeFactorAsByte);
             }
+        }
+    }
 
-            unk01 = reader.ReadInt32();
-            unk02 = reader.ReadByte();
+    public class SoundSectorResource
+    {
+        public string Name { get; set; }
+        public ulong[] Hashes { get; set; }
+        public SoundSectorBase[] Sectors { get; set; }
+        public PortalSphere[] Portals { get; set; }
 
-            count1 = reader.ReadInt16();
-            unksData2 = new ushort[count1];
-
-            for (int i = 0; i != count1; i++)
-            {
-                unksData2[i] = reader.ReadUInt16();
-            }
-
-            parent = reader.ReadInt32();
-            unk03 = reader.ReadInt32();
-            soundPrimary = new string(reader.ReadChars(reader.ReadByte()));
-            parentIdx = reader.ReadInt16();
-            sUnk04 = reader.ReadInt16();
-            count2 = reader.ReadInt16();
-
-            data = new unkStruct1[count2];
-            for (int i = 0; i != count2; i++)
-            {
-                unkStruct1 subData = new unkStruct1();
-                subData.unk0 = reader.ReadByte();
-                subData.unk1 = reader.ReadByte();
-                subData.numFloats = reader.ReadByte();
-
-                subData.floats = new Vector4[subData.numFloats];
-
-                for (int x = 0; x != subData.numFloats; x++)
-                {
-                    subData.floats[x] = Vector4Extenders.ReadFromFile(reader);
-                }
-
-                subData.numShorts = reader.ReadInt16();
-
-                subData.shorts = new short[subData.numShorts];
-
-                for (int x = 0; x != subData.numShorts; x++)
-                {
-                    subData.shorts[x] = reader.ReadInt16();
-                }
-
-                subData.unk2 = reader.ReadInt32();
-                subData.unk3 = reader.ReadSingle();
-                subData.sectorName = new string(reader.ReadChars(reader.ReadByte()));
-                subData.unk4 = reader.ReadInt16();
-                subData.unk5 = reader.ReadInt32();
-                data[i] = subData;
-            }
-
-            sUnk06 = reader.ReadByte();
-            sUnk07 = reader.ReadInt32();
-            data1 = new unkStruct2[sUnk07];
-            for (int i = 0; i != sUnk07; i++)
-            {
-                byte sZero = reader.ReadByte();
-                unkStruct2 subData = new unkStruct2();
-                subData.portalName = new string(reader.ReadChars(reader.ReadByte()));
-                subData.floats = new float[5];
-                for (int x = 0; x != 5; x++)
-                {
-                    subData.floats[x] = reader.ReadSingle();
-                }
-                subData.sectorToLoad = new string(reader.ReadChars(reader.ReadByte()));
-                subData.unk01 = reader.ReadByte();
-                subData.sectorType = new string(reader.ReadChars(reader.ReadByte()));
-                subData.unk02 = reader.ReadByte();
-                subData.unk03 = reader.ReadSingle();
-                subData.doorName = new string(reader.ReadChars(reader.ReadByte()));
-                subData.unk04 = reader.ReadByte();
-                subData.unk05 = reader.ReadByte();
-
-                if (subData.unk05 == 1)
-                    subData.unk06 = reader.ReadByte();
-
-                data1[i] = subData;
-            }
-             DumpToSound();
+        public SoundSectorResource()
+        {
+            Name = string.Empty;
+            Hashes = new ulong[0];
+            Sectors = new SoundSectorBase[0];
+            Portals = new PortalSphere[0];
         }
 
-        private void DumpToSound()
+        public SoundSectorResource(FileInfo info)
         {
-            List<string> dump = new List<string>();
-            dump.Add(string.Format("File Name: {0}", fileName));
-            dump.Add("");
-            dump.Add(string.Format("Unk01: {0}", unk01));
-            dump.Add(string.Format("Unk02: {0}", unk02));
-            dump.Add(string.Format("Parent: {0}", parent));
-            dump.Add(string.Format("Unk03: {0}", unk03));
-            dump.Add(string.Format("SoundPrimary: {0}", soundPrimary));
-            dump.Add(string.Format("Parent Index: {0}", parentIdx));
-            dump.Add(string.Format("Unk04: {0}", sUnk04));
-            dump.Add("");
-            dump.Add("Sound hashes (Links to sounds in actors)");
-            dump.Add("========================================");
-            dump.Add(string.Format("Count: {0}", numActorhashes));
-
-            for (int i = 0; i != actorHashes.Length; i++)
-                dump.Add(actorHashes[i].ToString());
-
-            dump.Add("");
-            dump.Add("Unknown Data Set:");
-            dump.Add("========================================");
-            dump.Add(string.Format("Count: {0}", count1));
-
-            for (int i = 0; i != unksData2.Length; i++)
-                dump.Add(unksData2[i].ToString());
-
-            dump.Add("");
-            dump.Add("Unknown Data Set:");
-            dump.Add("========================================");
-            dump.Add(string.Format("Count: {0}", count2));
-            for (int i = 0; i != count2; i++)
+            byte[] FileBytes = File.ReadAllBytes(info.FullName);
+            using(MemoryStream Stream = new MemoryStream(FileBytes))
             {
-                dump.Add("Next Set: " + i.ToString());
-                dump.Add("========================================");
-                dump.Add(string.Format("Unk00: {0}", data[i].unk0));
-                dump.Add(string.Format("Unk01: {0}", data[i].unk1));
-                dump.Add("");
-                dump.Add(string.Format("Vector4 Count: {0}", data[i].numFloats));
-                for (int x = 0; x != data[i].numFloats; x++)
-                    dump.Add(string.Format(data[i].floats[x].ToString()));
-                dump.Add("");
-                dump.Add(string.Format("Short Count: {0}", data[i].numShorts));
-                for (int x = 0; x != data[i].numShorts; x++)
-                    dump.Add(string.Format(data[i].shorts[x].ToString()));
-                dump.Add("");
-                dump.Add(string.Format("Unk02: {0}", data[i].unk2));
-                dump.Add(string.Format("Unk03: {0}", data[i].unk3));
-                dump.Add(string.Format("Name: {0}", data[i].sectorName));
-                dump.Add(string.Format("Unk04: {0}", data[i].unk4));
-                dump.Add(string.Format("Unk05: {0}", data[i].unk5));
-                dump.Add("========================================");
-                dump.Add("");
-                dump.Add("");
+                ReadSDS(Stream, Gibbed.IO.Endian.Little);
+
+                XElement XMLFile = ReflectionHelpers.ConvertPropertyToXML(this);
+                XMLFile.Save("Output.xml");
+
+                using(MemoryStream WriteStream = new MemoryStream())
+                {
+                    WriteSDS(WriteStream, Gibbed.IO.Endian.Little);
+                    File.WriteAllBytes("Output.bin", WriteStream.ToArray());
+                }
             }
-            dump.Add("");
-            dump.Add(string.Format("sUnk06: {0}", sUnk06));
-            dump.Add("");
-            dump.Add("Unknown Data Set:");
-            dump.Add("========================================");
-            dump.Add(string.Format("Count 3: {0}", sUnk07));
-            for (int i = 0; i != sUnk07; i++)
-            {
-                dump.Add("Next Set: " + i.ToString());
-                dump.Add("========================================");
-                dump.Add(string.Format("Portal Name: {0}", data1[i].portalName));
-                dump.Add(string.Format("Floats (First three position): {0}", 5));
-                for (int x = 0; x != 5; x++)
-                    dump.Add(string.Format(data1[i].floats[x].ToString()));
-                dump.Add(string.Format("Sector To Load: {0}", data1[i].sectorToLoad));
-                dump.Add(string.Format("Unk01: {0}", data1[i].unk01));
-                dump.Add(string.Format("Unk02: {0}", data1[i].sectorType));
-                dump.Add(string.Format("Name3: {0}", data1[i].unk02));
-                dump.Add(string.Format("Unk03: {0}", data1[i].unk03));
-                dump.Add(string.Format("Door Name: {0}", data1[i].doorName));
-                dump.Add(string.Format("Unk04: {0}", data1[i].unk04));
-                dump.Add(string.Format("Unk05: {0}", data1[i].unk05));
-                dump.Add(string.Format("Unk06: {0}", data1[i].unk06));
-                dump.Add("========================================");
-                dump.Add("");
-                dump.Add("");
-            }
-            File.WriteAllLines("SoundSectors/"+(fileName.Replace("/", "").Trim('\0')) + ".txt", dump.ToArray());
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void ReadSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            writer.Write((byte)fileName.Length);
-            writer.Write(fileName.ToCharArray());
-            writer.Write(numActorhashes);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
-            for (int i = 0; i != numActorhashes; i++)
-                writer.Write(actorHashes[i]);
+            Name = Stream.ReadString8(bIsBigEndian);
 
-            writer.Write(unk01);
-            writer.Write(unk02);
-            writer.Write(count1);
-
-            for (int i = 0; i != count1; i++)
-                writer.Write(unksData2[i]);
-
-            writer.Write(parent);
-            writer.Write(unk03);
-            writer.Write((byte)soundPrimary.Length);
-            writer.Write(soundPrimary.ToCharArray());
-            writer.Write(parentIdx);
-            writer.Write(sUnk04);
-            writer.Write(count2);
-
-            for (int i = 0; i != count2; i++)
+            // Read all hashes
+            uint NumHashes = Stream.ReadUInt32(bIsBigEndian);
+            Hashes = new ulong[NumHashes];
+            for (uint i = 0; i < NumHashes; i++)
             {
-                unkStruct1 subData = data[i];
-                writer.Write(subData.unk0);
-                writer.Write(subData.unk1);
-                writer.Write(subData.numFloats);
+                Hashes[i] = Stream.ReadUInt64(bIsBigEndian);
+            }
 
-                for (int x = 0; x != subData.numFloats; x++)
+            // Read Sectors
+            uint NumSectors = Stream.ReadUInt32(bIsBigEndian);
+            Sectors = new SoundSectorBase[NumSectors];
+            for(uint i = 0; i < NumSectors; i++)
+            {
+                byte SectorType = Stream.ReadByte8();
+                if(SectorType == 0)
                 {
-                    Vector4Extenders.WriteToFile(subData.floats[x], writer);
+                    SoundSectorPrimary SectorPrimary = new SoundSectorPrimary();
+                    SectorPrimary.ReadSDS(Stream, Endianess);
+                    Sectors[i] = SectorPrimary;
+                }
+                else if(SectorType == 1)
+                {
+                    SoundSectorNormal SectorNormal = new SoundSectorNormal();
+                    SectorNormal.ReadSDS(Stream, Endianess);
+                    Sectors[i] = SectorNormal;
+                }
+            }
+
+            // Read Portals
+            uint NumPortals = Stream.ReadUInt32(bIsBigEndian);
+            Portals = new PortalSphere[NumPortals];
+            for (uint i = 0; i < NumPortals; i++)
+            {
+                byte PortalType = Stream.ReadByte8();
+                if(PortalType == 0)
+                {
+                    PortalSphere Portal = new PortalSphere();
+                    Portal.ReadSDS(Stream, Endianess);
+                    Portals[i] = Portal;
+                }
+                else
+                {
+                    int z = 0;
+                }
+            }
+        }
+
+        public void WriteSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
+        {
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
+
+            Stream.WriteString8(Name, bIsBigEndian);
+
+            // Write hashes
+            Stream.Write(Hashes.Length, bIsBigEndian);
+            foreach (ulong Hash in Hashes)
+            {
+                Stream.Write(Hash, bIsBigEndian);
+            }
+
+            // Write Sectors
+            Stream.Write(Sectors.Length, bIsBigEndian);
+            foreach(SoundSectorBase Sector in Sectors)
+            {
+                // TODO: Could probably clean this... but it does for now
+                SoundSectorPrimary PrimarySector = (Sector as SoundSectorPrimary);
+                if(PrimarySector != null)
+                {
+                    Stream.WriteByte(0);
+                    PrimarySector.WriteSDS(Stream, Endianess);
                 }
 
-                writer.Write(subData.numShorts);
-
-                for (int x = 0; x != subData.numShorts; x++)
-                    writer.Write(subData.shorts[x]);
-
-                writer.Write(subData.unk2);
-                writer.Write(subData.unk3);
-                writer.Write((byte)subData.sectorName.Length);
-                writer.Write(subData.sectorName.ToCharArray());
-                writer.Write(subData.unk4);
-                writer.Write(subData.unk5);
+                SoundSectorNormal NormalSector = (Sector as SoundSectorNormal);
+                if (NormalSector != null)
+                {
+                    Stream.WriteByte(1);
+                    NormalSector.WriteSDS(Stream, Endianess);
+                }
             }
 
-            writer.Write(sUnk06);
-            writer.Write(sUnk07);
-
-            for (int i = 0; i != sUnk07; i++)
+            // Write portals
+            Stream.Write(Portals.Length, bIsBigEndian);
+            foreach (PortalSphere Portal in Portals)
             {
-                writer.Write((byte)0);
-                unkStruct2 subData = data1[i];
-                writer.Write((byte)subData.portalName.Length);
-                writer.Write(subData.portalName.ToCharArray());
-                for (int x = 0; x != 5; x++)
-                    writer.Write(subData.floats[x]);
-
-                writer.Write((byte)subData.sectorToLoad.Length);
-                writer.Write(subData.sectorToLoad.ToCharArray());
-                writer.Write(subData.unk01);
-                writer.Write((byte)subData.sectorType.Length);
-                writer.Write(subData.sectorType.ToCharArray());
-                writer.Write(subData.unk02);
-                writer.Write(subData.unk03);
-                writer.Write((byte)subData.doorName.Length);
-                writer.Write(subData.doorName.ToCharArray());
-                writer.Write(subData.unk04);
-                writer.Write(subData.unk05);
-
-                if (subData.unk05 == 1)
-                    writer.Write(subData.unk06);
+                Stream.WriteByte(0);
+                Portal.WriteSDS(Stream, Endianess);
             }
+        }
+
+        public void WriteToFile(string FileName, bool bIsBigEndian)
+        {
+            using (MemoryStream outStream = new MemoryStream())
+            {
+                WriteSDS(outStream, (bIsBigEndian ? Endian.Big : Endian.Little));
+                File.WriteAllBytes(FileName, outStream.ToArray());
+            }
+        }
+
+        public void ConvertToXML(string Filename)
+        {
+            XElement Root = ReflectionHelpers.ConvertPropertyToXML(this);
+            Root.Save(Filename);
+        }
+
+        public void ConvertFromXML(string Filename)
+        {
+            XElement LoadedDoc = XElement.Load(Filename);
+            SoundSectorResource FileContents = ReflectionHelpers.ConvertToPropertyFromXML<SoundSectorResource>(LoadedDoc);
+
+            // Copy data taken from loaded XML
+            Hashes = FileContents.Hashes;
+            Sectors = FileContents.Sectors;
+            Portals = FileContents.Portals;
+            Name = FileContents.Name;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Mafia2Tool
         public static FrameResource FrameResource;
         public static VertexBufferManager VertexBufferPool;
         public static IndexBufferManager IndexBufferPool;
-        public static SoundSectorLoader SoundSector;
+        public static SoundSectorResource SoundSector;
         public static Actor[] Actors;
         public static ItemDescLoader[] ItemDescs;
         public static Collision Collisions;

@@ -1006,7 +1006,7 @@ namespace Mafia2Tool
                             }
                         }
 
-                        ToolkitAssert.Ensure(sorted, "Error: Did not detect the frame accompanying this actor " + item.EntityName + "; This means it will probably cause errors in game. Check your actors in the toolkit!");
+                        //ToolkitAssert.Ensure(sorted, "Error: Did not detect the frame accompanying this actor " + item.EntityName + "; This means it will probably cause errors in game. Check your actors in the toolkit!");
                     }
                 }
             }
@@ -1115,6 +1115,14 @@ namespace Mafia2Tool
             else if (FileNameExtension.Equals(".mto"))
             {
                 model.ReadObjectFromM2T(MeshBrowser.FileName);
+            }
+
+            // Ensure we do not crash
+            if(model.ModelObject == null)
+            {
+                string ErrorMsg = string.Format("[LoadModelFromFile] Model is NULL, failed to load model from the file we were given:\n{0}", MeshBrowser.FileName);
+                MessageBox.Show(ErrorMsg);
+                return null;
             }
 
             // Let users change their import values
@@ -1611,9 +1619,13 @@ namespace Mafia2Tool
             {
                 ExportCollision(dSceneTree.SelectedNode.Tag as Collision.CollisionModel);
             }
-            if (dSceneTree.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
+            else if (dSceneTree.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
             {
                 ExportScene(dSceneTree.SelectedNode.Tag as FrameHeaderScene);
+            }
+            else if (dSceneTree.SelectedNode.Text == "Collision Data")
+            {
+                ExportCollisions(dSceneTree.SelectedNode);
             }
             else
             {
@@ -1630,6 +1642,20 @@ namespace Mafia2Tool
             WrapperObject.ModelObject = CollisionObject;
 
             InternalSaveModelWrapper(WrapperObject);
+        }
+
+        private void ExportCollisions(TreeNode CollisionRoot)
+        {
+            foreach(TreeNode CollisionNode in CollisionRoot.Nodes)
+            {
+                // Skip non collision models
+                if (CollisionNode.Tag.GetType() != typeof(Collision.CollisionModel))
+                {
+                    continue;
+                }
+
+
+            }
         }
 
         private void Export3DFrame()

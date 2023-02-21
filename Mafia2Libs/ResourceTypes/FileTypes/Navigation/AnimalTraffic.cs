@@ -258,7 +258,7 @@ namespace ResourceTypes.Navigation
 
                 //ToolkitAssert.Ensure(path.Unk00 == 5.0f, "Unk00 is expected to be 5, but it is [0]", path.Unk00);
                 //ToolkitAssert.Ensure(path.Unk10 == 15.0f, "Unk00 is expected to be 15, but it is [0]", path.Unk10);
-                ToolkitAssert.Ensure(count4 == 1, "Unk30 is supposed to have the size of 1. It is: [0]", path.Unk30.Length);
+                ToolkitAssert.Ensure(count4 == 1, "Unk30 is supposed to have the size of 1. It is: {0}.\nThis suggests bad data. Saving may not be possible.", path.Unk30.Length);
 
                 // Load Path points
                 path.Points = new PathPoint[pathSize];

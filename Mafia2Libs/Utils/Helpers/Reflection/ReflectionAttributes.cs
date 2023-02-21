@@ -16,4 +16,9 @@ namespace Utils.Helpers.Reflection
     public class PropertyClassAllowReflection : Attribute
     {
     }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public class PropertyClassCheckInherited : Attribute
+    {
+    }
 }

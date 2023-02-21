@@ -159,6 +159,20 @@ namespace Utils.Helpers.Reflection
 
         private static object InternalConvertProperty(XElement Node, Type ElementType)
         {
+            // Get cheap types out of the way
+            if (ElementType == typeof(string))
+            {
+                return Node.Value;
+            }
+            else if (ElementType == typeof(float))
+            {
+                return ToSingle(Node.Value);
+            }
+            else if (ElementType == typeof(double))
+            {
+                return ToDouble(Node.Value);
+            }
+
             // If interface, then we may have to do extra steps.
             if(ElementType.IsInterface)
             {
@@ -169,21 +183,19 @@ namespace Utils.Helpers.Reflection
                 Type Test = Type.GetType(NameSpace + "." + Name, true);
                 ElementType = Test;
             }
-
+            else if(ElementType.IsClass && CheckForDerivedClass(ElementType))
+            {
+                string NameSpace = ElementType.Namespace;
+                string Name = Node.Name.LocalName;
+                Type Test = Type.GetType(NameSpace + "." + Name, true);
+                if(Test.IsAssignableTo(ElementType))
+                {
+                    ElementType = Test;
+                }          
+            }
+           
             // Construct the new object
             object TypedObject = Activator.CreateInstance(ElementType);
-
-            if (ElementType == typeof(float))
-            {
-                TypedObject = ToSingle(Node.Value);
-                return TypedObject;
-            }
-            
-            if (ElementType == typeof(double))
-            {
-                TypedObject = ToDouble(Node.Value);
-                return TypedObject;
-            }
 
             if (ElementType.GetProperties().Length == 0)
             {
@@ -397,6 +409,13 @@ namespace Utils.Helpers.Reflection
         {
             // Is our Class allowed to reflect?
             Attribute PropertyAttritbute = Info.GetCustomAttribute(typeof(PropertyClassAllowReflection));
+            return PropertyAttritbute != null;
+        }
+
+        public static bool CheckForDerivedClass(Type Info)
+        {
+            // Does our class want to check for inherited classes?
+            Attribute PropertyAttritbute = Info.GetCustomAttribute(typeof(PropertyClassCheckInherited));
             return PropertyAttritbute != null;
         }
 

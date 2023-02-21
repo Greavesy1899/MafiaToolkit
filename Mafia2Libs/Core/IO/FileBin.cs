@@ -5,6 +5,7 @@ using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;
 using ResourceTypes.Sound;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Core.IO
 {
@@ -28,8 +29,6 @@ namespace Core.IO
 
         public override bool Open()
         {
-            var filename = GetNameWithoutExtension();
-
             if (CheckFileMagic(file, CityAreasMagic))
             {
                 CityAreaEditor editor = new CityAreaEditor(file);
@@ -75,11 +74,41 @@ namespace Core.IO
             }
             else
             {
-                // Unsure on how we should handle this. For now we will just try and hope the loader works.
-                SoundSectorLoader loader = new SoundSectorLoader(file);
+                SaveFileDialog saveFile = new SaveFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
+                    SoundSectorResource loader = new SoundSectorResource(file);
+                    loader.ConvertToXML(saveFile.FileName);
+                }
             }
 
             return false;
+        }
+
+        public override void Save()
+        {
+            OpenFileDialog openFile = new OpenFileDialog()
+            {
+                InitialDirectory = Path.GetDirectoryName(file.FullName),
+                FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                Filter = "XML (*.xml)|*.xml"
+            };
+
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+                SoundSectorResource loader = new SoundSectorResource(file);
+                loader.ConvertFromXML(openFile.FileName);
+
+                File.Copy(file.FullName, file.FullName + "_old", true);
+                loader.WriteToFile(file.FullName, false);
+            }
         }
 
         private bool CheckFileMagic(FileInfo file, uint Magic)
@@ -92,6 +121,26 @@ namespace Core.IO
                 }
             }
             return false;
+        }
+
+        public override bool CanContextMenuOpen()
+        {
+            return true;
+        }
+
+        public override bool CanContextMenuSave()
+        {
+            return true;
+        }
+
+        public override string GetContextMenuOpenTitle()
+        {
+            return "Convert To (.xml)";
+        }
+
+        public override string GetContextMenuSaveTitle()
+        {
+            return "Convert From (.xml)";
         }
     }
 }
