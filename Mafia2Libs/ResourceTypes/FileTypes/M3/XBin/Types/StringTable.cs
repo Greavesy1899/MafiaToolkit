@@ -15,13 +15,13 @@ namespace ResourceTypes.M3.XBin
         [PropertyIgnoreByReflector]
         public uint Unk0 { get; set; } // I'm guessing this used to be a pointer to the stringID.
         [PropertyForceAsAttribute]
-        public XBinHashName StringID { get; set; } // Hash of the StringID which no longer exists. *cry ever tim*
+        public ulong StringID { get; set; } // Hash of the StringID
         public string Content { get; set; } // Text
 
         public LocalisableString()
         {
             Unk0 = 0;
-            StringID = new XBinHashName();
+            StringID = 0;
             Content = "";
         }
 
@@ -55,7 +55,7 @@ namespace ResourceTypes.M3.XBin
             {
                 LocalisableString Entry = new LocalisableString();
                 Entry.Unk0 = reader.ReadUInt32();
-                Entry.StringID.ReadFromFile(reader);
+                Entry.StringID = reader.ReadUInt64();
                 Entry.Content = XBinCoreUtils.ReadStringPtrWithOffset(reader);
                 Items[i] = Entry;
             }
@@ -63,9 +63,6 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
-            // Order StringTable entries.
-            Items = Items.OrderBy(e => e.StringID.Hash).ToArray();
-
             writer.Write(unk0);
             writer.Write(Items.Length);
             writer.Write(Items.Length);
@@ -76,16 +73,16 @@ namespace ResourceTypes.M3.XBin
             {
                 LocalisableString Entry = Items[i];
                 writer.Write(Entry.Unk0);
-                Entry.StringID.WriteToFile(writer);
+                writer.Write(Entry.StringID);
 
                 positions[i] = writer.BaseStream.Position;
                 writer.Write(-1);
             }
-            
+
             // Seems to be padding. Concerning..
             writer.Write(0);
 
-            for(int i = 0; i < Items.Length; i++)
+            for (int i = 0; i < Items.Length; i++)
             {
                 LocalisableString Entry = Items[i];
 
@@ -101,7 +98,7 @@ namespace ResourceTypes.M3.XBin
                 writer.BaseStream.Position = currentPosition;
             }
 
-            positions = new long[0];
+            //positions = new long[0];
         }
 
         public void ReadFromXML(string file)
