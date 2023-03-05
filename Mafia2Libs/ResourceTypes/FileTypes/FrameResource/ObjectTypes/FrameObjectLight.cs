@@ -125,6 +125,7 @@ namespace ResourceTypes.FrameResource
             UnkVector_4 = new Vector3();
             UnkVector_5 = new Vector3();
             TextureHashes = new HashName[4];
+            ProjectionTexture = new HashName();
             for (int i = 0; i < 4; i++)
             {
                 TextureHashes[i] = new HashName();
