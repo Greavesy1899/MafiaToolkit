@@ -477,6 +477,10 @@ namespace Mafia2Tool
                     linesTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
                 }
             }
+            else if(e.ChangedItem.Label == "PreferredGroup")
+            {
+                UpdateStream();
+            }
 
             PropertyGrid_Stream.Refresh();
             Cursor.Current = Cursors.Default;

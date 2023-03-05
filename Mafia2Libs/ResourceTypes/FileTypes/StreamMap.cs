@@ -13,22 +13,22 @@ namespace ResourceTypes.Misc
         Null = 0,
         City = 1,
         City_Ground = 2,
-        //City_Univers = 3,
+        City_Univers = 3,
         Shop = 4,
-        //Char_Universe = 5,
-        //Player = 6,
+        Char_Universe = 5,
+        Player = 6,
         H_Char = 7,
         L_Char = 8,
         Police_Char = 9,
-        //Car_Universe = 10,
+        Car_Universe = 10,
         Car = 11,
-        //Base_Anim = 15,
-        //Weapons = 16,
-        //GUI = 17,
+        Base_Anim = 15,
+        Weapons = 16,
+        GUI = 17,
         Sky = 18,
-        //Tables = 19,
-        //Default_Sound = 20,
-        //Particles = 21,
+        Tables = 19,
+        Default_Sound = 20,
+        Particles = 21,
         Game_Script = 23,
         Mission_Script = 24,
         Script = 25,
@@ -40,21 +40,21 @@ namespace ResourceTypes.Misc
         Generate = 32,
         Script_Sounds = 34,
         Director_Lua = 35,
-        //Mapa = 36,
+        Mapa = 36,
         Sound_City = 37,
         Anims_City = 38,
-        //Generic_Speech_Normal = 41,
-        //Generic_Speech_Gangster = 42,
+        Generic_Speech_Normal = 41,
+        Generic_Speech_Gangster = 42,
         Generic_Speeh_Various = 43,
-        //Generic_Speech_Story = 44,
+        Generic_Speech_Story = 44,
         Big_Script = 45,
         Big_Mission_Scrippt = 46,
-        //Generic_Speech_Police = 47,
-        //Text = 48,
-        //Ingame = 50,
-        //Ingame_GUI = 51,
+        Generic_Speech_Police = 47,
+        Text = 48,
+        Ingame = 50,
+        Ingame_GUI = 51,
         Dabing = 52,
-        
+
     }
     public class StreamMapLoader
     {
@@ -236,6 +236,7 @@ namespace ResourceTypes.Misc
                 return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", nameIDX, lineID, groupID, loadType, flagIDX, unk5, unk10, unk11, unk12, unk13, unk14, unk15);
             }
         }
+
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class StreamLoader
         {
