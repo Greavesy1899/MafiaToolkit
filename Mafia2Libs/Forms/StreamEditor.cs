@@ -41,6 +41,8 @@ namespace Mafia2Tool
             DeleteLineButton.Text = Language.GetString("$DELETE_LINE");
             MoveItemDownButton.Text = Language.GetString("$MOVE_DOWN");
             MoveItemUpButton.Text = Language.GetString("$MOVE_UP");
+            Button_CreateLineGroup.Text = Language.GetString("$STREAM_EDITOR_CREATE_LINE_GROUP");
+            Button_CreateStreamGroup.Text = Language.GetString("$STREAM_EDITOR_CREATE_STREAM_GROUP");
         }
 
         private void Sort(List<StreamLoader> loaders)
@@ -537,6 +539,21 @@ namespace Mafia2Tool
             NewHeaderNode.Text = "New_Line_Group";
             NewHeaderNode.Tag = HeaderGroup;
             linesTree.Nodes.Add(NewHeaderNode);
+
+            Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
+        private void Button_CreateStreamGroup_Click(object Sender, EventArgs Args)
+        {
+            StreamGroup NewGroup = new StreamGroup();
+            NewGroup.Name = "New_Group";
+            NewGroup.Type = GroupTypes.Null;
+
+            TreeNode NewGroupNode = new TreeNode();
+            NewGroupNode.Text = "New_Group_Node";
+            NewGroupNode.Tag = NewGroup;
+            groupTree.Nodes.Add(NewGroupNode);
 
             Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
             bIsFileEdited = true;

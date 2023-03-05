@@ -46,6 +46,7 @@ namespace Mafia2Tool
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_Tools = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_CreateLineGroup = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_CreateStreamGroup = new System.Windows.Forms.ToolStripMenuItem();
             this.PropertyGrid_Stream = new System.Windows.Forms.PropertyGrid();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.StreamLinesPage = new System.Windows.Forms.TabPage();
@@ -180,7 +181,7 @@ namespace Mafia2Tool
             // 
             this.Button_Tools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.Button_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Button_CreateLineGroup});
+            this.Button_CreateLineGroup, this.Button_CreateStreamGroup});
             this.Button_Tools.Image = ((System.Drawing.Image)(resources.GetObject("Button_Tools.Image")));
             this.Button_Tools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Button_Tools.Name = "Button_Tools";
@@ -193,6 +194,13 @@ namespace Mafia2Tool
             this.Button_CreateLineGroup.Size = new System.Drawing.Size(193, 22);
             this.Button_CreateLineGroup.Text = "$CREATE_LINE_GROUP";
             this.Button_CreateLineGroup.Click += new System.EventHandler(this.Button_CreateLineGroup_Click);
+            // 
+            // Button_CreateLineGroup
+            // 
+            this.Button_CreateStreamGroup.Name = "Button_CreateStreamGroup";
+            this.Button_CreateStreamGroup.Size = new System.Drawing.Size(193, 22);
+            this.Button_CreateStreamGroup.Text = "$CREATE_STREAM_GROUP";
+            this.Button_CreateStreamGroup.Click += new System.EventHandler(this.Button_CreateStreamGroup_Click);
             // 
             // PropertyGrid_Stream
             // 
@@ -332,5 +340,6 @@ namespace Mafia2Tool
         private ToolStripMenuItem DuplicateLine;
         private ToolStripDropDownButton Button_Tools;
         private ToolStripMenuItem Button_CreateLineGroup;
+        private ToolStripMenuItem Button_CreateStreamGroup;
     }
 }
