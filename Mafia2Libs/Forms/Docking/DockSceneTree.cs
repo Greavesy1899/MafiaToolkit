@@ -207,18 +207,18 @@ namespace Forms.Docking
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
-                else if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)) ||
-                    (TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.FrameResource.FrameHeaderScene)))
+                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)) 
+                    || (TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.FrameResource.FrameHeaderScene)))
                 {
                     Export3DButton.Visible = true;
                 }
-                else if(TreeView_Explorer.SelectedNode.Text == "Collision Data")
+                if(TreeView_Explorer.SelectedNode.Text == "Collision Data")
                 {
                     // TODO: Get a better check than the string of a tree node.
                     // It doesn't prove to be very stable.
                     Export3DButton.Visible = true;
                 }
-                else if (FrameResource.IsFrameType(TreeView_Explorer.SelectedNode.Tag))
+                if (FrameResource.IsFrameType(TreeView_Explorer.SelectedNode.Tag))
                 {
                     EntryMenuStrip.Items[3].Visible = true;
                     EntryMenuStrip.Items[4].Visible = true;
