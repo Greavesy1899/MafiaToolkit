@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
@@ -28,6 +29,12 @@ namespace ResourceTypes.City
             public LocalisedString(uint id) 
             { 
                 this.id = id; 
+            }
+
+            public LocalisedString(LocalisedString OtherString)
+            {
+                id = OtherString.id;
+                text = OtherString.text;
             }
 
             public override string ToString()
@@ -69,70 +76,45 @@ namespace ResourceTypes.City
 
         public class ShopMenu
         {
-            int id;
-            int unk0;
-            string unk1;
-            string path;
-            LocalisedString unkDB0;
-            int unkZero0;
-            int unk2;
-            int unk3;
-            int unkZero01;
-            int unkZero02;
-
-            List<ItemConfig> items = new List<ItemConfig>();
-
-            public int ID {
-                get { return id; }
-                set { id = value; }
-            }
-            public int Unk0 {
-                get { return unk0; }
-                set { unk0 = value; }
-            }
-            public string Unk1 {
-                get { return unk1; }
-                set { unk1 = value; }
-            }
-            public string Path {
-                get { return path; }
-                set { path = value; }
-            }
-            public LocalisedString UnkDB0 {
-                get { return unkDB0; }
-                set { unkDB0 = value; }
-            }
-            public int UnkZero0 {
-                get { return unkZero0; }
-                set { unkZero0 = value; }
-            }
-            public int Unk2 {
-                get { return unk2; }
-                set { unk2 = value; }
-            }
-            public int Unk3 {
-                get { return unk3; }
-                set { unk3 = value; }
-            }
-            public int UnkZero01 {
-                get { return unkZero01; }
-                set { unkZero01 = value; }
-            }
-            public int UnkZero02 {
-                get { return unkZero02; }
-                set { unkZero02 = value; }
-            }
-            public List<ItemConfig> Items {
-                get { return items; }
-                set { items = value; }
-            }
+            public int ID { get; set; }
+            public int Unk0 { get; set; }
+            public string Unk1 { get; set; }
+            public string Path { get; set; }
+            public LocalisedString UnkDB0 { get; set; }
+            public int UnkZero0 { get; set; }
+            public int Unk2 { get; set; }
+            public int Unk3 { get; set; }
+            public int UnkZero01 { get; set; }
+            public int UnkZero02 { get; set; }
+            public List<ItemConfig> Items { get; set; }
 
             public ShopMenu()
             {
-                items = new List<ItemConfig>();
-                unkDB0 = new LocalisedString(0);
-                unk1 = "";
-                path = "";
+                Items = new List<ItemConfig>();
+                UnkDB0 = new LocalisedString(0);
+                Unk1 = string.Empty;
+                Path = string.Empty;
+            }
+
+            public ShopMenu(ShopMenu OtherShopMenu)
+            {
+                ID = OtherShopMenu.ID;
+                Unk0 = OtherShopMenu.Unk0;
+                Unk1 = OtherShopMenu.Unk1;
+                Path = OtherShopMenu.Path;
+                UnkDB0 = new LocalisedString(OtherShopMenu.UnkDB0);
+                UnkZero0 = OtherShopMenu.UnkZero0;
+                Unk2 = OtherShopMenu.Unk2;
+                Unk3 = OtherShopMenu.Unk3;
+                UnkZero01 = OtherShopMenu.UnkZero01;
+                UnkZero02 = OtherShopMenu.UnkZero02;
+
+                Items = new List<ItemConfig>();
+                foreach (ItemConfig OtherItem in OtherShopMenu.Items)
+                {
+                    ItemConfig CopiedItem = new ItemConfig(OtherItem);
+                    Items.Add(CopiedItem);
+                }
             }
 
             public override string ToString()
@@ -143,27 +125,23 @@ namespace ResourceTypes.City
 
         public class Item
         {
-            string name;
-            ushort key;
-            byte unk0;
-
-            public string Name {
-                get { return name; }
-                set { name = value; }
-            }
+            public string Name { get; set; }
             [Browsable(false)]
-            public ushort Key {
-                get { return key; }
-                set { key = value; }
-            }
-            public byte Unk0 {
-                get { return unk0; }
-                set { unk0 = value; }
-            }
+            public ushort Key { get; set; }
+            public byte Unk0 { get; set; }
 
             public Item()
             {
-                name = "";
+                Name = string.Empty;
+                Key = 0;
+                Unk0 = 0;
+            }
+
+            public Item(Item OtherItem)
+            {
+                Name = OtherItem.Name;
+                Key = OtherItem.Key;
+                Unk0 = OtherItem.Unk0;
             }
         }
 
@@ -175,6 +153,20 @@ namespace ResourceTypes.City
                 public Vector3 Position { get; set; }
                 public Quaternion Rotation { get; set; }
                 public float Unk01 { get; set; }
+
+                public ItemCamera()
+                {
+                    Position = Vector3.Zero;
+                    Rotation = Quaternion.Identity;
+                    Unk01 = 0.0f;
+                }
+
+                public ItemCamera(ItemCamera Other)
+                {
+                    Position = Other.Position;
+                    Rotation = Other.Rotation;
+                    Unk01 = Other.Unk01;
+                }
 
                 public void ReadFromFile(MemoryStream stream, bool isBigEndian)
                 {
@@ -191,108 +183,79 @@ namespace ResourceTypes.City
                 }
             }
 
-            LocalisedString unkDB0;
-            LocalisedString unkDB1;
-            LocalisedString unkDB2;
-            LocalisedString unkDB3;
-            LocalisedString unkDB4;
-            LocalisedString unkDB5;
-            int itemUnk0;
-            int itemPrice;
-            int itemUnk1;
-            int itemChangeTimeIn;
-            int itemChangeTimeOut;
-            ItemCamera cameraConfig;
-            byte unkByte;
-            float[] unkMatrix;
-
-            int count1;
-            Item[] section1;
-            int count2;
-            Item[] section2;
-
-            public LocalisedString UnkDB0 {
-                get { return unkDB0; }
-                set { unkDB0 = value; }
-            }
-            public LocalisedString UnkDB1 {
-                get { return unkDB1; }
-                set { unkDB1 = value; }
-            }
-            public LocalisedString UnkDB2 {
-                get { return unkDB2; }
-                set { unkDB2 = value; }
-            }
-            public LocalisedString UnkDB3 {
-                get { return unkDB3; }
-                set { unkDB3 = value; }
-            }
-            public LocalisedString UnkDB4 {
-                get { return unkDB4; }
-                set { unkDB4 = value; }
-            }
-            public LocalisedString UnkDB5 {
-                get { return unkDB5; }
-                set { unkDB5 = value; }
-            }
+            public LocalisedString UnkDB0 { get; set; }
+            public LocalisedString UnkDB1 { get; set; }
+            public LocalisedString UnkDB2 { get; set; }
+            public LocalisedString UnkDB3 { get; set; }
+            public LocalisedString UnkDB4 { get; set; }
+            public LocalisedString UnkDB5 { get; set; }
             [Category("Item Information")]
-            public int ItemUnk0 {
-                get { return itemUnk0; }
-                set { itemUnk0 = value; }
-            }
+            public int ItemUnk0 { get; set; }
             [Category("Item Information")]
-            public int ItemPrice {
-                get { return itemPrice; }
-                set { itemPrice = value; }
-            }
+            public int ItemPrice { get; set; }
             [Category("Item Information")]
-            public int ItemUnk1 {
-                get { return itemUnk1; }
-                set { itemUnk1 = value; }
-            }
+            public int ItemUnk1 { get; set; }
             [Category("Item Information")]
-            public int ItemChangeTimeIn {
-                get { return itemChangeTimeIn; }
-                set { itemChangeTimeIn = value; }
-            }
+            public int ItemChangeTimeIn { get; set; }
             [Category("Item Information")]
-            public int ItemChangeTimeOut {
-                get { return itemChangeTimeOut; }
-                set { itemChangeTimeOut = value; }
-            }
-            public ItemCamera CameraConfig {
-                get { return cameraConfig; }
-                set { cameraConfig = value; }
-            }
-            public byte UnkByte {
-                get { return unkByte; }
-                set { unkByte = value; }
-            }
-            public float[] UnkMatrixFloats {
-                get { return unkMatrix; }
-                set { unkMatrix = value; }
-            }
-            public Item[] Section1 {
-                get { return section1; }
-                set { section1 = value; }
-            }
-            public Item[] Section2 {
-                get { return section2; }
-                set { section2 = value; }
-            }
+            public int ItemChangeTimeOut { get; set; }
+            public ItemCamera CameraConfig { get; set; }
+            public byte UnkByte { get; set; }
+            public float[] UnkMatrixFloats { get; set; }
+            public Item[] Section1 { get; set; }
+            public Item[] Section2 { get; set; }
 
             public ItemConfig()
             {
                 CameraConfig = new ItemCamera();
-                unkMatrix = new float[10];
-                section1 = new Item[0];
-                section2 = new Item[0];
-                unkDB0 = new LocalisedString(0);
-                unkDB1 = new LocalisedString(0);
-                unkDB2 = new LocalisedString(0); 
-                unkDB3 = new LocalisedString(0);
-                unkDB4 = new LocalisedString(0);
-                unkDB5 = new LocalisedString(0);
+                UnkMatrixFloats = new float[10];
+                Section1 = new Item[0];
+                Section2 = new Item[0];
+                UnkDB0 = new LocalisedString(0);
+                UnkDB1 = new LocalisedString(0);
+                UnkDB2 = new LocalisedString(0); 
+                UnkDB3 = new LocalisedString(0);
+                UnkDB4 = new LocalisedString(0);
+                UnkDB5 = new LocalisedString(0);
+            }
+
+            public ItemConfig(ItemConfig OtherItemConfig)
+            {
+                CameraConfig = new ItemCamera(OtherItemConfig.CameraConfig);
+
+                // Copy Matrix using default C# copy
+                UnkMatrixFloats = new float[10];
+                Array.Copy(OtherItemConfig.UnkMatrixFloats, UnkMatrixFloats, OtherItemConfig.UnkMatrixFloats.Length);
+
+                // Copy over item data
+                ItemUnk0 = OtherItemConfig.ItemUnk0;
+                ItemPrice = OtherItemConfig.ItemPrice;
+                ItemUnk1 = OtherItemConfig.ItemUnk1;
+                ItemChangeTimeIn = OtherItemConfig.ItemChangeTimeIn;
+                ItemChangeTimeOut = OtherItemConfig.ItemChangeTimeOut;
+                UnkByte = OtherItemConfig.UnkByte;
+
+                // Copy sections
+                Section1 = new Item[OtherItemConfig.Section1.Length];
+                Section2 = new Item[OtherItemConfig.Section2.Length];
+                
+                for(int i = 0; i < Section1.Length; i++)
+                {
+                    Section1[i] = new Item(OtherItemConfig.Section1[i]);
+                }
+
+                for (int i = 0; i < Section2.Length; i++)
+                {
+                    Section2[i] = new Item(OtherItemConfig.Section2[i]);
+                }
+
+                // Copy all localised Strings
+                UnkDB0 = new LocalisedString(OtherItemConfig.UnkDB0);
+                UnkDB1 = new LocalisedString(OtherItemConfig.UnkDB1);
+                UnkDB2 = new LocalisedString(OtherItemConfig.UnkDB2);
+                UnkDB3 = new LocalisedString(OtherItemConfig.UnkDB3);
+                UnkDB4 = new LocalisedString(OtherItemConfig.UnkDB4);
+                UnkDB5 = new LocalisedString(OtherItemConfig.UnkDB5);
             }
         }
 

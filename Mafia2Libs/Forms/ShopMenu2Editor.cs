@@ -11,6 +11,9 @@ namespace Mafia2Tool
         private FileInfo menuFile;
         private ShopMenu2 menuData;
 
+        private TreeNode ShopFolder = null;
+        private TreeNode ShopMetaInfoFolder = null;
+
         private bool bIsFileEdited = false;
 
         public ShopMenu2Editor(FileInfo file)
@@ -44,27 +47,29 @@ namespace Mafia2Tool
             menuData = new ShopMenu2();
             menuData.ReadFromFile(menuFile.FullName);
 
-            var node = new TreeNode("Shop Types");
-            for(int i = 0; i < menuData.shops.Count; i++)
+            ShopFolder = new TreeNode("Shop Types");
+            for (int i = 0; i < menuData.shops.Count; i++)
             {
                 var shop = menuData.shops[i];
-                var child = new TreeNode("Shop"+shop.ID.ToString());
+                var child = new TreeNode("Shop" + shop.ID.ToString());
                 child.Text = shop.Name;
                 child.Tag = shop;
-                node.Nodes.Add(child);
+                ShopFolder.Nodes.Add(child);
             }
 
-            var metaNode = new TreeNode("Shop MetaInfo");
+            ShopMetaInfoFolder = new TreeNode("Shop MetaInfo");
             for (int i = 0; i < menuData.shopItems.Count; i++)
             {
                 var metaInfo = menuData.shopItems[i];
                 var meta = new TreeNode("Meta" + metaInfo.ID.ToString());
                 meta.Text = metaInfo.Path;
                 meta.Tag = metaInfo;
-                metaNode.Nodes.Add(meta);
+                ShopMetaInfoFolder.Nodes.Add(meta);
             }
-            TreeView_ShopMenu2.Nodes.Add(node);
-            TreeView_ShopMenu2.Nodes.Add(metaNode);
+
+            // Add all nodes
+            TreeView_ShopMenu2.Nodes.Add(ShopFolder);
+            TreeView_ShopMenu2.Nodes.Add(ShopMetaInfoFolder);
         }
 
         private void Save()
@@ -169,6 +174,34 @@ namespace Mafia2Tool
             bIsFileEdited = true;
         }
 
+        private void DuplicateMetaInfo()
+        {
+            if (TreeView_ShopMenu2.SelectedNode == null || TreeView_ShopMenu2.SelectedNode.Tag == null)
+            {
+                // Skip, nothing selected
+                return;
+            }
+
+            ShopMenu2.ShopMenu MetaInfo = (TreeView_ShopMenu2.SelectedNode.Tag as ShopMenu2.ShopMenu);
+            if (MetaInfo == null)
+            {
+                // Skip, not a meta info
+                return;
+            }
+
+            // Copy
+            ShopMenu2.ShopMenu CopiedMetaInfo = new ShopMenu2.ShopMenu(MetaInfo);
+
+            // Create a new TreeNode
+            var NewMetaInfoNode = new TreeNode("Meta" + CopiedMetaInfo.ID.ToString());
+            NewMetaInfoNode.Text = CopiedMetaInfo.Path;
+            NewMetaInfoNode.Tag = CopiedMetaInfo;
+            ShopMetaInfoFolder.Nodes.Add(NewMetaInfoNode);
+
+            Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
             PropertyGrid_ShopMenu2.SelectedObject = e.Node.Tag;
@@ -200,6 +233,24 @@ namespace Mafia2Tool
             }
         }
 
+        private void Context_Menu_OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Context_DuplicateMetaInfo.Enabled = false;
+
+            if (TreeView_ShopMenu2.SelectedNode == null || TreeView_ShopMenu2.SelectedNode.Tag == null)
+            {
+                // Skip, nothing selected
+                return;
+            }
+
+            // If a MetaInfo, enable DuplicateMetaInfo button
+            ShopMenu2.ShopMenu MetaInfo = (TreeView_ShopMenu2.SelectedNode.Tag as ShopMenu2.ShopMenu);
+            if(MetaInfo != null)
+            {
+                Context_DuplicateMetaInfo.Enabled = true;
+            }
+        }
+
         private void Button_Save_OnClick(object sender, System.EventArgs e) => Save();
         private void Button_Reload_OnClick(object sender, System.EventArgs e) => Reload();
         private void Button_Exit_OnClick(object sender, System.EventArgs e) => Close();
@@ -209,5 +260,6 @@ namespace Mafia2Tool
         private void Context_Delete_OnClick(object sender, System.EventArgs e) => Delete();
         private void Context_AddType_OnClick(object sender, System.EventArgs e) => AddType();
         private void Context_AddMetaInfo_OnClick(object sender, System.EventArgs e) => AddMetaInfo();
+        private void Context_DupeMetaInfo_Clicked(object sender, System.EventArgs e) => DuplicateMetaInfo();
     }
 }
