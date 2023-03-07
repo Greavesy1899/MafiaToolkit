@@ -41,6 +41,7 @@ namespace ResourceTypes.Actors
         public float Unk1C { get; set; }
         public uint Unk20 { get; set; }
         public uint Unk24 { get; set; }
+        public uint Unk28 { get; set; }
         public int POType { get; set; }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 POPos { get; set; }
@@ -99,6 +100,7 @@ namespace ResourceTypes.Actors
             Unk1C = reader.ReadSingle(isBigEndian);
             Unk20 = reader.ReadUInt32(isBigEndian);
             Unk24 = reader.ReadUInt32(isBigEndian);
+            Unk28 = reader.ReadUInt32(isBigEndian);
             reader.Seek(212, SeekOrigin.Begin);
             POType = reader.ReadInt32(isBigEndian);
             POPos = Vector3Utils.ReadFromFile(reader, isBigEndian);
@@ -153,6 +155,7 @@ namespace ResourceTypes.Actors
             writer.Write(Unk1C, isBigEndian);
             writer.Write(Unk20, isBigEndian);
             writer.Write(Unk24, isBigEndian);
+            writer.Write(Unk28, isBigEndian);
             writer.Seek(212, SeekOrigin.Begin);
             writer.Write(POType, isBigEndian);
             Vector3Utils.WriteToFile(POPos, writer, isBigEndian);
