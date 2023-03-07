@@ -389,8 +389,11 @@ namespace Mafia2Tool
             
             if (window.ShowDialog() == DialogResult.OK)
             {
-                FrameEntry obj = (window.chosenObject as FrameEntry);
-                UpdateObjectParents(ParentType, obj.RefID, obj);
+                FrameEntry NewParent = (window.chosenObject != null ? window.chosenObject as FrameEntry : null);
+                int ParentRefID = (NewParent != null ? NewParent.RefID : -1);
+
+                // Request parent update
+                UpdateObjectParents(ParentType, ParentRefID, NewParent);
             }
         }
 

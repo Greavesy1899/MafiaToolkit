@@ -602,7 +602,7 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 			FaceGroups->push_back(NewFaceGroup);
 
 			// log Name
-			Logger->Printf(ELogType::eInfo, "Setup material called:- %s", Material->GetName());
+			Logger->Printf(ELogType::eInfo, "Setup material called:- %s", ExpectedName);
 		}
 	}
 }
