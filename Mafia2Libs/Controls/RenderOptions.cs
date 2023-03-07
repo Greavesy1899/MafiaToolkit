@@ -24,8 +24,9 @@ namespace Forms.OptionControls
             CameraSpeedLabel.Text = Language.GetString("$RENDER_CAMERASPEED");
             TexBrowser.Description = Language.GetString("$SELECT_TEX_FOLDER");
             ExperimentalBox.Text = Language.GetString("$ENABLE_EXPERIMENTAL");
+            Checkbox_EnableNavigation.Text = Language.GetString("$ENABLE_NAVIGATION");
         }
-        
+
         private void LoadSettings()
         {
             ScreenFarUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenDepth), ScreenFarUpDown.Maximum);
@@ -34,6 +35,7 @@ namespace Forms.OptionControls
             FieldOfViewNumDown.Value = Math.Min(Math.Max(Convert.ToInt16(ToolkitSettings.FieldOfView), FieldOfViewNumDown.Minimum), FieldOfViewNumDown.Maximum);
             TexDirectoryBox.Text = ToolkitSettings.TexturePath;
             ExperimentalBox.Checked = ToolkitSettings.Experimental;
+            Checkbox_EnableNavigation.Checked = ToolkitSettings.bNavigation;
             UseMIPsBox.Checked = ToolkitSettings.UseMIPS;
             CheckBox_VSync.Checked = ToolkitSettings.VSync;
         }
@@ -95,6 +97,12 @@ namespace Forms.OptionControls
         {
             ToolkitSettings.VSync = CheckBox_VSync.Checked;
             ToolkitSettings.WriteKey("VSync", "ModelViewer", ToolkitSettings.VSync.ToString());
+        }
+
+        private void Button_EnableNavigation_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.bNavigation = Checkbox_EnableNavigation.Checked;
+            ToolkitSettings.WriteKey("EnableNavigation", "ModelViewer", ToolkitSettings.bNavigation.ToString());
         }
     }
 }

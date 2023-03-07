@@ -81,7 +81,7 @@ namespace Mafia2Tool
 
             //IndexBuffers
             var paths = sdsContent.GetResourceFiles("IndexBufferPool", true);
-            foreach(var item in paths)
+            foreach (var item in paths)
             {
                 ibps.Add(BuildFileInfo(item));
             }
@@ -101,11 +101,11 @@ namespace Mafia2Tool
                 {
                     try
                     {
-                        if(File.Exists(item))
+                        if (File.Exists(item))
                         {
                             FileInfo NewFileInfo = new FileInfo(item);
                             act.Add(new Actor(NewFileInfo));
-                        }              
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -198,49 +198,46 @@ namespace Mafia2Tool
             //}
             //~ENABLE THIS SECTION AT YOUR OWN RISK
 
-            //~ENABLE THIS SECTION AT YOUR OWN RISK
-            // Kynapse OBJ_DATA
-#if DEBUG
-            //if (!isBigEndian)
-            //{
-            //    paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
-            //    foreach (var item in paths)
-            //    {
-            //        obj.Add(new NAVData(new FileInfo(item)));
-            //    }
+            // Kynapse Navigation
+            if (ToolkitSettings.bNavigation)
+            {
+                // OBJ_DATA
+                if (!isBigEndian)
+                {
+                    paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
+                    foreach (var item in paths)
+                    {
+                        obj.Add(new NAVData(new FileInfo(item)));
+                    }
 
-            //    for (int i = 0; i < obj.Count; i++)
-            //    {
-            //        obj[i].WriteToFile();
-            //    }
-            //}
+                    OBJData = obj.ToArray();
+                }
 
-            //AI WORLD
-            //if (!isBigEndian)
-            //{
-            //    paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
-            //    foreach (var Item in paths)
-            //    {
-            //        aiw.Add(new NAVData(new FileInfo(Item)));
-            //    }
-            //}
+                // AI WORLD
+                if (!isBigEndian)
+                {
+                    paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
+                    foreach (var Item in paths)
+                    {
+                        aiw.Add(new NAVData(new FileInfo(Item)));
+                    }
 
-            //if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
-            //{
-            //    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
-            //    var data = new NAVData(new FileInfo(name));
-            //    //HPDData = (data.data as HPDData);
-            //    //data.WriteToFile();
-            //}
-#endif // DEBUG
-            //~ENABLE THIS SECTION AT YOUR OWN RISK
+                    AIWorlds = aiw.ToArray();
+                }
+
+                // HPD DATA
+                if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
+                {
+                    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
+                    var data = new NAVData(new FileInfo(name));
+                    HPDData = (data.data as HPDData);
+                }
+            }
 
             IndexBufferPool = new IndexBufferManager(ibps, dirInfo, isBigEndian);
             VertexBufferPool = new VertexBufferManager(vbps, dirInfo, isBigEndian);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
-            //OBJData = obj.ToArray();
-            //AIWorlds = aiw.ToArray();
         }
 
         public static void UpdateResourceType()

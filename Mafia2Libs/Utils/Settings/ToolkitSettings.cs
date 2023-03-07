@@ -25,6 +25,7 @@ namespace Utils.Settings
         public static float CameraSpeed;
         public static string TexturePath;
         public static bool Experimental;
+        public static bool bNavigation;
         public static bool UseMIPS;
         public static float FieldOfView;
 
@@ -75,6 +76,7 @@ namespace Utils.Settings
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
             float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "100"), out CameraSpeed);
             bool.TryParse(ReadKey("EnableExperimental", "ModelViewer", "0"), out Experimental);
+            bool.TryParse(ReadKey("EnableNavigation", "ModelViewer", "0"), out bNavigation);
             float.TryParse(ReadKey("FieldOfView", "ModelViewer", "60"), out FieldOfView);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
