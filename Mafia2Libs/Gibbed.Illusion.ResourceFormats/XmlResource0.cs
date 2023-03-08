@@ -359,7 +359,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
                     var value = input.ReadStringZ(Encoding.UTF8);
 
-                    if (string.IsNullOrEmpty(value) || value.Contains("--") || value.Contains("\n\t >") || value.Contains("\t"))
+                    if (string.IsNullOrEmpty(value) || value.Contains("<!--") || value.Contains("\n\t >") || value.Contains("\t"))
                     {
                         Log.WriteLine("Detect unusual special: " + value);
                         return null;
@@ -401,7 +401,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                     }
 
                     var value = input.ReadStringZ(Encoding.UTF8);
-                    if (string.IsNullOrEmpty(value) == true || value.Contains("--"))
+                    if (string.IsNullOrEmpty(value) == true || value.Contains("<!--"))
                     {
                         return null;
                     }

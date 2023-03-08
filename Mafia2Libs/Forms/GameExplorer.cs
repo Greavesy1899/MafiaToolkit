@@ -414,7 +414,7 @@ namespace Mafia2Tool
                         OpenFile(item.Tag as FileBase);
                         return;
                     default:
-                        MessageBox.Show("Cannot open files with 'Use SDS Tool Format' Enabled.\nPlease Disable this in the Settings Menu and try again.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Cannot open files with the setting 'Use SDS Tool Format' Enabled.\nPlease Disable this in the Settings Menu and try again.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                 }
                 return;
