@@ -196,6 +196,7 @@ namespace Mafia2Tool
             var NewMetaInfoNode = new TreeNode("Meta" + CopiedMetaInfo.ID.ToString());
             NewMetaInfoNode.Text = CopiedMetaInfo.Path;
             NewMetaInfoNode.Tag = CopiedMetaInfo;
+            menuData.shopItems.Add(CopiedMetaInfo);
             ShopMetaInfoFolder.Nodes.Add(NewMetaInfoNode);
 
             Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
