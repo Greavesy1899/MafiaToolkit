@@ -38,6 +38,7 @@ namespace ResourceTypes.Prefab.CrashObject
             Unk2 = new int[0];
             Unk3_Transform = new C_Transform();
             Unk4 = new S_InitDeformPartCommon_Unk4[0];
+            Unk5_Data = new S_InitCollVolume_Nested();
             Unk6_Value = String.Empty;
             Unk8 = new uint[0];
             PartEffects = new S_InitDeformPartEffects();
