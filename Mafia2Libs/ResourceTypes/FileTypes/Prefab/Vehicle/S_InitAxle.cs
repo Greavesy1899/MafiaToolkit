@@ -15,6 +15,11 @@ namespace ResourceTypes.Prefab.Vehicle
         public uint AxleType { get; set; }
         public S_InitWheel Wheel { get; set; }
 
+        public S_InitAxle()
+        {
+            Wheel = new S_InitWheel();
+        }
+
         public void Load(BitStream MemStream)
         {
             AxleName = MemStream.ReadUInt64();
