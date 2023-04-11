@@ -99,10 +99,11 @@ namespace ResourceTypes.M3.XBin
                     XBinData = new SubtitleTable();
                     XBinData.ReadFromFile(reader);
                     break;
-                //case 0xDC327944DD83627E: // TODO: Fix for M1: DE. look for 0xA for PaintCombination array entries.
-                //    XBinData = new PaintCombinationsTable(); // PaintCombinations
-                //    XBinData.ReadFromFile(reader);
-                //    break;
+                case 15866877770641655778:
+                case 15866877773860790910:
+                    XBinData = new PaintCombinationsTable(); // PaintCombinations
+                    XBinData.ReadFromFile(reader);
+                    break;
                 default:
                     throw new Exception("We lack the support for this type.");
                     break;

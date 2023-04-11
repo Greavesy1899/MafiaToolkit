@@ -1,19 +1,30 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using ResourceTypes.M3.XBin;
+using ResourceTypes.M3.XBin.PaintCombinations;
 using Utils.Helpers.Reflection;
+using Utils.Logging;
+using Utils.Settings;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin
 {
     public class PaintCombinationsTableItem
     {
+        [PropertyForceAsAttribute]
         public int ID { get; set; }
-        public int Unk01 { get; set; }
-        public int MinOccurs { get; set; }
-        public int MaxOccurs { get; set; }
+        [PropertyForceAsAttribute]
         public string CarName { get; set; }
-        public int[] ColorIndex { get; set; }
+        public IPaintCombinationsTableItem_Elm[] Elements { get; set; }
+
+        public static readonly uint NUM_ELEMENTS = 14;
+
+        public PaintCombinationsTableItem()
+        {
+            Elements = new IPaintCombinationsTableItem_Elm[NUM_ELEMENTS];
+        }
 
         public override string ToString()
         {
@@ -24,8 +35,14 @@ namespace ResourceTypes.M3.XBin
     public class PaintCombinationsTable : BaseTable
     {
         private uint unk0;
+        private GamesEnumerator gameVersion;
 
         public PaintCombinationsTableItem[] PaintCombinations { get; set; }
+
+        public PaintCombinationsTable()
+        {
+            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
+        }
 
         public void ReadFromFile(BinaryReader reader)
         {
@@ -38,9 +55,10 @@ namespace ResourceTypes.M3.XBin
             {
                 PaintCombinationsTableItem item = new PaintCombinationsTableItem();
                 item.ID = reader.ReadInt32();
-                item.Unk01 = reader.ReadInt32();
-                item.MinOccurs = reader.ReadInt32();
-                item.MaxOccurs = reader.ReadInt32();
+                reader.BaseStream.Position += 4; // Skip array offset, not required
+                int MinOccurs = reader.ReadInt32();
+                int MaxOccurs = reader.ReadInt32();
+                ToolkitAssert.Ensure(MinOccurs == 14 && MaxOccurs == 14, "Would expect Min and Max Occurs to be 14, not {0} and {1} respectively.", MinOccurs, MaxOccurs);
                 item.CarName = StringHelpers.ReadStringBuffer(reader, 32).Trim('\0');
                 PaintCombinations[i] = item;
             }
@@ -48,11 +66,24 @@ namespace ResourceTypes.M3.XBin
             for (int i = 0; i < count1; i++)
             {
                 var item = PaintCombinations[i];
-                item.ColorIndex = new int[item.MaxOccurs];
-                for (int z = 0; z < item.MaxOccurs; z++)
+                item.Elements = new IPaintCombinationsTableItem_Elm[PaintCombinationsTableItem.NUM_ELEMENTS];
+                for (int z = 0; z < PaintCombinationsTableItem.NUM_ELEMENTS; z++)
                 {
-                    item.ColorIndex[z] = reader.ReadInt32();
+                    IPaintCombinationsTableItem_Elm Element = null;
+                    if(gameVersion == GamesEnumerator.MafiaIII)
+                    {
+                        Element = new PaintCombinationsTableItem_Elm_M3();
+                    }
+                    else if(gameVersion == GamesEnumerator.MafiaI_DE)
+                    {
+                        Element = new PaintCombinationsTableItem_Elm_MDE();
+                    }
+
+                    Element.ReadEntry(reader);
+
+                    item.Elements[z] = Element;
                 }
+
                 PaintCombinations[i] = item;
             }
         }
@@ -63,22 +94,24 @@ namespace ResourceTypes.M3.XBin
             writer.Write(PaintCombinations.Length);
             writer.Write(PaintCombinations.Length);
 
-            for(int i = 0; i < PaintCombinations.Length; i++)
+            for (int i = 0; i < PaintCombinations.Length; i++)
             {
                 PaintCombinationsTableItem Item = PaintCombinations[i];
                 writer.Write(Item.ID);
-                writer.Write(Item.Unk01);
-                writer.Write(Item.MinOccurs);
-                writer.Write(Item.MaxOccurs);
-                StringHelpers.WriteString32(writer, Item.CarName);
+                writer.PushObjectPtr(string.Format("Entry_{0}", i));
+                writer.Write(PaintCombinationsTableItem.NUM_ELEMENTS);
+                writer.Write(PaintCombinationsTableItem.NUM_ELEMENTS);
+                StringHelpers.WriteStringBuffer(writer, 32, Item.CarName);
             }
 
             for (int i = 0; i < PaintCombinations.Length; i++)
             {
                 PaintCombinationsTableItem Item = PaintCombinations[i];
-                for (int z = 0; z < Item.MaxOccurs; z++)
+                writer.FixUpObjectPtr(string.Format("Entry_{0}", i));
+                for (int z = 0; z < PaintCombinationsTableItem.NUM_ELEMENTS; z++)
                 {
-                    writer.Write(Item.ColorIndex[z]);
+                    IPaintCombinationsTableItem_Elm Element = Item.Elements[z];
+                    Element.WriteEntry(writer);
                 }
             }
         }
@@ -87,7 +120,7 @@ namespace ResourceTypes.M3.XBin
         {
             XElement Root = XElement.Load(file);
             PaintCombinationsTable TableInformation = ReflectionHelpers.ConvertToPropertyFromXML<PaintCombinationsTable>(Root);
-            this.PaintCombinations = TableInformation.PaintCombinations;
+            PaintCombinations = TableInformation.PaintCombinations;
         }
 
         public void WriteToXML(string file)

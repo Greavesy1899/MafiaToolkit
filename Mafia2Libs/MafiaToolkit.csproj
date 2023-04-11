@@ -316,6 +316,7 @@
     <PackageReference Include="Vortice.XInput" Version="1.9.87" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ResourceTypes\FileTypes\M3\XBin\Types\PaintCombinations\Mafia3\" />
     <Folder Include="ResourceTypes\FileTypes\Wwise\HIRC\Helpers\" />
     <Folder Include="ResourceTypes\FileTypes\Wwise\HIRC\Objects\" />
   </ItemGroup>
