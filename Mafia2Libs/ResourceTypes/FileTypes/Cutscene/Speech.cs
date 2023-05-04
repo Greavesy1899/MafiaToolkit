@@ -1,34 +1,31 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using Utils.StringHelpers;
+using static ResourceTypes.Speech.SpeechFile;
+using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.Speech
 {
-    public class SpeechLoader
+    public class SpeechFile
     {
-        int fileversion = 2; //probably a reference to file version; xml is also 2;
-        int fileversion2 = 2; //another one though?
-        int numSpeechTypes; //num of first set of data.
-        SpeechTypeData[] speechTypes;
-        int numSpeechItems; //num of second set of data.
-        SpeechItemData[] speechItems;
+        private int fileversion = 2; //probably a reference to file version; xml is also 2;
+        private int fileversion2 = 2; //another one though?
 
-        public SpeechTypeData[] SpeechTypes {
-            get { return speechTypes; }
-            set { speechTypes = value; }
-        }
-        public SpeechItemData[] SpeechItems {
-            get { return speechItems; }
-            set { speechItems = value; }
-        }
+        public SpeechTypeInfo[] SpeechTypes { get; private set; }
+        public SpeechItemInfo[] SpeechItems { get; private set; }
 
-        public SpeechLoader(BinaryReader reader)
+        public SpeechFile()
         {
-            ReadFromFile(reader);
+            SpeechTypes = new SpeechTypeInfo[0];
+            SpeechItems = new SpeechItemInfo[0];
         }
 
-        public SpeechLoader(FileInfo info)
+        public SpeechFile(FileInfo info)
         {
+            SpeechTypes = new SpeechTypeInfo[0];
+            SpeechItems = new SpeechItemInfo[0];
+
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
                 ReadFromFile(reader);
@@ -47,18 +44,24 @@ namespace ResourceTypes.Speech
                 throw new Exception("Error: Int 2 did not equal 2.");
             }
 
-            numSpeechTypes = reader.ReadInt32();
-            speechTypes = new SpeechTypeData[numSpeechTypes];
-            numSpeechItems = reader.ReadInt32();
-            speechItems = new SpeechItemData[numSpeechItems];
+            uint NumSpeechTypes = reader.ReadUInt32();
+            uint numSpeechItems = reader.ReadUInt32();
+            SpeechTypes = new SpeechTypeInfo[NumSpeechTypes];
+            SpeechItems = new SpeechItemInfo[numSpeechItems];
+            for (int i = 0; i < NumSpeechTypes; i++)
+            {
+                SpeechTypeInfo NewType = new SpeechTypeInfo();
+                NewType.ReadFromFile(reader);
 
-            for (int i = 0; i != speechTypes.Length; i++)
-            {
-                speechTypes[i] = new SpeechTypeData(reader);
+                SpeechTypes[i] = NewType;
             }
-            for (int i = 0; i != speechItems.Length; i++)
+
+            for (int i = 0; i < numSpeechItems; i++)
             {
-                speechItems[i] = new SpeechItemData(reader);
+                SpeechItemInfo NewItem = new SpeechItemInfo();
+                NewItem.ReadFromFile(reader);
+
+                SpeechItems[i] = NewItem;
             }
         }
 
@@ -66,22 +69,23 @@ namespace ResourceTypes.Speech
         {
             writer.Write(fileversion);
             writer.Write(fileversion2);
-            writer.Write(numSpeechTypes);
-            writer.Write(numSpeechItems);
+            writer.Write((int)SpeechTypes.Length);
+            writer.Write((int)SpeechItems.Length);
 
-            foreach (SpeechTypeData type in speechTypes)
+            foreach (SpeechTypeInfo type in SpeechTypes)
             {
                 type.WriteToFile(writer);
             }
 
-            foreach (SpeechItemData item in speechItems)
+            foreach (SpeechItemInfo item in SpeechItems)
             {
                 item.WriteToFile(writer);
             }
 
         }
 
-        public class SpeechTypeData
+        [PropertyClassAllowReflection]
+        public class SpeechTypeInfo
         {
             int unk0; //possible hash in int32.
             string entityType; //int32 for string size;
@@ -130,9 +134,11 @@ namespace ResourceTypes.Speech
                 set { unk5 = value; }
             }
 
-            public SpeechTypeData(BinaryReader reader)
+            public void SpeechItemInfo()
             {
-                ReadFromFile(reader);
+                EntityType = string.Empty;
+                speechType = string.Empty;
+                Folder = string.Empty;
             }
 
             public void ReadFromFile(BinaryReader reader)
@@ -167,7 +173,9 @@ namespace ResourceTypes.Speech
             }
         }
 
-        public class SpeechItemData
+
+        [PropertyClassAllowReflection]
+        public class SpeechItemInfo
         {
             int unk0; //another hash maybe; int32;
             long unk1; //8 bytes; possible padding or flags.
@@ -211,9 +219,9 @@ namespace ResourceTypes.Speech
                 set { unk6 = value; }
             }
 
-            public SpeechItemData(BinaryReader reader)
+            public SpeechItemInfo()
             {
-                ReadFromFile(reader);
+                ItemName = string.Empty;
             }
 
             public void ReadFromFile(BinaryReader reader)

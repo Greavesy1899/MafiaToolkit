@@ -172,7 +172,7 @@ namespace ResourceTypes.Prefab.CrashObject
     public class S_InitDeformPart
     {
         public uint Unk0 { get; set; } // [13 = MOTOR] [15 = SNOW] [12 = EXHAUST] [16 = PLOW] [7 = BUMPER] [5 = WINDOW] [6 = COVER] [3 = LID] [14 = TYRE] [2 = WHEEL] [1 = BODY]
-        public uint Unk1 { get; set; }
+        public uint Unk1 { get; set; } // [8192 = AIBOX]
         public byte Unk2 { get; set; }
         public ulong[] Unk3 { get; set; }
         public float Unk4 { get; set; }

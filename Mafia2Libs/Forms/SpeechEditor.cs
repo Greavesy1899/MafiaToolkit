@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using ResourceTypes.Speech;
 using Utils.Helpers;
+using Utils.Helpers.Reflection;
 using Utils.Language;
 using Utils.Settings;
 
@@ -10,7 +12,7 @@ namespace Mafia2Tool
     public partial class SpeechEditor : Form
     {
         private FileInfo speechFile;
-        private SpeechLoader speechData;
+        private SpeechFile speechData;
 
         private bool bIsFileEdited = false;
 
@@ -19,6 +21,7 @@ namespace Mafia2Tool
             InitializeComponent();
             Localise();
             speechFile = file;
+            speechData = new SpeechFile(file);
             BuildData();
             Show();
             ToolkitSettings.UpdateRichPresence("Using the Speech editor.");
@@ -35,11 +38,14 @@ namespace Mafia2Tool
 
         private void BuildData()
         {
-            speechData = new SpeechLoader(speechFile);
+            TreeView_Speech.SelectedNode = null;
+            Grid_Speech.SelectedObject = null;
+
+            TreeView_Speech.Nodes.Clear();
 
             for (int i = 0; i != speechData.SpeechTypes.Length; i++)
             {
-                SpeechLoader.SpeechTypeData typeData = speechData.SpeechTypes[i];
+                SpeechFile.SpeechTypeInfo typeData = speechData.SpeechTypes[i];
 
                 TreeNode node = new TreeNode(typeData.SpeechType.ToString());
                 node.Tag = typeData;
@@ -48,11 +54,11 @@ namespace Mafia2Tool
                 for (int x = 0; x != speechData.SpeechItems.Length; x++)
                 {
                     num++;
-                    SpeechLoader.SpeechItemData itemData = speechData.SpeechItems[x];
-                    TreeNode node1 = new TreeNode(typeData.SpeechType.ToString());
+                    SpeechFile.SpeechItemInfo itemData = speechData.SpeechItems[x];
+                    TreeNode node1 = new TreeNode(itemData.ItemName.ToString());
                     node1.Tag = itemData;
 
-                    if (typeData.Unk0+num == itemData.Unk0)
+                    if (typeData.Unk0 + num == itemData.Unk0)
                     {
                         node.Nodes.Add(node1);
                     }
@@ -78,10 +84,8 @@ namespace Mafia2Tool
 
         private void Reload()
         {
-            TreeView_Speech.SelectedNode = null;
-            Grid_Speech.SelectedObject = null;
+            speechData = new SpeechFile(speechFile);
 
-            TreeView_Speech.Nodes.Clear();
             BuildData();
 
             Text = Language.GetString("$SPEECH_EDITOR_TITLE");
@@ -116,6 +120,25 @@ namespace Mafia2Tool
                 {
                     e.Cancel = true;
                 }
+            }
+        }
+
+        private void OnSaveToXMLClicked(object sender, System.EventArgs e)
+        {
+            if (FileSaveDialog_SelectXML.ShowDialog() == DialogResult.OK)
+            {
+                XElement RootElement = ReflectionHelpers.ConvertPropertyToXML<SpeechFile>(speechData);
+                RootElement.Save(FileSaveDialog_SelectXML.FileName);
+            }
+        }
+
+        private void OnLoadFromXMLClicked(object sender, System.EventArgs e)
+        {
+            if (FileOpenDialog_SelectXML.ShowDialog() == DialogResult.OK)
+            {
+                XElement RootElement = XElement.Load(FileOpenDialog_SelectXML.FileName);
+                speechData = ReflectionHelpers.ConvertToPropertyFromXML<SpeechFile>(RootElement);
+                BuildData();
             }
         }
 
