@@ -42,7 +42,7 @@ namespace ResourceTypes.Actors
         public uint Unk20 { get; set; }
         public uint Unk24 { get; set; }
         public uint Unk28 { get; set; }
-        public int POType { get; set; }
+        public PathObjectTypes POType { get; set; }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 POPos { get; set; }
 
@@ -102,7 +102,7 @@ namespace ResourceTypes.Actors
             Unk24 = reader.ReadUInt32(isBigEndian);
             Unk28 = reader.ReadUInt32(isBigEndian);
             reader.Seek(212, SeekOrigin.Begin);
-            POType = reader.ReadInt32(isBigEndian);
+            POType = (PathObjectTypes)reader.ReadInt32(isBigEndian);
             POPos = Vector3Utils.ReadFromFile(reader, isBigEndian);
             POSize = Vector3Utils.ReadFromFile(reader, isBigEndian);
             reader.Seek(44, SeekOrigin.Begin);
@@ -157,7 +157,7 @@ namespace ResourceTypes.Actors
             writer.Write(Unk24, isBigEndian);
             writer.Write(Unk28, isBigEndian);
             writer.Seek(212, SeekOrigin.Begin);
-            writer.Write(POType, isBigEndian);
+            writer.Write((int)POType, isBigEndian);
             Vector3Utils.WriteToFile(POPos, writer, isBigEndian);
             Vector3Utils.WriteToFile(POSize, writer, isBigEndian);
             writer.Seek(44, SeekOrigin.Begin);
@@ -2037,26 +2037,27 @@ namespace ResourceTypes.Actors
     public class ActorHuman : IActorExtraDataInterface
     {
         public float HealthMax { get; set; }
-        public int HumanType { get; set; }
-        public int Aggressiveness { get; set; }
-        public int Courage { get; set; }
+        public int Human2_Unk1 { get; set; }
+        public HumanAIType HumanType { get; set; }
+        public HumanAggressiveFlags Aggressiveness { get; set; }
+        public HumanCourageFlags Courage { get; set; }
         public int PanicOnEvent { get; set; }
         public int PanicOnHP { get; set; }
-        public int Sight { get; set; }
+        public float Sight { get; set; }
         public float VisionAngle { get; set; }
-        public float Hearing { get; set; }
+        public int Hearing { get; set; }
         public int UseSoundScene { get; set; }
-        public float FightingSkill { get; set; }
+        public int FightingSkill { get; set; }
         public int ReactionOnSounds { get; set; }
         public int RecogniseTime { get; set; }
         public int RecogniseRange { get; set; }
         public int PreferMelee { get; set; }
-        public int MeleeAttackLevel { get; set; }
+        public float MeleeAttackLevel { get; set; }
         public float MeleeBlockLevel { get; set; }
         public float MeleeAggressiveness { get; set; }
         public float MeleeCounterBlockSkill { get; set; }
-        public float HumanVoices { get; set; }
-        public int ShootDispXY { get; set; }
+        public int HumanVoices { get; set; }
+        public float ShootDispXY { get; set; }
         public float ShootDispZ { get; set; }
         public float ShootDispCorrectionTimeMin { get; set; }
         public float ShootDispCorrectionTimeMax { get; set; }
@@ -2065,8 +2066,7 @@ namespace ResourceTypes.Actors
         public ulong Archetype { get; set; }
         public int Unk2 { get; set; }
         public float Unk3 { get; set; }
-        public float Unk4 { get; set; }
-        public int Unk5 { get; set; }
+        public int Unk4 { get; set; }
         public ActorHuman(MemoryStream stream, bool isBigEndian)
         {
             ReadFromFile(stream, isBigEndian);
@@ -2084,44 +2084,45 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             HealthMax = stream.ReadSingle(isBigEndian);
-            HumanType = stream.ReadInt32(isBigEndian);
-            Aggressiveness = stream.ReadInt32(isBigEndian);
-            Courage = stream.ReadInt32(isBigEndian);
+            Human2_Unk1 = stream.ReadInt32(isBigEndian);
+            HumanType = (HumanAIType)stream.ReadInt32(isBigEndian);
+            Aggressiveness = (HumanAggressiveFlags)stream.ReadInt32(isBigEndian);
+            Courage = (HumanCourageFlags)stream.ReadInt32(isBigEndian);
             PanicOnEvent = stream.ReadInt32(isBigEndian);
             PanicOnHP = stream.ReadInt32(isBigEndian);
-            Sight = stream.ReadInt32(isBigEndian);
+            Sight = stream.ReadSingle(isBigEndian);
             VisionAngle = MathHelper.ToDegrees(stream.ReadSingle(isBigEndian));
-            Hearing = stream.ReadSingle(isBigEndian);
+            Hearing = stream.ReadInt32(isBigEndian);
             UseSoundScene = stream.ReadInt32(isBigEndian);
-            FightingSkill = stream.ReadSingle(isBigEndian);
+            FightingSkill = stream.ReadInt32(isBigEndian);
             ReactionOnSounds = stream.ReadInt32(isBigEndian);
             RecogniseTime = stream.ReadInt32(isBigEndian);
             RecogniseRange = stream.ReadInt32(isBigEndian);
             PreferMelee = stream.ReadInt32(isBigEndian);
-            MeleeAttackLevel = stream.ReadInt32(isBigEndian);
+            MeleeAttackLevel = stream.ReadSingle(isBigEndian);
             MeleeBlockLevel = stream.ReadSingle(isBigEndian);
             MeleeAggressiveness = stream.ReadSingle(isBigEndian);
             MeleeCounterBlockSkill = stream.ReadSingle(isBigEndian);
-            HumanVoices = stream.ReadSingle(isBigEndian);
-            ShootDispXY = stream.ReadInt32(isBigEndian);
+            HumanVoices = stream.ReadInt32(isBigEndian);
+            ShootDispXY = stream.ReadSingle(isBigEndian);
             ShootDispZ = stream.ReadSingle(isBigEndian);
             ShootDispCorrectionTimeMin = stream.ReadSingle(isBigEndian);
             ShootDispCorrectionTimeMax = stream.ReadSingle(isBigEndian);
-            Unk0 = stream.ReadSingle(isBigEndian);
             Unk1 = stream.ReadSingle(isBigEndian);
             Archetype = stream.ReadUInt64(isBigEndian);
             Unk2 = stream.ReadInt32(isBigEndian);
+            Unk0 = stream.ReadSingle(isBigEndian);
             Unk3 = stream.ReadSingle(isBigEndian);
-            Unk4 = stream.ReadSingle(isBigEndian);
-            Unk5 = stream.ReadInt32(isBigEndian);
+            Unk4 = stream.ReadInt32(isBigEndian);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(HealthMax, isBigEndian);
-            writer.Write(HumanType, isBigEndian);
-            writer.Write(Aggressiveness, isBigEndian);
-            writer.Write(Courage, isBigEndian);
+            writer.Write(Human2_Unk1, isBigEndian);
+            writer.Write((int)HumanType, isBigEndian);
+            writer.Write((int)Aggressiveness, isBigEndian);
+            writer.Write((int)Courage, isBigEndian);
             writer.Write(PanicOnEvent, isBigEndian);
             writer.Write(PanicOnHP, isBigEndian);
             writer.Write(Sight, isBigEndian);
@@ -2142,13 +2143,12 @@ namespace ResourceTypes.Actors
             writer.Write(ShootDispZ, isBigEndian);
             writer.Write(ShootDispCorrectionTimeMin, isBigEndian);
             writer.Write(ShootDispCorrectionTimeMax, isBigEndian);
-            writer.Write(Unk0, isBigEndian);
             writer.Write(Unk1, isBigEndian);
             writer.Write(Archetype, isBigEndian);
             writer.Write(Unk2, isBigEndian);
+            writer.Write(Unk0, isBigEndian);
             writer.Write(Unk3, isBigEndian);
             writer.Write(Unk4, isBigEndian);
-            writer.Write(Unk5, isBigEndian);
         }
     }
     public class ActorScriptEntity : IActorExtraDataInterface

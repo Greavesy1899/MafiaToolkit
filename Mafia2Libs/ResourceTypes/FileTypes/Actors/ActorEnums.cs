@@ -97,4 +97,55 @@ namespace ResourceTypes.Actors
         Interactive = 2,
         Hidden = 4,
     }
+
+    public enum HumanAIType : int
+    {
+        CIVILIAN,
+        FRIEND,
+        ENEMY,
+        GUARD,
+        POLICE,
+        DETECTIVE,
+        CELEMENTE,
+        FALCONE,
+        BOMBERS,
+        BIKERS,
+        IRISH,
+        CHINESE,
+        SCRIPTED,
+        VINCI,
+        FMV,
+        SELLER
+    }
+
+    [Flags]
+    public enum HumanAggressiveFlags : int
+    {
+        SEE_ENEMY = 0,
+        SEE_ENEMY_WITH_WEAPON = 1,
+        HEAR_GUNSHOT = 2,
+        ON_ATTACK = 4
+    }
+
+    [Flags]
+    public enum HumanCourageFlags : int
+    {
+        FUNK = 0,
+        NORMAL = 1,
+        COURAGOUS = 2,
+        BOWLER = 4
+    }
+
+    public enum PathObjectTypes : int
+    {
+        INVALID = 0,
+        CLIMB = 1,
+        CLIMB_BEVEL = 2,
+        CLIMB_BEVEL_WALL = 3,
+        CLIMB_CO = 4,
+        CLIMB_CAR = 5,
+        DOOR = 11,
+        E_LIFT = 12,
+        LADDER = 13
+    }
 }
