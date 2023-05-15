@@ -66,23 +66,27 @@ namespace Mafia2Tool
                 TreeNode node = new TreeNode(actors.Items[i].EntityName);
                 node.Tag = actors.Items[i];
 
-                TreeNode child = new TreeNode("Extra Data");
-                child.Tag = actors.ExtraData[actors.Items[i].DataID];
-                node.Nodes.Add(child);
-                items.Nodes.Add(node);
-
-                if (Debugger.IsAttached)
+                if (actors.Items[i].DataID != -1)
                 {
-                    string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorTypeID + "/";
-                    string filename = actors.Items[i].EntityName + ".dat";
+                    TreeNode child = new TreeNode("Extra Data");
+                    child.Tag = actors.ExtraData[actors.Items[i].DataID];
+                    node.Nodes.Add(child);
 
-                    if (!Directory.Exists(folder))
+                    if (Debugger.IsAttached)
                     {
-                        Directory.CreateDirectory(folder);
-                    }
+                        string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorTypeID + "/";
+                        string filename = actors.Items[i].EntityName + ".dat";
 
-                    File.WriteAllBytes(Path.Combine(folder, filename), actors.Items[i].Data.GetDataInBytes());
+                        if (!Directory.Exists(folder))
+                        {
+                            Directory.CreateDirectory(folder);
+                        }
+
+                        File.WriteAllBytes(Path.Combine(folder, filename), actors.Items[i].Data.GetDataInBytes());
+                    }
                 }
+
+                items.Nodes.Add(node);
             }
             ActorTreeView.Nodes.Add(definitions);
             ActorTreeView.Nodes.Add(items);
@@ -207,9 +211,13 @@ namespace Mafia2Tool
                 node.Text = entry.EntityName;
                 node.Tag = entry;
 
-                TreeNode child = new TreeNode("Extra Data");
-                child.Tag = actors.ExtraData[entry.DataID];
-                node.Nodes.Add(child);
+                if (entry.DataID != -1)
+                {
+                    TreeNode child = new TreeNode("Extra Data");
+                    child.Tag = actors.ExtraData[entry.DataID];
+                    node.Nodes.Add(child);
+                }
+
                 items.Nodes.Add(node);
             }
 

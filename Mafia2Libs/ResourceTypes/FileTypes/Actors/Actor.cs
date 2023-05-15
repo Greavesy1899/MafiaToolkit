@@ -102,14 +102,20 @@ namespace ResourceTypes.Actors
             var ordered = definitions.OrderBy(d => d.FrameNameHash);
             definitions = ordered.ToList();
 
-            Dictionary<ushort, ushort> reorganisedKeys = new Dictionary<ushort, ushort>();
+            Dictionary<short, short> reorganisedKeys = new Dictionary<short, short>();
             extraData.Clear();
             for (int i = 0; i < items.Count; i++)
             {
+                if (items[i].DataID == -1)
+                {
+                    // Skip, no data is present
+                    continue;
+                }
+
                 if (!reorganisedKeys.ContainsKey(items[i].DataID))
                 {
                     extraData.Add(items[i].Data);
-                    reorganisedKeys.Add(items[i].DataID, (ushort)(extraData.Count - 1));
+                    reorganisedKeys.Add(items[i].DataID, (short)(extraData.Count - 1));
                     items[i].DataID = reorganisedKeys[items[i].DataID];
                 }
                 else
@@ -122,12 +128,16 @@ namespace ResourceTypes.Actors
 
         public ActorEntry CreateActorEntry(ActorTypes type, string name)
         {
-            ActorExtraData extraData = new ActorExtraData();
-            extraData.BufferType = type;
-            extraData.Data = ActorFactory.CreateExtraData(type);
+            ActorExtraData extraData = null;
+            if (type != ActorTypes.C_Car)
+            {
+                extraData = new ActorExtraData();
+                extraData.BufferType = type;
+                extraData.Data = ActorFactory.CreateExtraData(type);
+            }
 
             ActorEntry entry = ActorFactory.CreateActorItem(type, name);
-            entry.DataID = (ushort)(ExtraData.Count);
+            entry.DataID = (short)(extraData != null ? ExtraData.Count : -1);
             entry.Data = extraData;
 
             ExtraData.Add(extraData);
@@ -211,7 +221,11 @@ namespace ResourceTypes.Actors
             for (int i = 0; i != itemCount; i++)
             {
                 ActorEntry item = new ActorEntry(reader);
-                item.Data = ExtraData[item.DataID];
+                if (item.DataID != -1)
+                {
+                    item.Data = ExtraData[item.DataID];
+                }
+
                 items.Add(item);
             }
 

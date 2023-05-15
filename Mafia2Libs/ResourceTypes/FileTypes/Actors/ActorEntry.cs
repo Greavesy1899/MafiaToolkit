@@ -25,7 +25,7 @@ namespace ResourceTypes.Actors
         Quaternion rotation;
         Vector3 scale;
         bool ActivateOnInit;
-        ushort dataID;
+        short dataID;
         ActorExtraData data;
 
         public int Size {
@@ -89,7 +89,7 @@ namespace ResourceTypes.Actors
             get { return ActivateOnInit; }
             set { ActivateOnInit = value; }
         }
-        public ushort DataID {
+        public short DataID {
             get { return dataID; }
             set { dataID = value; }
         }
@@ -133,7 +133,7 @@ namespace ResourceTypes.Actors
             rotation = QuaternionExtensions.ReadFromFile(reader);
             scale = Vector3Utils.ReadFromFile(reader);
             ActivateOnInit = Convert.ToBoolean(reader.ReadUInt16());
-            dataID = reader.ReadUInt16();
+            dataID = reader.ReadInt16();
         }
 
         public int CalculateSize()
