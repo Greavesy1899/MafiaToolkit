@@ -115,7 +115,8 @@ namespace ResourceTypes.Actors
         SCRIPTED,
         VINCI,
         FMV,
-        SELLER
+        SELLER,
+        SELLER_FUNK
     }
 
     [Flags]
