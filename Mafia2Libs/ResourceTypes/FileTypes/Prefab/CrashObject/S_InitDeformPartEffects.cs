@@ -76,7 +76,7 @@ namespace ResourceTypes.Prefab.CrashObject
         public short SnowParticleID_3 { get; set; }
         public short Unk33 { get; set; }
         public byte Unk34 { get; set; }
-        public float Unk35 { get; set; }
+        public float ParticleScale { get; set; }
         public int Unk36 { get; set; }
         public float Unk37 { get; set; }
         public int Unk38 { get; set; }
@@ -138,7 +138,7 @@ namespace ResourceTypes.Prefab.CrashObject
             SnowParticleID_3 = MemStream.ReadInt16();
             Unk33 = MemStream.ReadInt16();
             Unk34 = MemStream.ReadBit();
-            Unk35 = MemStream.ReadSingle();
+            ParticleScale = MemStream.ReadSingle();
             Unk36 = MemStream.ReadInt32();
             Unk37 = MemStream.ReadSingle();
             Unk38 = MemStream.ReadInt32();
@@ -188,7 +188,7 @@ namespace ResourceTypes.Prefab.CrashObject
             MemStream.WriteInt16(SnowParticleID_3);
             MemStream.WriteInt16(Unk33);
             MemStream.WriteBit(Unk34);
-            MemStream.WriteSingle(Unk35);
+            MemStream.WriteSingle(ParticleScale);
             MemStream.WriteInt32(Unk36);
             MemStream.WriteSingle(Unk37);
             MemStream.WriteInt32(Unk38);
