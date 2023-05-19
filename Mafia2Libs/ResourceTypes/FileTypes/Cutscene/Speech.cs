@@ -182,7 +182,7 @@ namespace ResourceTypes.Speech
             int unk2; //1? in spvito;
             string itemName; //links to names of files;
             int unk3;
-            int unk4; //0 in cloth_gossip.
+            byte[] unk4; // Array of bytes?
             int unk5; //8000 in cloth_gossip
             int unk6; //16000 in cloth_gossip
 
@@ -206,7 +206,7 @@ namespace ResourceTypes.Speech
                 get { return unk3; }
                 set { unk3 = value; }
             }
-            public int Unk4 {
+            public byte[] Unk4 {
                 get { return unk4; }
                 set { unk4 = value; }
             }
@@ -222,6 +222,7 @@ namespace ResourceTypes.Speech
             public SpeechItemInfo()
             {
                 ItemName = string.Empty;
+                unk4 = new byte[0];
             }
 
             public void ReadFromFile(BinaryReader reader)
@@ -231,7 +232,9 @@ namespace ResourceTypes.Speech
                 unk2 = reader.ReadInt32();
                 itemName = StringHelpers.ReadString32(reader);
                 unk3 = reader.ReadInt32();
-                unk4 = reader.ReadInt32();
+
+                int NumBytes = reader.ReadInt32();
+                unk4 = reader.ReadBytes(NumBytes);
                 unk5 = reader.ReadInt32();
                 unk6 = reader.ReadInt32();
             }
@@ -243,6 +246,7 @@ namespace ResourceTypes.Speech
                 writer.Write(unk2);
                 StringHelpers.WriteString32(writer, itemName);
                 writer.Write(unk3);
+                writer.Write((int)unk4.Length);
                 writer.Write(unk4);
                 writer.Write(unk5);
                 writer.Write(unk6);
