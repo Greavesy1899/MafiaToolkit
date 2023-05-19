@@ -5,6 +5,24 @@ using Utils.Logging;
 
 namespace ResourceTypes.Prefab.CrashObject
 {
+    public class S_InitPartBreakEnergy
+    {
+        public int PartID { get; set; }
+        public float BreakEnergy { get; set; }
+
+        public void Load(BitStream MemStream)
+        {
+            PartID = MemStream.ReadInt32();
+            BreakEnergy = MemStream.ReadSingle();
+        }
+
+        public void Save(BitStream MemStream)
+        {
+            MemStream.WriteInt32(PartID);
+            MemStream.WriteSingle(BreakEnergy);
+        }
+    }
+
     public class S_InitJoint
     {
         public ushort Unk0 { get; set; }
@@ -16,7 +34,7 @@ namespace ResourceTypes.Prefab.CrashObject
         public C_Transform Unk5 { get; set; } // transform 1
         public string Unk6 { get; set; }
         public C_Vector3 Unk7 { get; set; } // Vector3?
-        public uint Unk8 { get; set; }
+        public S_InitPartBreakEnergy[] PartBreakEnergyList { get; set; }
 
         public S_InitJoint()
         {
@@ -25,6 +43,7 @@ namespace ResourceTypes.Prefab.CrashObject
             Unk5 = new C_Transform();
             Unk6 = String.Empty;
             Unk7 = new C_Vector3();
+            PartBreakEnergyList = new S_InitPartBreakEnergy[0];
         }
 
         public void Load(BitStream MemStream)
@@ -56,9 +75,15 @@ namespace ResourceTypes.Prefab.CrashObject
 
             Unk7.Load(MemStream);
 
-            // If one - means something is available.
-            Unk8 = MemStream.ReadUInt32();
-            ToolkitAssert.Ensure(Unk8 == 0, "We expect one here. This has extra data!");
+            // Load Part Break Energy array
+            uint NumPartBreakEnergies = MemStream.ReadUInt32();
+            PartBreakEnergyList = new S_InitPartBreakEnergy[NumPartBreakEnergies];
+            for(uint i = 0; i < NumPartBreakEnergies; i++)
+            {
+                S_InitPartBreakEnergy PartBreakEnergy = new S_InitPartBreakEnergy();
+                PartBreakEnergy.Load(MemStream);
+                PartBreakEnergyList[i] = PartBreakEnergy;
+            }
         }
 
         public void Save(BitStream MemStream)
@@ -89,7 +114,12 @@ namespace ResourceTypes.Prefab.CrashObject
 
             Unk7.Save(MemStream);
 
-            MemStream.WriteUInt32(Unk8);
+            // Save PartBreakEnergy
+            MemStream.WriteInt32(PartBreakEnergyList.Length);
+            foreach(S_InitPartBreakEnergy PartBreakEntry in PartBreakEnergyList)
+            {
+                PartBreakEntry.Save(MemStream);
+            }
         }
     }
 }
