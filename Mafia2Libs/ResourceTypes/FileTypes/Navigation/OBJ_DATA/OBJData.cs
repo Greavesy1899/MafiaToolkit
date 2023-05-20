@@ -5,7 +5,7 @@ using Utils.VorticeUtils;
 
 namespace ResourceTypes.Navigation
 {
-    public class OBJData
+    public class OBJData : INavigationData
     {
         public struct ConnectionStruct
         {

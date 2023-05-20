@@ -10,7 +10,7 @@ using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {
-    public class AIWorld
+    public class AIWorld : INavigationData
     {
         public int Unk03 { get; set; }
         public int Unk05 { get; set; } // same as Unk3

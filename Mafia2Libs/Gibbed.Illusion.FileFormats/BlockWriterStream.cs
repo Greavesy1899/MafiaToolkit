@@ -107,11 +107,18 @@ namespace Gibbed.Illusion.FileFormats
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            // Something is extremely stinky in Gibbed's original code (possibly due to the number of .NET upgrades?)
+            // But basically, once you call FlushBlock(), it *overwrites* some data in buffer with blockLength.
+            // So to avoid this, we are going to write into a new, seperate buffer so there is no chance of this happening again.
+            // It's worse performance wise, but atleast we can guarantee we are saving the correct value.
+            byte[] BytesToWrite = new byte[count];
+            Array.Copy(buffer, BytesToWrite, count);
+
             long remaining = count;
             while (remaining > 0)
             {
                 var write = (int)Math.Min(remaining, this._Alignment - this._BlockOffset);
-                Array.Copy(buffer, offset, this._BlockBytes, this._BlockOffset, write);
+                Array.Copy(BytesToWrite, offset, this._BlockBytes, this._BlockOffset, write);
                 this._BlockOffset += write;
                 remaining -= write;
                 offset += write;

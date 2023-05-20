@@ -727,15 +727,15 @@ namespace Mafia2Tool
                 navNode.Text = string.Format("HPD");
                 navNode.Name = generatedID.ToString();
 
-                for (int i = 0; i < SceneData.HPDData.unkData.Count; i++)
+                for (int i = 0; i < SceneData.HPDData.HPDEntries.Count; i++)
                 {
                     generatedID = RefManager.GetNewRefID();
                     TreeNode hpdNode = new TreeNode();
                     hpdNode.Text = string.Format("NODE: {0}", i);
                     hpdNode.Name = generatedID.ToString();
-                    var item = SceneData.HPDData.unkData[i];
+                    var item = SceneData.HPDData.HPDEntries[i];
                     RenderBoundingBox bbox = new RenderBoundingBox();
-                    BoundingBox box = new BoundingBox(item.unk0, item.unk1);
+                    BoundingBox box = new BoundingBox(item.BBoxMin, item.BBoxMax);
                     bbox.Init(box);
                     assets.Add(generatedID, bbox);
                     hpdNode.Tag = box;
@@ -752,7 +752,7 @@ namespace Mafia2Tool
                 var data = new OBJData[SceneData.OBJData.Length];
                 for (int i = 0; i < SceneData.OBJData.Length; i++)
                 {
-                    data[i] = (OBJData)SceneData.OBJData[i].data;
+                    data[i] = (OBJData)SceneData.OBJData[i].Data;
                 }
 
                 TreeNode Grids = Graphics.SetNavigationGrid(data);
@@ -760,7 +760,7 @@ namespace Mafia2Tool
 
                 for (int i = 0; i < SceneData.OBJData.Length; i++)
                 {
-                    var obj = (SceneData.OBJData[i].data as OBJData);
+                    var obj = (SceneData.OBJData[i].Data as OBJData);
                     RenderNav navigationPoints = new RenderNav(Graphics);
                     navigationPoints.Init(obj);
 
@@ -792,7 +792,7 @@ namespace Mafia2Tool
                 var data = new AIWorld[SceneData.AIWorlds.Length];
                 for (int i = 0; i < SceneData.AIWorlds.Length; i++)
                 {
-                    data[i] = (AIWorld)SceneData.AIWorlds[i].data;
+                    data[i] = (AIWorld)SceneData.AIWorlds[i].Data;
                     data[i].ConstructRenderable(Graphics);
 
                     TreeNode AIWorldNode = data[i].PopulateTreeNode();

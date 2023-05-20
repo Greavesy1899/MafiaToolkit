@@ -2,9 +2,15 @@
 using System.Diagnostics;
 using System.IO;
 using Utils.StringHelpers;
+using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.Navigation
 {
+    [PropertyClassAllowReflection, PropertyClassCheckInherited]
+    public class INavigationData
+    { 
+    }
+
     //For AIWorld
     //Type 1: AI Group
     //Type 2: AI World Part
@@ -18,16 +24,18 @@ namespace ResourceTypes.Navigation
     //Type 10: AI Action Point 3?
     //Type 11: AI Hiding Place
     //Type 12: AI Action Point 4?
+    [PropertyClassAllowReflection]
     public class NAVData
     {
         //unk01_flags could be types; AIWORLDS seem to have 1005, while OBJDATA is 3604410608.
         FileInfo file;
 
         int fileSize; //size - 4;
-        uint unk01_flags; //possibly flags?
-        string fileName;
-        public object data;
 
+        public uint Flags { get; set; }
+        [PropertyIgnoreByReflector]
+        public string Filename { get; set; }
+        public INavigationData Data { get; set; }
 
         public NAVData(BinaryReader reader)
         {
@@ -65,13 +73,12 @@ namespace ResourceTypes.Navigation
         public void ReadFromFile(BinaryReader reader)
         {
             fileSize = reader.ReadInt32();
-            unk01_flags = reader.ReadUInt32();
+            Flags = reader.ReadUInt32();
 
             //file name seems to be earlier.
-            if (unk01_flags == 3604410608)
+            if (Flags == 3604410608)
             {
-                int nameSize = reader.ReadInt32();
-                fileName = new string(reader.ReadChars(nameSize));
+                Filename = StringHelpers.ReadString32(reader);
 
                 long start = reader.BaseStream.Position;
                 string hpdString = new string(reader.ReadChars(11));
@@ -79,39 +86,39 @@ namespace ResourceTypes.Navigation
                 int hpdVersion = reader.ReadInt32();
                 if (hpdString == "Kynogon HPD" && hpdVersion == 2)
                 {
-                    data = new HPDData();
-                    (data as HPDData).ReadFromFile(reader);
+                    Data = new HPDData();
+                    (Data as HPDData).ReadFromFile(reader);
                 }
                 else
                 {
                     reader.BaseStream.Seek(start, SeekOrigin.Begin);
-                    data = new OBJData(reader);
+                    Data = new OBJData(reader);
                 }
             }
-            else if (unk01_flags == 1005)
+            else if (Flags == 1005)
             {
-                data = new AIWorld(reader);
+                Data = new AIWorld(reader);
             }
             else
             {
-                throw new Exception("Found unexpected type: " + unk01_flags);
+                throw new Exception("Found unexpected type: " + Flags);
             }
         }
 
         public void WriteToFile(NavigationWriter writer)
         {
             writer.Write(-1); //file size
-            writer.Write(unk01_flags);
+            writer.Write(Flags);
 
-            if (unk01_flags == 3604410608)
+            if (Flags == 3604410608)
             {
-                writer.Write(fileName.Length);
-                StringHelpers.WriteString(writer, fileName, false);
-                if (data is OBJData)
+                writer.Write(Filename.Length);
+                StringHelpers.WriteString(writer, Filename, false);
+                if (Data is OBJData)
                 {
-                    (data as OBJData).WriteToFile(writer);
+                    (Data as OBJData).WriteToFile(writer);
                 }
-                else if(data is HPDData)
+                else if(Data is HPDData)
                 {
                     WriteHPD(writer);
 
@@ -121,9 +128,9 @@ namespace ResourceTypes.Navigation
                     return;
                 }
             }
-            else if(unk01_flags == 1005)
+            else if(Flags == 1005)
             {
-                (data as AIWorld).WriteToFile(writer);
+                (Data as AIWorld).WriteToFile(writer);
             }
 
             writer.BaseStream.Position = 0;
@@ -132,7 +139,7 @@ namespace ResourceTypes.Navigation
 
         private void WriteHPD(BinaryWriter writer)
         {
-            var hpd = (data as HPDData);
+            var hpd = (Data as HPDData);
 
             StringHelpers.WriteString(writer, "Kynogon HPD");
             writer.Write(2); // HPD Version is always 2.

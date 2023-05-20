@@ -230,7 +230,7 @@ namespace Mafia2Tool
                 {
                     var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
                     var data = new NAVData(new FileInfo(name));
-                    HPDData = (data.data as HPDData);
+                    HPDData = (data.Data as HPDData);
                 }
             }
 
