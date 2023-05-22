@@ -7,6 +7,7 @@ using Utils.Language;
 using Utils.Settings;
 using Utils.Helpers.Reflection;
 using Forms.EditorControls;
+using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 namespace Mafia2Tool
 {
@@ -45,6 +46,8 @@ namespace Mafia2Tool
             AddItemButton.Text = Language.GetString("$ADD_ITEM");
             ContextCopy.Text = Language.GetString("$COPY");
             ContextPaste.Text = Language.GetString("$PASTE");
+            Button_MoveDown.Text = Language.GetString("$MOVE_DOWN");
+            Button_MoveUp.Text = Language.GetString("$MOVE_UP");
         }
 
         private void BuildData()
@@ -224,7 +227,7 @@ namespace Mafia2Tool
             ListWindow window = new ListWindow();
             window.PopulateForm(actors.Items);
 
-            if(window.ShowDialog() == DialogResult.OK)
+            if (window.ShowDialog() == DialogResult.OK)
             {
                 ActorDefinition definition = actors.CreateActorDefinition((window.chosenObject as ActorEntry));
                 TreeNode node = new TreeNode(definition.Name);
@@ -243,6 +246,14 @@ namespace Mafia2Tool
             {
                 ActorGrid.SelectedObject = null;
                 ActorTreeView.SelectedNode = null;
+            }
+            else if(e.Control && e.KeyCode == Keys.PageUp)
+            {
+                MoveItemUp();
+            }
+            else if(e.Control && e.KeyCode == Keys.PageDown)
+            {
+                MoveItemDown();
             }
         }
 
@@ -280,20 +291,110 @@ namespace Mafia2Tool
         private void ExitButton_OnClick(object sender, System.EventArgs e) => Close();
         private void ContextCopy_Click(object sender, System.EventArgs e) => Copy();
         private void ContextPaste_Click(object sender, System.EventArgs e) => Paste();
+        private void Button_MoveUp_Clicked(object sender, EventArgs e) => MoveItemUp();
+        private void Button_MoveDown_Clicked(object sender, EventArgs e) => MoveItemDown();
         private void ContextMenu_OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ContextCopy.Visible = false;
             ContextPaste.Visible = false;
+            Button_MoveDown.Visible = false;
+            Button_MoveUp.Visible = false;
 
             TreeNode SelectedNode = ActorTreeView.SelectedNode;
-            if(SelectedNode != null && SelectedNode.Tag != null)
+            if (SelectedNode != null && SelectedNode.Tag != null)
             {
-                if(SelectedNode.Text.Equals("Extra Data") || SelectedNode.Tag is ActorExtraData)
+                if (SelectedNode.Text.Equals("Extra Data") || SelectedNode.Tag is ActorExtraData)
                 {
                     ContextCopy.Visible = true;
                     ContextPaste.Visible = true;
                 }
+
+                // For now, Move Up/Down only active for ActorEntry.
+                ActorEntry Item = (SelectedNode.Tag as ActorEntry);
+                if(Item != null)
+                {
+                    Button_MoveDown.Visible = true;
+                    Button_MoveUp.Visible = true;
+                }
             }
+        }
+
+        private void MoveItemDown()
+        {
+            TreeNode SelectedNode = ActorTreeView.SelectedNode;
+            if (SelectedNode == null || SelectedNode.Tag == null)
+            {
+                return;
+            }
+
+            ActorEntry Item = (SelectedNode.Tag as ActorEntry);
+            if (Item == null)
+            {
+                // Only works for ActorEntry for now
+                return;
+            }
+
+            int Index = actors.Items.IndexOf(Item);
+            int NextIndex = (actors.Items.Count != Index ? Index + 1 : -1);
+            if (NextIndex == -1)
+            {
+                return;
+            }
+
+            // Can move down, start by swapping entires
+            ActorEntry ItemBelow = actors.Items[NextIndex];
+            actors.Items[Index] = ItemBelow;
+            actors.Items[NextIndex] = Item;
+
+            // Now move down in TreeView
+            TreeNode ParentNode = SelectedNode.Parent;
+            int NodeIndex = ParentNode.Nodes.IndexOf(SelectedNode);
+            ParentNode.Nodes.RemoveAt(NodeIndex);
+            ParentNode.Nodes.Insert(NodeIndex + 1, SelectedNode);
+            ActorTreeView.SelectedNode = SelectedNode;
+
+            // Update UI
+            Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
+        private void MoveItemUp()
+        {
+            TreeNode SelectedNode = ActorTreeView.SelectedNode;
+            if (SelectedNode == null || SelectedNode.Tag == null)
+            {
+                return;
+            }
+
+            ActorEntry Item = (SelectedNode.Tag as ActorEntry);
+            if (Item == null)
+            {
+                // Only works for ActorEntry for now
+                return;
+            }
+
+            int Index = actors.Items.IndexOf(Item);
+            int NextIndex = (Index != 0 ? Index - 1 : -1);
+            if (NextIndex == -1)
+            {
+                return;
+            }
+
+            // Can move up, start by swapping entires
+            ActorEntry ItemAbove = actors.Items[NextIndex];
+            actors.Items[Index] = ItemAbove;
+            actors.Items[NextIndex] = Item;
+
+            // Now move up in TreeView
+            TreeNode ParentNode = SelectedNode.Parent;
+            int NodeIndex = ParentNode.Nodes.IndexOf(SelectedNode);
+            ParentNode.Nodes.RemoveAt(NodeIndex);
+            ParentNode.Nodes.Insert(NodeIndex - 1, SelectedNode);
+            ActorTreeView.SelectedNode = SelectedNode;
+
+            // Update UI
+            Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
     }
 }

@@ -33,8 +33,7 @@ namespace ResourceTypes.Navigation
         int fileSize; //size - 4;
 
         public uint Flags { get; set; }
-        [PropertyIgnoreByReflector]
-        public string Filename { get; set; }
+        public byte[] Filename { get; set; }
         public INavigationData Data { get; set; }
 
         public NAVData(BinaryReader reader)
@@ -78,7 +77,8 @@ namespace ResourceTypes.Navigation
             //file name seems to be earlier.
             if (Flags == 3604410608)
             {
-                Filename = StringHelpers.ReadString32(reader);
+                int NumChars = reader.ReadInt32();
+                Filename = reader.ReadBytes(NumChars);
 
                 long start = reader.BaseStream.Position;
                 string hpdString = new string(reader.ReadChars(11));
@@ -113,7 +113,7 @@ namespace ResourceTypes.Navigation
             if (Flags == 3604410608)
             {
                 writer.Write(Filename.Length);
-                StringHelpers.WriteString(writer, Filename, false);
+                writer.Write(Filename);
                 if (Data is OBJData)
                 {
                     (Data as OBJData).WriteToFile(writer);

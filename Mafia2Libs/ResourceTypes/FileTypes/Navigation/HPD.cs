@@ -4,7 +4,7 @@ using System.IO;
 using System.Numerics;
 using Utils.StringHelpers;
 using Utils.Helpers.Reflection;
-using Octokit;
+using Utils.Logging;
 
 namespace ResourceTypes.Navigation
 {
@@ -12,14 +12,14 @@ namespace ResourceTypes.Navigation
     public class HPDData : INavigationData
     {
         public int Unk0 { get; set; }
-        byte[] remainingHeader; //132
-        public List<unkStruct> HPDEntries { get; set; }
+        public byte[] UnkHeader { get; set; } // 132, todo, figure out what they are
+        public HPDEntry[] HPDEntries { get; set; }
         public string Unk2 { get; set; }
         public int Unk3 { get; set; }
         public int Unk4 { get; set; }
 
         [PropertyClassAllowReflection]
-        public class unkStruct
+        public class HPDEntry
         {
             /* Unk00 and Unk01 is Nodes bounding box */
             public int FileID { get; set; }
@@ -45,14 +45,14 @@ namespace ResourceTypes.Navigation
         {
             Unk0 = reader.ReadInt32();
             int entryCount = reader.ReadInt32();
-            remainingHeader = reader.ReadBytes(132);
+            UnkHeader = reader.ReadBytes(132);
 
 
-            HPDEntries = new List<unkStruct>();
+            HPDEntries = new HPDEntry[entryCount];
 
             for (int i = 0; i < entryCount; i++)
             {
-                unkStruct data = new unkStruct();
+                HPDEntry data = new HPDEntry();
                 data.FileID = reader.ReadInt32();
 
                 // The bounding box here is stored as X X -Y -Y Z Z
@@ -76,42 +76,23 @@ namespace ResourceTypes.Navigation
                 data.AccumulatingSize = reader.ReadInt32();
                 data.Unk5 = reader.ReadInt32();
                 data.Flags = reader.ReadInt32();
-                HPDEntries.Add(data);
+                HPDEntries[i] = data;
             } 
             
             Unk2 = StringHelpers.ReadString(reader);          
             Unk3 = reader.ReadInt32();          
             Unk4 = reader.ReadInt32();
-            //unkFooter = reader.ReadUInt64();
 
-            if (Debugger.IsAttached)
-            {
-                DebugWriteToFile();
-                AddTest();
-            }
-        }
-
-        private void AddTest()
-        {
-            unkStruct data = new unkStruct();
-            data.FileID = 1156;
-            data.BBoxMin = new Vector3(-1125.855f, 1398.833f, 23.14296f);
-            data.BBoxMax = new Vector3(-1016.458f, 1368.833f, 16.67241f);
-            data.Unk2 = 0;
-            data.FileSize = 46412;
-            data.AccumulatingSize = HPDEntries[HPDEntries.Count-1].AccumulatingSize + HPDEntries[HPDEntries.Count-1].FileSize;
-            data.Unk2 = 100731;
-            data.Flags = 16583800;
-            HPDEntries.Add(data);
+            ToolkitAssert.Ensure(reader.BaseStream.Position == reader.BaseStream.Length, "Expected to read the whole of the HPD file!");
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(Unk0);
-            writer.Write(HPDEntries.Count);
-            writer.Write(remainingHeader);
+            writer.Write(HPDEntries.Length);
+            writer.Write(UnkHeader);
 
-            for (int i = 0; i < HPDEntries.Count; i++)
+            for (int i = 0; i < HPDEntries.Length; i++)
             {
                 var data = HPDEntries[i];
                 writer.Write(data.FileID);
@@ -138,7 +119,6 @@ namespace ResourceTypes.Navigation
             StringHelpers.WriteString(writer, Unk2);
             writer.Write(Unk3);
             writer.Write(Unk4);
-            //writer.Write(unkFooter);
         }
 
         private Vector3 SwapVector3(Vector3 vector)
@@ -154,10 +134,10 @@ namespace ResourceTypes.Navigation
         {
             StreamWriter writer = new StreamWriter("NAV_HPD_DATA content.txt");
             writer.WriteLine(Unk0);
-            writer.WriteLine(HPDEntries.Count);
+            writer.WriteLine(HPDEntries.Length);
             writer.WriteLine("");
 
-            for(int i = 0; i < HPDEntries.Count; i++)
+            for(int i = 0; i < HPDEntries.Length; i++)
             {
                 var data = HPDEntries[i];
                 writer.WriteLine(string.Format("FileID: {0}", data.FileID));
@@ -175,7 +155,6 @@ namespace ResourceTypes.Navigation
             writer.WriteLine(Unk2);
             writer.WriteLine(Unk3);
             writer.WriteLine(Unk4);
-            //writer.WriteLine(unkFooter);
             writer.Close();
         }
     }

@@ -727,7 +727,7 @@ namespace Mafia2Tool
                 navNode.Text = string.Format("HPD");
                 navNode.Name = generatedID.ToString();
 
-                for (int i = 0; i < SceneData.HPDData.HPDEntries.Count; i++)
+                for (int i = 0; i < SceneData.HPDData.HPDEntries.Length; i++)
                 {
                     generatedID = RefManager.GetNewRefID();
                     TreeNode hpdNode = new TreeNode();

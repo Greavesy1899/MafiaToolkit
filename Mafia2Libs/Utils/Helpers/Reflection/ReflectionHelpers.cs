@@ -353,7 +353,7 @@ namespace Utils.Helpers.Reflection
                 else if (Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
                 {
                     object ClassObject = PropertyData.GetType().GetProperty(Info.Name).GetValue(PropertyData);
-                    Element.Add(InternalConvertProperty(ClassObject, Info.PropertyType, Info.Name));
+                    Element.Add(InternalConvertProperty(ClassObject, ClassObject.GetType(), Info.Name));
                 }
                 else
                 {
