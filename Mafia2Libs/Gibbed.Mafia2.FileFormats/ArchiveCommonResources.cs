@@ -9,6 +9,7 @@ using System.Xml.XPath;
 using Utils.Settings;
 using Utils.Lua;
 using Core.IO;
+using Utils.Logging;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -517,7 +518,11 @@ namespace Gibbed.Mafia2.FileFormats
                 //maybe we can get away with saving to version 1, and then converting to version 2 when packing?
                 using (MemoryStream stream = new MemoryStream())
                 {
-                    data.Serialize(1, stream, Endian.Little);
+                    // Write the version of the Table into the stream
+                    stream.WriteValueU32(entry.Version, Endian.Little);
+
+                    // Follow up by serialising the rest of the Table.
+                    data.Serialize(entry.Version, stream, Endian.Little);
                     File.WriteAllBytes(tableDIR + data.Name, stream.ToArray());
                 }
 
@@ -534,30 +539,40 @@ namespace Gibbed.Mafia2.FileFormats
             nodes.Current.MoveToNext();
             int count = nodes.Current.ValueAsInt;
 
-            //read tables and add to resource.
-            for (int i = 0; i != count; i++)
+            // First read the names from the SDS Entry
+            string[] Filenames = new string[count];
+            for (int i = 0; i < count; i++)
             {
                 //goto next and read file name.
                 nodes.Current.MoveToNext();
-                string file = nodes.Current.Value;
+                Filenames[i] = nodes.Current.Value;
+            }
 
+            // Get version, always 1 Mafia II (2010) is 1, Mafia: DE (2020) is 2.
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            // Now that we have the version, we can load the tables
+            for (int i = 0; i < count; i++)
+            { 
                 //create file data.
                 TableData data = new TableData();
 
-                //now read..
+                string file = Filenames[i];
                 using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + file, FileMode.Open)))
                 {
-                    data.Deserialize(1, reader.BaseStream, Endian);
+                    // Load from the Table file. ensure that the versions match
+                    int Version = reader.ReadInt32();
+                    ToolkitAssert.Ensure(Version == entry.Version, "Expected the Version in the Table file to be the same as the entry in SDSContent.xml");
+
+                    // Load from the Table file
+                    data.Deserialize(entry.Version, reader.BaseStream, Endian);
                     data.Name = file;
                     data.NameHash = FNV64.Hash(data.Name);
                 }
 
                 resource.Tables.Add(data);
             }
-
-            //get version, always 1 Mafia II (2010) is 1, Mafia: DE (2020) is 2.
-            nodes.Current.MoveToNext();
-            entry.Version = Convert.ToUInt16(nodes.Current.Value);
 
             //create a temporary memory stream, merge all data and then fill entry data.
             using (MemoryStream stream = new MemoryStream())

@@ -35,6 +35,7 @@ namespace Gibbed.Mafia2.ResourceFormats
     {
         public ulong NameHash;
         public string Name;
+        public byte[] HeaderData;
         public uint Unk1;
         public uint Unk2;
         public byte[] Data;
@@ -54,9 +55,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
             if(version >= 2)
             {
-                input.WriteBytes(new byte[10]);
-                input.WriteValueS32(-1);
-                input.WriteValueS32(0);
+                input.WriteBytes(HeaderData);
             }
 
             input.WriteValueU16((ushort)Columns.Count, endian);
@@ -330,7 +329,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
             if(version >= 2)
             {
-                input.ReadBytes(18);
+                HeaderData = input.ReadBytes(18);
             }
 
             var columnCount = input.ReadValueU16(endian);

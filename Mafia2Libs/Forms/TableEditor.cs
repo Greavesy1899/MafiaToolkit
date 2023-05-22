@@ -14,6 +14,7 @@ namespace Mafia2Tool
         private FileInfo file;
         private TableData data;
         private Dictionary<uint, string> columnNames = new Dictionary<uint, string>();
+        private ushort Version = 0;
 
         private bool bIsFileEdited = false;
 
@@ -50,13 +51,13 @@ namespace Mafia2Tool
             {
                 string[] hashes = File.ReadAllLines(Path.Combine("Resources", "hashes.txt"));
 
-                foreach(var hash in hashes)
+                foreach (var hash in hashes)
                 {
                     uint key = FNV32.Hash(hash);
                     columnNames.TryAdd(key, hash);
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 MessageBox.Show("Missing hashes.txt, No column names will be present.", "Toolkit", MessageBoxButtons.OK);
                 columnNames = new Dictionary<uint, string>();
@@ -64,7 +65,7 @@ namespace Mafia2Tool
 
             // Load custom hashes. This is optional. Expects format like [uint32] [string]
             FileInfo CustomHashesFile = new FileInfo(Path.Combine("Resources", "custom_hashes.txt"));
-            if(CustomHashesFile.Exists)
+            if (CustomHashesFile.Exists)
             {
                 string[] CustomHashes = File.ReadAllLines(CustomHashesFile.FullName);
 
@@ -95,7 +96,8 @@ namespace Mafia2Tool
             data = new TableData();
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
             {
-                data.Deserialize(0, reader.BaseStream, Gibbed.IO.Endian.Little);
+                Version = (ushort)reader.ReadInt32();
+                data.Deserialize(Version, reader.BaseStream, Gibbed.IO.Endian.Little);
             }
 
             foreach (TableData.Column column in data.Columns)
@@ -129,6 +131,8 @@ namespace Mafia2Tool
                 DataGrid.Rows.Add(row.Values.ToArray());
             }
 
+            Label_Version.Text = string.Format("Version: {0}", Version);
+
             Text = Language.GetString("$TABLE_EDITOR_TITLE");
             bIsFileEdited = false;
         }
@@ -140,8 +144,8 @@ namespace Mafia2Tool
             newData.Name = data.Name;
             newData.Unk1 = data.Unk1;
             newData.Unk2 = data.Unk2;
-            
-            for(int i = 0; i != DataGrid.ColumnCount; i++)
+
+            for (int i = 0; i != DataGrid.ColumnCount; i++)
             {
                 TableData.Column column = new TableData.Column();
                 MTableColumn col = (DataGrid.Columns[i] as MTableColumn);
@@ -164,7 +168,7 @@ namespace Mafia2Tool
             }
 
             // Don't save the file if we fail to validate
-            if(!newData.Validate())
+            if (!newData.Validate())
             {
                 MessageBox.Show("Failed to validate. Not saving data.", "Toolkit", MessageBoxButtons.OK);
                 return;
@@ -172,6 +176,7 @@ namespace Mafia2Tool
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create)))
             {
+                writer.Write((int)Version);
                 newData.Serialize(writer);
             }
 
@@ -198,7 +203,7 @@ namespace Mafia2Tool
 
             foreach (MTableColumn column in DataGrid.Columns)
             {
-                switch(column.TypeM2)
+                switch (column.TypeM2)
                 {
                     case TableData.ColumnType.Boolean:
                     case TableData.ColumnType.Unsigned32:
@@ -238,7 +243,7 @@ namespace Mafia2Tool
 
         private void DeleteRowOnClick(object sender, EventArgs e)
         {
-            if(DataGrid.SelectedRows.Count > 0)
+            if (DataGrid.SelectedRows.Count > 0)
             {
                 DataGrid.Rows.Remove(DataGrid.SelectedRows[0]);
 

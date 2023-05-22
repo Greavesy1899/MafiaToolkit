@@ -29,170 +29,164 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TableEditor));
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.AddRowButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.DeleteRowButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.DataGrid = new System.Windows.Forms.DataGridView();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.ColumnIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.RowIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.DataTypeLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).BeginInit();
-            this.statusStrip1.SuspendLayout();
-            this.SuspendLayout();
+            toolStrip1 = new System.Windows.Forms.ToolStrip();
+            FileButton = new System.Windows.Forms.ToolStripDropDownButton();
+            SaveButton = new System.Windows.Forms.ToolStripMenuItem();
+            ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
+            ExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            EditButton = new System.Windows.Forms.ToolStripDropDownButton();
+            AddRowButton = new System.Windows.Forms.ToolStripMenuItem();
+            DeleteRowButton = new System.Windows.Forms.ToolStripMenuItem();
+            DataGrid = new System.Windows.Forms.DataGridView();
+            statusStrip1 = new System.Windows.Forms.StatusStrip();
+            ColumnIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            RowIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            DataTypeLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            Label_Version = new System.Windows.Forms.ToolStripLabel();
+            toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)DataGrid).BeginInit();
+            statusStrip1.SuspendLayout();
+            SuspendLayout();
             // 
             // toolStrip1
             // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FileButton,
-            this.EditButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(933, 25);
-            this.toolStrip1.TabIndex = 15;
-            this.toolStrip1.Text = "MainStrip";
+            toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { FileButton, EditButton, Label_Version });
+            toolStrip1.Location = new System.Drawing.Point(0, 0);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new System.Drawing.Size(933, 25);
+            toolStrip1.TabIndex = 15;
+            toolStrip1.Text = "MainStrip";
             // 
             // FileButton
             // 
-            this.FileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.FileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SaveButton,
-            this.ReloadButton,
-            this.ExitButton});
-            this.FileButton.Image = ((System.Drawing.Image)(resources.GetObject("FileButton.Image")));
-            this.FileButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FileButton.Name = "FileButton";
-            this.FileButton.Size = new System.Drawing.Size(47, 22);
-            this.FileButton.Text = "$FILE";
+            FileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            FileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { SaveButton, ReloadButton, ExitButton });
+            FileButton.Image = (System.Drawing.Image)resources.GetObject("FileButton.Image");
+            FileButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            FileButton.Name = "FileButton";
+            FileButton.Size = new System.Drawing.Size(47, 22);
+            FileButton.Text = "$FILE";
             // 
             // SaveButton
             // 
-            this.SaveButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.ShortcutKeyDisplayString = "";
-            this.SaveButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.SaveButton.Size = new System.Drawing.Size(165, 22);
-            this.SaveButton.Text = "$SAVE";
-            this.SaveButton.Click += new System.EventHandler(this.SaveOnClick);
+            SaveButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            SaveButton.Name = "SaveButton";
+            SaveButton.ShortcutKeyDisplayString = "";
+            SaveButton.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
+            SaveButton.Size = new System.Drawing.Size(165, 22);
+            SaveButton.Text = "$SAVE";
+            SaveButton.Click += SaveOnClick;
             // 
             // ReloadButton
             // 
-            this.ReloadButton.Name = "ReloadButton";
-            this.ReloadButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.ReloadButton.Size = new System.Drawing.Size(165, 22);
-            this.ReloadButton.Text = "$RELOAD";
-            this.ReloadButton.Click += new System.EventHandler(this.ReloadOnClick);
+            ReloadButton.Name = "ReloadButton";
+            ReloadButton.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R;
+            ReloadButton.Size = new System.Drawing.Size(165, 22);
+            ReloadButton.Text = "$RELOAD";
+            ReloadButton.Click += ReloadOnClick;
             // 
             // ExitButton
             // 
-            this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(165, 22);
-            this.ExitButton.Text = "$EXIT";
-            this.ExitButton.Click += new System.EventHandler(this.ExitButtonOnClick);
+            ExitButton.Name = "ExitButton";
+            ExitButton.Size = new System.Drawing.Size(165, 22);
+            ExitButton.Text = "$EXIT";
+            ExitButton.Click += ExitButtonOnClick;
             // 
             // EditButton
             // 
-            this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddRowButton,
-            this.DeleteRowButton});
-            this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
-            this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.EditButton.Name = "EditButton";
-            this.EditButton.Size = new System.Drawing.Size(49, 22);
-            this.EditButton.Text = "$EDIT";
+            EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { AddRowButton, DeleteRowButton });
+            EditButton.Image = (System.Drawing.Image)resources.GetObject("EditButton.Image");
+            EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            EditButton.Name = "EditButton";
+            EditButton.Size = new System.Drawing.Size(49, 22);
+            EditButton.Text = "$EDIT";
             // 
             // AddRowButton
             // 
-            this.AddRowButton.Name = "AddRowButton";
-            this.AddRowButton.Size = new System.Drawing.Size(201, 22);
-            this.AddRowButton.Text = "$ADD_ROW";
-            this.AddRowButton.Click += new System.EventHandler(this.AddRowOnClick);
+            AddRowButton.Name = "AddRowButton";
+            AddRowButton.Size = new System.Drawing.Size(201, 22);
+            AddRowButton.Text = "$ADD_ROW";
+            AddRowButton.Click += AddRowOnClick;
             // 
             // DeleteRowButton
             // 
-            this.DeleteRowButton.Name = "DeleteRowButton";
-            this.DeleteRowButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.DeleteRowButton.Size = new System.Drawing.Size(201, 22);
-            this.DeleteRowButton.Text = "$DELETE_ROW";
-            this.DeleteRowButton.Click += new System.EventHandler(this.DeleteRowOnClick);
+            DeleteRowButton.Name = "DeleteRowButton";
+            DeleteRowButton.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete;
+            DeleteRowButton.Size = new System.Drawing.Size(201, 22);
+            DeleteRowButton.Text = "$DELETE_ROW";
+            DeleteRowButton.Click += DeleteRowOnClick;
             // 
             // DataGrid
             // 
-            this.DataGrid.AllowUserToAddRows = false;
-            this.DataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.DataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.DataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DataGrid.Location = new System.Drawing.Point(0, 32);
-            this.DataGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.DataGrid.MultiSelect = false;
-            this.DataGrid.Name = "DataGrid";
-            this.DataGrid.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.DataGrid.Size = new System.Drawing.Size(933, 458);
-            this.DataGrid.TabIndex = 16;
-            this.DataGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CellContent_Changed);
-            this.DataGrid.SelectionChanged += new System.EventHandler(this.OnSelectedChange);
+            DataGrid.AllowUserToAddRows = false;
+            DataGrid.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            DataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            DataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            DataGrid.Location = new System.Drawing.Point(0, 32);
+            DataGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            DataGrid.MultiSelect = false;
+            DataGrid.Name = "DataGrid";
+            DataGrid.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            DataGrid.Size = new System.Drawing.Size(933, 458);
+            DataGrid.TabIndex = 16;
+            DataGrid.CellValueChanged += CellContent_Changed;
+            DataGrid.SelectionChanged += OnSelectedChange;
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ColumnIndexLabel,
-            this.RowIndexLabel,
-            this.DataTypeLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 497);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(933, 22);
-            this.statusStrip1.TabIndex = 17;
-            this.statusStrip1.Text = "statusStrip1";
+            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { ColumnIndexLabel, RowIndexLabel, DataTypeLabel });
+            statusStrip1.Location = new System.Drawing.Point(0, 497);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+            statusStrip1.Size = new System.Drawing.Size(933, 22);
+            statusStrip1.TabIndex = 17;
+            statusStrip1.Text = "statusStrip1";
             // 
             // ColumnIndexLabel
             // 
-            this.ColumnIndexLabel.Name = "ColumnIndexLabel";
-            this.ColumnIndexLabel.Size = new System.Drawing.Size(79, 17);
-            this.ColumnIndexLabel.Text = "ColumnIndex";
+            ColumnIndexLabel.Name = "ColumnIndexLabel";
+            ColumnIndexLabel.Size = new System.Drawing.Size(79, 17);
+            ColumnIndexLabel.Text = "ColumnIndex";
             // 
             // RowIndexLabel
             // 
-            this.RowIndexLabel.Name = "RowIndexLabel";
-            this.RowIndexLabel.Size = new System.Drawing.Size(59, 17);
-            this.RowIndexLabel.Text = "RowIndex";
+            RowIndexLabel.Name = "RowIndexLabel";
+            RowIndexLabel.Size = new System.Drawing.Size(59, 17);
+            RowIndexLabel.Text = "RowIndex";
             // 
             // DataTypeLabel
             // 
-            this.DataTypeLabel.Name = "DataTypeLabel";
-            this.DataTypeLabel.Size = new System.Drawing.Size(118, 17);
-            this.DataTypeLabel.Text = "toolStripStatusLabel1";
+            DataTypeLabel.Name = "DataTypeLabel";
+            DataTypeLabel.Size = new System.Drawing.Size(118, 17);
+            DataTypeLabel.Text = "toolStripStatusLabel1";
+            // 
+            // Label_Version
+            // 
+            Label_Version.Name = "Label_Version";
+            Label_Version.Size = new System.Drawing.Size(60, 22);
+            Label_Version.Text = "$VERSION";
             // 
             // TableEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(933, 519);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.DataGrid);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "TableEditor";
-            this.Text = "$TABLE_EDITOR";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TableEditor_Closing);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).EndInit();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(933, 519);
+            Controls.Add(statusStrip1);
+            Controls.Add(toolStrip1);
+            Controls.Add(DataGrid);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "TableEditor";
+            Text = "$TABLE_EDITOR";
+            FormClosing += TableEditor_Closing;
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)DataGrid).EndInit();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -210,5 +204,6 @@
         private System.Windows.Forms.ToolStripStatusLabel RowIndexLabel;
         private System.Windows.Forms.ToolStripStatusLabel DataTypeLabel;
         private System.Windows.Forms.ToolStripMenuItem DeleteRowButton;
+        private System.Windows.Forms.ToolStripLabel Label_Version;
     }
 }
