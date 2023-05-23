@@ -35,10 +35,15 @@ namespace Gibbed.Mafia2.ResourceFormats
     {
         public ulong NameHash;
         public string Name;
-        public byte[] HeaderData;
         public uint Unk1;
         public uint Unk2;
         public byte[] Data;
+
+        // TODO: Only present if Version >= 2??
+        public ulong PatchedNameHash;
+        public string PatchedName;
+        public uint PatchedUnk1;
+        public uint PatchedUnk2;
 
         public List<Row> Rows = new List<Row>();
         public List<Column> Columns = new List<Column>();
@@ -50,18 +55,24 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         public void Serialize(ushort version, Stream input, Endian endian)
         {
+            // Calculate before serializing
+            int Size = CalculateRowSize();
+
             input.WriteValueU64(NameHash, endian);
             input.WriteStringU16(Name, endian);
 
             if(version >= 2)
             {
-                input.WriteBytes(HeaderData);
+                input.WriteValueU64(PatchedNameHash, endian);
+                input.WriteStringU16(PatchedName, endian);
+                input.WriteValueU32(PatchedUnk1);
+                input.WriteValueU32(PatchedUnk2);
             }
 
             input.WriteValueU16((ushort)Columns.Count, endian);
             input.WriteValueU32(Unk1, endian);
             input.WriteValueU32(Unk2, endian);
-            input.WriteValueU32((uint)(Data.Length / Rows.Count));
+            input.WriteValueU32((uint)Size);
             input.WriteValueU32((uint)Rows.Count);
 
             for (int i = 0; i < Rows.Count; i++)
@@ -250,78 +261,6 @@ namespace Gibbed.Mafia2.ResourceFormats
             return false;
         }
 
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.Write(NameHash);
-            StringHelpers.WriteString16(writer, Name);
-            writer.Write((ushort)Columns.Count);
-            writer.Write(Unk1);
-            writer.Write(Unk2);
-            writer.Write((uint)CalculateRowSize());
-            writer.Write((uint)Rows.Count);
-
-            for (int i = 0; i < Rows.Count; i++)
-            {
-                for (int x = 0; x < Columns.Count; x++)
-                {
-                    Column column = Columns[x];
-                    object value = Rows[i].Values[x];
-                    bool isValid = true;
-
-                    switch (column.Type)
-                    {
-                        case ColumnType.Boolean:
-                            writer.Write(ConvertToType<int>(value, ref isValid));
-                            break;
-                        case ColumnType.Float32:
-                            writer.Write(ConvertToType<float>(value, ref isValid));
-                            break;
-                        case ColumnType.Signed32:
-                            writer.Write(ConvertToType<int>(value, ref isValid));
-                            break;
-                        case ColumnType.Unsigned32:
-                        case ColumnType.Flags32:
-                            writer.Write(ConvertToType<uint>(value, ref isValid));
-                            break;
-                        case ColumnType.Hash64:
-                            writer.Write(ConvertToType<ulong>(value, ref isValid));
-                            break;
-                        case ColumnType.String8:
-                            StringHelpers.WriteStringBuffer(writer, 8, (string)Rows[i].Values[x]);
-                            break;
-                        case ColumnType.String16:
-                            StringHelpers.WriteStringBuffer(writer, 16, (string)Rows[i].Values[x]);
-                            break;
-                        case ColumnType.String32:
-                            StringHelpers.WriteStringBuffer(writer, 32, (string)Rows[i].Values[x], ' ', System.Text.Encoding.GetEncoding(1250));
-                            break;
-                        case ColumnType.String64:
-                            StringHelpers.WriteStringBuffer(writer, 64, (string)Rows[i].Values[x]);
-                            break;
-                        case ColumnType.Color:
-                            string[] colors = (Rows[i].Values[x] as string).Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            foreach(var colour in colors)
-                            {
-                                writer.Write(ConvertToType<float>(colour, ref isValid));
-
-                            }
-                            break;
-                        case ColumnType.Hash64AndString32:
-                            string name = (string)Rows[i].Values[x];
-                            ulong hash = FNV64.Hash(name);
-                            writer.Write(hash);
-                            StringHelpers.WriteStringBuffer(writer, 32, !string.IsNullOrEmpty(name) ? name : "");
-                            break;
-                        default:
-                            throw new FormatException();
-                    }
-                }
-            }
-
-            for (int i = 0; i < Columns.Count; i++)
-                Columns[i].Serialize(writer);
-        }
-
         public void Deserialize(ushort version, Stream input, Endian endian)
         {
             this.NameHash = input.ReadValueU64(endian);
@@ -329,7 +268,10 @@ namespace Gibbed.Mafia2.ResourceFormats
 
             if(version >= 2)
             {
-                HeaderData = input.ReadBytes(18);
+                PatchedNameHash = input.ReadValueU64();
+                PatchedName = input.ReadStringU16(endian);
+                PatchedUnk1 = input.ReadValueU32();
+                PatchedUnk2 = input.ReadValueU32();
             }
 
             var columnCount = input.ReadValueU16(endian);
@@ -605,6 +547,14 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         private int CalculateRowSize()
         {
+            if (Data != null)
+            {
+                // Looks awful but does the job, cheaper.
+                // Calculate the size based on Data and Rows already serialized
+                return Data.Length / Rows.Count;
+            }
+
+            // Otherwise attempt to calculate size
             int rowSize = 0;
 
             foreach (Column col in Columns)

@@ -505,7 +505,11 @@ namespace Gibbed.Mafia2.FileFormats
         public ResourceEntry ReadTableEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string tableDIR)
         {
             TableResource resource = new TableResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
+            using (MemoryStream stream = new MemoryStream(entry.Data))
+            {
+                resource.Deserialize(entry.Version, stream, Endian);
+            }
+                
             if (!Directory.Exists(tableDIR + "/tables"))
             {
                 Directory.CreateDirectory(tableDIR + "/tables");

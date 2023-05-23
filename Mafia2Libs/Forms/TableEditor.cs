@@ -139,9 +139,15 @@ namespace Mafia2Tool
 
         private void SaveTableData()
         {
+            // TODO: This *really* sucks. Can't we just remove the rows/columns and repopulate them?
+            // Instead of doing the whole TableData structure...
             TableData newData = new TableData();
             newData.NameHash = data.NameHash;
             newData.Name = data.Name;
+            newData.PatchedName = data.PatchedName;
+            newData.PatchedNameHash = data.PatchedNameHash;
+            newData.PatchedUnk1 = data.PatchedUnk1;
+            newData.PatchedUnk2 = data.PatchedUnk2;
             newData.Unk1 = data.Unk1;
             newData.Unk2 = data.Unk2;
 
@@ -177,7 +183,7 @@ namespace Mafia2Tool
             using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create)))
             {
                 writer.Write((int)Version);
-                newData.Serialize(writer);
+                newData.Serialize(Version, writer.BaseStream, Gibbed.IO.Endian.Little);
             }
 
             data = newData;
