@@ -42,6 +42,7 @@ namespace Utils.Settings
         public static bool bUseOodleCompression;
         public static float CompressionRatio;
         public static bool DecompileLUA;
+        public static bool EnableLuaHelper;
         public static bool bBackupEnabled;
         public static bool AddTimeDataBackup;
         public static bool UseSDSToolFormat;
@@ -87,6 +88,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
             bool.TryParse(ReadKey("CookCollisions", "SDS", "True"), out CookCollisions);
+            bool.TryParse(ReadKey("EnableLUAHelper", "LUA", "True"), out DecompileLUA);
             bool.TryParse(ReadKey("CheckForUpdates", "Misc", "True"), out CheckForUpdates);
             bool.TryParse(ReadKey("SkipGameSelector", "Misc", "False"), out SkipGameSelector);
             int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);

@@ -106,5 +106,11 @@ namespace Forms.OptionControls
             ToolkitSettings.WriteKey("CompressionRatio", "SDS", ToolkitSettings.CompressionRatio.ToString());
             NumericUpDown_Ratio.Text = ToolkitSettings.CompressionRatio.ToString();
         }
+
+        private void Checkbox_EnableLuaHelper_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.EnableLuaHelper = Checkbox_EnableLuaHelper.Checked;
+            ToolkitSettings.WriteKey("EnableLUAHelper", "LUA", ToolkitSettings.EnableLuaHelper.ToString());
+        }
     }
 }

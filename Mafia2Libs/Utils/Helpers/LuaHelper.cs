@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using UnluacNET;
+using Utils.Settings;
 
 namespace Utils.Lua
 {
@@ -40,6 +41,13 @@ namespace Utils.Lua
 
         private static void FixDecompiledLua(string Name)
         {
+            if (ToolkitSettings.EnableLuaHelper == false)
+            {
+                // Lua helper is disabled, do not make changes
+                return;
+            }
+
+            // LuaHelper enabled, make changes
             string[] lines = File.ReadAllLines(Name);
             int LastFunctionLine = 0;
             int FirstListLine = 0;
