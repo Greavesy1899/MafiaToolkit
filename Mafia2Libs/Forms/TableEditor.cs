@@ -194,9 +194,10 @@ namespace Mafia2Tool
 
         private void GetCellProperties(int r, int c)
         {
-            RowIndexLabel.Text = "Row Index: " + r.ToString();
-            ColumnIndexLabel.Text = "Column Index: " + c.ToString();
-            DataTypeLabel.Text = "Data Type: " + data.Columns[c].Type;
+            RowIndexLabel.Text = string.Format("[Row Index: {0}]", r);
+            ColumnIndexLabel.Text = string.Format("[Column Index: {0}]", c);
+            Label_DataType.Text = string.Format("[Data Type: {0}]", data.Columns[c].Type);
+            Label_ValueDataType.Text = string.Format("[Value Type: {0}]", DataGrid.Rows[r].Cells[c].Value.GetType());
         }
 
         private void ExitButtonOnClick(object sender, EventArgs e) => Close();
@@ -243,6 +244,13 @@ namespace Mafia2Tool
 
         private void CellContent_Changed(object sender, DataGridViewCellEventArgs e)
         {
+            MTableColumn Column = (DataGrid.Columns[e.ColumnIndex] as MTableColumn);
+            DataGridViewCell Cell = DataGrid.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            if (Cell.Value.GetType() != TableData.GetValueTypeForColumnType(Column.TypeM2))
+            {
+                object Output = Convert.ChangeType(Cell.Value, TableData.GetValueTypeForColumnType(Column.TypeM2));
+                Cell.Value = Output;
+            }
             Text = Language.GetString("$TABLE_EDITOR_TITLE") + "*";
             bIsFileEdited = true;
         }

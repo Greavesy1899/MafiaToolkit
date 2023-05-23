@@ -525,16 +525,10 @@ namespace Gibbed.Mafia2.ResourceFormats
                 case ColumnType.String16:
                 case ColumnType.String32:
                 case ColumnType.String64:
+                case ColumnType.Color:
                     {
                         return typeof(string);
                     }
-
-                /*
-                case ColumnType.Color:
-                {
-                    return typeof(Color);
-                }
-                */
 
                 case ColumnType.Hash64AndString32:
                     {

@@ -37,12 +37,13 @@
             EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             AddRowButton = new System.Windows.Forms.ToolStripMenuItem();
             DeleteRowButton = new System.Windows.Forms.ToolStripMenuItem();
+            Label_Version = new System.Windows.Forms.ToolStripLabel();
             DataGrid = new System.Windows.Forms.DataGridView();
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             ColumnIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
             RowIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            DataTypeLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            Label_Version = new System.Windows.Forms.ToolStripLabel();
+            Label_DataType = new System.Windows.Forms.ToolStripStatusLabel();
+            Label_ValueDataType = new System.Windows.Forms.ToolStripStatusLabel();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DataGrid).BeginInit();
             statusStrip1.SuspendLayout();
@@ -117,6 +118,12 @@
             DeleteRowButton.Text = "$DELETE_ROW";
             DeleteRowButton.Click += DeleteRowOnClick;
             // 
+            // Label_Version
+            // 
+            Label_Version.Name = "Label_Version";
+            Label_Version.Size = new System.Drawing.Size(60, 22);
+            Label_Version.Text = "$VERSION";
+            // 
             // DataGrid
             // 
             DataGrid.AllowUserToAddRows = false;
@@ -135,7 +142,7 @@
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { ColumnIndexLabel, RowIndexLabel, DataTypeLabel });
+            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { ColumnIndexLabel, RowIndexLabel, Label_DataType, Label_ValueDataType });
             statusStrip1.Location = new System.Drawing.Point(0, 497);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
@@ -155,17 +162,17 @@
             RowIndexLabel.Size = new System.Drawing.Size(59, 17);
             RowIndexLabel.Text = "RowIndex";
             // 
-            // DataTypeLabel
+            // Label_DataType
             // 
-            DataTypeLabel.Name = "DataTypeLabel";
-            DataTypeLabel.Size = new System.Drawing.Size(118, 17);
-            DataTypeLabel.Text = "toolStripStatusLabel1";
+            Label_DataType.Name = "Label_DataType";
+            Label_DataType.Size = new System.Drawing.Size(103, 17);
+            Label_DataType.Text = "$CELL_DATA_TYPE";
             // 
-            // Label_Version
+            // Label_ValueDataType
             // 
-            Label_Version.Name = "Label_Version";
-            Label_Version.Size = new System.Drawing.Size(60, 22);
-            Label_Version.Text = "$VERSION";
+            Label_ValueDataType.Name = "Label_ValueDataType";
+            Label_ValueDataType.Size = new System.Drawing.Size(111, 17);
+            Label_ValueDataType.Text = "$VALUE_DATA_TYPE";
             // 
             // TableEditor
             // 
@@ -202,8 +209,9 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel ColumnIndexLabel;
         private System.Windows.Forms.ToolStripStatusLabel RowIndexLabel;
-        private System.Windows.Forms.ToolStripStatusLabel DataTypeLabel;
+        private System.Windows.Forms.ToolStripStatusLabel Label_DataType;
         private System.Windows.Forms.ToolStripMenuItem DeleteRowButton;
         private System.Windows.Forms.ToolStripLabel Label_Version;
+        private System.Windows.Forms.ToolStripStatusLabel Label_ValueDataType;
     }
 }
