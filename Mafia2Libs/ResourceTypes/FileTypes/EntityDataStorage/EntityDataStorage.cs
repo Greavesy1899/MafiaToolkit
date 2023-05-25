@@ -35,6 +35,7 @@ namespace ResourceTypes.EntityDataStorage
         [ReadOnly(true)]
         public int TableSize { get; set; }
         public ulong Hash { get; set; }
+        [PropertyIgnoreByReflector]
         public string Name { get => EDSHashes.GetHashName(Hash); }
         public ulong[] TableHashes { get; set; }
         [Browsable(false)]
