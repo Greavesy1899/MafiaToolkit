@@ -38,6 +38,7 @@ namespace Forms.OptionControls
             CookCollisionsBox.Checked = ToolkitSettings.CookCollisions;
             CheckBox_UseOodle.Checked = ToolkitSettings.bUseOodleCompression;
             CheckBox_BackupSDS.Checked = ToolkitSettings.bBackupEnabled;
+            Checkbox_EnableLuaHelper.Checked = ToolkitSettings.EnableLuaHelper;
 
             AddTimeDateBackupsBox.Enabled = ToolkitSettings.bBackupEnabled;
 

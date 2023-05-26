@@ -88,7 +88,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
             bool.TryParse(ReadKey("CookCollisions", "SDS", "True"), out CookCollisions);
-            bool.TryParse(ReadKey("EnableLUAHelper", "LUA", "True"), out DecompileLUA);
+            bool.TryParse(ReadKey("EnableLUAHelper", "LUA", "True"), out EnableLuaHelper);
             bool.TryParse(ReadKey("CheckForUpdates", "Misc", "True"), out CheckForUpdates);
             bool.TryParse(ReadKey("SkipGameSelector", "Misc", "False"), out SkipGameSelector);
             int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);
