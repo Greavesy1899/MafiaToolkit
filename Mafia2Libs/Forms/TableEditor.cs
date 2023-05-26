@@ -14,7 +14,7 @@ namespace Mafia2Tool
         private FileInfo file;
         private TableData data;
         private Dictionary<uint, string> columnNames = new Dictionary<uint, string>();
-        private ushort Version = 0;
+        private ushort Version;
 
         private bool bIsFileEdited = false;
 
@@ -151,7 +151,7 @@ namespace Mafia2Tool
             newData.Unk1 = data.Unk1;
             newData.Unk2 = data.Unk2;
 
-            for (int i = 0; i != DataGrid.ColumnCount; i++)
+            for (int i = 0; i < DataGrid.ColumnCount; i++)
             {
                 TableData.Column column = new TableData.Column();
                 MTableColumn col = (DataGrid.Columns[i] as MTableColumn);
@@ -162,10 +162,10 @@ namespace Mafia2Tool
                 newData.Columns.Add(column);
             }
 
-            for (int i = 0; i != DataGrid.RowCount; i++)
+            for (int i = 0; i < DataGrid.RowCount; i++)
             {
                 TableData.Row row = new TableData.Row();
-                for (int x = 0; x != DataGrid.ColumnCount; x++)
+                for (int x = 0; x < DataGrid.ColumnCount; x++)
                 {
                     row.Values.Add(DataGrid.Rows[i].Cells[x].Value);
                 }
@@ -210,6 +210,7 @@ namespace Mafia2Tool
 
             foreach (MTableColumn column in DataGrid.Columns)
             {
+                Type DataType = TableData.GetValueTypeForColumnType(column.TypeM2);
                 switch (column.TypeM2)
                 {
                     case TableData.ColumnType.Boolean:
@@ -218,7 +219,7 @@ namespace Mafia2Tool
                     case TableData.ColumnType.Hash64:
                     case TableData.ColumnType.Float32:
                     case TableData.ColumnType.Flags32:
-                        data.Add(0);
+                        data.Add(Activator.CreateInstance(DataType));
                         break;
                     case TableData.ColumnType.Color:
                         data.Add("255 255 255");
