@@ -226,6 +226,7 @@ namespace Forms.Docking
                     if (TreeView_Explorer.SelectedNode.Tag is FrameObjectFrame)
                     {
                         Export3DButton.Visible = true;
+                        LinkToActorButton.Visible = true;
                     }
                 }
             }
