@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 
 namespace Core.IO
 {
@@ -6,6 +7,10 @@ namespace Core.IO
     {
         public static FileBase ConstructFromFileInfo(FileInfo info)
         {
+            // Set culture to invariant, potential fix with Turkish windows and XBin
+            CultureInfo SavedCulture = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
             string extension = info.Extension.Replace(".", "").ToUpper();
             FileBase File = null;
 
@@ -75,6 +80,8 @@ namespace Core.IO
                 default:
                     return new FileBase(info);
             }
+
+            CultureInfo.CurrentCulture = SavedCulture;
 
             return File;
         }
