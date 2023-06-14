@@ -9,32 +9,32 @@
 	<String ID="$STOP">توقف</String>
 	<String ID="$ENTRY_NAME">Entry Name</String>
 	<String ID="$UPDATE_MESSAGE1">!متاح Mafia: Toolkit إصدار جديد من</String>
-	<String ID="$UPDATE_MESSAGE2">للتحميل، يرجى الضغط على موافق</String>
+	<String ID="$UPDATE_MESSAGE2">.للتحميل، يرجى الضغط على موافق</String>
 	<String ID="$UPDATE_MESSAGE3">.لاستخدام الإصدار الحالي، اضغط على إلغاء</String>
-	<String ID="$FAILED_UPDATE_CHECK">فشل في التحقق من وجود تحديثات</String>
+	<String ID="$FAILED_UPDATE_CHECK">!فشل التحقق من وجود تحديثات</String>
 
 	<!-- Game Explorer Strings -->
 	<String ID="$ABOUT">About</String>
 	<String ID="$THANKS">شكر خاص</String>
-	<String ID="$VIEW">عرض</String>
+	<String ID="$VIEW">عرض كـ</String>
 	<String ID="$FILE">الملف</String>
 	<String ID="$TOOLS">الأدوات</String>
 	<String ID="$BTN_OPEN_MII">فتح مجلد اللعبة</String>
 	<String ID="$BTN_RUN_MII">تشغيل اللعبة</String>
 	<String ID="$EXIT">خروج</String>
 	<String ID="$OPTIONS">الإعدادات</String>
-	<String ID="$SELECT_MII_FOLDER">mafia II Definitive Edition.exe mafia2.exe حدد مجلد لعبة مافيا الخاص بك يجب أن يحتوي المجلد على</String>
+	<String ID="$SELECT_MII_FOLDER">حدد مجلد لعبة مافيا الخاص بك يجب أن يحتوي المجلد على أيقونة اللعبة</String>
 	<String ID="$ICON">أيقونات</String>
-	<String ID="$DETAILS">تفاصيل</String>
+	<String ID="$DETAILS">قائمة مفصلة</String>
 	<String ID="$SMALL_ICON">أيقونات صغيرة</String>
 	<String ID="$LIST">قائمة</String>
 	<String ID="$TILE">لوحات</String>
 	<String ID="$MII_TK_GAME_EXPLORER">Mafia Toolkit: مستكشف اللعبة</String>
-	<String ID="$UNPACK_ALL_SDS">SDS استخراج جميع ملفات</String>
+	<String ID="$UNPACK_ALL_SDS">SDS استخراج جميع ملفات الـ</String>
 	<String ID="$DELETE_SELECTED_OBJECTS">حذف الملفات والمجلدات المحددة</String>
-	<String ID="$UNPACK_SELECTED_SDS">المحددة SDS استخراج ملفات</String>
-	<String ID="$PACK_SELECTED_SDS">المحددة SDS حزم ملفات</String>
-	<String ID="$OPEN_FOLDER_EXPLORER">فتح موقع الملف</String>
+	<String ID="$UNPACK_SELECTED_SDS">المحددة SDS استخراج ملفات الـ </String>
+	<String ID="$PACK_SELECTED_SDS">المحددة SDS حزم ملفات الـ </String>
+	<String ID="$OPEN_FOLDER_EXPLORER">فتح المجلد في مستكشف الملفات</String>
 	<String ID="$PACK">حزم الملفات</String>
 	<String ID="$UNPACK">استخراج الملفات</String>
 	<String ID="$LAST_MODIFIED">تاريخ التعديل</String>
@@ -46,7 +46,7 @@
 	<String ID="$REFRESH">تحديث</String>
 	<String ID="$FOLDER_PATH_TOOLTIP">مسار الملف</String>
 	<String ID="$UP_TOOLTIP">فوق</String>
-	<String ID="$M1DE_OODLEERROR">المطلوب للضغط / إلغاء الضغط. يرجى التأكد من وجوده في مسار اللعبة. oo2core_8_win64.dll تعذر العثور على</String>
+	<String ID="$M1DE_OODLEERROR">.المطلوب للاستخراج/الحزم Oodle DLL تعذر العثور على</String>
 	<String ID="$OPEN_MAP_EDITOR">Map Editor فتح</String>
 
 	<!-- Game Selector -->
@@ -58,16 +58,16 @@
 
 	<!-- Main Options Strings-->
 	<String ID="$GENERAL">عام</String>
-	<String ID="$SDS_OPTIONS">SDS إعدادات ملفات</String>
+	<String ID="$SDS_OPTIONS">SDS إعدادات ملفات الـ</String>
 	<String ID="$MODEL_EXPORTING">المجسمات/الاستخراج</String>
 	<String ID="$MATERIAL_LIBS">مكتبات الخامة</String>
 
 	<!-- General Options Strings-->
-	<String ID="$ENABLE_DEBUG_LOGGING">تمكين المسجل</String>
+	<String ID="$ENABLE_DEBUG_LOGGING">تمكين السجل</String>
 	<String ID="$MII_DIRECTORY">Mafia مسار لعبة</String>
-	<String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
+	<String ID="$DISCORD_RICH_PRESENCE">Discord نشاط المستخدم على</String>
 	<String ID="$DISCORD_TOGGLE_ELAPSED_TIME">إظهار الوقت المنقضي</String>
-	<String ID="$DISCORD_TOGGLE_STATE">إظهار التعليق</String>
+	<String ID="$DISCORD_TOGGLE_STATE">إظهار الحالة</String>
 	<String ID="$DISCORD_TOGGLE_DETAILS">إظهار التفاصيل</String>
 	<String ID="$DISCORD_TOGGLE_RICH_PRESENCE">إظهار نشاط المستخدم</String>
 	<String ID="$LANGUAGE_ENGLISH">English</String>
@@ -77,34 +77,34 @@
 	<String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
 	<String ID="$LANGUAGE_ARABIC">اللغة العربية</String>
 	<String ID="$LANGUAGE_OPTION">لغة الواجهة</String>
-	<String ID="$DISCORD_STATE_CUSTOM">Discord تعديل التعليق الظاهر على</String>
+	<String ID="$DISCORD_STATE_CUSTOM">.Discord تعديل الحالة الظاهرة على</String>
 	<String ID="$CHECK_FOR_UPDATES">التحقق من وجود تحديثات</String>
 	<String ID="$SAVE_PROMPT">هل تريد الحفظ قبل الإغلاق؟</String>
 
 	<!-- Model/Exporting Option Strings-->
 	<String ID="$EXPORT_PATH_TITLE">:مسار الاستخراج</String>
-	<String ID="$EXPORT_PATH_DESC">حدد مسار استخراج المجسمات.</String>
+	<String ID="$EXPORT_PATH_DESC">حدد مسار استخراج المجسمات</String>
 	<String ID="$EXPORT_MODELTYPE_TITLE">:امتداد المجسم المستخرج</String>
 
 	<!-- Material Libs Option Strings-->
 	<String ID="$MATERIAL_LIB_REMOVE">حذف المكتبة المحددة</String>
 	<String ID="$MATERIAL_LIB_ADD">إضافة مكتبة</String>
 	<String ID="$MATERIAL_LIB_SELECTED">المكتبات المحددة</String>
-	<String ID="$CONFLICTING_MATS">الخامات المتعارضة</String>
+	<String ID="$CONFLICTING_MATS">الخامات المتناقضة</String>
 	<String ID="$NEW_MATS">خامات جديدة</String>
 	<String ID="$MERGE">دمج</String>
-	<String ID="$MERGE_MTL">Merge MTL</String>
+	<String ID="$MERGE_MTL">MTL دمج ملفات</String>
 	<String ID="$DELETE_SEL_MAT">حذف الخامة المحددة</String>
 	<String ID="$SELECT_ALL">اختيار الكل</String>
 	<String ID="$SEARCH">بحث</String>
 
 	<!-- SDS Options -->
 	<String ID="$SDS_COMPRESSION_RATIO">نسبة الضغط</String>
-	<String ID="$SDS_TOOLTIP_COMPRESSION_RATIO">القيمة صفر لا تساوي أي ضغط، 1.0 يساوي ضغط كامل، 0.9 هو الافتراضي</String>
-	<String ID="$SDS_TOOLTIP_USE_OODLE">zlib بدلا من Oodle بإستخدام Mafia: Definitive Edition الخاصة بلعبة SDS ضغط ملفات</String>
-	<String ID="$ADD_TIME_DATE_BACKUP">أضف الوقت والتاريخ إلى النسخ الاحتياطية</String>
+	<String ID="$SDS_TOOLTIP_COMPRESSION_RATIO">القيمة صفر لا تساوي أي ضغط، 1.0 تساوي ضغط كامل، 0.9 هي الافتراضية</String>
+	<String ID="$SDS_TOOLTIP_USE_OODLE">zlib بدلا من Oodle بإستخدام Mafia الخاصة بلعبة SDS ضغط ملفات</String>
+	<String ID="$ADD_TIME_DATE_BACKUP">إضافة الوقت والتاريخ إلى النسخ الاحتياطية</String>
 	<String ID="$DECOMPILE_LUA_UNPACK">عند الاستخراج lua فك</String>
-	<String ID="$USE_SDS_TOOL_FORMAT">عند الاستخراج SDS استخدم واجهة أداة</String>
+	<String ID="$USE_SDS_TOOL_FORMAT">عند الاستخراج SDS استخدام واجهة أداة</String>
 	<String ID="$COOK_COLLISIONS">تجهيز التضاربات عند الحفظ</String>
 	<String ID="$BACKUP_SDS_LABEL">عند الاستخراج SDS إنشاء نسخ احتياطية من ملفات</String>
 	<String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
@@ -112,12 +112,12 @@
 
 	<!-- Map Editor -->
 	<String ID="$NO_COL_FILE_CREATE_NEW">لا يوجد ملف تضارب موجود. إنشاء ملف تضارب جديد؟</String>
-	<String ID="$CANNOT_CREATE_COL">لا يمكن إضافة ملف تضارب.لا يوجد ملف تضارب موجود</String>
+	<String ID="$CANNOT_CREATE_COL">لا يمكن إضافة ملف تضارب. لا يوجد ملف تضارب موجود</String>
 	<String ID="$ADD_COLLISION">إضافة تضارب</String>
 
 	<!-- Render Options -->
-	<String ID="$RENDER">التجسيم</String>
-	<String ID="$RENDER_OPTIONS">إعدادات التجسيم</String>
+	<String ID="$RENDER">العرض</String>
+	<String ID="$RENDER_OPTIONS">إعدادات العرض</String>
 	<String ID="$RENDER_SCREENFAR">بعد الشاشة</String>
 	<String ID="$RENDER_SCREENEAR">قرب الشاشة</String>
 	<String ID="$RENDER_CAMERASPEED">سرعة الكاميرا</String>
@@ -132,7 +132,7 @@
 	<String ID="$COLLISION_ADD">إضافة تضارب</String>
 	<String ID="$PLACEMENT_DELETE">حذف النموذج</String>
 	<String ID="$PLACEMENT_ADD">إضافة نموذج</String>
-	<String ID="$SELECT_MODEL_FILE">تحديد مجسم</String>
+	<String ID="$SELECT_MODEL_FILE">حدد مجسم</String>
 	<String ID="$COLLISION_EDITOR_TITLE">محرر التضارب</String>
 
 	<!-- Material Editor Form Strings-->
@@ -168,24 +168,24 @@
 	<String ID="$FRAME_EDITOR_TITLE">FrameResource محرر</String>
 	<String ID="$FRADD_TYPE">نوع الإطار</String>
 	<String ID="$FRADD_NAME_TABLE">هل تريد إضافة إطار إلى جدول الاسم؟</String>
-	<String ID="$QUESTION_FRADD">أدخل اسم ونوع الإطار.</String>
+	<String ID="$QUESTION_FRADD">أدخل اسم ونوع الإطار</String>
 
 	<!-- Scene Outliner Dock Strings-->
-	<String ID="$SCENE_OUTLINER_FORMNAME">Scene Outliner</String>
-	<String ID="$SCENE_OUTLINER_EXPLORER">Explorer</String>
-	<String ID="$SCENE_OUTLINER_SEARCHER">Search</String>
+	<String ID="$SCENE_OUTLINER_FORMNAME">قائمة المشهد</String>
+	<String ID="$SCENE_OUTLINER_EXPLORER">المستكشف</String>
+	<String ID="$SCENE_OUTLINER_SEARCHER">البحث</String>
 
 	<!-- Actor Editor -->
 	<String ID="$ACTOR_EDITOR_TITLE">Actor محرر</String>
-	<String ID="$ADD_ITEM">Add Item</String>
-	<String ID="$ADD_DEFINITION">Add Definition</String>
+	<String ID="$ADD_ITEM">إضافة عنصر</String>
+	<String ID="$ADD_DEFINITION">إضافة هدف</String>
 
 	<!-- EntityDataStorage Editor -->
 	<String ID="$EDS_EDITOR_TITLE">EntityDataStorage محرر</String>
 	<String ID="$SAVE_TITLE">حفظ الملف</String>
 	<String ID="$OPEN_TITLE">فتح الملف</String>
-	<String ID="$EXPORT_XML">XML استخرج الملف بامتداد</String>
-	<String ID="$IMPORT_XML">XML إدخال البيانات من ملف</String>
+	<String ID="$EXPORT_XML">.XML استخرج الملف بامتداد</String>
+	<String ID="$IMPORT_XML">.XML إدخال البيانات من ملف</String>
 	<String ID="$PHYSICS_RB">فيزيائية الجسم/ الجسم الصلب</String>
 	<String ID="$MOTOR_TORQUE">المحرك / عزم الدوران</String>
 	<String ID="$FUEL">الوقود</String>
@@ -208,7 +208,7 @@
 	<String ID="$RAIN_CONTACT">تأثيرات المطر</String>
 	<String ID="$HEDGE_CONTACT">آثار التصادم</String>
 	<String ID="$SKIDDING_SLIDING">الانزلاق</String>
-	<String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
+	<String ID="$ROLL">انقلاب السيارة</String>
 
 	<!-- NewObjForm Form Strings-->
 	<String ID="$NEWOBJFORM_TITLE">Input Name</String>
@@ -217,7 +217,7 @@
 	<String ID="$FSCENE_OFFSET">Position Offset</String>
 
 	<!-- Error strings -->
-	<String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Could not find MafiaII 'launcher.exe', please correct the path!</String>
+	<String ID="$ERROR_DID_NOT_FIND_LAUNCHER">!لم يتم العثور على أيقونة اللعبة، يرجى تصحيح المسار</String>
 	<String ID="$ERROR_TITLE">خطأ</String>
 	<String ID="$ERROR_SELECT_ITEM">حدد عنصر</String>
 	<String ID="$ERROR_DIDNT_FIND_MTL">Unable to load materials. Error occured: \n\n</String>
@@ -257,18 +257,18 @@
 	<String ID="$TOGGLE_BOXES">تبديل المربعات</String>
 	<String ID="$ADD">إضافة إطار</String>
 	<String ID="$IMPORT_FRAME">إدخال إطار</String>
-	<String ID="$IMPORT_BUNDLE">Import Model Bundle</String>
-	<String ID="$ADD_SCENE_FOLDER">Add Scene Folder</String>
-	<String ID="$ADD_ROAD_SPLINE">Add Road Spline</String>
+	<String ID="$IMPORT_BUNDLE">إدخال حزمة المجسم</String>
+	<String ID="$ADD_SCENE_FOLDER">إضافة مجلد المشهد</String>
+	<String ID="$ADD_ROAD_SPLINE">إضافة مسار للطريق</String>
 	<String ID="$VISIBLE">مرئي</String>
 	<String ID="$HIDDEN">مخفي</String>
-	<String ID="$EDIT_TRANSFORM">Edit Transform</String>
+	<String ID="$EDIT_TRANSFORM">تعديل التحويلات</String>
 	<String ID="$PROPERTY_GRID">شبكة الملكية</String>
-	<String ID="$TOP">Top</String>
-	<String ID="$FRONT">Front</String>
-	<String ID="$TOGGLE_WIREFRAME">Toggle Wireframe</String>
-	<String ID="$TOGGLE_CULLING">Toggle Culling</String>
-	<String ID="$EDIT_LIGHTING">Edit Lighting</String>
+	<String ID="$TOP">أعلى</String>
+	<String ID="$FRONT">أمام</String>
+	<String ID="$TOGGLE_WIREFRAME">تعديل الشبكة</String>
+	<String ID="$TOGGLE_CULLING">تعديل التجنيب</String>
+	<String ID="$EDIT_LIGHTING">تعديل الإنارة</String>
 	<String ID="$POSITION_X">Position X</String>
 	<String ID="$POSITION_Y">Position Y</String>
 	<String ID="$POSITION_Z">Position Z</String>
@@ -314,8 +314,8 @@
 
 	<!-- XBIN Editor Strings-->
 	<String ID="$XBIN_EDITOR_TITLE">XBIN محرر</String>
-	<String ID="$IMPORT_XBIN">xml إدخال البيانات من ملف</String>
-	<String ID="$EXPORT_XBIN">xml استخراج الملف بامتداد</String>
+	<String ID="$IMPORT_XBIN">.xml إدخال البيانات من ملف</String>
+	<String ID="$EXPORT_XBIN">.xml استخراج الملف بامتداد</String>
 
 	<!-- ATP Editor Strings -->
 	<String ID="$ATP_EDITOR_TITLE">AnimalTrafficPaths محرر</String>
