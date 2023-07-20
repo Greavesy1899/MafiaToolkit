@@ -6,6 +6,8 @@ namespace ResourceTypes.Actors
     {
         None = 0,
         Human = 14,
+        C_Car = 18,
+        C_Train = 19,
         C_CrashObject = 20,
         C_TrafficCar = 21,
         C_TrafficHuman = 22,
