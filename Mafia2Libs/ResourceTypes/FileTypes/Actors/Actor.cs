@@ -129,7 +129,7 @@ namespace ResourceTypes.Actors
         public ActorEntry CreateActorEntry(ActorTypes type, string name)
         {
             ActorExtraData extraData = null;
-            if (type != ActorTypes.C_Car)
+            if (RequiresExtraData(type))
             {
                 extraData = new ActorExtraData();
                 extraData.BufferType = type;
@@ -380,6 +380,12 @@ namespace ResourceTypes.Actors
             writer.Write(const16);
             writer.Write((int)size); //size
             writer.Write((int)(endPos)); //unk12
+        }
+
+        public static bool RequiresExtraData(ActorTypes InActorType)
+        {
+            // Quicker to test whether it is not C_Car or C_Train
+            return (InActorType != ActorTypes.C_Car && InActorType != ActorTypes.C_Train);
         }
     }
 }
