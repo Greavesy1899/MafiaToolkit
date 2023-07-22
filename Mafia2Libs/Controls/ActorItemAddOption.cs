@@ -35,7 +35,8 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.C_Pinup);
             TypeCombo.Items.Add(ActorTypes.C_Car);
             TypeCombo.Items.Add(ActorTypes.C_Train);
-
+            TypeCombo.Items.Add(ActorTypes.JukeBox);
+            TypeCombo.Items.Add(ActorTypes.PhysicsScene);
             TypeCombo.SelectedIndex = 0;
         }
 

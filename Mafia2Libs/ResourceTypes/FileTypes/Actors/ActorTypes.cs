@@ -77,7 +77,7 @@ namespace ResourceTypes.Actors
         public ActorPhysicsBase()
         {
             HitInfo = new HitData[3];
-            for(int i = 0; i < HitInfo.Length; i++)
+            for (int i = 0; i < HitInfo.Length; i++)
             {
                 HitInfo[i] = new HitData();
             }
@@ -236,11 +236,6 @@ namespace ResourceTypes.Actors
             sizeZ = 0.0f;
         }
 
-        public ActorActorDetector(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
-        }
-
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             testPrimitive = stream.ReadInt32(isBigEndian);
@@ -273,10 +268,6 @@ namespace ResourceTypes.Actors
             return 20;
         }
 
-        public ActorCleanEntity(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             Radius = stream.ReadSingle(isBigEndian);
@@ -298,7 +289,7 @@ namespace ResourceTypes.Actors
         public ActorRadioFlags Flags { get; set; }
         public float Range { get; set; }
         public float NearRange { get; set; }
-        [Description("The volume of the Radio. It is multipled by 100 in game.")]
+        [Description("The volume of the Radio. It is multiplied by 100 in game.")]
         public float Volume { get; set; }
         public int CurveID { get; set; }
         public string Program { get; set; }
@@ -307,13 +298,11 @@ namespace ResourceTypes.Actors
 
         public ActorRadio() : base()
         {
-
+            Program = string.Empty;
+            Playlist = string.Empty;
+            Station = string.Empty;
         }
 
-        public ActorRadio(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
         public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             base.ReadFromFile(reader, isBigEndian);
@@ -398,16 +387,12 @@ namespace ResourceTypes.Actors
         public int DamageMin { get { return damageMin; } set { damageMin = value; } }
         public int DamageMax { get { return damageMax; } set { damageMax = value; } }
         public int Zero { get { return zero; } set { zero = value; } }
-        public ActorTrafficCar(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
 
         public ActorTrafficCar()
         {
-            tableName = "";
-            areaName = "";
-            crewGenerator = "";
+            tableName = string.Empty;
+            areaName = string.Empty;
+            crewGenerator = string.Empty;
         }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
@@ -500,15 +485,10 @@ namespace ResourceTypes.Actors
         public float AgregationRange { get { return agregationRange; } set { agregationRange = value; } }
         public int AgregationCount { get { return agregationCount; } set { agregationCount = value; } }
 
-        public ActorTrafficHuman(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
         public ActorTrafficHuman()
         {
-            tableName = "";
-            areaName = "";
+            tableName = string.Empty;
+            areaName = string.Empty;
         }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
@@ -581,16 +561,11 @@ namespace ResourceTypes.Actors
         public string AreaName { get { return areaName; } set { areaName = value; } }
         public string CrewGenerator { get { return crewGenerator; } set { crewGenerator = value; } }
 
-        public ActorTrafficTrain(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
         public ActorTrafficTrain()
         {
-            tableName = "";
-            areaName = "";
-            crewGenerator = "";
+            tableName = string.Empty;
+            areaName = string.Empty;
+            crewGenerator = string.Empty;
         }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
@@ -642,7 +617,7 @@ namespace ResourceTypes.Actors
         int testPrimitive;
         byte[] posData;
 
-        public byte[] CameraPos { get { return cameraPos;  } set { cameraPos = value; } }
+        public byte[] CameraPos { get { return cameraPos; } set { cameraPos = value; } }
         public string DoorName { get { return doorName; } set { doorName = value; } }
         public string SoundName { get { return soundName; } set { soundName = value; } }
         public string HumanAnimationName { get { return humanAnimationName; } set { humanAnimationName = value; } }
@@ -651,10 +626,15 @@ namespace ResourceTypes.Actors
         public int TestPrimitive { get { return testPrimitive; } set { testPrimitive = value; } }
         public byte[] PosData { get { return posData; } set { posData = value; } }
 
-        public ActorWardrobe(MemoryStream reader, bool isBigEndian)
+        public ActorWardrobe()
         {
-            ReadFromFile(reader, isBigEndian);
+            PosData = new byte[0];
+            CameraPos = new byte[0];
+            DoorName = string.Empty;
+            SoundName = string.Empty;
+            HumanAnimationName = string.Empty;
         }
+
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             cameraPos = reader.ReadBytes(72);
@@ -685,7 +665,7 @@ namespace ResourceTypes.Actors
         }
     }
 
-    public class 
+    public class
     ActorLight : IActorExtraDataInterface
     {
         byte[] padding;
@@ -854,13 +834,10 @@ namespace ResourceTypes.Actors
             get { return instanced; }
             set { instanced = value; }
         }
-        public int Type {
+        public int Type
+        {
             get { return type; }
             set { type = value; }
-        }
-        public ActorLight(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public ActorLight()
@@ -1133,11 +1110,6 @@ namespace ResourceTypes.Actors
         public int PushAwayMode { get { return pushAwayMode; } set { pushAwayMode = value; } }
         public int PushAwayReaction { get { return pushAwayReaction; } set { pushAwayReaction = value; } }
 
-        public ActorDoor(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
         public ActorDoor() : base()
         {
         }
@@ -1403,13 +1375,7 @@ namespace ResourceTypes.Actors
         public ActorSoundEntity()
         {
             randomWaves = new string[5];
-            file = "";
-        }
-
-        public ActorSoundEntity(MemoryStream reader, bool isBigEndian)
-        {
-            randomWaves = new string[5];
-            ReadFromFile(reader, isBigEndian);
+            file = string.Empty;
         }
 
         public ActorSoundEntity(IActorExtraDataInterface extraData)
@@ -1458,7 +1424,7 @@ namespace ResourceTypes.Actors
             volume = reader.ReadSingle(isBigEndian);
             pitch = reader.ReadSingle(isBigEndian);
             file = reader.ReadStringBuffer(80);
-            if(behaviourType == 20)
+            if (behaviourType == 20)
             {
                 int seek = 0x21C;
                 reader.Seek(seek, SeekOrigin.Begin);
@@ -1594,11 +1560,6 @@ namespace ResourceTypes.Actors
             set { length = value; }
         }
 
-        public ActorSpikeStrip(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             length = reader.ReadSingle(isBigEndian);
@@ -1629,11 +1590,6 @@ namespace ResourceTypes.Actors
 
         }
 
-        public ActorFrameWrapper(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
-        }
-
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             unk0 = reader.ReadInt32(isBigEndian);
@@ -1656,11 +1612,6 @@ namespace ResourceTypes.Actors
         public int SoundMotorID {
             get { return soundMotorID; }
             set { soundMotorID = value; }
-        }
-
-        public ActorAircraft(MemoryStream reader, bool isBigEndian)
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
@@ -1788,13 +1739,6 @@ namespace ResourceTypes.Actors
             scriptEvent = new ItemScript();
         }
 
-        public ActorItem(MemoryStream reader, bool isBigEndian)
-        {
-            type0Data = new Type0();
-            scriptEvent = new ItemScript();
-            ReadFromFile(reader, isBigEndian);
-        }
-
         public int GetSize()
         {
             return 152;
@@ -1807,7 +1751,7 @@ namespace ResourceTypes.Actors
             type = reader.ReadInt32(isBigEndian);
             respawnTime = reader.ReadSingle(isBigEndian);
 
-            switch(type)
+            switch (type)
             {
                 case 0:
                     type0Data = new Type0();
@@ -1902,11 +1846,6 @@ namespace ResourceTypes.Actors
             set { pinupNum = value; }
         }
 
-        public ActorPinup(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
-        }
-
         public ActorPinup()
         {
             pinupNum = 0;
@@ -1940,11 +1879,6 @@ namespace ResourceTypes.Actors
         public ActorStaticEntity()
         {
             unk01 = 0;
-        }
-
-        public ActorStaticEntity(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
         }
 
         public int Unk01 {
@@ -1995,11 +1929,6 @@ namespace ResourceTypes.Actors
         public float LoopDelayRnd {
             get { return loopDelayRnd; }
             set { loopDelayRnd = value; }
-        }
-
-        public ActorStaticParticle(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
         }
 
         public ActorStaticParticle()
@@ -2067,10 +1996,6 @@ namespace ResourceTypes.Actors
         public int Unk2 { get; set; }
         public float Unk3 { get; set; }
         public int Unk4 { get; set; }
-        public ActorHuman(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
-        }
 
         public ActorHuman()
         {
@@ -2167,13 +2092,8 @@ namespace ResourceTypes.Actors
 
         public ActorScriptEntity()
         {
-            scriptName = "";
+            scriptName = string.Empty;
             unk01 = 0;
-        }
-
-        public ActorScriptEntity(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
         }
 
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -2201,18 +2121,13 @@ namespace ResourceTypes.Actors
 
     public class ActorTree : IActorExtraDataInterface
     {
-        public int GarbageID {get;set;}
+        public int GarbageID { get; set; }
         public int SummerLeavesID { get; set; }
         public int WinterLeavesID { get; set; }
 
         public ActorTree()
         {
 
-        }
-
-        public ActorTree(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
         }
 
         public int GetSize()
@@ -2244,11 +2159,6 @@ namespace ResourceTypes.Actors
         public ActorCutscene()
         {
             Name = "";
-        }
-
-        public ActorCutscene(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
         }
 
         public int GetSize()
@@ -2294,11 +2204,6 @@ namespace ResourceTypes.Actors
             Data = new byte[2048];
         }
 
-        public ActorActionPoint(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
-        }
-
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             AttractionCoeff = stream.ReadSingle(isBigEndian);
@@ -2310,9 +2215,9 @@ namespace ResourceTypes.Actors
             ScriptEntity = stream.ReadStringBuffer(128);
             Data = stream.ReadBytes(2048);
 
-            for(int i = 0; i < Data.Length; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
-                if(Data[i] != 0)
+                if (Data[i] != 0)
                 {
                     System.Windows.MessageBox.Show("Detected ActionPoint actor with extra data! Please mention on the Mafia: Toolkit discord!", "Toolkit", System.Windows.MessageBoxButton.OK);
                 }
@@ -2354,11 +2259,6 @@ namespace ResourceTypes.Actors
         public ActorGarage()
         {
             DoorName = "";
-        }
-
-        public ActorGarage(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
         }
 
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -2410,11 +2310,6 @@ namespace ResourceTypes.Actors
         {
         }
 
-        public ActorBlocker(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
-        }
-
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             BlockPlayer = stream.ReadBoolean();
@@ -2449,11 +2344,6 @@ namespace ResourceTypes.Actors
             ScriptEntity = "";
         }
 
-        public ActorActionPointSearch(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
-        }
-
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             WalkRange = stream.ReadSingle(isBigEndian);
@@ -2477,10 +2367,6 @@ namespace ResourceTypes.Actors
         public int Unk01 { get; set; }
 
         public ActorStaticWeapon() { }
-        public ActorStaticWeapon(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
-        }
 
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -2516,9 +2402,10 @@ namespace ResourceTypes.Actors
         public int HumanRule { get; set; }
         public bool CameraCollision { get; set; }
         public bool BlinkingAnimation { get; set; }
+        public bool DisableLight { get; set; }
         public bool ActiveInDayOnly { get; set; }
         public int NumEntries { get; set; }
-        // Padding (4 Bytes here)
+        public int Unk03 { get; set; }
         public ActorCrashObjectEntry[] Entries { get; set; }
         public int Unk01 { get; set; }
         public int Unk02 { get; set; }
@@ -2531,15 +2418,10 @@ namespace ResourceTypes.Actors
         public ActorCrashObject() : base()
         {
             Entries = new ActorCrashObjectEntry[8];
-            for(int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Entries[i] = new ActorCrashObjectEntry();
             }
-        }
-
-        public ActorCrashObject(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
         }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -2556,16 +2438,15 @@ namespace ResourceTypes.Actors
             HumanRule = stream.ReadInt32(isBigEndian);
             CameraCollision = stream.ReadBoolean();
             BlinkingAnimation = stream.ReadBoolean();
+            DisableLight = stream.ReadBoolean();
             ActiveInDayOnly = stream.ReadBoolean();
-
-            stream.ReadByte(); // Padding?
 
             NumEntries = stream.ReadInt32(isBigEndian);
 
-            stream.ReadInt32(isBigEndian);
+            Unk03 = stream.ReadInt32(isBigEndian);
 
             Entries = new ActorCrashObjectEntry[8];
-            for(int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 ActorCrashObjectEntry Entry = new ActorCrashObjectEntry();
                 Entry.Hash = stream.ReadUInt64(isBigEndian);
@@ -2592,15 +2473,14 @@ namespace ResourceTypes.Actors
             writer.Write(HumanRule, isBigEndian);
             writer.Write(CameraCollision);
             writer.Write(BlinkingAnimation);
+            writer.Write(DisableLight);
             writer.Write(ActiveInDayOnly);
-
-            writer.Write(false); // Padding?
 
             writer.Write(NumEntries, isBigEndian);
 
-            writer.Write(0, isBigEndian);
+            writer.Write(Unk03, isBigEndian);
 
-            for(int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 writer.Write(Entries[i].Hash, isBigEndian);
                 writer.Write(Entries[i].Unk01, isBigEndian);
@@ -2612,5 +2492,84 @@ namespace ResourceTypes.Actors
         }
     }
 
+    public class ActorJukebox : ActorPhysicsBase
+    {
+        public string SoundCoin { get; set; }
+        public float Volume { get; set; }
+        public float Range { get; set; }
+        public uint CurveID { get; set; }
+        public float NearRange { get; set; }
 
+        public override int GetSize()
+        {
+            return 744;
+        }
+
+        public ActorJukebox() : base()
+        {
+        }
+
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            base.ReadFromFile(reader, isBigEndian);
+
+            reader.Position = 645;
+            SoundCoin = reader.ReadStringBuffer(83);
+            Volume = reader.ReadSingle(isBigEndian);
+            Range = reader.ReadSingle(isBigEndian);
+            NearRange = reader.ReadSingle(isBigEndian);
+            CurveID = reader.ReadUInt32(isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            base.WriteToFile(writer, isBigEndian);
+
+            // Write padding
+            writer.Write(new byte[GetSize() - writer.Length]);
+            writer.Position = 645;
+            writer.WriteStringBuffer(83, SoundCoin);
+            writer.Write(Volume, isBigEndian);
+            writer.Write(Range, isBigEndian);
+            writer.Write(NearRange, isBigEndian);
+            writer.Write(CurveID, isBigEndian);
+        }
+    }
+
+    public class ActorPhysicsScene : IActorExtraDataInterface
+    {
+        public Vector3 BBox { get; set; }
+        public uint SceneID { get; set; }
+        public bool CarSimulated { get; set; }
+        public bool CarFarScene { get; set; }
+        public ushort Unk01 { get; set; }
+
+        public ActorPhysicsScene() : base()
+        {
+            BBox = Vector3.Zero;
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            BBox = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            SceneID = stream.ReadUInt32(isBigEndian);
+            CarSimulated = stream.ReadBoolean();
+            CarFarScene = stream.ReadBoolean();
+            Unk01 = stream.ReadUInt16(isBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            BBox.WriteToFile(writer, isBigEndian);
+            writer.Write(SceneID, isBigEndian);
+            writer.Write(CarSimulated);
+            writer.Write(CarFarScene);
+            writer.Write(Unk01, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 20;
+        }
+    }
 }

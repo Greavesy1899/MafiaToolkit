@@ -128,19 +128,19 @@ namespace ResourceTypes.Actors
 
         public ActorEntry CreateActorEntry(ActorTypes type, string name)
         {
-            ActorExtraData extraData = null;
+            ActorExtraData NewExtraData = null;
             if (RequiresExtraData(type))
             {
-                extraData = new ActorExtraData();
-                extraData.BufferType = type;
-                extraData.Data = ActorFactory.CreateExtraData(type);
+                NewExtraData = new ActorExtraData();
+                NewExtraData.BufferType = type;
+                NewExtraData.Data = ActorFactory.CreateExtraData(type);
             }
 
             ActorEntry entry = ActorFactory.CreateActorItem(type, name);
-            entry.DataID = (short)(extraData != null ? ExtraData.Count : -1);
-            entry.Data = extraData;
+            entry.DataID = (short)(NewExtraData != null ? ExtraData.Count : -1);
+            entry.Data = NewExtraData;
 
-            ExtraData.Add(extraData);
+            ExtraData.Add(NewExtraData);
             Items.Add(entry);
             return entry;
         }
