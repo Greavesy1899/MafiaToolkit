@@ -37,6 +37,8 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.C_Train);
             TypeCombo.Items.Add(ActorTypes.JukeBox);
             TypeCombo.Items.Add(ActorTypes.PhysicsScene);
+            TypeCombo.Items.Add(ActorTypes.Boat);
+            TypeCombo.Items.Add(ActorTypes.Airplane);
             TypeCombo.SelectedIndex = 0;
         }
 

@@ -60,6 +60,10 @@ namespace ResourceTypes.Actors
                     return new ActorJukebox();
                 case ActorTypes.PhysicsScene:
                     return new ActorPhysicsScene();
+                case ActorTypes.Boat:
+                    return new ActorBoat();
+                case ActorTypes.Airplane:
+                    return new ActorAircraft();
                 default:
                     Console.WriteLine("Cannot read type: " + type);
                     return null;

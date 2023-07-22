@@ -1607,21 +1607,16 @@ namespace ResourceTypes.Actors
     }
     public class ActorAircraft : IActorExtraDataInterface
     {
-        int soundMotorID;
-
-        public int SoundMotorID {
-            get { return soundMotorID; }
-            set { soundMotorID = value; }
-        }
+        public uint SoundMotorID { get; set; }
 
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            soundMotorID = reader.ReadInt32(isBigEndian);
+            SoundMotorID = reader.ReadUInt32(isBigEndian);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
-            writer.Write(soundMotorID, isBigEndian);
+            writer.Write(SoundMotorID, isBigEndian);
         }
 
         public int GetSize()
@@ -2570,6 +2565,65 @@ namespace ResourceTypes.Actors
         public int GetSize()
         {
             return 20;
+        }
+    }
+
+    public class ActorBoat : ActorPhysicsBase
+    {
+        public float Thrust { get; set; }
+        public float AreaRudder { get; set; }
+        public float Sink { get; set; }
+        public float Wobling { get; set; }
+        public int MoveOnRoad { get; set; }
+        public int ExhaustID { get; set; }
+        public int SoundMotorID { get; set; }
+        public int SoundHornID { get; set; }
+        public float SimplePhysicsDist { get; set; }
+        public Vector3 WheelPos { get; set; }
+
+        public ActorBoat() : base() { }
+
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            base.ReadFromFile(reader, isBigEndian);
+
+            reader.Seek(240, SeekOrigin.Begin);
+
+            Thrust = reader.ReadSingle(isBigEndian);
+            AreaRudder = reader.ReadSingle(isBigEndian);
+            Sink = reader.ReadSingle(isBigEndian);
+            Wobling = reader.ReadSingle(isBigEndian);
+            MoveOnRoad = reader.ReadInt32(isBigEndian);
+            ExhaustID = reader.ReadInt32(isBigEndian);
+            SoundMotorID = reader.ReadInt32(isBigEndian);
+            SoundHornID = reader.ReadInt32(isBigEndian);
+            SimplePhysicsDist = reader.ReadSingle(isBigEndian);
+            WheelPos = Vector3Utils.ReadFromFile(reader, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            base.WriteToFile(writer, isBigEndian);
+
+            // Write padding
+            writer.Write(new byte[GetSize() - writer.Length]);
+            writer.Position = 240;
+
+            writer.Write(Thrust, isBigEndian);
+            writer.Write(AreaRudder, isBigEndian);
+            writer.Write(Sink, isBigEndian);
+            writer.Write(Wobling, isBigEndian);
+            writer.Write(MoveOnRoad, isBigEndian);
+            writer.Write(ExhaustID, isBigEndian);
+            writer.Write(SoundMotorID, isBigEndian);
+            writer.Write(SoundHornID, isBigEndian);
+            writer.Write(SimplePhysicsDist, isBigEndian);
+            WheelPos.WriteToFile(writer, isBigEndian);
+        }
+
+        public override int GetSize()
+        {
+            return 288;
         }
     }
 }
