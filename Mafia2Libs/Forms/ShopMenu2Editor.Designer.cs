@@ -36,6 +36,7 @@
             Context_AddType = new System.Windows.Forms.ToolStripMenuItem();
             Context_AddMetaInfo = new System.Windows.Forms.ToolStripMenuItem();
             Context_DuplicateMetaInfo = new System.Windows.Forms.ToolStripMenuItem();
+            Context_DuplicateMetaInfoItem = new System.Windows.Forms.ToolStripMenuItem();
             Context_Delete = new System.Windows.Forms.ToolStripMenuItem();
             ToolStrip_Main = new System.Windows.Forms.ToolStrip();
             Button_File = new System.Windows.Forms.ToolStripDropDownButton();
@@ -74,9 +75,9 @@
             // 
             // Context_Menu
             // 
-            Context_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { Context_AddType, Context_AddMetaInfo, Context_DuplicateMetaInfo, Context_Delete });
+            Context_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { Context_AddType, Context_AddMetaInfo, Context_DuplicateMetaInfo, Context_DuplicateMetaInfoItem, Context_Delete });
             Context_Menu.Name = "SDSContext";
-            Context_Menu.Size = new System.Drawing.Size(181, 114);
+            Context_Menu.Size = new System.Drawing.Size(181, 136);
             Context_Menu.Opening += Context_Menu_OnOpening;
             // 
             // Context_AddType
@@ -99,6 +100,13 @@
             Context_DuplicateMetaInfo.Size = new System.Drawing.Size(180, 22);
             Context_DuplicateMetaInfo.Text = "$DUPE_METAINFO";
             Context_DuplicateMetaInfo.Click += Context_DupeMetaInfo_Clicked;
+            // 
+            // Context_DuplicateMetaInfoItem
+            // 
+            Context_DuplicateMetaInfoItem.Name = "Context_DuplicateMetaInfoItem";
+            Context_DuplicateMetaInfoItem.Size = new System.Drawing.Size(180, 22);
+            Context_DuplicateMetaInfoItem.Text = "$DUPLICATE_ITEM";
+            Context_DuplicateMetaInfoItem.Click += Context_DupeMetaInfoItem_Clicked;
             // 
             // Context_Delete
             // 
@@ -222,5 +230,6 @@
         private System.Windows.Forms.ToolStripMenuItem Context_AddType;
         private System.Windows.Forms.ToolStripMenuItem Context_AddMetaInfo;
         private System.Windows.Forms.ToolStripMenuItem Context_DuplicateMetaInfo;
+        private System.Windows.Forms.ToolStripMenuItem Context_DuplicateMetaInfoItem;
     }
 }

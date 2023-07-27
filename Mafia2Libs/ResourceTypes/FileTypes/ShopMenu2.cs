@@ -65,7 +65,7 @@ namespace ResourceTypes.City
             public Shop()
             {
                 unk0 = new LocalisedString(0);
-                Name = "";
+                Name = string.Empty;
             }
 
             public override string ToString()
@@ -86,6 +86,7 @@ namespace ResourceTypes.City
             public int Unk3 { get; set; }
             public int UnkZero01 { get; set; }
             public int UnkZero02 { get; set; }
+            [Browsable(false)]
             public List<ItemConfig> Items { get; set; }
 
             public ShopMenu()
@@ -310,9 +311,12 @@ namespace ResourceTypes.City
 
         public void ReadFromFile(string file)
         {
-            using (var stream = new MemoryStream(File.ReadAllBytes(file)))
+            ReadTextDB();
+
+            using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(file)))
             {
-                ReadTextDB();
+                // TODO: Support Big Endian formats.
+                // We can check magic & version
                 var isBigEndian = false;
                 if (stream.ReadInt32(isBigEndian) != magic)
                 {

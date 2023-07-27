@@ -38,6 +38,7 @@ namespace Mafia2Tool
             Context_Delete.Text = Language.GetString("$DELETE");
             Context_AddType.Text = Language.GetString("$ADD_SHOPTYPE");
             Context_AddMetaInfo.Text = Language.GetString("$ADD_METAINFO");
+            Context_DuplicateMetaInfoItem.Text = Language.GetString("$DUPLICATE_ITEM");
         }
 
         private void BuildData()
@@ -48,7 +49,7 @@ namespace Mafia2Tool
             menuData.ReadFromFile(menuFile.FullName);
 
             ShopFolder = new TreeNode("Shop Types");
-            foreach(ShopMenu2.Shop Shop in menuData.Shops)
+            foreach (ShopMenu2.Shop Shop in menuData.Shops)
             {
                 var child = new TreeNode("Shop" + Shop.ID.ToString());
                 child.Text = Shop.Name;
@@ -65,7 +66,7 @@ namespace Mafia2Tool
                 ShopMetaInfoFolder.Nodes.Add(meta);
 
                 // Add items as sub-nodes
-                foreach(ShopMenu2.ItemConfig Item in MetaInfo.Items)
+                foreach (ShopMenu2.ItemConfig Item in MetaInfo.Items)
                 {
                     TreeNode ItemConfigNode = new TreeNode(Item.Name.ToString());
                     ItemConfigNode.Tag = Item;
@@ -85,6 +86,7 @@ namespace Mafia2Tool
             File.Copy(menuFile.FullName, menuFile.FullName + "_old", true);
             menuData.WriteToFile(menuFile.FullName);
 
+            // Mark as not edited
             Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE");
             bIsFileEdited = false;
         }
@@ -96,7 +98,7 @@ namespace Mafia2Tool
             menuData.ShopItems.Clear();
 
             // Repopulate lists
-            foreach(TreeNode Shop in ShopFolder.Nodes)
+            foreach (TreeNode Shop in ShopFolder.Nodes)
             {
                 menuData.Shops.Add((ShopMenu2.Shop)Shop.Tag);
             }
@@ -128,84 +130,43 @@ namespace Mafia2Tool
         private void Delete()
         {
             TreeNode SelNode = TreeView_ShopMenu2.SelectedNode;
-
-            if (SelNode.Parent != null)
+            if(SelNode != null)
             {
-                if (SelNode.Parent.Text == "Shop Types")
-                {
-                    var SelShop = new ShopMenu2.Shop();
-                    foreach (var shop in menuData.Shops)
-                    {
-                        if (SelNode.Text == shop.Name)
-                        {
-                            SelShop = shop;
-                            break;
-                        }
-                    }
+                SelNode.Remove();
 
-                    if (menuData.Shops.Contains(SelShop))
-                    {
-                        menuData.Shops.Remove(SelShop);
-                        TreeView_ShopMenu2.Nodes.Remove(SelNode);
-
-                        Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
-                        bIsFileEdited = true;
-                    }
-                }
-                else if (SelNode.Parent.Text == "Shop MetaInfo")
-                {
-                    var SelItem = new ShopMenu2.ShopMenu();
-                    foreach (var item in menuData.ShopItems)
-                    {
-                        if (SelNode.Text == item.Path)
-                        {
-                            SelItem = item;
-                            break;
-                        }
-                    }
-
-                    if (menuData.ShopItems.Contains(SelItem))
-                    {
-                        menuData.ShopItems.Remove(SelItem);
-                        TreeView_ShopMenu2.Nodes.Remove(SelNode);
-
-                        Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
-                        bIsFileEdited = true;
-                    }
-                }
+                Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
             }
         }
 
         private void AddType()
         {
-            var shop = new ShopMenu2.Shop();
-            var child = new TreeNode("Shop" + shop.ID.ToString());
-            shop.Name = "New Shop " + menuData.Shops.Count.ToString();
-            menuData.Shops.Add(shop);
+            // Create the new shop
+            ShopMenu2.Shop NewShop = new ShopMenu2.Shop();
+            NewShop.Name = "New Shop";
 
-            var NewShop = menuData.Shops[menuData.Shops.Count - 1];
-            child.Text = NewShop.Name;
-            child.Tag = NewShop;
-            TreeView_ShopMenu2.Nodes[0].Nodes.Add(child);
+            // Create a new node
+            TreeNode NewNode = new TreeNode("Shop" + (ShopFolder.Nodes.Count + 1));
+            NewNode.Tag = NewShop;
+            ShopFolder.Nodes.Add(NewNode);
 
-            Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
-            bIsFileEdited = true;
+            // Mark as edited
+            MarkAsEdited();
         }
 
         private void AddMetaInfo()
         {
-            var metaInfo = new ShopMenu2.ShopMenu();
-            var meta = new TreeNode("Meta" + metaInfo.ID.ToString());
-            metaInfo.Path = "New MetaInfo " + menuData.ShopItems.Count.ToString();
-            menuData.ShopItems.Add(metaInfo);
+            // Create the new MetaInfo
+            ShopMenu2.ShopMenu NewMenu = new ShopMenu2.ShopMenu();
+            NewMenu.Path = "New Shop Menu";
 
-            var newInfo = menuData.ShopItems[menuData.ShopItems.Count - 1];
-            meta.Text = newInfo.Path;
-            meta.Tag = newInfo;
-            TreeView_ShopMenu2.Nodes[1].Nodes.Add(meta);
+            // Create a new node
+            TreeNode NewNode = new TreeNode("ShopMenu" + (ShopMetaInfoFolder.Nodes.Count + 1));
+            NewNode.Tag = NewMenu;
+            ShopMetaInfoFolder.Nodes.Add(NewNode);
 
-            Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
-            bIsFileEdited = true;
+            // Mark as edited
+            MarkAsEdited();
         }
 
         private void DuplicateMetaInfo()
@@ -230,11 +191,38 @@ namespace Mafia2Tool
             var NewMetaInfoNode = new TreeNode("Meta" + CopiedMetaInfo.ID.ToString());
             NewMetaInfoNode.Text = CopiedMetaInfo.Path;
             NewMetaInfoNode.Tag = CopiedMetaInfo;
-            menuData.ShopItems.Add(CopiedMetaInfo);
-            ShopMetaInfoFolder.Nodes.Add(NewMetaInfoNode);
 
-            Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
-            bIsFileEdited = true;
+            MarkAsEdited();
+        }
+
+        private void DuplicateMetaInfoItem()
+        {
+            if (TreeView_ShopMenu2.SelectedNode == null || TreeView_ShopMenu2.SelectedNode.Tag == null)
+            {
+                // Skip, nothing selected
+                return;
+            }
+
+            ShopMenu2.ItemConfig SelectedConfig = (TreeView_ShopMenu2.SelectedNode.Tag as ShopMenu2.ItemConfig);
+            if (SelectedConfig == null)
+            {
+                // Skip, not correct type
+                return;
+            }
+
+            // Copy
+            ShopMenu2.ItemConfig CopiedConfig = new ShopMenu2.ItemConfig(SelectedConfig);
+
+            // Create a new TreeNode
+            TreeNode NewMetaInfoNode = new TreeNode(CopiedConfig.Name.ToString());
+            NewMetaInfoNode.Tag = CopiedConfig;
+
+            // Add to same parent
+            TreeNode ParentNode = TreeView_ShopMenu2.SelectedNode.Parent;
+            ParentNode.Nodes.Add(NewMetaInfoNode);
+
+            // Mark as modified
+            MarkAsEdited();
         }
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
@@ -249,8 +237,7 @@ namespace Mafia2Tool
                 TreeView_ShopMenu2.SelectedNode.Text = e.ChangedItem.Value.ToString();
             }
 
-            Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
-            bIsFileEdited = true;
+            MarkAsEdited();
         }
 
         private void ShopMenu2Editor_Closing(object sender, FormClosingEventArgs e)
@@ -273,6 +260,7 @@ namespace Mafia2Tool
         private void Context_Menu_OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Context_DuplicateMetaInfo.Enabled = false;
+            Context_DuplicateMetaInfoItem.Enabled = false;
 
             if (TreeView_ShopMenu2.SelectedNode == null || TreeView_ShopMenu2.SelectedNode.Tag == null)
             {
@@ -282,10 +270,23 @@ namespace Mafia2Tool
 
             // If a MetaInfo, enable DuplicateMetaInfo button
             ShopMenu2.ShopMenu MetaInfo = (TreeView_ShopMenu2.SelectedNode.Tag as ShopMenu2.ShopMenu);
-            if(MetaInfo != null)
+            if (MetaInfo != null)
             {
                 Context_DuplicateMetaInfo.Enabled = true;
             }
+
+            // If a ItemConfig, enable DuplicateMetaInfoItem button
+            ShopMenu2.ItemConfig ItemConfig = (TreeView_ShopMenu2.SelectedNode.Tag as ShopMenu2.ItemConfig);
+            if (ItemConfig != null)
+            {
+                Context_DuplicateMetaInfoItem.Enabled = true;
+            }
+        }
+
+        private void MarkAsEdited()
+        {
+            Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void Button_Save_OnClick(object sender, System.EventArgs e) => Save();
@@ -298,5 +299,6 @@ namespace Mafia2Tool
         private void Context_AddType_OnClick(object sender, System.EventArgs e) => AddType();
         private void Context_AddMetaInfo_OnClick(object sender, System.EventArgs e) => AddMetaInfo();
         private void Context_DupeMetaInfo_Clicked(object sender, System.EventArgs e) => DuplicateMetaInfo();
+        private void Context_DupeMetaInfoItem_Clicked(object sender, System.EventArgs e) => DuplicateMetaInfoItem();
     }
 }
