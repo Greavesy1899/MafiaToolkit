@@ -50,6 +50,7 @@ namespace ResourceTypes.Actors
 
     public enum ActorEDSTypes
     {
+        Human = 14,
         C_Car = 18,
         C_Train = 19,
         C_ActionPointScript = 30,

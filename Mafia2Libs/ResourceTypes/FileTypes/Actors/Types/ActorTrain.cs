@@ -84,11 +84,6 @@ namespace ResourceTypes.Actors
             Door2Sounds = SetupArray(NUM_DOOR2_SOUNDS);
         }
 
-        public ActorTrain(MemoryStream stream, bool bIsBigEndian) : this()
-        {
-            ReadFromFile(stream, bIsBigEndian);
-        }
-
         public void ReadFromFile(MemoryStream Reader, bool bIsBigEndian)
         {
             MaxAcceleration = Reader.ReadSingle(bIsBigEndian);

@@ -72,17 +72,29 @@ namespace ResourceTypes.Actors
 
         public static IActorExtraDataInterface LoadEntityDataStorage(ActorEDSTypes type, MemoryStream stream, bool isBigEndian)
         {
+            IActorExtraDataInterface NewExtraData = null;
+
             switch(type)
             {
                 case ActorEDSTypes.C_Car:
-                    return new ActorCar(stream, isBigEndian);
+                    NewExtraData = new ActorCar();
+                    break;
                 case ActorEDSTypes.C_ActionPointScript:
-                    return new ActorActionPointScript(stream, isBigEndian);
+                    NewExtraData = new ActorActionPointScript();
+                    break;
                 case ActorEDSTypes.C_Train:
-                    return new ActorTrain(stream, isBigEndian);
+                    NewExtraData = new ActorTrain();
+                    break;
+                case ActorEDSTypes.Human:
+                    NewExtraData = new ActorHuman();
+                    break;
                 default:
-                    return null;
+                    NewExtraData = null;
+                    break;
             }
+
+            NewExtraData.ReadFromFile(stream, isBigEndian);
+            return NewExtraData;
         }
 
         public static IActorExtraDataInterface LoadExtraData(ActorTypes type, MemoryStream stream, bool isBigEndian)

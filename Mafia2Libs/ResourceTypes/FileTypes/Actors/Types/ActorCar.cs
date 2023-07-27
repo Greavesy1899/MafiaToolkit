@@ -679,14 +679,6 @@ namespace ResourceTypes.Actors
             CrashData = new CrashTableData[4];
         }
 
-        public ActorCar(MemoryStream stream, bool isBigEndian)
-        {
-            CenterOfMass = new EDSVector3();
-            Inertia = new EDSVector3();
-
-            ReadFromFile(stream, isBigEndian);
-        }
-
         public ActorCar(ActorCar OtherCar)
         {
             ReflectionHelpers.Copy(OtherCar, this);

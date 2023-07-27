@@ -18,12 +18,7 @@ namespace ResourceTypes.Actors
 
         public ActorActionPointScript()
         {
-            ScriptEntity = "";
-        }
-
-        public ActorActionPointScript(MemoryStream stream, bool isBigEndian)
-        {
-            ReadFromFile(stream, isBigEndian);
+            ScriptEntity = string.Empty;
         }
 
         public int GetSize()
