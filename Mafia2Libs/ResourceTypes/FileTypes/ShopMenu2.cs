@@ -183,11 +183,11 @@ namespace ResourceTypes.City
                 }
             }
 
-            public LocalisedString UnkDB0 { get; set; }
-            public LocalisedString UnkDB1 { get; set; }
+            public LocalisedString Name { get; set; }
+            public LocalisedString ShortDescription { get; set; }
             public LocalisedString UnkDB2 { get; set; }
             public LocalisedString UnkDB3 { get; set; }
-            public LocalisedString UnkDB4 { get; set; }
+            public LocalisedString PromptText { get; set; }
             public LocalisedString UnkDB5 { get; set; }
             [Category("Item Information")]
             public int ItemUnk0 { get; set; }
@@ -211,11 +211,11 @@ namespace ResourceTypes.City
                 UnkMatrixFloats = new float[10];
                 Section1 = new Item[0];
                 Section2 = new Item[0];
-                UnkDB0 = new LocalisedString(0);
-                UnkDB1 = new LocalisedString(0);
+                Name = new LocalisedString(0);
+                ShortDescription = new LocalisedString(0);
                 UnkDB2 = new LocalisedString(0); 
                 UnkDB3 = new LocalisedString(0);
-                UnkDB4 = new LocalisedString(0);
+                PromptText = new LocalisedString(0);
                 UnkDB5 = new LocalisedString(0);
             }
 
@@ -250,29 +250,32 @@ namespace ResourceTypes.City
                 }
 
                 // Copy all localised Strings
-                UnkDB0 = new LocalisedString(OtherItemConfig.UnkDB0);
-                UnkDB1 = new LocalisedString(OtherItemConfig.UnkDB1);
+                Name = new LocalisedString(OtherItemConfig.Name);
+                ShortDescription = new LocalisedString(OtherItemConfig.ShortDescription);
                 UnkDB2 = new LocalisedString(OtherItemConfig.UnkDB2);
                 UnkDB3 = new LocalisedString(OtherItemConfig.UnkDB3);
-                UnkDB4 = new LocalisedString(OtherItemConfig.UnkDB4);
+                PromptText = new LocalisedString(OtherItemConfig.PromptText);
                 UnkDB5 = new LocalisedString(OtherItemConfig.UnkDB5);
             }
         }
 
-        const int magic = 1936223538;
-        const int version = 4;
+        public List<Shop> Shops { get; set; }
+        public List<ShopMenu> ShopItems { get; set; }
 
-        string stringPool = "";
-        Dictionary<int, string> dicPool = new Dictionary<int, string>();
-        public List<Shop> shops = new List<Shop>();
-        int[] unkOffsets;
-        int[] unkIDs;
-        public List<ShopMenu> shopItems = new List<ShopMenu>();
-        Dictionary<uint, string> textDB = new Dictionary<uint, string>();
+        private string stringPool = "";
+        private Dictionary<int, string> dicPool;
+        private Dictionary<uint, string> textDB;
+
+        private const int magic = 1936223538;
+        private const int version = 4;
 
         public ShopMenu2()
         {
-
+            stringPool = string.Empty;
+            dicPool = new Dictionary<int, string>();
+            Shops = new List<Shop>();
+            ShopItems = new List<ShopMenu>();
+            textDB = new Dictionary<uint, string>();
         }
 
         private void ReadTextDB()
@@ -290,19 +293,19 @@ namespace ResourceTypes.City
                         textDB.Add(uint.Parse(split[0]), split[1]);
                     }
                 }
-                lines = null;
             }
         }
 
         private void GetFromDB(LocalisedString loc)
         {
-            string result;
-            textDB.TryGetValue(loc.ID, out result);
-
-            if (textDB.Count == 0)
-                loc.Text = "TextDatabase is not loaded!";
-            else
+            string result = string.Empty;
+            if (textDB.TryGetValue(loc.ID, out result))
+            {
                 loc.Text = result;
+                return;
+            }
+
+            loc.Text = "TextDatabase is not loaded!";
         }
 
         public void ReadFromFile(string file)
@@ -312,10 +315,14 @@ namespace ResourceTypes.City
                 ReadTextDB();
                 var isBigEndian = false;
                 if (stream.ReadInt32(isBigEndian) != magic)
+                {
                     return;
+                }
 
                 if (stream.ReadInt32(isBigEndian) != version)
+                {
                     return;
+                }
 
                 var size = stream.ReadInt32(isBigEndian);
 
@@ -324,7 +331,9 @@ namespace ResourceTypes.City
                     int offset = (int)stream.Position - 12; // header is 12 bytes.
 
                     if (offset == size)
+                    {
                         break;
+                    }
 
                     string name = stream.ReadString(); //read string
                     dicPool.Add(offset, name); //add offset as unique key and string
@@ -339,13 +348,12 @@ namespace ResourceTypes.City
                     shop.Unk0 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                     GetFromDB(shop.Unk0);
                     shop.ID = stream.ReadInt32(isBigEndian);
-                    shops.Add(shop);
+                    Shops.Add(shop);
                 }
 
                 var num = stream.ReadInt32(isBigEndian);
-                long startOffset = stream.Position;
-                unkIDs = new int[num];
-                unkOffsets = new int[num];
+                int[] unkIDs = new int[num];
+                int[] unkOffsets = new int[num];
 
                 for (int x = 0; x < num; x++)
                 {
@@ -373,16 +381,16 @@ namespace ResourceTypes.City
                     for (int x = 0; x < itemNum; x++)
                     {
                         var item = new ItemConfig();
-                        item.UnkDB0 = new LocalisedString(stream.ReadUInt32(isBigEndian));
-                        GetFromDB(item.UnkDB0);
-                        item.UnkDB1 = new LocalisedString(stream.ReadUInt32(isBigEndian));
-                        GetFromDB(item.UnkDB1);
+                        item.Name = new LocalisedString(stream.ReadUInt32(isBigEndian));
+                        GetFromDB(item.Name);
+                        item.ShortDescription = new LocalisedString(stream.ReadUInt32(isBigEndian));
+                        GetFromDB(item.ShortDescription);
                         item.UnkDB2 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB2);
                         item.UnkDB3 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB3);
-                        item.UnkDB4 = new LocalisedString(stream.ReadUInt32(isBigEndian));
-                        GetFromDB(item.UnkDB4);
+                        item.PromptText = new LocalisedString(stream.ReadUInt32(isBigEndian));
+                        GetFromDB(item.PromptText);
                         item.UnkDB5 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB5);
 
@@ -398,7 +406,9 @@ namespace ResourceTypes.City
                         item.UnkByte = stream.ReadByte8();
                         item.UnkMatrixFloats = new float[10];
                         for (int z = 0; z < 10; z++)
+                        {
                             item.UnkMatrixFloats[z] = stream.ReadSingle(isBigEndian);
+                        }
 
                         var section1Size = stream.ReadInt32(isBigEndian);
                         item.Section1 = new Item[section1Size];
@@ -427,7 +437,7 @@ namespace ResourceTypes.City
                         }
                             metaInfo.Items.Add(item);
                     }
-                    shopItems.Add(metaInfo);
+                    ShopItems.Add(metaInfo);
                 }
             }
         }
@@ -442,33 +452,30 @@ namespace ResourceTypes.City
                 stream.Write(version, isBigEndian);
                 stream.Write(stringPool.Length, isBigEndian);
                 stream.Write(stringPool.ToCharArray());
-                stream.Write(shops.Count, isBigEndian);
+                stream.Write(Shops.Count, isBigEndian);
 
-                for (int i = 0; i < shops.Count; i++)
+                for (int i = 0; i < Shops.Count; i++)
                 {
-                    Shop shop = shops[i];
+                    Shop shop = Shops[i];
                     stream.WriteString(shop.Name);
                     stream.Write(shop.Unk0.ID, isBigEndian);
                     stream.Write(shop.ID, isBigEndian);
                 }
 
-                stream.Write(shopItems.Count, isBigEndian);
+                stream.Write(ShopItems.Count, isBigEndian);
                 long startOffset = stream.Position;
 
 
-                for (int x = 0; x < shopItems.Count; x++)
+                for (int x = 0; x < ShopItems.Count; x++)
                 {
                     stream.Write(-1, isBigEndian);
                     stream.Write(-1, isBigEndian);
                 }
 
-                long previousFinish = 0;
-
-                for (int i = 0; i < shopItems.Count; i++)
+                for (int i = 0; i < ShopItems.Count; i++)
                 {
-                    var metaInfo = shopItems[i];
+                    var metaInfo = ShopItems[i];
 
-                    previousFinish = stream.Position;
                     long currentPos = stream.Position;
                     long offset = (startOffset + (i * 8));
                     stream.Position = offset;
@@ -490,11 +497,11 @@ namespace ResourceTypes.City
                     for (int x = 0; x < metaInfo.Items.Count; x++)
                     {
                         var item = metaInfo.Items[x];
-                        stream.Write(item.UnkDB0.ID, isBigEndian);
-                        stream.Write(item.UnkDB1.ID, isBigEndian);
+                        stream.Write(item.Name.ID, isBigEndian);
+                        stream.Write(item.ShortDescription.ID, isBigEndian);
                         stream.Write(item.UnkDB2.ID, isBigEndian);
                         stream.Write(item.UnkDB3.ID, isBigEndian);
-                        stream.Write(item.UnkDB4.ID, isBigEndian);
+                        stream.Write(item.PromptText.ID, isBigEndian);
                         stream.Write(item.UnkDB5.ID, isBigEndian);
 
                         stream.Write(item.ItemUnk0, isBigEndian);
@@ -539,9 +546,9 @@ namespace ResourceTypes.City
             List<ushort> addedPos = new List<ushort>();
             stringPool = "";
 
-            for (int i = 0; i != shopItems.Count; i++)
+            for (int i = 0; i != ShopItems.Count; i++)
             {
-                var shop = shopItems[i];
+                var shop = ShopItems[i];
                 for (int y = 0; y != shop.Items.Count; y++)
                 {
                     var itemd = shop.Items[y];
