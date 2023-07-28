@@ -4,6 +4,7 @@ using Utils.Discord;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Reflection;
+using System.Globalization;
 
 namespace Utils.Settings
 {
@@ -59,6 +60,10 @@ namespace Utils.Settings
 
         public static void ReadINI()
         {
+            // Set to invariant culture, some cultures may have issues with ini
+            CultureInfo CurrentCulture = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
             ini = new IniFile();
             ElapsedTime = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
@@ -88,7 +93,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
             bool.TryParse(ReadKey("CookCollisions", "SDS", "True"), out CookCollisions);
-            bool.TryParse(ReadKey("EnableLUAHelper", "LUA", "True"), out EnableLuaHelper);
+            bool.TryParse(ReadKey("EnableLUAHelper", "LUA", "False"), out EnableLuaHelper);
             bool.TryParse(ReadKey("CheckForUpdates", "Misc", "True"), out CheckForUpdates);
             bool.TryParse(ReadKey("SkipGameSelector", "Misc", "False"), out SkipGameSelector);
             int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);
@@ -99,15 +104,24 @@ namespace Utils.Settings
             Log.LoggingEnabled = LoggingEnabled;
 
             if (DiscordEnabled)
+            {
                 InitRichPresence();
+            }
+
+            // Reset culture
+            CultureInfo.CurrentCulture = CurrentCulture;
         }
 
         public static string ReadKey(string key, string section, string defaultValue = null)
         {
             if (!ini.KeyExists(key, section))
+            {
                 ini.Write(key, defaultValue, section);
+            }
             else
+            {
                 return ini.Read(key, section);
+            }
 
             return defaultValue;
         }
@@ -152,7 +166,9 @@ namespace Utils.Settings
             else
             {
                 if (controller == null)
+                {
                     InitRichPresence();
+                }
 
                 details = ""; //don't like current imp.
                 string detailsLine = string.IsNullOrEmpty(details) ? CustomStateText : details;
