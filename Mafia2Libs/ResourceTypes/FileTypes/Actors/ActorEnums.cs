@@ -6,6 +6,7 @@ namespace ResourceTypes.Actors
     {
         None = 0,
         Human = 14,
+        C_Player2 = 16,
         C_Car = 18,
         C_Train = 19,
         C_CrashObject = 20,
@@ -51,6 +52,7 @@ namespace ResourceTypes.Actors
     public enum ActorEDSTypes
     {
         Human = 14,
+        C_Player2 = 16,
         C_Car = 18,
         C_Train = 19,
         C_ActionPointScript = 30,

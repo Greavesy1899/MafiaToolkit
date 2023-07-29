@@ -88,6 +88,9 @@ namespace ResourceTypes.Actors
                 case ActorEDSTypes.Human:
                     NewExtraData = new ActorHuman();
                     break;
+                case ActorEDSTypes.C_Player2:
+                    NewExtraData = new ActorPlayer2();
+                    break;
                 default:
                     NewExtraData = null;
                     break;

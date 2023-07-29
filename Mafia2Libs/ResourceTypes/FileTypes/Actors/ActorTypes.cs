@@ -2071,6 +2071,13 @@ namespace ResourceTypes.Actors
             writer.Write(Unk4, isBigEndian);
         }
     }
+
+    public class ActorPlayer2 : ActorHuman
+    {
+        // Empty because ActorHuman contains the data
+        // Only used to attempt to distinguish between the two types at a later date
+    }
+
     public class ActorScriptEntity : IActorExtraDataInterface
     {
         string scriptName;
