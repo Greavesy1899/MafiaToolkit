@@ -445,6 +445,15 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         private static void WriteXmlNode(XmlWriter writer, List<NodeEntry> nodes, NodeEntry node)
         {
+            if(node.Value != null && node.Value.Type == DataType.Special)
+            {
+                string AsString = node.Value.Value.ToString();
+                if(AsString.Contains("--"))
+                {
+                    return;
+                }
+            }
+
             writer.WriteStartElement(node.Name.ToString());
 
             foreach (var attribute in node.Attributes)
