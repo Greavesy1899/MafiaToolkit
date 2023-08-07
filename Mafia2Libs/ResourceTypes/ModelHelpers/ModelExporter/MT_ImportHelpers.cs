@@ -50,7 +50,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 for(int i = 0; i < OwningObject.FaceGroups.Length; i++)
                 {
-                    OwningObject.FaceGroups[i].Material.Name = Materials[i].ToString();
+                    string NewCollisionName = Materials[i].CollisionMaterial.ToString();
+                    OwningObject.FaceGroups[i].Material.Name = NewCollisionName;
+                    Materials[i].FaceGroupName = NewCollisionName;
                 }
             }
         }
