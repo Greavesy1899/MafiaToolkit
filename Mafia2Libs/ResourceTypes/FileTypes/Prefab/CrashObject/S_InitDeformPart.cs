@@ -11,7 +11,7 @@ namespace ResourceTypes.Prefab.CrashObject
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class S_InitDrainEnergy
     {
-        public uint DrainPart { get; set; } // ID to part
+        public uint DrainPart { get; set; } // ID to part. Assume its an index within the DeformParts list? Ref system required maybe.
         public float DrainEnergyCoeff { get; set; } // Game multiplies this by 100.
 
         public void Load(BitStream MemStream)
@@ -172,15 +172,13 @@ namespace ResourceTypes.Prefab.CrashObject
     public class S_InitDeformPart
     {
         public uint Unk0 { get; set; } // [13 = MOTOR] [15 = SNOW] [12 = EXHAUST] [16 = PLOW] [7 = BUMPER] [5 = WINDOW] [6 = COVER] [3 = LID] [14 = TYRE] [2 = WHEEL] [1 = BODY]
-        public uint Unk1 { get; set; } // [8192 = AIBOX]
+        public uint Unk1 { get; set; } // [16 = KILL PART] [400 = SNOW] [8192 = AIBOX] [262144 = FADE OFF]
         public byte Unk2 { get; set; }
         public ulong[] Unk3 { get; set; }
         public float Unk4 { get; set; }
         public float Unk5 { get; set; }
         public float Unk6 { get; set; }
-        public float Unk7 { get; set; }
-        public float Unk8 { get; set; }
-        public float Unk9 { get; set; }
+        public C_Vector3 CentreOfMass { get; set; }
         public S_InitInternalImpulse[] DPInternalImpulses { get; set; }
         public S_InitDropPart[] DropParts { get; set; }
         public S_InitDrainEnergy[] DPDrainEnergy { get; set; }
@@ -188,8 +186,8 @@ namespace ResourceTypes.Prefab.CrashObject
         public S_InitCollVolumeCollection[] CollisionVolumesCollections { get; set; }
         public S_InitSMDeformBone[] SMDeformBones { get; set; }
         public ushort[] Unk14 { get; set; } // indexes?
-        public C_Transform Unk15 { get; set; } // transform?
-        public ulong Unk16 { get; set; }
+        public C_Transform PartTransform { get; set; } // Transform of the part
+        public ulong ParentDeformPartName { get; set; }
         public ushort Unk17 { get; set; }
         public byte Unk18 { get; set; }
         public byte Unk19 { get; set; }
@@ -205,13 +203,14 @@ namespace ResourceTypes.Prefab.CrashObject
         public S_InitDeformPart()
         {
             Unk3 = new ulong[0];
+            CentreOfMass = new C_Vector3();
             DPDrainEnergy = new S_InitDrainEnergy[0];
             DropParts = new S_InitDropPart[0];
             CollisionVolumesCollections = new S_InitCollVolumeCollection[0];
             SMDeformBones = new S_InitSMDeformBone[0];
             DPInternalImpulses = new S_InitInternalImpulse[0];
             Unk14 = new ushort[0];
-            Unk15 = new C_Transform();
+            PartTransform = new C_Transform();
             Unk20 = new ushort[0];
             Unk21Data = new S_InitDeformOrigData();
             CommonData = new S_InitDeformPartCommon();
@@ -251,9 +250,7 @@ namespace ResourceTypes.Prefab.CrashObject
             Unk4 = MemStream.ReadSingle();
             Unk5 = MemStream.ReadSingle();
             Unk6 = MemStream.ReadSingle();
-            Unk7 = MemStream.ReadSingle();
-            Unk8 = MemStream.ReadSingle();
-            Unk9 = MemStream.ReadSingle();
+            CentreOfMass.Load(MemStream);
 
             uint NumDPInternalImpulses = MemStream.ReadUInt32();
             DPInternalImpulses = new S_InitInternalImpulse[NumDPInternalImpulses];
@@ -314,9 +311,9 @@ namespace ResourceTypes.Prefab.CrashObject
             }
 
             // Read matrix
-            Unk15.Load(MemStream);
+            PartTransform.Load(MemStream);
 
-            Unk16 = MemStream.ReadUInt64();
+            ParentDeformPartName = MemStream.ReadUInt64();
             Unk17 = MemStream.ReadUInt16();
             Unk18 = MemStream.ReadByte();
             Unk19 = MemStream.ReadByte();
@@ -363,9 +360,7 @@ namespace ResourceTypes.Prefab.CrashObject
             MemStream.WriteSingle(Unk4);
             MemStream.WriteSingle(Unk5);
             MemStream.WriteSingle(Unk6);
-            MemStream.WriteSingle(Unk7);
-            MemStream.WriteSingle(Unk8);
-            MemStream.WriteSingle(Unk9);
+            CentreOfMass.Save(MemStream);
 
             MemStream.WriteUInt32((uint)DPInternalImpulses.Length);
             foreach (S_InitInternalImpulse Value in DPInternalImpulses)
@@ -409,9 +404,9 @@ namespace ResourceTypes.Prefab.CrashObject
             }
 
             // Write Matrix
-            Unk15.Save(MemStream);
+            PartTransform.Save(MemStream);
 
-            MemStream.WriteUInt64(Unk16);
+            MemStream.WriteUInt64(ParentDeformPartName);
             MemStream.WriteUInt16(Unk17);
             MemStream.WriteByte(Unk18);
             MemStream.WriteByte(Unk19);

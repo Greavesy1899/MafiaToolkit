@@ -15,7 +15,6 @@ namespace ResourceTypes.FrameResource
     {
         SingleMeshFlags flags;
         BoundingBox bounds;
-        byte unk14;
         int meshIndex;
         int materialIndex;
         HashName omTextureHash;
@@ -35,10 +34,7 @@ namespace ResourceTypes.FrameResource
             get { return bounds; }
             set { bounds = value; }
         }
-        public byte Unk_14 {
-            get { return unk14; }
-            set { unk14 = value; }
-        }
+        public byte DeformPartIndex { get; set; }
         [ReadOnly(true)]
         public int MeshIndex {
             get { return meshIndex; }
@@ -82,7 +78,7 @@ namespace ResourceTypes.FrameResource
         {
             flags = other.flags;
             bounds = other.bounds;
-            unk14 = other.unk14;
+            DeformPartIndex = other.DeformPartIndex;
             meshIndex = other.meshIndex;
             materialIndex = other.materialIndex;
             omTextureHash = new HashName(other.omTextureHash.String);
@@ -97,7 +93,7 @@ namespace ResourceTypes.FrameResource
         {
             flags = SingleMeshFlags.Unk14_Flag | SingleMeshFlags.flag_32 | SingleMeshFlags.flag_67108864;
             bounds = new BoundingBox();
-            unk14 = 255;
+            DeformPartIndex = 255;
             meshIndex = 0;
             materialIndex = 0;
             omTextureHash = new HashName();
@@ -111,7 +107,7 @@ namespace ResourceTypes.FrameResource
             base.ReadFromFile(reader, isBigEndian);
             flags = (SingleMeshFlags)reader.ReadInt32(isBigEndian);
             bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
-            unk14 = reader.ReadByte8();
+            DeformPartIndex = reader.ReadByte8();
             meshIndex = reader.ReadInt32(isBigEndian);
             materialIndex = reader.ReadInt32(isBigEndian);
             omTextureHash = new HashName(reader, isBigEndian);
@@ -125,7 +121,7 @@ namespace ResourceTypes.FrameResource
             base.WriteToFile(writer);
             writer.Write((int)flags);
             bounds.WriteToFile(writer);
-            writer.Write(unk14);
+            writer.Write(DeformPartIndex);
             writer.Write(meshIndex);
             writer.Write(materialIndex);
             omTextureHash.WriteToFile(writer);

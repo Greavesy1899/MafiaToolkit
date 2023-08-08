@@ -69,28 +69,28 @@ namespace ResourceTypes.Prefab.CrashObject
     [PropertyClassAllowReflection]
     public class S_InitCollVolume
     {
-        public uint Unk0 { get; set; } // Coll Type? [6 = NONE] [5 = BOX?]
-        public C_Transform Unk1 { get; set; } // transform?
+        public uint VolumeType { get; set; } // Coll Type? [6 = NONE] [5 = BOX?]
+        public C_Transform Transform { get; set; } // transform? (parent/child very important here, this is world transform, not local)
         public byte Unk2 { get; set; } // if 1 - means something is available
         public C_Transform Unk2_Transform { get; set; } // transform?
-        public C_Vector3 Unk3 { get; set; }
-        public ulong[] Unk4 { get; set; } // hashes?
+        public C_Vector3 Extents { get; set; } // Multiply bounding box extents by 2
+        public ulong[] Unk4 { get; set; } // Could be linked to ItemDesc hashes (the ones inside the ItemDesc, not the name)
         public byte Unk5 { get; set; } // if 1 - means something is available
         public S_InitCollVolume_Nested Unk6 { get; set; }
 
         public S_InitCollVolume()
         {
-            Unk1 = new C_Transform();
+            Transform = new C_Transform();
             Unk2_Transform = new C_Transform();
-            Unk3 = new C_Vector3();
+            Extents = new C_Vector3();
             Unk4 = new ulong[0];
             Unk6 = new S_InitCollVolume_Nested();
         }
 
         public void Load(BitStream MemStream)
         {
-            Unk0 = MemStream.ReadUInt32();
-            Unk1.Load(MemStream);
+            VolumeType = MemStream.ReadUInt32();
+            Transform.Load(MemStream);
 
             // If one - means something is available.
             Unk2 = MemStream.ReadBit();
@@ -99,7 +99,7 @@ namespace ResourceTypes.Prefab.CrashObject
                 Unk2_Transform.Load(MemStream);
             }
 
-            Unk3 = C_Vector3.Construct(MemStream);
+            Extents = C_Vector3.Construct(MemStream);
 
             // Read Hashes. Fixed number of 2.
             bool bUnk4HashesAvailable = MemStream.ReadBit();
@@ -122,8 +122,8 @@ namespace ResourceTypes.Prefab.CrashObject
 
         public void Save(BitStream MemStream)
         {
-            MemStream.WriteUInt32(Unk0);
-            Unk1.Save(MemStream);
+            MemStream.WriteUInt32(VolumeType);
+            Transform.Save(MemStream);
 
             MemStream.WriteBit(Unk2);
             if(Unk2 == 1)
@@ -131,7 +131,7 @@ namespace ResourceTypes.Prefab.CrashObject
                 Unk2_Transform.Save(MemStream);
             }
 
-            Unk3.Save(MemStream);
+            Extents.Save(MemStream);
 
             // Only save-able if we have some present
             bool bUnk4HashesAvailable = (Unk4 != null  && Unk4.Length > 0);

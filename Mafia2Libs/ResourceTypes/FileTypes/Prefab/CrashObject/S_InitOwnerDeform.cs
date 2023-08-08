@@ -5,26 +5,26 @@ namespace ResourceTypes.Prefab.CrashObject
 {
     public class S_InitOwnerDeform
     {
-        public class DataPacket
+        public class S_InitPartMatrix
         {
-            public ulong Unk0 { get; set; }
-            public C_Transform Unk1 { get; set; } // transform?
+            public ulong PartHashName { get; set; }
+            public C_Transform PartTransform { get; set; }
 
-            public DataPacket()
+            public S_InitPartMatrix()
             {
-                Unk1 = new C_Transform();
+                PartTransform = new C_Transform();
             }
 
             public void Load(BitStream MemStream)
             {
-                Unk0 = MemStream.ReadUInt64();
-                Unk1.Load(MemStream);
+                PartHashName = MemStream.ReadUInt64();
+                PartTransform.Load(MemStream);
             }
 
             public void Save(BitStream MemStream)
             {
-                MemStream.WriteUInt64(Unk0);
-                Unk1.Save(MemStream);
+                MemStream.WriteUInt64(PartHashName);
+                PartTransform.Save(MemStream);
             }
         }
 
@@ -37,7 +37,7 @@ namespace ResourceTypes.Prefab.CrashObject
         public C_Vector3 Unk12 { get; set; }
         public ushort[] Unk4 { get; set; } // array of index?
         public ushort[] Unk6 { get; set; }
-        public DataPacket[] Unk9 { get; set; }
+        public S_InitPartMatrix[] PartTransforms { get; set; }
         public C_Transform Unk10 { get; set; } // transform?
 
         public S_InitOwnerDeform()
@@ -47,7 +47,7 @@ namespace ResourceTypes.Prefab.CrashObject
             Unk12 = new C_Vector3();
             Unk4 = new ushort[0];
             Unk6 = new ushort[0];
-            Unk9 = new DataPacket[0];
+            PartTransforms = new S_InitPartMatrix[0];
             Unk10 = new C_Transform();
         }
 
@@ -82,12 +82,12 @@ namespace ResourceTypes.Prefab.CrashObject
 
             // Read unknown data
             uint NumDataPackets = MemStream.ReadUInt32();
-            Unk9 = new DataPacket[NumDataPackets];
-            for(int i = 0; i < Unk9.Length; i++)
+            PartTransforms = new S_InitPartMatrix[NumDataPackets];
+            for(int i = 0; i < PartTransforms.Length; i++)
             {
-                DataPacket NewPacket = new DataPacket();
+                S_InitPartMatrix NewPacket = new S_InitPartMatrix();
                 NewPacket.Load(MemStream);
-                Unk9[i] = NewPacket;
+                PartTransforms[i] = NewPacket;
             }
 
             // Read transform
@@ -119,8 +119,8 @@ namespace ResourceTypes.Prefab.CrashObject
             }
 
             // Write unknown data
-            MemStream.WriteUInt32((uint)Unk9.Length);
-            foreach (DataPacket Value in Unk9)
+            MemStream.WriteUInt32((uint)PartTransforms.Length);
+            foreach (S_InitPartMatrix Value in PartTransforms)
             {
                 Value.Save(MemStream);
             }
