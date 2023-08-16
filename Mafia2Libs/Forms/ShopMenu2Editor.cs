@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Utils.Helpers;
 using Utils.Language;
 using ResourceTypes.City;
+using System;
 
 namespace Mafia2Tool
 {
@@ -21,7 +22,7 @@ namespace Mafia2Tool
             InitializeComponent();
             Localise();
             menuFile = file;
-            BuildData();
+            BuildData(true);
             Show();
         }
 
@@ -41,12 +42,15 @@ namespace Mafia2Tool
             Context_DuplicateMetaInfoItem.Text = Language.GetString("$DUPLICATE_ITEM");
         }
 
-        private void BuildData()
+        private void BuildData(bool fromFile)
         {
             TreeView_ShopMenu2.Nodes.Clear();
 
-            menuData = new ShopMenu2();
-            menuData.ReadFromFile(menuFile.FullName);
+            if (fromFile)
+            {
+                menuData = new ShopMenu2();
+                menuData.ReadFromFile(menuFile.FullName);
+            }
 
             ShopFolder = new TreeNode("Shop Types");
             foreach (ShopMenu2.Shop Shop in menuData.Shops)
@@ -94,25 +98,26 @@ namespace Mafia2Tool
         private void PreSave()
         {
             // Clear existing lists
-            menuData.Shops.Clear();
-            menuData.ShopItems.Clear();
+            menuData.Shops = new ShopMenu2.Shop[ShopFolder.Nodes.Count];
+            menuData.ShopItems = new ShopMenu2.ShopMenu[ShopMetaInfoFolder.Nodes.Count];
 
             // Repopulate lists
-            foreach (TreeNode Shop in ShopFolder.Nodes)
+            for (int i = 0; i < ShopFolder.Nodes.Count; i++)
             {
-                menuData.Shops.Add((ShopMenu2.Shop)Shop.Tag);
+                menuData.Shops[i] = (ShopMenu2.Shop)ShopFolder.Nodes[i].Tag;
             }
 
-            foreach (TreeNode MetaInfo in ShopMetaInfoFolder.Nodes)
+            for (int i = 0; i < ShopMetaInfoFolder.Nodes.Count; i++)
             {
+                var MetaInfo = ShopMetaInfoFolder.Nodes[i];
                 ShopMenu2.ShopMenu CurrentMetaInfo = (ShopMenu2.ShopMenu)MetaInfo.Tag;
-                menuData.ShopItems.Add(CurrentMetaInfo);
+                menuData.ShopItems[i] = CurrentMetaInfo;
 
                 // Clear for new entries
-                CurrentMetaInfo.Items.Clear();
-                foreach (TreeNode Item in MetaInfo.Nodes)
+                CurrentMetaInfo.Items = new ShopMenu2.ItemConfig[MetaInfo.Nodes.Count];
+                for (int j = 0; j < MetaInfo.Nodes.Count; j++)
                 {
-                    CurrentMetaInfo.Items.Add((ShopMenu2.ItemConfig)Item.Tag);
+                    CurrentMetaInfo.Items[j] = (ShopMenu2.ItemConfig)MetaInfo.Nodes[j].Tag;
                 }
             }
         }
@@ -121,7 +126,7 @@ namespace Mafia2Tool
         {
             PropertyGrid_ShopMenu2.SelectedObject = null;
             TreeView_ShopMenu2.SelectedNode = null;
-            BuildData();
+            BuildData(true);
 
             Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE");
             bIsFileEdited = false;
@@ -130,7 +135,7 @@ namespace Mafia2Tool
         private void Delete()
         {
             TreeNode SelNode = TreeView_ShopMenu2.SelectedNode;
-            if(SelNode != null)
+            if (SelNode != null)
             {
                 SelNode.Remove();
 
@@ -295,6 +300,36 @@ namespace Mafia2Tool
         private void Button_Delete_OnClick(object sender, System.EventArgs e) => Delete();
         private void Button_AddType_OnClick(object sender, System.EventArgs e) => AddType();
         private void Button_AddMetaInfo_OnClick(object sender, System.EventArgs e) => AddMetaInfo();
+        private void Button_ExportXml_OnClick(object sender, System.EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "XML|*.XML";
+
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                menuData.ConvertToXML(saveFile.FileName);
+            }
+        }
+
+        private void Button_ImportXml_OnClick(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "XML|*.XML";
+            openFileDialog.Multiselect = false;
+            openFileDialog.CheckFileExists = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string FileToOpen = openFileDialog.FileName;
+                if (File.Exists(FileToOpen))
+                {
+                    menuData.ConvertFromXML(FileToOpen);
+
+                    BuildData(false);
+                }
+            }
+        }
+
         private void Context_Delete_OnClick(object sender, System.EventArgs e) => Delete();
         private void Context_AddType_OnClick(object sender, System.EventArgs e) => AddType();
         private void Context_AddMetaInfo_OnClick(object sender, System.EventArgs e) => AddMetaInfo();
