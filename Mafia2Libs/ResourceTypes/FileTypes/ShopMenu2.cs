@@ -1,17 +1,185 @@
-﻿using System;
+﻿using ResourceTypes.EntityDataStorage;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Utils.Extensions;
+using Utils.Helpers.Reflection;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.City
 {
     public class ShopMenu2
     {
-        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class SHPMQuaternionConverter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+            }
+
+            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+            {
+                return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+            }
+
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+            {
+                object result = null;
+                string stringValue = value as string;
+
+                if (!string.IsNullOrEmpty(stringValue))
+                {
+                    float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 3);
+                    result = new SHPMQuaternion(values);
+                }
+
+                return result ?? base.ConvertFrom(context, culture, value);
+            }
+
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            {
+                object result = null;
+                SHPMQuaternion quat = (SHPMQuaternion)value;
+
+                if (destinationType == typeof(string))
+                {
+                    result = quat.ToString();
+                }
+
+                return result ?? base.ConvertTo(context, culture, value, destinationType);
+            }
+        }
+
+        [TypeConverter(typeof(SHPMQuaternionConverter)), PropertyClassAllowReflection]
+        public class SHPMQuaternion
+        {
+            [PropertyForceAsAttribute]
+            public float X { get; set; }
+            [PropertyForceAsAttribute]
+            public float Y { get; set; }
+            [PropertyForceAsAttribute]
+            public float Z { get; set; }
+            [PropertyForceAsAttribute]
+            public float W { get; set; }
+
+            public SHPMQuaternion() { }
+
+            public SHPMQuaternion(float[] Values)
+            {
+                X = Values[0];
+                Y = Values[1];
+                Z = Values[2];
+                W = Values[3];
+            }
+
+            public void ReadFromFile(MemoryStream Stream, bool bIsBigEndian)
+            {
+                X = Stream.ReadSingle(bIsBigEndian);
+                Y = Stream.ReadSingle(bIsBigEndian);
+                Z = Stream.ReadSingle(bIsBigEndian);
+                W = Stream.ReadSingle(bIsBigEndian);
+            }
+
+            public void WriteToFile(MemoryStream Stream, bool bIsBigEndian)
+            {
+                Stream.Write(X, bIsBigEndian);
+                Stream.Write(Y, bIsBigEndian);
+                Stream.Write(Z, bIsBigEndian);
+                Stream.Write(W, bIsBigEndian);
+            }
+
+            public override string ToString()
+            {
+                return string.Format("X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+            }
+        }
+
+        public class SHPMVector3Converter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+            }
+
+            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+            {
+                return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+            }
+
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+            {
+                object result = null;
+                string stringValue = value as string;
+
+                if (!string.IsNullOrEmpty(stringValue))
+                {
+                    float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 3);
+                    result = new SHPMVector3(values);
+                }
+
+                return result ?? base.ConvertFrom(context, culture, value);
+            }
+
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            {
+                object result = null;
+                SHPMVector3 vector3 = (SHPMVector3)value;
+
+                if (destinationType == typeof(string))
+                {
+                    result = vector3.ToString();
+                }
+
+                return result ?? base.ConvertTo(context, culture, value, destinationType);
+            }
+        }
+
+        [TypeConverter(typeof(SHPMVector3Converter)), PropertyClassAllowReflection]
+        public class SHPMVector3
+        {
+            [PropertyForceAsAttribute]
+            public float X { get; set; }
+            [PropertyForceAsAttribute]
+            public float Y { get; set; }
+            [PropertyForceAsAttribute]
+            public float Z { get; set; }
+
+            public SHPMVector3() { }
+
+            public SHPMVector3(float[] Values)
+            {
+                X = Values[0];
+                Y = Values[1];
+                Z = Values[2];
+            }
+
+            public void ReadFromFile(MemoryStream Stream, bool bIsBigEndian)
+            {
+                X = Stream.ReadSingle(bIsBigEndian);
+                Y = Stream.ReadSingle(bIsBigEndian);
+                Z = Stream.ReadSingle(bIsBigEndian);
+            }
+
+            public void WriteToFile(MemoryStream Stream, bool bIsBigEndian)
+            {
+                Stream.Write(X, bIsBigEndian);
+                Stream.Write(Y, bIsBigEndian);
+                Stream.Write(Z, bIsBigEndian);
+            }
+
+            public override string ToString()
+            {
+                return string.Format("X:{0} Y:{1} Z:{2}", X, Y, Z);
+            }
+        }
+
+        [TypeConverter(typeof(ExpandableObjectConverter)), PropertyClassAllowReflection]
         public class LocalisedString
         {
             uint id;
@@ -24,6 +192,11 @@ namespace ResourceTypes.City
             public string Text {
                 get { return text; }
                 set { text = value; }
+            }
+
+            public LocalisedString()
+            {
+                this.id = 0;
             }
 
             public LocalisedString(uint id) 
@@ -87,11 +260,11 @@ namespace ResourceTypes.City
             public int UnkZero01 { get; set; }
             public int UnkZero02 { get; set; }
             [Browsable(false)]
-            public List<ItemConfig> Items { get; set; }
+            public ItemConfig[] Items { get; set; }
 
             public ShopMenu()
             {
-                Items = new List<ItemConfig>();
+                Items = null;
                 UnkDB0 = new LocalisedString(0);
                 Unk1 = string.Empty;
                 Path = string.Empty;
@@ -110,17 +283,17 @@ namespace ResourceTypes.City
                 UnkZero01 = OtherShopMenu.UnkZero01;
                 UnkZero02 = OtherShopMenu.UnkZero02;
 
-                Items = new List<ItemConfig>();
-                foreach (ItemConfig OtherItem in OtherShopMenu.Items)
+                Items = new ItemConfig[OtherShopMenu.Items.Length];
+                for (int i = 0; i < OtherShopMenu.Items.Length; i++)
                 {
-                    ItemConfig CopiedItem = new ItemConfig(OtherItem);
-                    Items.Add(CopiedItem);
+                    ItemConfig CopiedItem = new ItemConfig(OtherShopMenu.Items[i]);
+                    Items[i] = CopiedItem;
                 }
             }
 
             public override string ToString()
             {
-                return string.Format("{3} {0} {1} {2}", Unk1, Path, Items.Count, ID);
+                return string.Format("{3} {0} {1} {2}", Unk1, Path, Items.Length, ID);
             }
         }
 
@@ -148,17 +321,17 @@ namespace ResourceTypes.City
 
         public class ItemConfig
         {
-            [TypeConverter(typeof(ExpandableObjectConverter))]
+            [TypeConverter(typeof(ExpandableObjectConverter)), PropertyClassAllowReflection]
             public class ItemCamera
             {
-                public Vector3 Position { get; set; }
-                public Quaternion Rotation { get; set; }
+                public SHPMVector3 Position { get; set; }
+                public SHPMQuaternion Rotation { get; set; }
                 public float Unk01 { get; set; }
 
                 public ItemCamera()
                 {
-                    Position = Vector3.Zero;
-                    Rotation = Quaternion.Identity;
+                    Position = new SHPMVector3();
+                    Rotation = new SHPMQuaternion();
                     Unk01 = 0.0f;
                 }
 
@@ -171,8 +344,8 @@ namespace ResourceTypes.City
 
                 public void ReadFromFile(MemoryStream stream, bool isBigEndian)
                 {
-                    Position = Vector3Utils.ReadFromFile(stream, isBigEndian);
-                    Rotation = QuaternionExtensions.ReadFromFile(stream, isBigEndian);
+                    Position.ReadFromFile(stream, isBigEndian);
+                    Rotation.ReadFromFile(stream, isBigEndian);
                     Unk01 = stream.ReadSingle(isBigEndian);
                 }
 
@@ -260,8 +433,8 @@ namespace ResourceTypes.City
             }
         }
 
-        public List<Shop> Shops { get; set; }
-        public List<ShopMenu> ShopItems { get; set; }
+        public Shop[] Shops { get; set; }
+        public ShopMenu[] ShopItems { get; set; }
 
         private string stringPool = "";
         private Dictionary<int, string> dicPool;
@@ -274,8 +447,8 @@ namespace ResourceTypes.City
         {
             stringPool = string.Empty;
             dicPool = new Dictionary<int, string>();
-            Shops = new List<Shop>();
-            ShopItems = new List<ShopMenu>();
+            Shops = null;
+            ShopItems = null;
             textDB = new Dictionary<uint, string>();
         }
 
@@ -344,6 +517,7 @@ namespace ResourceTypes.City
                 }
 
                 var numShops = stream.ReadInt32(isBigEndian);
+                Shops = new Shop[numShops];
 
                 for (int i = 0; i < numShops; i++)
                 {
@@ -352,12 +526,13 @@ namespace ResourceTypes.City
                     shop.Unk0 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                     GetFromDB(shop.Unk0);
                     shop.ID = stream.ReadInt32(isBigEndian);
-                    Shops.Add(shop);
+                    Shops[i] = shop;
                 }
 
                 var num = stream.ReadInt32(isBigEndian);
                 int[] unkIDs = new int[num];
                 int[] unkOffsets = new int[num];
+                ShopItems = new ShopMenu[num];
 
                 for (int x = 0; x < num; x++)
                 {
@@ -381,6 +556,7 @@ namespace ResourceTypes.City
                     metaInfo.UnkZero02 = stream.ReadInt32(isBigEndian);
 
                     var itemNum = stream.ReadInt32(isBigEndian);
+                    metaInfo.Items = new ItemConfig[itemNum];
 
                     for (int x = 0; x < itemNum; x++)
                     {
@@ -439,9 +615,9 @@ namespace ResourceTypes.City
                             it.Unk0 = stream.ReadByte8();
                             item.Section2[z] = it;
                         }
-                            metaInfo.Items.Add(item);
+                        metaInfo.Items[x] = item;
                     }
-                    ShopItems.Add(metaInfo);
+                    ShopItems[i] = metaInfo;
                 }
             }
         }
@@ -456,9 +632,9 @@ namespace ResourceTypes.City
                 stream.Write(version, isBigEndian);
                 stream.Write(stringPool.Length, isBigEndian);
                 stream.Write(stringPool.ToCharArray());
-                stream.Write(Shops.Count, isBigEndian);
+                stream.Write(Shops.Length, isBigEndian);
 
-                for (int i = 0; i < Shops.Count; i++)
+                for (int i = 0; i < Shops.Length; i++)
                 {
                     Shop shop = Shops[i];
                     stream.WriteString(shop.Name);
@@ -466,17 +642,17 @@ namespace ResourceTypes.City
                     stream.Write(shop.ID, isBigEndian);
                 }
 
-                stream.Write(ShopItems.Count, isBigEndian);
+                stream.Write(ShopItems.Length, isBigEndian);
                 long startOffset = stream.Position;
 
 
-                for (int x = 0; x < ShopItems.Count; x++)
+                for (int x = 0; x < ShopItems.Length; x++)
                 {
                     stream.Write(-1, isBigEndian);
                     stream.Write(-1, isBigEndian);
                 }
 
-                for (int i = 0; i < ShopItems.Count; i++)
+                for (int i = 0; i < ShopItems.Length; i++)
                 {
                     var metaInfo = ShopItems[i];
 
@@ -496,9 +672,9 @@ namespace ResourceTypes.City
                     stream.Write(metaInfo.Unk3, isBigEndian);
                     stream.Write(metaInfo.UnkZero01, isBigEndian);
                     stream.Write(metaInfo.UnkZero02, isBigEndian);
-                    stream.Write(metaInfo.Items.Count, isBigEndian);
+                    stream.Write(metaInfo.Items.Length, isBigEndian);
 
-                    for (int x = 0; x < metaInfo.Items.Count; x++)
+                    for (int x = 0; x < metaInfo.Items.Length; x++)
                     {
                         var item = metaInfo.Items[x];
                         stream.Write(item.Name.ID, isBigEndian);
@@ -543,6 +719,24 @@ namespace ResourceTypes.City
             }
         }
 
+        public void ConvertToXML(string Filename)
+        {
+            XElement Root = ReflectionHelpers.ConvertPropertyToXML(this);
+            Root.Save(Filename);
+        }
+
+        public void ConvertFromXML(string Filename)
+        {
+            XElement LoadedDoc = XElement.Load(Filename);
+            ShopMenu2 FileContents = ReflectionHelpers.ConvertToPropertyFromXML<ShopMenu2>(LoadedDoc);
+
+            // Copy data taken from loaded XML
+            Shops = FileContents.Shops;
+            ShopItems = FileContents.ShopItems;
+            stringPool = string.Empty;
+            dicPool = new Dictionary<int, string>();
+        }
+
         private void BuildUpdateKeyStringBuffer()
         {
             //fix this
@@ -550,10 +744,10 @@ namespace ResourceTypes.City
             List<ushort> addedPos = new List<ushort>();
             stringPool = "";
 
-            for (int i = 0; i != ShopItems.Count; i++)
+            for (int i = 0; i != ShopItems.Length; i++)
             {
                 var shop = ShopItems[i];
-                for (int y = 0; y != shop.Items.Count; y++)
+                for (int y = 0; y != shop.Items.Length; y++)
                 {
                     var itemd = shop.Items[y];
                     for (int x = 0; x != itemd.Section1.Length; x++)

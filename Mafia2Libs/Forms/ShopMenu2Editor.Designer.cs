@@ -47,6 +47,8 @@
             Button_AddType = new System.Windows.Forms.ToolStripMenuItem();
             Button_AddMetaInfo = new System.Windows.Forms.ToolStripMenuItem();
             Button_Delete = new System.Windows.Forms.ToolStripMenuItem();
+            Button_ExportXml = new System.Windows.Forms.ToolStripMenuItem();
+            Button_ImportXml = new System.Windows.Forms.ToolStripMenuItem();
             Context_Menu.SuspendLayout();
             ToolStrip_Main.SuspendLayout();
             SuspendLayout();
@@ -77,34 +79,34 @@
             // 
             Context_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { Context_AddType, Context_AddMetaInfo, Context_DuplicateMetaInfo, Context_DuplicateMetaInfoItem, Context_Delete });
             Context_Menu.Name = "SDSContext";
-            Context_Menu.Size = new System.Drawing.Size(181, 136);
+            Context_Menu.Size = new System.Drawing.Size(172, 114);
             Context_Menu.Opening += Context_Menu_OnOpening;
             // 
             // Context_AddType
             // 
             Context_AddType.Name = "Context_AddType";
-            Context_AddType.Size = new System.Drawing.Size(180, 22);
+            Context_AddType.Size = new System.Drawing.Size(171, 22);
             Context_AddType.Text = "$ADD_SHOPTYPE";
             Context_AddType.Click += Context_AddType_OnClick;
             // 
             // Context_AddMetaInfo
             // 
             Context_AddMetaInfo.Name = "Context_AddMetaInfo";
-            Context_AddMetaInfo.Size = new System.Drawing.Size(180, 22);
+            Context_AddMetaInfo.Size = new System.Drawing.Size(171, 22);
             Context_AddMetaInfo.Text = "$ADD_METAINFO";
             Context_AddMetaInfo.Click += Context_AddMetaInfo_OnClick;
             // 
             // Context_DuplicateMetaInfo
             // 
             Context_DuplicateMetaInfo.Name = "Context_DuplicateMetaInfo";
-            Context_DuplicateMetaInfo.Size = new System.Drawing.Size(180, 22);
+            Context_DuplicateMetaInfo.Size = new System.Drawing.Size(171, 22);
             Context_DuplicateMetaInfo.Text = "$DUPE_METAINFO";
             Context_DuplicateMetaInfo.Click += Context_DupeMetaInfo_Clicked;
             // 
             // Context_DuplicateMetaInfoItem
             // 
             Context_DuplicateMetaInfoItem.Name = "Context_DuplicateMetaInfoItem";
-            Context_DuplicateMetaInfoItem.Size = new System.Drawing.Size(180, 22);
+            Context_DuplicateMetaInfoItem.Size = new System.Drawing.Size(171, 22);
             Context_DuplicateMetaInfoItem.Text = "$DUPLICATE_ITEM";
             Context_DuplicateMetaInfoItem.Click += Context_DupeMetaInfoItem_Clicked;
             // 
@@ -112,7 +114,7 @@
             // 
             Context_Delete.Name = "Context_Delete";
             Context_Delete.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete;
-            Context_Delete.Size = new System.Drawing.Size(180, 22);
+            Context_Delete.Size = new System.Drawing.Size(171, 22);
             Context_Delete.Text = "$DELETE";
             Context_Delete.Click += Context_Delete_OnClick;
             // 
@@ -161,7 +163,7 @@
             // Button_Tools
             // 
             Button_Tools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            Button_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { Button_AddType, Button_AddMetaInfo, Button_Delete });
+            Button_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { Button_AddType, Button_AddMetaInfo, Button_Delete, Button_ExportXml, Button_ImportXml });
             Button_Tools.Image = (System.Drawing.Image)resources.GetObject("Button_Tools.Image");
             Button_Tools.ImageTransparentColor = System.Drawing.Color.Magenta;
             Button_Tools.Name = "Button_Tools";
@@ -172,14 +174,14 @@
             // Button_AddType
             // 
             Button_AddType.Name = "Button_AddType";
-            Button_AddType.Size = new System.Drawing.Size(169, 22);
+            Button_AddType.Size = new System.Drawing.Size(180, 22);
             Button_AddType.Text = "$ADD_SHOPTYPE";
             Button_AddType.Click += Button_AddType_OnClick;
             // 
             // Button_AddMetaInfo
             // 
             Button_AddMetaInfo.Name = "Button_AddMetaInfo";
-            Button_AddMetaInfo.Size = new System.Drawing.Size(169, 22);
+            Button_AddMetaInfo.Size = new System.Drawing.Size(180, 22);
             Button_AddMetaInfo.Text = "$ADD_METAINFO";
             Button_AddMetaInfo.Click += Button_AddMetaInfo_OnClick;
             // 
@@ -187,9 +189,23 @@
             // 
             Button_Delete.Name = "Button_Delete";
             Button_Delete.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete;
-            Button_Delete.Size = new System.Drawing.Size(169, 22);
+            Button_Delete.Size = new System.Drawing.Size(180, 22);
             Button_Delete.Text = "$DELETE";
             Button_Delete.Click += Button_Delete_OnClick;
+            // 
+            // Button_ExportXml
+            // 
+            Button_ExportXml.Name = "Button_ExportXml";
+            Button_ExportXml.Size = new System.Drawing.Size(180, 22);
+            Button_ExportXml.Text = "$EXPORT_XML";
+            Button_ExportXml.Click += Button_ExportXml_OnClick;
+            // 
+            // Button_ImportXml
+            // 
+            Button_ImportXml.Name = "Button_ImportXml";
+            Button_ImportXml.Size = new System.Drawing.Size(180, 22);
+            Button_ImportXml.Text = "$IMPORT_XML";
+            Button_ImportXml.Click += Button_ImportXml_OnClick;
             // 
             // ShopMenu2Editor
             // 
@@ -231,5 +247,7 @@
         private System.Windows.Forms.ToolStripMenuItem Context_AddMetaInfo;
         private System.Windows.Forms.ToolStripMenuItem Context_DuplicateMetaInfo;
         private System.Windows.Forms.ToolStripMenuItem Context_DuplicateMetaInfoItem;
+        private System.Windows.Forms.ToolStripMenuItem Button_ExportXml;
+        private System.Windows.Forms.ToolStripMenuItem Button_ImportXml;
     }
 }
