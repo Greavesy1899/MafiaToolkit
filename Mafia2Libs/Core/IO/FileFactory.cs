@@ -30,6 +30,9 @@ namespace Core.IO
                 case "SDS":
                     File = new FileSDS(info);
                     break;
+                case "PCKG":
+                    File = new FilePCKG(info);
+                    break;
                 case "FR":
                     return new FileFrameResource(info);
                 case "MTL":

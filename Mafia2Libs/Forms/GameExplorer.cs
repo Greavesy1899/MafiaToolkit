@@ -392,6 +392,10 @@ namespace Mafia2Tool
             {           
                 OpenSDSDirectory(asset.GetUnderlyingFileInfo());
             }
+            else if (asset is FilePCKG)
+            {
+                OpenSDSDirectory(asset.GetUnderlyingFileInfo());
+            }
             else
             {
                 OpenDirectory(currentDirectory);
@@ -465,6 +469,12 @@ namespace Mafia2Tool
                 (file as FileSDS).Save();
                 infoText.Text = string.Format("Packed SDS: {0}", file.GetName());
             }
+
+            if (file is FilePCKG)
+            {
+                (file as FilePCKG).Save();
+                infoText.Text = string.Format("Packed PCKG: {0}", file.GetName());
+            }
         }
 
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
@@ -477,6 +487,13 @@ namespace Mafia2Tool
                     FileSDS SDSFile = (Tag as FileSDS);
                     SDSFile.Open();
                     OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo());
+                }
+
+                if (Tag is FilePCKG)
+                {
+                    FilePCKG PCKGFile = (Tag as FilePCKG);
+                    PCKGFile.Open();
+                    OpenSDSDirectory(PCKGFile.GetUnderlyingFileInfo());
                 }
             }
         }
@@ -541,7 +558,7 @@ namespace Mafia2Tool
             {
                 object Tag = fileListView.SelectedItems[0].Tag;
 
-                if (Tag is FileSDS)
+                if (Tag is FileSDS || Tag is FilePCKG)
                 {
                     ContextSDSUnpack.Visible = true;
                     ContextSDSPack.Visible = true;
@@ -907,7 +924,7 @@ namespace Mafia2Tool
             if (e.Item != null)
             {
                 object Tag = e.Item.Tag;
-                if(Tag is FileSDS)
+                if(Tag is FileSDS || Tag is FilePCKG)
                 {
                     SetPackUnpackButtonEnabled(true);
                 }
