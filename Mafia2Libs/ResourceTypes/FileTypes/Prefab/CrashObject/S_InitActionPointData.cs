@@ -12,6 +12,13 @@ namespace ResourceTypes.Prefab.CrashObject
         public string Unk3 { get; set; } // 100% not a hash
         public float[] Unk4 { get; set; } // Could be two C_Vector3s. A box?
 
+        public S_InitActionPointData()
+        {
+            Unk1 = string.Empty;
+            Unk3 = string.Empty;
+            Unk4 = new float[6];
+        }
+
         public void Load(BitStream MemStream)
         {
             Unk0 = MemStream.ReadBit();

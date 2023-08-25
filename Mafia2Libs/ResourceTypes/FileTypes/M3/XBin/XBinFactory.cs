@@ -100,7 +100,7 @@ namespace ResourceTypes.M3.XBin
                     XBinData.ReadFromFile(reader);
                     break;
                 case 15866877770641655778:
-                case 15866877773860790910:
+                case 0xDC327944DD83627E:
                     XBinData = new PaintCombinationsTable(); // PaintCombinations
                     XBinData.ReadFromFile(reader);
                     break;
