@@ -89,10 +89,12 @@ namespace ResourceTypes.Actors
     [Flags]
     public enum ActorCleanEntityFlags
     {
+        None = 0,
         ClearOnInit = 1,
         BlockPedestrians = 2,
         BlockTraffic = 4,
-        PrimitiveType = 8,
+        UseBoxObstacle = 8,
+        UseSphereObstacle = 16,
     }
 
     [Flags]

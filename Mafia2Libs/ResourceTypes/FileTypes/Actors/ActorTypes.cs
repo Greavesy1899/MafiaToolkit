@@ -261,7 +261,14 @@ namespace ResourceTypes.Actors
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BBoxSize { get; set; }
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public ActorCleanEntityFlags flags { get; set; }
+        public ActorCleanEntityFlags Flags { get; set; }
+
+        public ActorCleanEntity()
+        {
+            Radius = 2.0f;
+            BBoxSize = new Vector3(1.0f, 1.0f, 1.0f);
+            Flags = ActorCleanEntityFlags.ClearOnInit | ActorCleanEntityFlags.BlockTraffic | ActorCleanEntityFlags.BlockPedestrians | ActorCleanEntityFlags.UseBoxObstacle;
+        }
 
         public int GetSize()
         {
@@ -272,14 +279,14 @@ namespace ResourceTypes.Actors
         {
             Radius = stream.ReadSingle(isBigEndian);
             BBoxSize = Vector3Utils.ReadFromFile(stream, isBigEndian);
-            flags = (ActorCleanEntityFlags)stream.ReadInt32(isBigEndian);
+            Flags = (ActorCleanEntityFlags)stream.ReadInt32(isBigEndian);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(Radius, isBigEndian);
             Vector3Utils.WriteToFile(BBoxSize, writer, isBigEndian);
-            writer.Write((int)flags, isBigEndian);
+            writer.Write((int)Flags, isBigEndian);
         }
     }
 

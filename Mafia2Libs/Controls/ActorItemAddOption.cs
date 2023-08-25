@@ -39,6 +39,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.PhysicsScene);
             TypeCombo.Items.Add(ActorTypes.Boat);
             TypeCombo.Items.Add(ActorTypes.Airplane);
+            TypeCombo.Items.Add(ActorTypes.CleanEntity);
             TypeCombo.SelectedIndex = 0;
         }
 

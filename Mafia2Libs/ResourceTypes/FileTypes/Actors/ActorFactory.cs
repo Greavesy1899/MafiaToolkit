@@ -64,6 +64,8 @@ namespace ResourceTypes.Actors
                     return new ActorBoat();
                 case ActorTypes.Airplane:
                     return new ActorAircraft();
+                case ActorTypes.CleanEntity:
+                    return new ActorCleanEntity();
                 default:
                     Console.WriteLine("Cannot read type: " + type);
                     return null;

@@ -142,7 +142,7 @@ namespace ResourceTypes.Prefab.CrashObject
         }
     }
 
-    [TypeConverter(typeof(ExpandableObjectConverter))]
+    [TypeConverter(typeof(ExpandableObjectConverter)), PropertyClassAllowReflection]
     public class S_InitDeformRelData
     {
         public C_Vector3 Unk0 { get; set; }
@@ -172,12 +172,12 @@ namespace ResourceTypes.Prefab.CrashObject
     public class S_InitDeformPart
     {
         public uint Unk0 { get; set; } // [13 = MOTOR] [15 = SNOW] [12 = EXHAUST] [16 = PLOW] [7 = BUMPER] [5 = WINDOW] [6 = COVER] [3 = LID] [14 = TYRE] [2 = WHEEL] [1 = BODY]
-        public uint Unk1 { get; set; } // [16 = KILL PART] [400 = SNOW] [8192 = AIBOX] [262144 = FADE OFF]
+        public uint Unk1 { get; set; } // [2 = ALWAYS DYNAMIC?] [16 = KILL PART] [400 = SNOW] [8192 = AIBOX] [262144 = FADE OFF]
         public byte Unk2 { get; set; }
         public ulong[] Unk3 { get; set; }
         public float Unk4 { get; set; }
-        public float Unk5 { get; set; }
-        public float Unk6 { get; set; }
+        public float Unk5 { get; set; } // Hitpoints Min?
+        public float Unk6 { get; set; } // Hitpoints Max
         public C_Vector3 CentreOfMass { get; set; }
         public S_InitInternalImpulse[] DPInternalImpulses { get; set; }
         public S_InitDropPart[] DropParts { get; set; }
