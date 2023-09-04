@@ -40,6 +40,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.Boat);
             TypeCombo.Items.Add(ActorTypes.Airplane);
             TypeCombo.Items.Add(ActorTypes.CleanEntity);
+            TypeCombo.Items.Add(ActorTypes.Radio);
             TypeCombo.SelectedIndex = 0;
         }
 
