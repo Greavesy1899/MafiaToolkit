@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0-windows7.0</TargetFramework>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mafia2Tool</RootNamespace>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -329,5 +329,6 @@ del *.cmd</PostBuildEvent>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>2.24</AssemblyVersion>
     <FileVersion>2.24</FileVersion>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
   </PropertyGroup>
 </Project>
