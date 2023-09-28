@@ -34,6 +34,7 @@
     <LangVersion>6</LangVersion>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
+    <Optimize>True</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -320,6 +321,12 @@
     <Folder Include="ResourceTypes\FileTypes\Wwise\HIRC\Helpers\" />
     <Folder Include="ResourceTypes\FileTypes\Wwise\HIRC\Objects\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"
 cd $(TargetDir)
@@ -330,5 +337,8 @@ del *.cmd</PostBuildEvent>
     <AssemblyVersion>2.24</AssemblyVersion>
     <FileVersion>2.24</FileVersion>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <PackageProjectUrl>https://github.com/Greavesy1899/MafiaToolkit</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Greavesy1899/MafiaToolkit.git</RepositoryUrl>
   </PropertyGroup>
 </Project>
