@@ -163,14 +163,14 @@ namespace Rendering.Graphics
                 FrontFace = new DepthStencilOperationDescription()
                 {
                     StencilFailOp = StencilOperation.Keep,
-                    StencilDepthFailOp = StencilOperation.Incr,
+                    StencilDepthFailOp = StencilOperation.Increment,
                     StencilPassOp = StencilOperation.Keep,
                     StencilFunc = ComparisonFunction.Always,
                 },
                 BackFace = new DepthStencilOperationDescription()
                 {
                     StencilFailOp = StencilOperation.Keep,
-                    StencilDepthFailOp = StencilOperation.Decr,
+                    StencilDepthFailOp = StencilOperation.Decrement,
                     StencilPassOp = StencilOperation.Keep,
                     StencilFunc = ComparisonFunction.Always,
                 }
