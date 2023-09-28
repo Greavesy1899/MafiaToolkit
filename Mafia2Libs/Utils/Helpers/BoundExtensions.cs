@@ -11,27 +11,27 @@ namespace Utils.VorticeUtils
     {
         public static float GetWidth(this BoundingBox BBox)
         {
-            return (BBox.Maximum.X - BBox.Minimum.X);
+            return (BBox.Max.X - BBox.Min.X);
         }
 
         public static float GetHeight(this BoundingBox BBox)
         {
-            return (BBox.Maximum.Y - BBox.Minimum.Y);
+            return (BBox.Max.Y - BBox.Min.Y);
         }
 
         public static float GetDepth(this BoundingBox BBox)
         {
-            return (BBox.Maximum.Z - BBox.Minimum.Z);
+            return (BBox.Max.Z - BBox.Min.Z);
         }
 
         public static void SetMinimum(ref this BoundingBox BBox, Vector3 min)
         {
-            BBox = new BoundingBox(min, BBox.Maximum);
+            BBox = new BoundingBox(min, BBox.Max);
         }
 
         public static void SetMaximum(ref this BoundingBox BBox, Vector3 max)
         {
-            BBox = new BoundingBox(BBox.Minimum, max);
+            BBox = new BoundingBox(BBox.Min, max);
         }
 
         public static BoundingBox ReadFromFile(BinaryReader reader)
@@ -54,19 +54,19 @@ namespace Utils.VorticeUtils
 
         public static void WriteToFile(this BoundingBox bbox, BinaryWriter writer)
         {
-            bbox.Minimum.WriteToFile(writer);
-            bbox.Maximum.WriteToFile(writer);
+            bbox.Min.WriteToFile(writer);
+            bbox.Max.WriteToFile(writer);
         }
 
         public static void WriteToFile(this BoundingBox bbox, MemoryStream writer, bool isBigEndian)
         {
-            bbox.Minimum.WriteToFile(writer, isBigEndian);
-            bbox.Maximum.WriteToFile(writer, isBigEndian);
+            bbox.Min.WriteToFile(writer, isBigEndian);
+            bbox.Max.WriteToFile(writer, isBigEndian);
         }
 
         public static BoundingBox Swap(this BoundingBox box)
         {
-            box = new BoundingBox(Vector3Utils.Swap(box.Minimum), Vector3Utils.Swap(box.Maximum));
+            box = new BoundingBox(Vector3Utils.Swap(box.Min), Vector3Utils.Swap(box.Max));
             return box;
         }
 

@@ -808,12 +808,12 @@ namespace ResourceTypes.Actors
         }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMinimum {
-            get { return boundingBox.Minimum; }
+            get { return boundingBox.Min; }
             set { boundingBox.SetMinimum(value); }
         }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BoundaryBoxMaximum {
-            get { return boundingBox.Maximum; }
+            get { return boundingBox.Max; }
             set { boundingBox.SetMaximum(value); }
         }
         public byte UnkByte3 {

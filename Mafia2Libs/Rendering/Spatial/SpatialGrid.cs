@@ -47,12 +47,12 @@ namespace Rendering.Core
 
             width = mesh.CellSizeY;
             height = mesh.CellSizeX;
-            origin = new Vector3(gridBounds.Minimum.X, gridBounds.Minimum.Y, 0.0f);
+            origin = new Vector3(gridBounds.Min.X, gridBounds.Min.Y, 0.0f);
             cellSize = new Vector2(gridBounds.GetWidth() / width, gridBounds.GetHeight() / height);
             cells = new SpatialCell[width * height];
 
-            Vector3 TempMin = gridBounds.Minimum;
-            Vector3 TempMax = gridBounds.Maximum;
+            Vector3 TempMin = gridBounds.Min;
+            Vector3 TempMax = gridBounds.Max;
 
             var index = 0;
             for (int i = 0; i < width; i++)
@@ -63,20 +63,20 @@ namespace Rendering.Core
 
                     foreach (var set in cell.Sets)
                     {
-                        if (gridBounds.Minimum.Z < set.X)
+                        if (gridBounds.Min.Z < set.X)
                         {
                             TempMin.Z = set.X;
                         }
-                        if (gridBounds.Maximum.Z > set.Y)
+                        if (gridBounds.Max.Z > set.Y)
                         {
                             TempMax.Z = set.Y;
                         }
                     }
 
                     // Construct cell extents
-                    Vector3 Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
-                    Vector3 Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
-                    BoundingBox CellExtents = new BoundingBox(Minimum, Maximum);
+                    Vector3 Min = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
+                    Vector3 Max = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
+                    BoundingBox CellExtents = new BoundingBox(Min, Max);
 
                     // Construct Init params
                     SpatialCell_ObjDataParams InitParams = new SpatialCell_ObjDataParams();
@@ -104,7 +104,7 @@ namespace Rendering.Core
             height = translokator.Grids[0].Height;
             cellSize = new Vector2(gridBounds.GetWidth() / width, gridBounds.GetHeight() / height);
             cells = new SpatialCell[width * height];
-            origin = gridBounds.Minimum;
+            origin = gridBounds.Min;
 
             var index = 0;
             /*for (int i = 0; i < width; i++)
@@ -112,8 +112,8 @@ namespace Rendering.Core
                 for (int x = 0; x < height; x++)
                 {
                     var extents = new BoundingBox();
-                    extents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 10.0f);
-                    extents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 10.0f);
+                    extents.Min = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 10.0f);
+                    extents.Max = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 10.0f);
                     cells[index++] = new SpatialCell(InGraphics, extents);
                 }
             }
@@ -182,8 +182,8 @@ namespace Rendering.Core
                 if (previousCell != currentCell)
                 {
                     BoundingBox newBounds = cells[currentCell].BoundingBox;
-                    newBounds.Minimum.Z = gridBounds.Minimum.Z;
-                    newBounds.Maximum.Z = gridBounds.Maximum.Z;
+                    newBounds.Min.Z = gridBounds.Min.Z;
+                    newBounds.Max.Z = gridBounds.Max.Z;
 
                     cellBoundingBox.Update(newBounds);
                     cellBoundingBox.UpdateBuffers(device, deviceContext);

@@ -120,8 +120,8 @@ namespace ResourceTypes.Navigation
             {
                 // Compute from points, then add do a stretch on the extents of the BBox.
                 BoundingBox NewBBox = BoundingBox.CreateFromPoints(GetPoints());
-                NewBBox.SetMinimum(NewBBox.Minimum - new Vector3(0.01f));
-                NewBBox.SetMaximum(NewBBox.Maximum + new Vector3(0.01f));
+                NewBBox.SetMinimum(NewBBox.Min - new Vector3(0.01f));
+                NewBBox.SetMaximum(NewBBox.Max + new Vector3(0.01f));
                 BoundingBox0 = NewBBox;
 
                 // Generate lookups for points - use flags to determine list

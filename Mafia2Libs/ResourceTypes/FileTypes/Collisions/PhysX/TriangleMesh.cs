@@ -604,12 +604,12 @@ namespace ResourceTypes.Collisions
             WriteFloat(boundingSphere.Center.Z, writer, platformMismatch);
             WriteFloat(boundingSphere.Radius, writer, platformMismatch);
 
-            WriteFloat(BoundingBox.Minimum.X, writer, platformMismatch);
-            WriteFloat(BoundingBox.Minimum.Y, writer, platformMismatch);
-            WriteFloat(BoundingBox.Minimum.Z, writer, platformMismatch);
-            WriteFloat(BoundingBox.Maximum.X, writer, platformMismatch);
-            WriteFloat(BoundingBox.Maximum.Y, writer, platformMismatch);
-            WriteFloat(BoundingBox.Maximum.Z, writer, platformMismatch);
+            WriteFloat(BoundingBox.Min.X, writer, platformMismatch);
+            WriteFloat(BoundingBox.Min.Y, writer, platformMismatch);
+            WriteFloat(BoundingBox.Min.Z, writer, platformMismatch);
+            WriteFloat(BoundingBox.Max.X, writer, platformMismatch);
+            WriteFloat(BoundingBox.Max.Y, writer, platformMismatch);
+            WriteFloat(BoundingBox.Max.Z, writer, platformMismatch);
         }
 
         private void WritePhysProperties(BinaryWriter writer, bool platformMismatch)

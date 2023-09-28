@@ -112,13 +112,13 @@ namespace Utils.Models
             FrameGeometry frameGeometry = frameMesh.Geometry;
 
             BoundingBox bounds = new BoundingBox();
-            bounds.SetMinimum(frameMesh.Boundings.Minimum);
-            bounds.SetMaximum(frameMesh.Boundings.Maximum);
-            frameGeometry.DecompressionOffset = new Vector3(bounds.Minimum.X, bounds.Minimum.Y, bounds.Minimum.Z);
+            bounds.SetMinimum(frameMesh.Boundings.Min);
+            bounds.SetMaximum(frameMesh.Boundings.Max);
+            frameGeometry.DecompressionOffset = new Vector3(bounds.Min.X, bounds.Min.Y, bounds.Min.Z);
 
-            double MaxX = bounds.Maximum.X - bounds.Minimum.X;
-            double MaxY = bounds.Maximum.Y - bounds.Minimum.Y;
-            double MaxZ = bounds.Maximum.Z - bounds.Minimum.Z;
+            double MaxX = bounds.Max.X - bounds.Min.X;
+            double MaxY = bounds.Max.Y - bounds.Min.Y;
+            double MaxZ = bounds.Max.Z - bounds.Min.Z;
 
             float Max = (float)Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
             frameGeometry.DecompressionFactor = Max / 0xFFFF;
@@ -365,12 +365,12 @@ namespace Utils.Models
 
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].Bounds = new short[6]
                     {
-                        Convert.ToInt16(CurrentFaceGroup.Bounds.Minimum.X),
-                        Convert.ToInt16(CurrentFaceGroup.Bounds.Minimum.Y),
-                        Convert.ToInt16(CurrentFaceGroup.Bounds.Minimum.Z),
-                        Convert.ToInt16(CurrentFaceGroup.Bounds.Maximum.X),
-                        Convert.ToInt16(CurrentFaceGroup.Bounds.Maximum.Y),
-                        Convert.ToInt16(CurrentFaceGroup.Bounds.Maximum.Z)
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Min.X),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Min.Y),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Min.Z),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Max.X),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Max.Y),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Max.Z)
                     };
 
                     // TODO: Figure out what this actually means.
