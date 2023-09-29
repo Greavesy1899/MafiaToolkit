@@ -4,6 +4,8 @@ using Utils.Models;
 using System.Numerics;
 using ResourceTypes.Materials;
 using Gibbed.Illusion.FileFormats.Hashing;
+using Toolkit.Mathematics;
+using System;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -100,6 +102,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
     public class MT_LodHelper : IImportHelper
     {
+        
         private MT_Lod OwningObject;
 
         public string[] FaceGroupMaterials { get; set; }
@@ -192,22 +195,22 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                if(OwningObject.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                 {
-                    CurVertex.UVs[0] = new Vector2(CurVertex.UVs[0].X, 1f - CurVertex.UVs[0].Y);
+                    CurVertex.UVs[0] = new Vector2((float)CurVertex.UVs[0].X, (1f - (float)CurVertex.UVs[0].Y));
                 }
 
                 if (OwningObject.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
                 {
-                    CurVertex.UVs[1] = new Vector2(CurVertex.UVs[1].X, 1f - CurVertex.UVs[1].Y);
+                    CurVertex.UVs[1] = new Vector2((float)CurVertex.UVs[1].X, (1f - (float)CurVertex.UVs[1].Y));
                 }
 
                 if (OwningObject.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                 {
-                    CurVertex.UVs[2] = new Vector2(CurVertex.UVs[2].X, 1f - CurVertex.UVs[2].Y);
+                    CurVertex.UVs[2] = new Vector2((float)CurVertex.UVs[2].X, (1f - (float)CurVertex.UVs[2].Y));
                 }
 
                 if (OwningObject.VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
                 {
-                    CurVertex.UVs[3] = new Vector2(CurVertex.UVs[3].X, 1f - CurVertex.UVs[3].Y);
+                    CurVertex.UVs[3] = new Vector2((float)CurVertex.UVs[3].X, (1f - (float)CurVertex.UVs[3].Y));
                 }
             }
         }

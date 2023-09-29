@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Utils.StringHelpers;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
+using Vortice.Mathematics.PackedVector;
 
 namespace Utils.Models
 {

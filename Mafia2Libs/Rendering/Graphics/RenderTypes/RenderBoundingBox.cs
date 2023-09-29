@@ -35,12 +35,12 @@ namespace Rendering.Graphics
 
         public bool InitSwap(BoundingBox bbox)
         {
-            Vector3 NewMax = bbox.Maximum;
+            Vector3 NewMax = bbox.Max;
             float y = NewMax.Y;
             NewMax.Y = -NewMax.Z;
             NewMax.Z = y;
 
-            Vector3 NewMin = bbox.Minimum;
+            Vector3 NewMin = bbox.Min;
             y = NewMin.Y;
             NewMin.Y = -NewMin.Z;
             NewMin.Z = y;

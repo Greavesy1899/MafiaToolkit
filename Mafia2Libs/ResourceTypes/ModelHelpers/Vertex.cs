@@ -2,6 +2,8 @@
 using System.Numerics;
 using Vortice.Mathematics;
 using Utils.VorticeUtils;
+using Vortice.Mathematics.PackedVector;
+using System.ComponentModel;
 
 namespace Utils.Models
 {
@@ -179,13 +181,16 @@ namespace Utils.Models
 
         public void WriteUvData(byte[] data, int i, int uvNum)
         {
-            //Do X
-            byte[] tempPosData = HalfExtenders.GetBytes(UVs[uvNum].X);
+            // Do X
+            
+            System.Half uXHalf = (System.Half)(float)UVs[uvNum].X;
+            byte[] tempPosData = BitConverter.GetBytes(uXHalf);
             Array.Copy(tempPosData, 0, data, i, 2);
 
-            //Do Y
-            //UVs[uvNum] = new Half2(UVs[uvNum].X, (Vortice.Mathematics.Half)(1.0f - UVs[uvNum].Y));
-            tempPosData = HalfExtenders.GetBytes(UVs[uvNum].Y);
+            // Do Y
+           
+            System.Half uYHalf = (System.Half)(float)UVs[uvNum].Y;
+            tempPosData = BitConverter.GetBytes(uYHalf);
             Array.Copy(tempPosData, 0, data, i + 2, 2);
         }
 

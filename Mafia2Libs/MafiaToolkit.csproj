@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0-windows7.0</TargetFramework>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mafia2Tool</RootNamespace>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -34,6 +34,7 @@
     <LangVersion>6</LangVersion>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
+    <Optimize>True</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -302,23 +303,29 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.0-beta7" />
+    <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DockPanelSuite" Version="3.1.0-beta7" />
+    <PackageReference Include="DockPanelSuite" Version="3.1.0" />
     <PackageReference Include="Octokit" Version="0.36.0" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
-    <PackageReference Include="Vortice.D3DCompiler" Version="1.9.87" />
-    <PackageReference Include="Vortice.Direct3D11" Version="1.9.87" />
-    <PackageReference Include="Vortice.DXGI" Version="1.9.87" />
-    <PackageReference Include="Vortice.Mathematics" Version="1.3.21" />
-    <PackageReference Include="Vortice.XInput" Version="1.9.87" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+    <PackageReference Include="Vortice.D3DCompiler" Version="1.9.143" />
+    <PackageReference Include="Vortice.Direct3D11" Version="1.9.143" />
+    <PackageReference Include="Vortice.DXGI" Version="1.9.143" />
+    <PackageReference Include="Vortice.Mathematics" Version="1.7.2" />
+    <PackageReference Include="Vortice.XInput" Version="3.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ResourceTypes\FileTypes\M3\XBin\Types\PaintCombinations\Mafia3\" />
     <Folder Include="ResourceTypes\FileTypes\Wwise\HIRC\Helpers\" />
     <Folder Include="ResourceTypes\FileTypes\Wwise\HIRC\Objects\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"
@@ -329,5 +336,9 @@ del *.cmd</PostBuildEvent>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>2.24</AssemblyVersion>
     <FileVersion>2.24</FileVersion>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <PackageProjectUrl>https://github.com/Greavesy1899/MafiaToolkit</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Greavesy1899/MafiaToolkit.git</RepositoryUrl>
   </PropertyGroup>
 </Project>

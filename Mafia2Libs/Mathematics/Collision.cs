@@ -94,7 +94,7 @@ namespace Toolkit.Mathematics
             //Same thing as RayIntersectsSphere except that the radius of the sphere (point)
             //is the epsilon for zero.
             float b = Vector3.Dot(m, ray.Direction);
-            float c = Vector3.Dot(m, m) - MathHelper.ZeroTolerance;
+            float c = Vector3.Dot(m, m) - MathHelper.NearZeroEpsilon;
 
             if (c > 0f && b > 0f)
                 return false;
@@ -137,9 +137,9 @@ namespace Toolkit.Mathematics
             if (MathHelper.IsZero(denominator))
             {
                 //Lines are parallel and on top of each other.
-                if (MathHelper.NearEqual(ray2.Position.X, ray1.Position.X) &&
-                    MathHelper.NearEqual(ray2.Position.Y, ray1.Position.Y) &&
-                    MathHelper.NearEqual(ray2.Position.Z, ray1.Position.Z))
+                if (MathHelper.CompareEqual(ray2.Position.X, ray1.Position.X) &&
+                    MathHelper.CompareEqual(ray2.Position.Y, ray1.Position.Y) &&
+                    MathHelper.CompareEqual(ray2.Position.Z, ray1.Position.Z))
                 {
                     point = Vector3.Zero;
                     return true;
@@ -190,10 +190,11 @@ namespace Toolkit.Mathematics
             Vector3 point1 = ray1.Position + (s * ray1.Direction);
             Vector3 point2 = ray2.Position + (t * ray2.Direction);
 
-            //If the points are not equal, no intersection has occurred.
-            if (!MathHelper.NearEqual(point2.X, point1.X) ||
-                !MathHelper.NearEqual(point2.Y, point1.Y) ||
-                !MathHelper.NearEqual(point2.Z, point1.Z))
+            float epsilon = MathHelper.NearZeroEpsilon;
+
+            if (Math.Abs(point2.X) > epsilon ||
+                Math.Abs(point2.Y) > epsilon ||
+                Math.Abs(point2.Z) > epsilon)
             {
                 point = Vector3.Zero;
                 return false;
@@ -279,7 +280,7 @@ namespace Toolkit.Mathematics
         /// </remarks>
         public static bool RayIntersectsTriangle(ref Ray ray, ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3, out float distance)
         {
-            //Source: Fast Minimum Storage Ray / Triangle Intersection
+            //Source: Fast Min Storage Ray / Triangle Intersection
             //Reference: http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 
             //Compute vectors along two edges of the triangle.

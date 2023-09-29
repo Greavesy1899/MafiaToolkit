@@ -425,8 +425,8 @@ namespace ResourceTypes.Translokator
         private void CompileData()
         {
             #region calculate bounding box
-            Vector3 Minimum = Vector3.Zero;
-            Vector3 Maximum = Vector3.Zero;
+            Vector3 Min = Vector3.Zero;
+            Vector3 Max = Vector3.Zero;
             ushort numInstance = 0;
 
             for (int i = 0; i < ObjectGroups.Length; i++)
@@ -444,34 +444,34 @@ namespace ResourceTypes.Translokator
                     {
 
                         Instance instance = obj.Instances[y];
-                        if (instance.Position.X < Minimum.X)
+                        if (instance.Position.X < Min.X)
                         {
-                            Minimum.X = instance.Position.X;
+                            Min.X = instance.Position.X;
                         }
 
-                        if (instance.Position.X > Maximum.X)
+                        if (instance.Position.X > Max.X)
                         {
-                            Maximum.X = instance.Position.X;
+                            Max.X = instance.Position.X;
                         }
 
-                        if (instance.Position.Y < Minimum.Y)
+                        if (instance.Position.Y < Min.Y)
                         {
-                            Minimum.Y = instance.Position.Y;
+                            Min.Y = instance.Position.Y;
                         }
 
-                        if (instance.Position.Y > Maximum.Y)
+                        if (instance.Position.Y > Max.Y)
                         {
-                            Maximum.Y = instance.Position.Y;
+                            Max.Y = instance.Position.Y;
                         }
 
-                        if (instance.Position.Z < Minimum.Z)
+                        if (instance.Position.Z < Min.Z)
                         {
-                            Minimum.Z = instance.Position.Z;
+                            Min.Z = instance.Position.Z;
                         }
 
-                        if (instance.Position.Z > Maximum.Z)
+                        if (instance.Position.Z > Max.Z)
                         {
-                            Maximum.Z = instance.Position.Z;
+                            Max.Z = instance.Position.Z;
                         }
 
                         numInstance++;
@@ -479,7 +479,7 @@ namespace ResourceTypes.Translokator
                 }
             }
 
-            bounds = new BoundingBox(Minimum, Maximum);
+            bounds = new BoundingBox(Min, Max);
             #endregion calculate bounding box
 
             #region rebuild grid bounds
@@ -488,7 +488,7 @@ namespace ResourceTypes.Translokator
                 var grid = Grids[i];
                 grid.CellSize = new Vector2(bounds.GetWidth() / grid.Width, bounds.GetHeight() / grid.Height);
                 grid.Data = new ushort[grid.Width * grid.Height];
-                grid.Origin = bounds.Minimum;
+                grid.Origin = bounds.Min;
             }
             #endregion rebuild grid bounds
 
@@ -511,7 +511,7 @@ namespace ResourceTypes.Translokator
                         instance.W1 = 0;
                         instance.W2 = 0;
                         instance.ID = numInstance;
-                        CompressPosition(instance, bounds.Minimum, bounds.Maximum);
+                        CompressPosition(instance, bounds.Min, bounds.Max);
                         CompressScale(instance);
                         CompressRotation(instance);
 
@@ -623,7 +623,7 @@ namespace ResourceTypes.Translokator
                         instance.D4 = BitConverter.ToUInt16(packed, 12);
                         DecompressScale(instance);
                         DecompressRotation(instance);                    
-                        instance.Position = DecompressPosition(packed, instance, bounds.Minimum, bounds.Maximum);
+                        instance.Position = DecompressPosition(packed, instance, bounds.Min, bounds.Max);
                         obj.Instances[y] = instance;
 
 

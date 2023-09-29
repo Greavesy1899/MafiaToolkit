@@ -39,7 +39,7 @@ namespace Rendering.Graphics
                 {
                     RenderLine line = new RenderLine();
                     line.SetUnselectedColour(System.Drawing.Color.Turquoise);
-                    line.InitSwap(new Vector3[2] { unk10.B1.Maximum, unk10.B1.Minimum });
+                    line.InitSwap(new Vector3[2] { unk10.B1.Max, unk10.B1.Min });
                     Lines.Add(line);
                 }
 
@@ -47,7 +47,7 @@ namespace Rendering.Graphics
                 {
                     RenderLine line = new RenderLine();
                     line.SetUnselectedColour(System.Drawing.Color.Green);
-                    line.InitSwap(new Vector3[2] { unk12.B1.Maximum, unk12.B1.Minimum });
+                    line.InitSwap(new Vector3[2] { unk12.B1.Max, unk12.B1.Min });
                     Lines.Add(line);
                 }
 
@@ -63,7 +63,7 @@ namespace Rendering.Graphics
                 {
                     RenderLine line = new RenderLine();
                     line.SetUnselectedColour(System.Drawing.Color.Brown);
-                    line.InitSwap(new Vector3[2] { unk16.Maximum, unk16.Minimum });
+                    line.InitSwap(new Vector3[2] { unk16.Max, unk16.Min });
                     Lines.Add(line);
                 }
 
