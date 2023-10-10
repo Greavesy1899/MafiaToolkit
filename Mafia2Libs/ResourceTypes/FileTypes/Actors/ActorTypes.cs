@@ -2697,7 +2697,7 @@ namespace ResourceTypes.Actors
 
         public override int GetSize()
         {
-            return 428;
+            return 448;
         }
     }
 
