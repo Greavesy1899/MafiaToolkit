@@ -2639,4 +2639,65 @@ namespace ResourceTypes.Actors
             return 288;
         }
     }
+
+    public class ActorTelephone : ActorCrashObject
+    {
+        [Category("C_Telephone")]
+        public bool bEnableForPlayer { get; set; }
+        [Category("C_Telephone")]
+        public bool bEnableForNPC { get; set; }
+        [Category("C_Telephone")]
+        public int RingToneSoundID { get; set; }
+        [Category("C_Telephone")]
+        public int PickSoundID { get; set; }
+        [Category("C_Telephone")]
+        public int HangSoundID { get; set; }
+        [Category("C_Telephone")]
+        public int DialSoundID { get; set; }
+        [Category("C_Telephone")]
+        public int DialToneSoundID { get; set; }
+        [Category("C_Telephone")]
+        public int IdleToneSoundID { get; set; }
+        [Category("C_Telephone")]
+        public TelephoneType PhoneTypeID { get; set; }
+
+        public ActorTelephone() : base() { }
+
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            base.ReadFromFile(reader, isBigEndian);
+
+            bEnableForPlayer = reader.ReadBoolean();
+            bEnableForNPC = reader.ReadBoolean();
+            reader.Seek(2, SeekOrigin.Current); // padding
+            RingToneSoundID = reader.ReadInt32(isBigEndian);
+            PickSoundID = reader.ReadInt32(isBigEndian);
+            HangSoundID = reader.ReadInt32(isBigEndian);
+            DialSoundID = reader.ReadInt32(isBigEndian);
+            DialToneSoundID = reader.ReadInt32(isBigEndian);
+            IdleToneSoundID = reader.ReadInt32(isBigEndian);
+            PhoneTypeID = (TelephoneType)reader.ReadInt32(isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            base.WriteToFile(writer, isBigEndian);
+
+            writer.Write(bEnableForPlayer);
+            writer.Write(bEnableForNPC);
+            writer.Write((ushort)0, isBigEndian); // padding
+            writer.Write(RingToneSoundID, isBigEndian);
+            writer.Write(PickSoundID, isBigEndian);
+            writer.Write(HangSoundID, isBigEndian);
+            writer.Write(DialSoundID, isBigEndian);
+            writer.Write(DialToneSoundID, isBigEndian);
+            writer.Write(IdleToneSoundID, isBigEndian);
+            writer.Write((int)PhoneTypeID, isBigEndian);
+        }
+
+        public override int GetSize()
+        {
+            return 428;
+        }
+    }
 }

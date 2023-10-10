@@ -156,4 +156,10 @@ namespace ResourceTypes.Actors
         E_LIFT = 12,
         LADDER = 13
     }
+
+    public enum TelephoneType : int
+    {
+        TELEPHONE = 0,
+        TELEPHONE_BOX = 1,
+    }
 }

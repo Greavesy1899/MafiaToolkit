@@ -41,6 +41,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.Airplane);
             TypeCombo.Items.Add(ActorTypes.CleanEntity);
             TypeCombo.Items.Add(ActorTypes.Radio);
+            TypeCombo.Items.Add(ActorTypes.Telephone);
             TypeCombo.SelectedIndex = 0;
         }
 

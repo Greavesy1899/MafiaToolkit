@@ -68,6 +68,8 @@ namespace ResourceTypes.Actors
                     return new ActorCleanEntity();
                 case ActorTypes.Radio:
                     return new ActorRadio();
+                case ActorTypes.Telephone:
+                    return new ActorTelephone();
                 default:
                     Console.WriteLine("Cannot read type: " + type);
                     return null;

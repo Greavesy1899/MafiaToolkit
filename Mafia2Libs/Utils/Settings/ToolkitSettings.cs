@@ -56,7 +56,7 @@ namespace Utils.Settings
 
         // Update vars
         public static float CurrentVersion = 1.0f;
-        public static readonly float Version = 2.29f;
+        public static readonly float Version = 2.30f;
 
         public static void ReadINI()
         {
