@@ -682,7 +682,6 @@ namespace ResourceTypes.Actors
         int unk07;
         int unk08;
         int unk09;
-        byte count;
         int unk10;
         HashName[] sceneLinks;
         HashName[] frameLinks;

@@ -9,77 +9,86 @@ namespace Utils.Helpers.Reflection
 {
     public class ReflectionHelpers
     {
-        public static void Copy<T>(T FromObject, T ToObject)
+        public static void Copy<T>(T FromObject, ref T ToObject)
         {
             Type ObjectType = FromObject.GetType();
-            foreach(PropertyInfo Info in ObjectType.GetProperties())
+            if (ObjectType.IsPrimitive)
             {
-                if(Info.PropertyType.IsGenericType)
+                // quick copy should do
+                ToObject = FromObject;
+            }
+            else
+            {
+                // ensure that the contents of all properties are copied
+                foreach (PropertyInfo Info in ObjectType.GetProperties())
                 {
-                    // need support
-                    continue;
-                }
-
-                if(Info.PropertyType.IsArray)
-                {
-                    // Create an Array using the element type of the array, with the number of elements to set the length.
-                    Array FromObjectArray = (Array)Info.GetValue(FromObject);
-                    Array ArrayObject = Array.CreateInstance(Info.PropertyType.GetElementType(), FromObjectArray.Length);
-
-                    // Iterate through the elements, construct the object using our reflection system and push them into the array.
-                    for (int i = 0; i < ArrayObject.Length; i++)
+                    if (Info.PropertyType.IsGenericType)
                     {
-                        object FromItem = FromObjectArray.GetValue(i);
-                        object ToItem = Activator.CreateInstance(FromItem.GetType());
-                        Copy(FromItem, ToItem);
-
-                        // Set element in the array
-                        ArrayObject.SetValue(ToItem, i);
-                    }
-
-                    // Set new array
-                    Info.SetValue(ToObject, ArrayObject);
-                }
-                else if(Info.PropertyType.IsClass)
-                {
-                    object FromItem = Info.GetValue(FromObject);
-                    Type FromType = FromItem.GetType();
-
-                    // If we have a parameterless constructor, then we can try to 
-                    // copy over the data from one object to another
-                    if(FromType.GetConstructor(Type.EmptyTypes) != null)
-                    {
-                        object ToItem = Activator.CreateInstance(FromItem.GetType());
-                        Copy(FromItem, ToItem);
-
-                        // Set class object
-                        Info.SetValue(ToObject, ToItem);
-
+                        // need support
                         continue;
                     }
 
-                    // TODO: Not spectacular, as this will probably copy references from one object to another.
-                    // Particularly problematic with strings. 
-                    if (Info.CanWrite)
+                    if (Info.PropertyType.IsArray)
+                    {
+                        // Create an Array using the element type of the array, with the number of elements to set the length.
+                        Array FromObjectArray = (Array)Info.GetValue(FromObject);
+                        Array ArrayObject = Array.CreateInstance(Info.PropertyType.GetElementType(), FromObjectArray.Length);
+
+                        // Iterate through the elements, construct the object using our reflection system and push them into the array.
+                        for (int i = 0; i < ArrayObject.Length; i++)
+                        {
+                            object FromItem = FromObjectArray.GetValue(i);
+                            object ToItem = Activator.CreateInstance(FromItem.GetType());
+                            Copy(FromItem, ref ToItem);
+
+                            // Set element in the array
+                            ArrayObject.SetValue(ToItem, i);
+                        }
+
+                        // Set new array
+                        Info.SetValue(ToObject, ArrayObject);
+                    }
+                    else if (Info.PropertyType.IsClass)
+                    {
+                        object FromItem = Info.GetValue(FromObject);
+                        Type FromType = FromItem.GetType();
+
+                        // If we have a parameterless constructor, then we can try to 
+                        // copy over the data from one object to another
+                        if (FromType.GetConstructor(Type.EmptyTypes) != null)
+                        {
+                            object ToItem = Activator.CreateInstance(FromItem.GetType());
+                            Copy(FromItem, ref ToItem);
+
+                            // Set class object
+                            Info.SetValue(ToObject, ToItem);
+
+                            continue;
+                        }
+
+                        // TODO: Not spectacular, as this will probably copy references from one object to another.
+                        // Particularly problematic with strings. 
+                        if (Info.CanWrite)
+                        {
+                            Info.SetValue(ToObject, Info.GetValue(FromObject));
+                        }
+                    }
+                    else if (Info.CanWrite)
                     {
                         Info.SetValue(ToObject, Info.GetValue(FromObject));
                     }
-                }
-                else if (Info.CanWrite)
-                {
-                    Info.SetValue(ToObject, Info.GetValue(FromObject));
-                }
-                else
-                {
-                    object ToCopy = Info.GetValue(FromObject);
-                    object NewObject = Info.GetValue(ToObject);
-                    FieldInfo[] Fields = Info.PropertyType.GetFields();
-                    for(int i = 0; i < Fields.Length; i++)
+                    else
                     {
-                        FieldInfo ThisField = Fields[i];
-                        if (!ThisField.Attributes.HasFlag(FieldAttributes.Static))
+                        object ToCopy = Info.GetValue(FromObject);
+                        object NewObject = Info.GetValue(ToObject);
+                        FieldInfo[] Fields = Info.PropertyType.GetFields();
+                        for (int i = 0; i < Fields.Length; i++)
                         {
-                            ThisField.SetValue(NewObject, ThisField.GetValue(ToCopy));
+                            FieldInfo ThisField = Fields[i];
+                            if (!ThisField.Attributes.HasFlag(FieldAttributes.Static))
+                            {
+                                ThisField.SetValue(NewObject, ThisField.GetValue(ToCopy));
+                            }
                         }
                     }
                 }

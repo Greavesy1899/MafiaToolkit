@@ -679,11 +679,6 @@ namespace ResourceTypes.Actors
             CrashData = new CrashTableData[4];
         }
 
-        public ActorCar(ActorCar OtherCar)
-        {
-            ReflectionHelpers.Copy(OtherCar, this);
-        }
-
         public int GetSize()
         {
             return 3400;

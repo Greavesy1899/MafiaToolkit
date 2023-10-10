@@ -145,7 +145,7 @@ namespace Toolkit.Forms
                 {
                     object ObjectToCopy = OurClipboard;
                     object NewObject = Activator.CreateInstance(ObjectToCopy.GetType());
-                    ReflectionHelpers.Copy(ObjectToCopy, NewObject);
+                    ReflectionHelpers.Copy(ObjectToCopy, ref NewObject);
                     SelectedNode.Tag = NewObject;
 
                     // Force reload

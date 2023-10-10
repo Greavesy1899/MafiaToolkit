@@ -150,7 +150,7 @@ namespace Mafia2Tool
             // Copy contents and then assign the new pasted data into the selected extra data.
             object ObjectToCopy = ExtraDataToCopy.Data;
             object NewObject = Activator.CreateInstance(ObjectToCopy.GetType());
-            ReflectionHelpers.Copy(ObjectToCopy, NewObject);
+            ReflectionHelpers.Copy(ObjectToCopy, ref NewObject);
             ExtaDataToEdit.Data = (NewObject as IActorExtraDataInterface);
 
             // Force reload
