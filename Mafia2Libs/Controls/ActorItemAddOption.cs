@@ -42,6 +42,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.CleanEntity);
             TypeCombo.Items.Add(ActorTypes.Radio);
             TypeCombo.Items.Add(ActorTypes.Telephone);
+            TypeCombo.Items.Add(ActorTypes.FramesController);
             TypeCombo.SelectedIndex = 0;
         }
 

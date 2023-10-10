@@ -2700,4 +2700,59 @@ namespace ResourceTypes.Actors
             return 428;
         }
     }
+
+    public class ActorFramesController : IActorExtraDataInterface
+    {
+        public class FramesControllerEntry
+        {
+            public ulong SceneNameHash { get; set; }
+            public ulong FrameNameHash { get; set; }
+
+            public override string ToString()
+            {
+                return string.Format("Scene: {0} Frame: {1}", SceneNameHash, FrameNameHash);
+            }
+        }
+
+        public FramesControllerEntry[] Entries { get; set; }
+        public ulong Unk0 { get; set; }
+
+        private const uint NUM_ENTRIES = 20;
+
+        public ActorFramesController() : base()
+        {
+            Entries = new FramesControllerEntry[NUM_ENTRIES];
+            for(ulong i = 0; i < NUM_ENTRIES; i++)
+            {
+                Entries[i] = new FramesControllerEntry();
+            }
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            for (ulong i = 0; i < NUM_ENTRIES; i++)
+            {
+                Entries[i].SceneNameHash = stream.ReadUInt64(isBigEndian);
+                Entries[i].FrameNameHash = stream.ReadUInt64(isBigEndian);
+            }
+
+            Unk0 = stream.ReadUInt64(isBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            for (ulong i = 0; i < NUM_ENTRIES; i++)
+            {
+                writer.Write(Entries[i].SceneNameHash, isBigEndian);
+                writer.Write(Entries[i].FrameNameHash, isBigEndian);
+            }
+
+            writer.Write(Unk0, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 328;
+        }
+    }
 }

@@ -70,6 +70,8 @@ namespace ResourceTypes.Actors
                     return new ActorRadio();
                 case ActorTypes.Telephone:
                     return new ActorTelephone();
+                case ActorTypes.FramesController:
+                    return new ActorFramesController();
                 default:
                     Console.WriteLine("Cannot read type: " + type);
                     return null;
