@@ -64,37 +64,46 @@ namespace ResourceTypes.Actors
 
         private string BuildDefinitions()
         {
-            // Only fill buffer if we have definitions.
-            // If we have no definitions we leave the pool empty.
-            string bufferPool = String.Empty;
-            if (definitions.Count > 0)
+            if(Definitions.Count == 0)
             {
-                bufferPool += "<scene>\0";
-                Dictionary<string, int> names = new Dictionary<string, int>();
-                for (int i = 0; i < definitions.Count; i++)
-                {
-                    int startPos = 0;
+                // TODO: Check if this is correct?
+                return string.Empty;
+            }
 
-                    if (!string.IsNullOrEmpty(definitions[i].Name))
-                    {
-                        if (!names.ContainsKey(definitions[i].Name))
-                        {
-                            startPos = bufferPool.Length;
-                            bufferPool += definitions[i].Name;
-                            bufferPool += '\0';
-                            names.Add(definitions[i].Name, startPos);
-                            definitions[i].NamePos = (ushort)startPos;
-                        }
-                        else
-                        {
-                            names.TryGetValue(definitions[i].Name, out startPos);
-                            definitions[i].NamePos = (ushort)startPos;
-                        }
-                    }
+            // First we generate the Dictionary to store definition names
+            Dictionary<string, int> NameToOffsetLookup = new Dictionary<string, int>();
+            foreach (ActorDefinition Definition in Definitions)
+            {
+                string Name = Definition.Name;
+                if (NameToOffsetLookup.ContainsKey(Name) == false)
+                {
+                    NameToOffsetLookup.Add(Name, -1);
                 }
             }
-            
-            return bufferPool;
+
+            // Next we iterate through all of the actors and fill in the buffer pool
+            // It seems like the official tools also did this, so we will do the same.
+            // We want to replicate their pipeline as much as possible.
+            string OutBufferPool = "<scene>\0";
+            foreach (ActorEntry CurrentEntry in items)
+            {
+                string NameToSave = CurrentEntry.DefinitionName;
+                if (NameToOffsetLookup.ContainsKey(NameToSave) && NameToOffsetLookup[NameToSave] == -1)
+                {
+                    int StartOffset = OutBufferPool.Length;
+                    OutBufferPool += NameToSave;
+                    OutBufferPool += '\0';
+                    NameToOffsetLookup[CurrentEntry.DefinitionName] = StartOffset;
+                }
+            }
+
+            // Now we iterate through the definition list again, and update offsets
+            foreach (ActorDefinition Definition in Definitions)
+            {
+                Definition.NamePos = (ushort)NameToOffsetLookup[Definition.Name];
+            }
+
+            return OutBufferPool;
         }
 
         private void Sanitize()

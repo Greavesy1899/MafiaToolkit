@@ -40,18 +40,17 @@ namespace ResourceTypes.FrameResource
 
         public override void WriteToFile(BinaryWriter writer)
         {
+            // NB: We do not want to save the local transform of an actor into the frame resource.
+            // This is because the original Mafia II pipeline removed the transform from linked actors,
+            // so we will do the same to avoid any chance of discrepencies which may appear.
+            Matrix4x4 OldTransform = LocalTransform;
+            LocalTransform = Matrix4x4.Identity;
+
             base.WriteToFile(writer);
             actorHash.WriteToFile(writer);
-        }
 
-        protected override void SanitizeOnSave()
-        {
-            base.SanitizeOnSave();
-
-            if(ActorHash.Hash != 0)
-            {
-                LocalTransform = Matrix4x4.Identity;
-            }
+            // Now revert back to the original transform
+            LocalTransform = OldTransform;
         }
 
         public override string ToString()
