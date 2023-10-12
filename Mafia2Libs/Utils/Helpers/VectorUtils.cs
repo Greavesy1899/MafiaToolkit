@@ -154,8 +154,9 @@ namespace Utils.VorticeUtils
 
         public static void WriteToFile(this Half2 half, BinaryWriter writer)
         {
-            writer.Write(half.X);
-            writer.Write(half.Y);
+            // Force them to be written as floats, works better with prior .NET7 behaviour
+            writer.Write((float)half.X);
+            writer.Write((float)half.Y);
         }
 
     }
