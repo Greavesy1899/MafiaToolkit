@@ -831,7 +831,7 @@ namespace ResourceTypes.Actors
             get { return uMatrix1Quat; }
             set {
                 uMatrix1Quat = value;
-                var translation = uMatrix0.Translation;
+                var translation = uMatrix1.Translation;
                 uMatrix1 = Matrix4x4.CreateFromQuaternion(uMatrix1Quat);
                 uMatrix1.Translation = translation;
             }
