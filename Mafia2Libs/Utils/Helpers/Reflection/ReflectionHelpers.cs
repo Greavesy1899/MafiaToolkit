@@ -1,9 +1,11 @@
 ﻿using ResourceTypes.Prefab.Vehicle;
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
+using static System.Resources.ResXFileRef;
 
 namespace Utils.Helpers.Reflection
 {
@@ -157,7 +159,17 @@ namespace Utils.Helpers.Reflection
                         }
                         else
                         {
-                            Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
+                            var props = TypeDescriptor.GetProperties(TypedObject);
+                            var converter = props[Info.Name].Converter;
+
+                            if (converter.CanConvertFrom(NodeContent.GetType()))
+                            {
+                                Info.SetValue(TypedObject, converter.ConvertFromInvariantString(NodeContent));
+                            }
+                            else
+                            {
+                                Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
+                            }
                         }
                     }
                 }
@@ -279,7 +291,17 @@ namespace Utils.Helpers.Reflection
                     }
                     else
                     {
-                        Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
+                        var props = TypeDescriptor.GetProperties(TypedObject);
+                        var converter = props[Info.Name].Converter;
+
+                        if (converter.CanConvertFrom(NodeContent.GetType()))
+                        {
+                            Info.SetValue(TypedObject, converter.ConvertFromInvariantString(NodeContent));
+                        }
+                        else
+                        {
+                            Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
+                        }
                     }
                 }
             }
@@ -366,10 +388,15 @@ namespace Utils.Helpers.Reflection
                 }
                 else
                 {
+                    var props = TypeDescriptor.GetProperties(PropertyData);
+                    var converter = props[Info.Name].Converter;
+
                     object info = PropertyData.GetType().GetProperty(Info.Name).GetValue(PropertyData);
 
                     // Sanity check for null
                     info = (info != null ? info : "");
+
+                    info = converter.ConvertToString(info);
 
                     if (bForceAsAttribute)
                     {

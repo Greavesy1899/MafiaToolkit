@@ -1,15 +1,16 @@
-﻿using System;
-using System.Numerics;
+﻿using ResourceTypes.Actors;
+using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using Vortice.Mathematics;
+using System.Numerics;
+using System.Xml.Linq;
 using Utils.Extensions;
-using Utils.VorticeUtils;
+using Utils.Helpers.Reflection;
+using Utils.Logging;
 using Utils.StringHelpers;
 using Utils.Types;
-using Utils.Logging;
-using ResourceTypes.Actors;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Translokator
 {
@@ -139,7 +140,7 @@ namespace ResourceTypes.Translokator
         int numInstances;
         Instance[] instances;
 
-        [Browsable(false)]
+        [Browsable(false), PropertyIgnoreByReflector]
         public short NumInstance2 {
             get { return numInstance2; }
             set { numInstance2 = value; }
@@ -165,7 +166,7 @@ namespace ResourceTypes.Translokator
             get { return gridMin; }
             set { gridMin = value; }
         }
-        [Browsable(false)]
+        [Browsable(false), PropertyIgnoreByReflector]
         public int NumInstances {
             get { return numInstances; }
             set { numInstances = value; }
@@ -216,8 +217,8 @@ namespace ResourceTypes.Translokator
 
     public class TranslokatorLoader
     {
-        public Grid[] Grids;
-        public ObjectGroup[] ObjectGroups;
+        public Grid[] Grids { get; set; }
+        public ObjectGroup[] ObjectGroups { get; set; }
 
         int version;
         int unk1;
@@ -236,9 +237,15 @@ namespace ResourceTypes.Translokator
             get { return unk2; }
             set { unk2 = value; }
         }
+        [PropertyIgnoreByReflector]
         public BoundingBox Bounds {
             get { return bounds; }
             set { bounds = value; }
+        }
+
+        public TranslokatorLoader()
+        {
+
         }
 
         public TranslokatorLoader(FileInfo info)
@@ -686,6 +693,8 @@ namespace ResourceTypes.Translokator
                 for (int x = 0; x < objectGroup.Objects.Length; x++)
                 {
                     Object obj = objectGroup.Objects[x];
+                    obj.NumInstance2 = (short)obj.Instances.Length;
+                    obj.NumInstances = obj.Instances.Length;
                     writer.Write(obj.NumInstance2);
                     writer.Write(obj.Unk02);
                     writer.Write(obj.Name.Hash);
@@ -710,6 +719,26 @@ namespace ResourceTypes.Translokator
 
                 ObjectGroups[i] = objectGroup;
             }
+        }
+
+        public void ConvertToXML(string Filename)
+        {
+            XElement Root = ReflectionHelpers.ConvertPropertyToXML(this);
+            Root.Save(Filename);
+        }
+
+        public void ConvertFromXML(string Filename)
+        {
+            XElement LoadedDoc = XElement.Load(Filename);
+            TranslokatorLoader FileContents = ReflectionHelpers.ConvertToPropertyFromXML<TranslokatorLoader>(LoadedDoc);
+
+            // Copy data taken from loaded XML
+            Grids = FileContents.Grids;
+            ObjectGroups = FileContents.ObjectGroups;
+            Version = FileContents.Version;
+            Unk1 = FileContents.Unk1;
+            Unk2 = FileContents.Unk2;
+            Bounds = FileContents.Bounds;
         }
     }
 }

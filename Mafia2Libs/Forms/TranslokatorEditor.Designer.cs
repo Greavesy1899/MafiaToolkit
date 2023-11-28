@@ -44,6 +44,8 @@
             this.SaveToolButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ExportXml = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ImportXml = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewNumInstButton = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -191,7 +193,9 @@
             // 
             this.ToolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ToolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ViewNumInstButton});
+            this.ViewNumInstButton,
+            this.Button_ExportXml,
+            this.Button_ImportXml});
             this.ToolsButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsButton.Image")));
             this.ToolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolsButton.Name = "ToolsButton";
@@ -204,6 +208,21 @@
             this.ViewNumInstButton.Size = new System.Drawing.Size(180, 22);
             this.ViewNumInstButton.Text = "$VIEW_NUM_INST";
             this.ViewNumInstButton.Click += new System.EventHandler(this.ViewNumInstButton_Click);
+            //
+            // 
+            // Button_ExportXml
+            // 
+            this.Button_ExportXml.Name = "Button_ExportXml";
+            this.Button_ExportXml.Size = new System.Drawing.Size(180, 22);
+            this.Button_ExportXml.Text = "$EXPORT_XML";
+            this.Button_ExportXml.Click += new System.EventHandler(this.Button_ExportXml_OnClick);
+            //
+            // Button_ExportXml
+            // 
+            this.Button_ImportXml.Name = "Button_ImportXml";
+            this.Button_ImportXml.Size = new System.Drawing.Size(180, 22);
+            this.Button_ImportXml.Text = "$IMPORT_XML";
+            this.Button_ImportXml.Click += new System.EventHandler(this.Button_ImportXml_OnClick);
             // 
             // openFileDialog1
             // 
@@ -240,6 +259,8 @@
         private System.Windows.Forms.ToolStripMenuItem SaveToolButton;
         private System.Windows.Forms.ToolStripMenuItem ReloadButton;
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
+        private System.Windows.Forms.ToolStripMenuItem Button_ExportXml;
+        private System.Windows.Forms.ToolStripMenuItem Button_ImportXml;
         private System.Windows.Forms.ToolStripMenuItem AddObject;
         private System.Windows.Forms.ToolStripMenuItem Delete;
         private System.Windows.Forms.ToolStripMenuItem CopyButton;

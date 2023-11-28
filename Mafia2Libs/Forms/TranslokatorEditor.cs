@@ -1,9 +1,8 @@
-﻿using System;
+﻿using ResourceTypes.Translokator;
+using System;
 using System.IO;
-using ResourceTypes.Translokator;
 using System.Windows.Forms;
 using Utils.Language;
-using Utils.Helpers;
 
 namespace Mafia2Tool.Forms
 {
@@ -43,6 +42,12 @@ namespace Mafia2Tool.Forms
         private void LoadFile()
         {
             translokator = new TranslokatorLoader(file);
+
+            LoadData();
+        }
+
+        private void LoadData()
+        {
             TranslokatorTree.Nodes.Clear();
 
             TreeNode headerData = new TreeNode("Header Data");
@@ -402,6 +407,35 @@ namespace Mafia2Tool.Forms
         private void CopyButton_Click(object sender, EventArgs e) => Copy();
         private void PasteButton_Click(object sender, EventArgs e) => Paste();
         private void SaveToolButton_Click(object sender, EventArgs e) => SaveFile();
-        private void ExitButton_Click(object sender, EventArgs e) => Close();    
+        private void ExitButton_Click(object sender, EventArgs e) => Close();
+        private void Button_ExportXml_OnClick(object sender, System.EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "XML|*.XML";
+
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                translokator.ConvertToXML(saveFile.FileName);
+            }
+        }
+
+        private void Button_ImportXml_OnClick(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "XML|*.XML";
+            openFileDialog.Multiselect = false;
+            openFileDialog.CheckFileExists = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string FileToOpen = openFileDialog.FileName;
+                if (File.Exists(FileToOpen))
+                {
+                    translokator.ConvertFromXML(FileToOpen);
+
+                    LoadData();
+                }
+            }
+        }
     }
 }
