@@ -113,7 +113,6 @@ namespace Mafia2Tool.Forms
                 {
                     ResourceTypes.Translokator.Object obj = (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].Tag as ResourceTypes.Translokator.Object);
                     obj.Instances = new Instance[TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].GetNodeCount(false)];
-                    obj.NumInstances = obj.Instances.Length;
                     for (int z = 0; z < obj.Instances.Length; z++)
                     {
                         Instance instance = (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].Nodes[z].Tag as Instance);

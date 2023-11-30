@@ -131,20 +131,13 @@ namespace ResourceTypes.Translokator
 
     public class Object
     {
-        short numInstance2;
         short unk02;
         HashName name;
         byte[] unkBytes1;
         float gridMax;
         float gridMin;
-        int numInstances;
         Instance[] instances;
 
-        [Browsable(false), PropertyIgnoreByReflector]
-        public short NumInstance2 {
-            get { return numInstance2; }
-            set { numInstance2 = value; }
-        }
         public short Unk02 {
             get { return unk02; }
             set { unk02 = value; }
@@ -166,11 +159,6 @@ namespace ResourceTypes.Translokator
             get { return gridMin; }
             set { gridMin = value; }
         }
-        [Browsable(false), PropertyIgnoreByReflector]
-        public int NumInstances {
-            get { return numInstances; }
-            set { numInstances = value; }
-        }
         [Browsable(false)]
         public Instance[] Instances {
             get { return instances; }
@@ -185,8 +173,6 @@ namespace ResourceTypes.Translokator
 
         public Object(Object other)
         {
-            numInstance2 = 0;
-            numInstances = 0;
             instances = new Instance[0];
             unk02 = other.unk02;
             name = other.name;
@@ -444,41 +430,38 @@ namespace ResourceTypes.Translokator
                 {
                     Object obj = objectGroup.Objects[x];
 
-                    obj.NumInstance2 = (short)obj.NumInstances;
                     obj.UnkBytes1 = new byte[31 - obj.Name.ToString().Length];
 
-                    for (int y = 0; y != obj.NumInstances; y++)
+                    foreach(Instance CurrentInstance in obj.Instances)
                     {
-
-                        Instance instance = obj.Instances[y];
-                        if (instance.Position.X < Min.X)
+                        if (CurrentInstance.Position.X < Min.X)
                         {
-                            Min.X = instance.Position.X;
+                            Min.X = CurrentInstance.Position.X;
                         }
 
-                        if (instance.Position.X > Max.X)
+                        if (CurrentInstance.Position.X > Max.X)
                         {
-                            Max.X = instance.Position.X;
+                            Max.X = CurrentInstance.Position.X;
                         }
 
-                        if (instance.Position.Y < Min.Y)
+                        if (CurrentInstance.Position.Y < Min.Y)
                         {
-                            Min.Y = instance.Position.Y;
+                            Min.Y = CurrentInstance.Position.Y;
                         }
 
-                        if (instance.Position.Y > Max.Y)
+                        if (CurrentInstance.Position.Y > Max.Y)
                         {
-                            Max.Y = instance.Position.Y;
+                            Max.Y = CurrentInstance.Position.Y;
                         }
 
-                        if (instance.Position.Z < Min.Z)
+                        if (CurrentInstance.Position.Z < Min.Z)
                         {
-                            Min.Z = instance.Position.Z;
+                            Min.Z = CurrentInstance.Position.Z;
                         }
 
-                        if (instance.Position.Z > Max.Z)
+                        if (CurrentInstance.Position.Z > Max.Z)
                         {
-                            Max.Z = instance.Position.Z;
+                            Max.Z = CurrentInstance.Position.Z;
                         }
 
                         numInstance++;
@@ -508,7 +491,7 @@ namespace ResourceTypes.Translokator
                 {
                     Object obj = objectGroup.Objects[x];
 
-                    for (int y = 0; y != obj.NumInstances; y++)
+                    for (int y = 0; y < obj.Instances.Length; y++)
                     {
                         Instance instance = obj.Instances[y];
                         var other = new Instance(instance);
@@ -603,7 +586,7 @@ namespace ResourceTypes.Translokator
                 for (int x = 0; x < NumObjects; x++)
                 {
                     Object obj = new Object();
-                    obj.NumInstance2 = reader.ReadInt16();
+                    ushort NumInstances2 = reader.ReadUInt16();
                     obj.Unk02 = reader.ReadInt16();
 
                     obj.Name = new HashName();
@@ -615,10 +598,10 @@ namespace ResourceTypes.Translokator
                     obj.UnkBytes1 = reader.ReadBytes(31 - obj.Name.ToString().Length);
                     obj.GridMax = reader.ReadSingle();
                     obj.GridMin = reader.ReadSingle();
-                    obj.NumInstances = reader.ReadInt32();
-                    obj.Instances = new Instance[obj.NumInstances];
+                    uint NumInstances = reader.ReadUInt32();
+                    obj.Instances = new Instance[NumInstances];
 
-                    for (int y = 0; y != obj.NumInstances; y++)
+                    for (int y = 0; y < obj.Instances.Length; y++)
                     {
                         byte[] packed = reader.ReadBytes(14);
                         Instance instance = new Instance();
@@ -631,12 +614,13 @@ namespace ResourceTypes.Translokator
                         DecompressScale(instance);
                         DecompressRotation(instance);                    
                         instance.Position = DecompressPosition(packed, instance, bounds.Min, bounds.Max);
+
                         obj.Instances[y] = instance;
-
-
                     }
+
                     objectGroup.Objects[x] = obj;
                 }
+
                 ObjectGroups[i] = objectGroup;
             }
         }
@@ -693,18 +677,16 @@ namespace ResourceTypes.Translokator
                 for (int x = 0; x < objectGroup.Objects.Length; x++)
                 {
                     Object obj = objectGroup.Objects[x];
-                    obj.NumInstance2 = (short)obj.Instances.Length;
-                    obj.NumInstances = obj.Instances.Length;
-                    writer.Write(obj.NumInstance2);
+                    writer.Write((ushort)obj.Instances.Length);
                     writer.Write(obj.Unk02);
                     writer.Write(obj.Name.Hash);
                     StringHelpers.WriteString(writer, obj.Name.String);
                     writer.Write(obj.UnkBytes1);
                     writer.Write(obj.GridMax);
                     writer.Write(obj.GridMin);
-                    writer.Write(obj.NumInstances);
+                    writer.Write((uint)obj.Instances.Length);
 
-                    for (int y = 0; y != obj.NumInstances; y++)
+                    for (int y = 0; y < obj.Instances.Length; y++)
                     {
                         Instance instance = obj.Instances[y];
                         writer.Write(instance.W0);
