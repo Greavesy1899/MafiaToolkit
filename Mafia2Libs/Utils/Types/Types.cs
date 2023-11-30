@@ -6,10 +6,11 @@ using Utils.Extensions;
 using Utils.StringHelpers;
 using Utils.Models;
 using System;
+using Utils.Helpers.Reflection;
 
 namespace Utils.Types
 {
-    [TypeConverter(typeof(ExpandableObjectConverter))]
+    [TypeConverter(typeof(ExpandableObjectConverter)), PropertyClassAllowReflection]
     public class HashName
     {
         ulong hash;
@@ -24,7 +25,7 @@ namespace Utils.Types
             set { Set(value); }
         }
 
-        [ReadOnly(true)]
+        [ReadOnly(true), PropertyIgnoreByReflector]
         public string Hex {
             get { return string.Format("{0:X}", hash); }
         }
