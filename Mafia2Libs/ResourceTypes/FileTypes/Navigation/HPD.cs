@@ -162,6 +162,7 @@ namespace ResourceTypes.Navigation
             writer.Write(AiMeshManagement);
             writer.Write(NumPODEntries);
 
+            uint CurrentOffset = 0;
             for (int i = 0; i < HPDEntries.Length; i++)
             {
                 var data = HPDEntries[i];
@@ -174,9 +175,11 @@ namespace ResourceTypes.Navigation
                 writer.Write(data.BBoxMax.Z);
                 writer.Write(data.Level);
                 writer.Write(data.FileSize);
-                writer.Write(data.FileOffset);
+                writer.Write(CurrentOffset);
                 writer.Write(data.Tag1);
                 writer.Write(data.Tag2);
+
+                CurrentOffset += data.FileSize;
             }
 
             StringHelpers.WriteString(writer, Unk2);
