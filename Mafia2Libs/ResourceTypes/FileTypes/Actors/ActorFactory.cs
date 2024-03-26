@@ -32,6 +32,8 @@ namespace ResourceTypes.Actors
                     return new ActorDoor();
                 case ActorTypes.Tree:
                     return new ActorTree();
+                case ActorTypes.Lift:
+                    return new ActorLift();
                 case ActorTypes.C_Sound:
                     return new ActorSoundEntity();
                 case ActorTypes.StaticEntity:

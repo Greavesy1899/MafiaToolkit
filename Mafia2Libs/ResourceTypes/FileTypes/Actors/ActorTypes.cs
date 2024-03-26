@@ -2755,4 +2755,142 @@ namespace ResourceTypes.Actors
             return 328;
         }
     }
+
+    public class ActorLift : ActorPhysicsBase
+    {
+        [Category("C_Lift")]
+        public int InitialFloor { get; set; }
+        [Category("C_Lift")]
+        public float MotionSpeed { get; set; }
+        [Category("C_Lift")]
+        public float AcceleratingDistance { get; set; }
+        [Category("C_Lift")]
+        public float BreakingDistance { get; set; }
+        [Category("C_Lift")]
+        public string LightFrameName { get; set; } // limited to 32
+        [Category("C_Lift")]
+        public string LinkerPrefix { get; set; } // limited to 32
+        [Category("C_Lift")]
+        public int SoundCategoryId { get; set; }
+        [Category("C_Lift")]
+        public int AcceleratingSoundId { get; set; }
+        [Category("C_Lift")]
+        public int BreakingSoundId { get; set; }
+        [Category("C_Lift")]
+        public int MovingSoundId { get; set; }
+        [Category("C_Lift")]
+        public int ButtonSoundId { get; set; }
+        [Category("C_Lift")]
+        public bool bAutomaticDoorOpen { get; set; }
+        [Category("C_Lift")]
+        public string Door1Name { get; set; }
+        [Category("C_Lift")]
+        public string Door2Name { get; set; }
+        [Category("C_Lift")]
+        public bool bScriptControlled { get; set; }
+        [Category("C_Lift")]
+        public int InnerSpaceGraphIndex { get; set; }
+        [Category("C_Lift")]
+        public int OverrideFloors { get; set; }
+        [Category("C_Lift")]
+        public int SplineType { get; set; }
+        [Category("C_Lift")]
+        public float SplineInRange { get; set; }
+        [Category("C_Lift")]
+        public int SplineNavigation { get; set; }
+        [Category("C_Lift")]
+        public ulong SplineLock0 { get; set; }
+        [Category("C_Lift")]
+        public ulong SplineLock1 { get; set; }
+        [Category("C_Lift")]
+        public float Unk0 { get; set; }
+        [Category("C_Lift")]
+        public float Unk1 { get; set; }
+        [Category("C_Lift")]
+        public float Unk2 { get; set; }
+
+
+        public ActorLift()
+        {
+            LightFrameName = string.Empty;
+            LinkerPrefix = string.Empty;
+            Door1Name = string.Empty;
+            Door2Name = string.Empty;
+        }
+
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            base.ReadFromFile(reader, isBigEndian);
+
+            reader.Seek(240, SeekOrigin.Begin);
+
+            InitialFloor = reader.ReadInt32(isBigEndian);
+            MotionSpeed = reader.ReadSingle(isBigEndian);
+            AcceleratingDistance = reader.ReadSingle(isBigEndian);
+            BreakingDistance = reader.ReadSingle(isBigEndian);
+            LightFrameName = reader.ReadStringBuffer(32);
+            LinkerPrefix = reader.ReadStringBuffer(32);
+            SoundCategoryId = reader.ReadInt32(isBigEndian);
+            AcceleratingSoundId = reader.ReadInt32(isBigEndian);
+            BreakingSoundId = reader.ReadInt32(isBigEndian);
+            MovingSoundId = reader.ReadInt32(isBigEndian);
+            ButtonSoundId = reader.ReadInt32(isBigEndian);
+            bAutomaticDoorOpen = Convert.ToBoolean(reader.ReadByte8());
+            Door1Name = reader.ReadStringBuffer(64);
+            Door2Name = reader.ReadStringBuffer(64);
+            bScriptControlled = Convert.ToBoolean(reader.ReadByte8());
+            reader.Seek(2, SeekOrigin.Current); // padding?
+            InnerSpaceGraphIndex = reader.ReadInt32(isBigEndian);
+            OverrideFloors = reader.ReadInt32(isBigEndian);
+            SplineType = reader.ReadInt32(isBigEndian);
+            SplineInRange = reader.ReadSingle(isBigEndian);
+            SplineNavigation = reader.ReadInt32(isBigEndian);
+            SplineLock0 = reader.ReadUInt64(isBigEndian);
+            SplineLock1 = reader.ReadUInt64(isBigEndian);
+            Unk0 = reader.ReadSingle(isBigEndian);
+            Unk1 = reader.ReadSingle(isBigEndian);
+            Unk2 = reader.ReadSingle(isBigEndian);
+
+        }
+
+        public override void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            base.WriteToFile(writer, isBigEndian);
+
+            // Write padding
+            writer.Write(new byte[GetSize() - writer.Length]);
+            writer.Position = 240;
+
+            writer.Write(InitialFloor, isBigEndian);
+            writer.Write(MotionSpeed, isBigEndian);
+            writer.Write(AcceleratingDistance, isBigEndian);
+            writer.Write(BreakingDistance, isBigEndian);
+            writer.WriteStringBuffer(32, LightFrameName);
+            writer.WriteStringBuffer(32, LinkerPrefix);
+            writer.Write(SoundCategoryId, isBigEndian);
+            writer.Write(AcceleratingSoundId, isBigEndian);
+            writer.Write(BreakingSoundId, isBigEndian);
+            writer.Write(MovingSoundId, isBigEndian);
+            writer.Write(ButtonSoundId, isBigEndian);
+            writer.WriteByte(Convert.ToByte(bAutomaticDoorOpen));
+            writer.WriteStringBuffer(64, Door1Name);
+            writer.WriteStringBuffer(64, Door2Name);
+            writer.WriteByte(Convert.ToByte(bScriptControlled));
+            writer.Write((ushort)0, isBigEndian); // padding
+            writer.Write(InnerSpaceGraphIndex, isBigEndian);
+            writer.Write(OverrideFloors, isBigEndian);
+            writer.Write(SplineType, isBigEndian);
+            writer.Write(SplineNavigation, isBigEndian);
+            writer.Write(SplineLock0, isBigEndian);
+            writer.Write(SplineLock1, isBigEndian);
+            writer.Write(Unk0, isBigEndian);
+            writer.Write(Unk1, isBigEndian);
+            writer.Write(Unk2, isBigEndian);
+        }
+
+        public override int GetSize()
+        {
+            return 520;
+        }
+    }
 }
