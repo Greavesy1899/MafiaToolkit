@@ -24,6 +24,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.Tree);
             TypeCombo.Items.Add(ActorTypes.Lift);
             TypeCombo.Items.Add(ActorTypes.C_Sound);
+            TypeCombo.Items.Add(ActorTypes.SoundMixer);
             TypeCombo.Items.Add(ActorTypes.StaticEntity);
             TypeCombo.Items.Add(ActorTypes.Garage);
             TypeCombo.Items.Add(ActorTypes.FrameWrapper);

@@ -36,6 +36,8 @@ namespace ResourceTypes.Actors
                     return new ActorLift();
                 case ActorTypes.C_Sound:
                     return new ActorSoundEntity();
+                case ActorTypes.SoundMixer:
+                    return new ActorSoundMixer();
                 case ActorTypes.StaticEntity:
                     return new ActorStaticEntity();
                 case ActorTypes.Garage:

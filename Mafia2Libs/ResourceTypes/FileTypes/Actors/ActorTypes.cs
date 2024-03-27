@@ -2880,6 +2880,7 @@ namespace ResourceTypes.Actors
             writer.Write(InnerSpaceGraphIndex, isBigEndian);
             writer.Write(OverrideFloors, isBigEndian);
             writer.Write(SplineType, isBigEndian);
+            writer.Write(SplineInRange, isBigEndian);
             writer.Write(SplineNavigation, isBigEndian);
             writer.Write(SplineLock0, isBigEndian);
             writer.Write(SplineLock1, isBigEndian);
@@ -2891,6 +2892,146 @@ namespace ResourceTypes.Actors
         public override int GetSize()
         {
             return 520;
+        }
+    }
+
+    public class ActorSoundMixer : IActorExtraDataInterface
+    {
+        public class Mixer
+        {
+            public class FadePoint
+            {
+                public int MixValue { get; set; }
+                public float MixVolume { get; set; }
+
+                public override string ToString()
+                {
+                    return string.Format("{0} -> {1}", MixValue, MixVolume);
+                }
+            }
+
+            public uint SoundType { get; set; }
+            public float SoundVolume { get; set; }
+            public float SoundPitch { get; set; }
+            public string SoundWave { get; set; }
+            public int Unk0 { get; set; }
+            public float Near { get; set; }
+            public float Far { get; set; }
+            public int CurveId { get; set; }
+
+            // This may only be present if SoundType == 30
+            public float MonoDistance { get; set; }
+            public float InnerAngle { get; set; } // stored in rad
+            public float OuterAngle { get; set; } // stored in rad
+            public float OuterVolume { get; set; }
+            public FadePoint[] FadePoints { get; set; }
+
+            private const uint MAX_FADE_POINTS = 5;
+
+            public Mixer()
+            {
+                SoundWave = string.Empty;
+                FadePoints = new FadePoint[MAX_FADE_POINTS];
+                for(int i = 0; i < MAX_FADE_POINTS; i++)
+                {
+                    FadePoints[i] = new FadePoint();
+                }
+            }
+
+            public void Read(MemoryStream InStream, bool bIsBigEndian)
+            {
+                SoundType = InStream.ReadUInt32(bIsBigEndian);
+                SoundVolume = InStream.ReadSingle(bIsBigEndian);
+                SoundPitch = InStream.ReadSingle(bIsBigEndian);
+                SoundWave = InStream.ReadStringBuffer(80);
+                Unk0 = InStream.ReadInt32(bIsBigEndian); // always zero?
+                Near = InStream.ReadSingle(bIsBigEndian);
+                Far = InStream.ReadSingle(bIsBigEndian);
+                CurveId = InStream.ReadInt32(bIsBigEndian);
+                MonoDistance = InStream.ReadSingle(bIsBigEndian);
+                InnerAngle = InStream.ReadSingle(bIsBigEndian);
+                OuterAngle = InStream.ReadSingle(bIsBigEndian);
+                OuterVolume = InStream.ReadSingle(bIsBigEndian);
+
+                for (int i = 0; i < MAX_FADE_POINTS; i++)
+                {
+                    FadePoints[i].MixValue = InStream.ReadInt32(bIsBigEndian);
+                    FadePoints[i].MixVolume = InStream.ReadSingle(bIsBigEndian);
+                }
+            }
+
+            public void Write(MemoryStream InStream, bool bIsBigEndian)
+            {
+                InStream.Write(SoundType, bIsBigEndian);
+                InStream.Write(SoundVolume, bIsBigEndian);
+                InStream.Write(SoundPitch, bIsBigEndian);
+                InStream.WriteStringBuffer(80, SoundWave);
+                InStream.Write(Unk0, bIsBigEndian);
+                InStream.Write(Near, bIsBigEndian);
+                InStream.Write(Far, bIsBigEndian);
+                InStream.Write(CurveId, bIsBigEndian);
+                InStream.Write(MonoDistance, bIsBigEndian);
+                InStream.Write(InnerAngle, bIsBigEndian);
+                InStream.Write(OuterAngle, bIsBigEndian);
+                InStream.Write(OuterVolume, bIsBigEndian);
+
+                for (int i = 0; i < MAX_FADE_POINTS; i++)
+                {
+                    InStream.Write(FadePoints[i].MixValue, bIsBigEndian);
+                    InStream.Write(FadePoints[i].MixVolume, bIsBigEndian);
+                }
+            }
+
+            public override string ToString()
+            {
+                string ActualSoundWave = (SoundWave == string.Empty ? "[UNSET]" :  SoundWave);
+                return string.Format("Type: {0} Sound: {1}", SoundType, ActualSoundWave);
+            }
+        }
+
+        public int Unk0 { get; set; }
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public ActorSoundMixerFlags Flags { get; set; }
+        public Mixer[] Mixers { get; set; }
+
+        private const uint MAX_MIXERS = 3;
+
+        public ActorSoundMixer()
+        {
+            // Initialise array
+            Mixers = new Mixer[MAX_MIXERS];
+            for (int i = 0; i < MAX_MIXERS; i++)
+            {
+                Mixers[i] = new Mixer();
+            }
+        }
+
+        public void ReadFromFile(MemoryStream InStream, bool bIsBigEndian)
+        {
+            Unk0 = InStream.ReadInt32(bIsBigEndian);
+            Flags = (ActorSoundMixerFlags)InStream.ReadInt32(bIsBigEndian);
+
+            for(int i = 0; i < MAX_MIXERS; i++)
+            {
+                Mixers[i] = new Mixer();
+                Mixers[i].Read(InStream, bIsBigEndian);
+            }
+        }
+
+        public void WriteToFile(MemoryStream InStream, bool bIsBigEndian)
+        {
+            InStream.Write(Unk0, bIsBigEndian);
+            InStream.Write((int)Flags, bIsBigEndian);
+
+            for(int i = 0; i < MAX_MIXERS; i++)
+            {
+                Mixers[i].Write(InStream, bIsBigEndian);
+            }
+        }
+
+        public int GetSize()
+        {
+            return 500;
         }
     }
 }
