@@ -3034,4 +3034,52 @@ namespace ResourceTypes.Actors
             return 500;
         }
     }
+
+    public class ActorFireTarget : IActorExtraDataInterface
+    {
+        public int FireTargetType { get; set; }
+        public float Timeout { get; set; }
+        public float Range { get; set; }
+        public float Radius { get; set; }
+        public float Height { get; set; }
+        public Vector3 BoxExtents { get; set; }
+        public int ParticleId { get; set; }
+        public float ParticleScale { get; set; }
+        public int Probability { get; set; }
+        public int SoundId { get; set; }
+
+        public void ReadFromFile(MemoryStream InStream, bool bIsBigEndian)
+        {
+            FireTargetType = InStream.ReadInt32(bIsBigEndian);
+            Timeout = InStream.ReadSingle(bIsBigEndian);
+            Range = InStream.ReadSingle(bIsBigEndian);
+            Radius = InStream.ReadSingle(bIsBigEndian);
+            Height = InStream.ReadSingle(bIsBigEndian);
+            BoxExtents = Vector3Utils.ReadFromFile(InStream, bIsBigEndian);
+            ParticleId = InStream.ReadInt32(bIsBigEndian);
+            ParticleScale = InStream.ReadSingle(bIsBigEndian);
+            Probability = InStream.ReadInt32(bIsBigEndian);
+            SoundId = InStream.ReadInt32(bIsBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream InStream, bool bIsBigEndian)
+        {
+            InStream.Write(FireTargetType, bIsBigEndian);
+            InStream.Write(Timeout, bIsBigEndian);
+            InStream.Write(Range, bIsBigEndian);
+            InStream.Write(Radius, bIsBigEndian);
+            InStream.Write(Height, bIsBigEndian);
+            BoxExtents.WriteToFile(InStream, bIsBigEndian);
+            InStream.Write(ParticleId, bIsBigEndian);
+            InStream.Write(ParticleScale, bIsBigEndian);
+            InStream.Write(Probability, bIsBigEndian);
+            InStream.Write(SoundId, bIsBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 48;
+        }
+    }
+
 }

@@ -31,6 +31,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.C_ActorDetector);
             TypeCombo.Items.Add(ActorTypes.Blocker);
             TypeCombo.Items.Add(ActorTypes.C_StaticWeapon);
+            TypeCombo.Items.Add(ActorTypes.FireTarget);
             TypeCombo.Items.Add(ActorTypes.LightEntity);
             TypeCombo.Items.Add(ActorTypes.C_Cutscene);
             TypeCombo.Items.Add(ActorTypes.C_ScriptEntity);

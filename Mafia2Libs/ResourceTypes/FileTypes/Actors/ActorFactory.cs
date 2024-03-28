@@ -52,6 +52,8 @@ namespace ResourceTypes.Actors
                     return new ActorStaticWeapon();
                 case ActorTypes.C_StaticParticle:
                     return new ActorStaticParticle();
+                case ActorTypes.FireTarget:
+                    return new ActorFireTarget();
                 case ActorTypes.LightEntity:
                     return new ActorLight();
                 case ActorTypes.C_Cutscene:
