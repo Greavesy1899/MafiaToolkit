@@ -71,7 +71,6 @@ namespace ResourceTypes.Misc
         private StreamLine[] lines;
         private StreamLoader[] loaders;
         private StreamBlock[] blocks;
-        private ulong[] hashes;
 
         public StreamGroup[] Groups {
             get { return groups; }
@@ -519,7 +518,7 @@ namespace ResourceTypes.Misc
 
             ToolkitAssert.Ensure(reader.BaseStream.Position == hashOffset, "Did not reach the block hashes starting offset!");
 
-            hashes = new ulong[numHashes];
+            ulong[] hashes = new ulong[numHashes];
 
             for (int i = 0; i < numHashes; i++)
             {
@@ -728,15 +727,18 @@ namespace ResourceTypes.Misc
 
             blockOffset = (int)writer.BaseStream.Position;
 
+            List<ulong> hashesArray = new List<ulong>();
             foreach (var block in blocks)
             {
-                writer.Write(block.startOffset);
-                writer.Write(block.endOffset);
+                // add and update offsets
+                writer.Write(hashesArray.Count); // Start Offset
+                hashesArray.AddRange(block.Hashes);
+                writer.Write(hashesArray.Count); // End Offset
             }
 
             hashOffset = (int)writer.BaseStream.Position;
 
-            foreach (var value in hashes)
+            foreach (var value in hashesArray)
             {
                 writer.Write(value);
             }
@@ -760,7 +762,7 @@ namespace ResourceTypes.Misc
             writer.Write(loadersOffset);
             writer.Write(blocks.Length);
             writer.Write(blockOffset);
-            writer.Write(hashes.Length);
+            writer.Write(hashesArray.Count);
             writer.Write(hashOffset);
             writer.Write(rawPool.Length);
             writer.Write(poolOffset);
