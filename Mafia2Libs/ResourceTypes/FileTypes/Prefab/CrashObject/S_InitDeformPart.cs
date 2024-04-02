@@ -213,6 +213,7 @@ namespace ResourceTypes.Prefab.CrashObject
             PartTransform = new C_Transform();
             Unk20 = new ushort[0];
             Unk21Data = new S_InitDeformOrigData();
+            Unk22_RelData = new S_InitDeformRelData();
             CommonData = new S_InitDeformPartCommon();
         }
 

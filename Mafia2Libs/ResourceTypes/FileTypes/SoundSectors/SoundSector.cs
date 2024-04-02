@@ -92,7 +92,7 @@ namespace ResourceTypes.Sound
         }
     }
 
-    [PropertyClassCheckInherited]
+    [PropertyClassCheckInherited, PropertyClassAllowReflection]
     public class SoundSectorBase
     {
         public ushort[] Unk0 { get; set; }
