@@ -46,6 +46,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.Radio);
             TypeCombo.Items.Add(ActorTypes.Telephone);
             TypeCombo.Items.Add(ActorTypes.FramesController);
+            TypeCombo.Items.Add(ActorTypes.Wardrobe);
             TypeCombo.SelectedIndex = 0;
         }
 

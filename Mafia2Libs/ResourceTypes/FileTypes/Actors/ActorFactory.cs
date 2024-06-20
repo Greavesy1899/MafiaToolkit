@@ -70,6 +70,8 @@ namespace ResourceTypes.Actors
                     return new ActorBoat();
                 case ActorTypes.Airplane:
                     return new ActorAircraft();
+                case ActorTypes.Wardrobe:
+                    return new ActorWardrobe();
                 case ActorTypes.CleanEntity:
                     return new ActorCleanEntity();
                 case ActorTypes.Radio:
