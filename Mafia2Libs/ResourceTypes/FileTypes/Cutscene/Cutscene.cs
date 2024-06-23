@@ -288,6 +288,7 @@ namespace ResourceTypes.Cutscene
                     writer.Write(unk05);
                     writer.Write(unk06);
                     FaceFX.Write(writer);
+
                     using (MemoryStream ms = new())
                     {
                         using (BinaryWriter bw = new(ms))
