@@ -31,7 +31,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>6</LangVersion>
+    <LangVersion>latest</LangVersion>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
@@ -40,7 +40,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>7.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <DefineConstants>TRACE</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
 	<Optimize>True</Optimize>
@@ -73,14 +73,14 @@
     <OutputPath>bin\x86\Debug\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>7.0</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Localisations\ar_AR.xml" />
@@ -332,7 +332,7 @@
 cd $(TargetDir)
 del *.py
 del *.cmd</PostBuildEvent>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>2.24</AssemblyVersion>
     <FileVersion>2.24</FileVersion>

@@ -27,9 +27,9 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+            ToolkitAssert.Ensure(stream.Position != stream.Length || DataType == 104, "I've read the parent class data, although i've hit the eof!");
 
-            if (stream.Position != stream.Length)
+            if (stream.Position != stream.Length && DataType != 104)
             {
                 Unk02 = stream.ReadInt32(isBigEndian);
                 Unk03 = stream.ReadByte8();

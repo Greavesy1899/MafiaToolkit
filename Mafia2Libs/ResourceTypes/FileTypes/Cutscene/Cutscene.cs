@@ -4,6 +4,7 @@ using System.IO;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.StringHelpers;
+using static ResourceTypes.Cutscene.CutsceneLoader.Cutscene;
 
 namespace ResourceTypes.Cutscene
 {
@@ -62,6 +63,8 @@ namespace ResourceTypes.Cutscene
             set { cutscenes = value; }
         }
 
+        public GCRData[] VehicleContent { get; set; } = new GCRData[0];
+
         public CutsceneLoader(FileInfo file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
@@ -77,6 +80,16 @@ namespace ResourceTypes.Cutscene
             for(int i = 0; i < cutscenes.Length; i++)
             {
                 cutscenes[i] = new Cutscene(reader);
+            }
+
+            int numGCR = reader.ReadInt32();
+
+            VehicleContent = new GCRData[numGCR];
+
+            for (int i = 0; i < numGCR; i++)
+            {
+                VehicleContent[i] = new();
+                VehicleContent[i].ReadFromFile(reader);
             }
         }
 
@@ -96,17 +109,23 @@ namespace ResourceTypes.Cutscene
             {
                 Scene.WriteToFile(Writer);
             }
+
+            Writer.Write(VehicleContent.Length); // Num GCR
+
+            foreach (GCRData VehicleData in VehicleContent)
+            {
+                VehicleData.WriteToFile(Writer);
+            }
         }
 
         public class Cutscene
         {
-            private byte[] unk05; // Padding?
-            private int gcsSize; // Will need to be replaced
+            private int unk05; // Padding?
+            private byte unk06; // Compressed?
 
             public string CutsceneName { get; set; }
             public GCSData AssetContent { get; set; }
             public SPDData SoundContent { get; set; }
-            public GCRData[] VehicleContent { get; set; }
 
             public Cutscene(BinaryReader reader)
             {
@@ -115,73 +134,64 @@ namespace ResourceTypes.Cutscene
 
             public void ReadFromFile(BinaryReader reader)
             {
-                short length = reader.ReadInt16();
-                CutsceneName = new string(reader.ReadChars(length));
+                CutsceneName = reader.ReadString16();
 
-                if(!Directory.Exists("CutsceneInfo/"+ CutsceneName))
+                unk05 = reader.ReadInt32();
+                unk06 = reader.ReadByte();
+
+                using (BinaryReader gcsReader = new(new MemoryStream(reader.ReadBytes(reader.ReadInt32() - 8))))
                 {
-                    Directory.CreateDirectory("CutsceneInfo/" + CutsceneName);
+                    AssetContent = new GCSData();
+                    AssetContent.ReadFromFile(gcsReader, CutsceneName);
                 }
-
-                unk05 = reader.ReadBytes(5);
-                gcsSize = reader.ReadInt32();
-
-                long start = reader.BaseStream.Position;
-                AssetContent = new GCSData();
-                AssetContent.ReadFromFile(reader, CutsceneName);
 
                 bool hasSPD = reader.ReadBoolean();
                 if(hasSPD)
                 {
-                    SoundContent = new SPDData();
-                    SoundContent.ReadFromFile(reader, CutsceneName);
+                    reader.ReadInt32(); //1000
+                    using (BinaryReader spdReader = new(new MemoryStream(reader.ReadBytes(reader.ReadInt32() - 8))))
+                    {
+                        SoundContent = new SPDData();
+                        SoundContent.ReadFromFile(spdReader, CutsceneName);
+                    }
                 }
-
-                // TODO: Figure out the actual way of detecting this.
-                // Get vehicle data.. if it is an absurd value we know its a GCR.
-                int numGCR = reader.ReadInt32();
-                if(numGCR > 0xFF)
-                {
-                    reader.BaseStream.Position -= 4;
-                    return;
-                }
-
-                VehicleContent = new GCRData[numGCR];
-
-                for (int i = 0; i < numGCR; i++)
-                {
-                    VehicleContent[i] = new GCRData();
-                    VehicleContent[i].ReadFromFile(reader);
-                }
-                return;
             }
 
             public void WriteToFile(BinaryWriter Writer)
             {
-                StringHelpers.WriteString16(Writer, CutsceneName);
+                Writer.WriteString16(CutsceneName);
                 Writer.Write(unk05);
-                Writer.Write(gcsSize);
-                AssetContent.WriteToFile(Writer);
+                Writer.Write(unk06);
 
-                if(SoundContent != null)
+                using (MemoryStream ms = new())
                 {
-                    Writer.Write(true); // Has SPD
-                    SoundContent.WriteToFile(Writer);
-                }
-
-                // TODO: Not sure if this is fully valid or not..
-                if (VehicleContent != null && VehicleContent.Length > 0)
-                {
-                    Writer.Write(VehicleContent.Length); // Num GCR
-
-                    foreach(GCRData VehicleData in VehicleContent)
+                    using (BinaryWriter bw = new(ms))
                     {
-                        VehicleData.WriteToFile(Writer);
+                        AssetContent.WriteToFile(bw);
                     }
+
+                    byte[] gcsData = ms.ToArray();
+                    Writer.Write(gcsData.Length + 8);
+                    Writer.Write(gcsData);
                 }
-                else
+
+                Writer.Write(SoundContent != null);
+
+                if (SoundContent != null)
                 {
-                    Writer.Write(0);
+                    Writer.Write(1000);
+
+                    using (MemoryStream ms = new())
+                    {
+                        using (BinaryWriter bw = new(ms))
+                        {
+                            SoundContent.WriteToFile(bw);
+                        }
+
+                        byte[] spdData = ms.ToArray();
+                        Writer.Write(spdData.Length + 8);
+                        Writer.Write(spdData);
+                    }
                 }
             }
 
@@ -193,12 +203,10 @@ namespace ResourceTypes.Cutscene
                 private short unk04; //25.0f;
                 private short unk05; //sometimes 0xFF
                 private int unk06; //100000.
-                private int unk07; //size
-                private byte[] unk08; //size from unk07; facefx data
-                private int unk09; //possible size of entries;
+                public FaceFX FaceFX { get; set; }
                 private ushort numEntities; //numEntities;
                 public AnimEntityWrapper[] entities;
-                public int unk10;
+                public float unk10;
                 public float unk11;
                 public int unk12;
                 public float unk13;
@@ -216,53 +224,55 @@ namespace ResourceTypes.Cutscene
                     unk04 = reader.ReadInt16();
                     unk05 = reader.ReadInt16();
                     unk06 = reader.ReadInt32();
-                    unk07 = reader.ReadInt32();
-                    unk08 = reader.ReadBytes(unk07-4);
-                    unk09 = reader.ReadInt32();
-                    numEntities = reader.ReadUInt16();
-                    entities = new AnimEntityWrapper[numEntities];
+                    FaceFX = new FaceFX(reader);
 
-                    for(int i = 0; i < numEntities; i++)
+                    using (BinaryReader br = new(new MemoryStream(reader.ReadBytes(reader.ReadInt32() - 8))))
                     {
-                        int Header = reader.ReadInt32();
-                        ToolkitAssert.Ensure(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
+                        numEntities = br.ReadUInt16();
+                        entities = new AnimEntityWrapper[numEntities];
 
-                        int Size = reader.ReadInt32();
-                        int RawAnimEntityType = reader.ReadInt32();
-                        AnimEntityTypes AnimEntityType = (AnimEntityTypes)RawAnimEntityType;
-
-                        byte[] DefintionData = reader.ReadBytes(Size - 12);
-                        using (MemoryStream Reader = new MemoryStream(DefintionData))
+                        for (int i = 0; i < numEntities; i++)
                         {
-                            AnimEntityWrapper EntityWrapper = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
+                            int Header = br.ReadInt32();
+                            ToolkitAssert.Ensure(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
 
-                            string format = string.Format("CutsceneInfo/{2}/Entity_{0}_{1}.bin", AnimEntityType, i, CutsceneName);
-                            File.WriteAllBytes(format, DefintionData);
+                            int Size = br.ReadInt32();
+                            AnimEntityTypes AnimEntityType = (AnimEntityTypes)br.ReadInt32();
 
-                            entities[i] = EntityWrapper;
+                            byte[] DefintionData = br.ReadBytes(Size - 12);
+
+                            using (MemoryStream Reader = new MemoryStream(DefintionData))
+                            {
+                                AnimEntityWrapper EntityWrapper = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
+
+                                //string format = string.Format("CutsceneInfo/{2}/Entity_{0}_{1}.bin", AnimEntityType, i, CutsceneName);
+                                //File.WriteAllBytes(format, DefintionData);
+
+                                entities[i] = EntityWrapper;
+                            }
+                        }
+
+                        for (int z = 0; z < numEntities; z++)
+                        {
+                            // Export this first
+                            int dataType = br.ReadInt32();
+                            int size = br.ReadInt32();
+                            br.BaseStream.Position -= 8;
+                            byte[] dataBytes = br.ReadBytes(size);
+
+                            //string format = string.Format("CutsceneInfo/{2}/{0}_{1}.bin", entities[z], z, CutsceneName);
+                            //File.WriteAllBytes(format, dataBytes);
+
+                            // And then This
+                            using (MemoryStream stream = new MemoryStream(dataBytes))
+                            {
+                                entities[z].AnimEntityData.ReadFromFile(stream, false);
+                                ToolkitAssert.Ensure(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
+                            }
                         }
                     }
 
-                    for (int z = 0; z < numEntities; z++)
-                    {
-                        // Export this first
-                        int dataType = reader.ReadInt32();
-                        int size = reader.ReadInt32();
-                        reader.BaseStream.Position -= 8;
-                        byte[] dataBytes = reader.ReadBytes(size);
-
-                        string format = string.Format("CutsceneInfo/{2}/{0}_{1}.bin", entities[z], z, CutsceneName);
-                        File.WriteAllBytes(format, dataBytes);
-
-                        // And then This
-                        using(MemoryStream stream = new MemoryStream(dataBytes))
-                        {
-                            entities[z].AnimEntityData.ReadFromFile(stream, false);
-                            ToolkitAssert.Ensure(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
-                        }
-                    }
-
-                    unk10 = reader.ReadInt32();
+                    unk10 = reader.ReadSingle();
                     unk11 = reader.ReadSingle();
                     unk12 = reader.ReadInt32();
                     unk13 = reader.ReadSingle();
@@ -277,46 +287,52 @@ namespace ResourceTypes.Cutscene
                     writer.Write(unk04);
                     writer.Write(unk05);
                     writer.Write(unk06);
-                    writer.Write(unk07);
-                    writer.Write(unk08);
-                    writer.Write(unk09);
-                    writer.Write(numEntities);
-
-                    foreach(var Entity in entities)
+                    FaceFX.Write(writer);
+                    using (MemoryStream ms = new())
                     {
-                        writer.Write(126); //Header for types is 126.
-
-                        long sizePosition = writer.BaseStream.Position;
-                        writer.Write(-1);
-                        writer.Write((int)Entity.GetEntityType());
-
-                        using(MemoryStream stream = new MemoryStream())
+                        using (BinaryWriter bw = new(ms))
                         {
-                            // Write Entity to the Stream
-                            CutsceneEntityFactory.WriteAnimEntityToFile(stream, Entity);
-                            writer.Write(stream.ToArray());
+                            bw.Write(numEntities);
 
-                            // Update Size.
-                            long currentPosition = writer.BaseStream.Position;
-                            writer.BaseStream.Seek(sizePosition, SeekOrigin.Begin);
-                            writer.Write((uint)stream.Length + 12);
-                            writer.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+                            foreach (var Entity in entities)
+                            {
+                                bw.Write(126); //Header for types is 126.
+
+                                byte[] entityData;
+
+                                using (MemoryStream stream = new MemoryStream())
+                                {
+                                    // Write Entity to the Stream
+                                    CutsceneEntityFactory.WriteAnimEntityToFile(stream, Entity);
+                                    entityData = stream.ToArray();
+                                }
+
+                                bw.Write(entityData.Length + 12);
+                                bw.Write((int)Entity.GetEntityType());
+                                bw.Write(entityData);
+
+
+                            }
+
+                            foreach (var Entity in entities)
+                            {
+                                using (MemoryStream EntityStream = new MemoryStream())
+                                {
+                                    bool isBigEndian = false;
+                                    Entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
+
+                                    byte[] animEntityData = EntityStream.ToArray();
+
+                                    bw.Write(Entity.AnimEntityData.DataType);
+                                    bw.Write(animEntityData.Length + 8);
+                                    bw.Write(animEntityData);
+                                }
+                            }
                         }
-                    }
 
-                    foreach (var Entity in entities)
-                    {
-                        using (MemoryStream EntityStream = new MemoryStream())
-                        {
-                            bool isBigEndian = false;
-                            Entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
-
-                            EntityStream.Seek(4, SeekOrigin.Begin);
-                            EntityStream.Write((uint)EntityStream.Length, isBigEndian);
-                            EntityStream.Seek(0, SeekOrigin.End);
-
-                            writer.Write(EntityStream.ToArray());
-                        }
+                        byte[] data = ms.ToArray();
+                        writer.Write(data.Length + 8);
+                        writer.Write(data);
                     }
 
                     writer.Write(unk10);
@@ -332,72 +348,47 @@ namespace ResourceTypes.Cutscene
                 public int Unk01 { get; set; }
                 public float Unk02 { get; set; } // For GCS this is FPS i think.
                 public AnimEntityWrapper[] EntityDefinitions { get; set; }
-
-                private uint Size; // Will be removed when we have proper saving.
                 private string CutsceneName; // For debugging
 
                 public void ReadFromFile(BinaryReader reader, string name)
                 {
                     CutsceneName = name;
-
-                    int magic = reader.ReadInt32();
-                    if(magic == 1000)
+                    int fourcc = reader.ReadInt32();
+                    if (fourcc == 0x21445053)
                     {
-                        //the size includes the size and the magic, A.K.A: (magic and size == 8)
-                        Size = reader.ReadUInt32();
+                        Unk01 = reader.ReadInt32();
+                        Unk02 = reader.ReadSingle();
+                        int NumEntities = reader.ReadInt32();
+                        EntityDefinitions = new AnimEntityWrapper[NumEntities];
 
-                        int fourcc = reader.ReadInt32();
-                        if(fourcc == 0x21445053)
+                        for (int i = 0; i < NumEntities; i++)
                         {
-                            Unk01 = reader.ReadInt32();
-                            Unk02 = reader.ReadSingle();
-                            int NumEntities = reader.ReadInt32();
-                            EntityDefinitions = new AnimEntityWrapper[NumEntities];
+                            int Header = reader.ReadInt32();
+                            ToolkitAssert.Ensure(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
 
-                            for (int i = 0; i < NumEntities; i++)
+                            int Size = reader.ReadInt32();
+                            AnimEntityTypes AnimEntityType = (AnimEntityTypes)reader.ReadInt32();
+
+                            byte[] DefintionData = reader.ReadBytes(Size - 12);
+                            using (MemoryStream Reader = new MemoryStream(DefintionData))
                             {
-                                int Header = reader.ReadInt32();
-                                ToolkitAssert.Ensure(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
-
-                                int Size = reader.ReadInt32();
-                                int RawAnimEntityType = reader.ReadInt32();
-                                AnimEntityTypes AnimEntityType = (AnimEntityTypes)RawAnimEntityType;
-
-                                byte[] DefintionData = reader.ReadBytes(Size - 12);
-                                using (MemoryStream Reader = new MemoryStream(DefintionData))
-                                {
-                                    AnimEntityWrapper Entity = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
-
-                                    if (System.Diagnostics.Debugger.IsAttached)
-                                    {
-                                        // Debugging: If the AnimEntity is null and a debugger is attached, we should save it to the disc.
-                                        string format = string.Format("CutsceneInfo/{0}/Entity_SPD_{1}_{2}.bin", CutsceneName, AnimEntityType, i);
-                                        File.WriteAllBytes(format, DefintionData);
-                                    }
-
-                                    EntityDefinitions[i] = Entity;
-                                }
+                                AnimEntityWrapper Entity = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
+                                EntityDefinitions[i] = Entity;
                             }
+                        }
 
-                            for (int z = 0; z < NumEntities; z++)
+                        for (int z = 0; z < NumEntities; z++)
+                        {
+                            // Export this first
+                            int dataType = reader.ReadInt32();
+                            int entitySize = reader.ReadInt32();
+                            reader.BaseStream.Position -= 8;
+                            byte[] dataBytes = reader.ReadBytes(entitySize);
+
+                            // And then This
+                            using (MemoryStream stream = new MemoryStream(dataBytes))
                             {
-                                // Export this first
-                                int dataType = reader.ReadInt32();
-                                int entitySize = reader.ReadInt32();
-                                reader.BaseStream.Position -= 8;
-                                byte[] dataBytes = reader.ReadBytes(entitySize);
-
-                                if (System.Diagnostics.Debugger.IsAttached)
-                                {
-                                    string format = string.Format("CutsceneInfo/{2}/{0}_SPD_{1}.bin", EntityDefinitions[z], z, CutsceneName);
-                                    File.WriteAllBytes(format, dataBytes);
-                                }
-
-                                // And then This
-                                using (MemoryStream stream = new MemoryStream(dataBytes))
-                                {
-                                    EntityDefinitions[z].AnimEntityData.ReadFromFile(stream, false);
-                                }
+                                EntityDefinitions[z].AnimEntityData.ReadFromFile(stream, false);
                             }
                         }
                     }
@@ -405,9 +396,6 @@ namespace ResourceTypes.Cutscene
 
                 public void WriteToFile(BinaryWriter Writer)
                 {
-                    Writer.Write(1000); // Magic
-                    long SPDSizePosition = Writer.BaseStream.Position;
-                    Writer.Write(Size);
                     Writer.Write(0x21445053);
                     Writer.Write(Unk01);
                     Writer.Write(Unk02);
@@ -415,22 +403,19 @@ namespace ResourceTypes.Cutscene
 
                     foreach (var Entity in EntityDefinitions)
                     {
-                        Writer.Write(126); //Header for types is 126.
-
-                        long sizePosition = Writer.BaseStream.Position;
-                        Writer.Write(-1);
-                        Writer.Write((int)Entity.GetEntityType());
+                        byte[] AnimEntityData;
 
                         using (MemoryStream EntityStream = new MemoryStream())
                         {
                             CutsceneEntityFactory.WriteAnimEntityToFile(EntityStream, Entity);
-                            Writer.Write(EntityStream.ToArray());
-
-                            long currentPosition = Writer.BaseStream.Position;
-                            Writer.BaseStream.Seek(sizePosition, SeekOrigin.Begin);
-                            Writer.Write((uint)EntityStream.Length + 12);
-                            Writer.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+                            
+                            AnimEntityData = EntityStream.ToArray();
                         }
+
+                        Writer.Write(126); //Header for types is 126.
+                        Writer.Write(AnimEntityData.Length + 12);
+                        Writer.Write((int)Entity.GetEntityType());
+                        Writer.Write(AnimEntityData);
                     }
 
                     foreach (var Entity in EntityDefinitions)
@@ -438,51 +423,39 @@ namespace ResourceTypes.Cutscene
                         using (MemoryStream EntityStream = new MemoryStream())
                         {
                             bool isBigEndian = false;
+
                             Entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
 
-                            EntityStream.Seek(4, SeekOrigin.Begin);
-                            EntityStream.Write((uint)EntityStream.Length, isBigEndian);
-                            EntityStream.Seek(0, SeekOrigin.End);
+                            byte[] animEntityData = EntityStream.ToArray();
 
-                            Writer.Write(EntityStream.ToArray());
+                            Writer.Write(Entity.AnimEntityData.DataType);
+                            Writer.Write(animEntityData.Length + 8);
+                            Writer.Write(animEntityData);
                         }
                     }
-
-                    Writer.Seek((int)SPDSizePosition, SeekOrigin.Begin);
-                    uint SPDSize = (uint)(Writer.BaseStream.Length - SPDSizePosition) + 4;
-                    Writer.Write(SPDSize);
-                    Writer.Seek(0, SeekOrigin.End);
                 }
             }
+        }
 
-            public class GCRData
+        public class GCRData
+        {
+            public string Name { get; set; }
+            public byte[] Data { get; set; }
+
+            public void ReadFromFile(BinaryReader reader)
             {
-                public string Name { get; set; }
-                public int Unk0 { get; set; }
-                public byte[] Data { get; set; }
+                Name = reader.ReadString16();
+                reader.ReadInt32(); //Const 2569
+                int size = reader.ReadInt32();
+                Data = reader.ReadBytes(size - 8);
+            }
 
-                public void ReadFromFile(BinaryReader reader)
-                {
-                    Name = StringHelpers.ReadString16(reader);
-                    Unk0 = reader.ReadInt32();
-                    int size = reader.ReadInt32();
-                    reader.BaseStream.Position -= 8;
-                    //Data = reader.ReadBytes(size-8);
-                    Data = reader.ReadBytes(size);
-
-                    if (System.Diagnostics.Debugger.IsAttached)
-                    {
-                        File.WriteAllBytes("CutsceneInfo/" + Name + ".gcr", Data);
-                    }
-                }
-
-                public void WriteToFile(BinaryWriter writer)
-                {
-                    StringHelpers.WriteString16(writer, Name);
-                    writer.Write(Unk0);
-                    writer.Write(Data.Length + 8); // writing size here
-                    writer.Write(Data);
-                }
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.WriteString16(Name);
+                writer.Write(2569);
+                writer.Write(Data.Length + 8); // writing size here
+                writer.Write(Data);
             }
         }
     }

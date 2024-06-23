@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
+using static ResourceTypes.Cutscene.CutsceneLoader;
 
 namespace Mafia2Tool.Forms
 {
@@ -14,6 +15,7 @@ namespace Mafia2Tool.Forms
         private FileCutscene OriginalFile;
 
         private CutsceneLoader.Cutscene[] Cutscenes;
+        private CutsceneLoader.GCRData[] VehicleData;
 
         private bool bIsFileEdited = false;
 
@@ -44,6 +46,14 @@ namespace Mafia2Tool.Forms
                 var Assets = Cutscene.AssetContent;
                 TreeNode AssetsParent = new TreeNode("Game Cutscene Content: (GCS Data)");
                 
+                if (Assets.FaceFX != null)
+                {
+                    TreeNode AssetNode = new TreeNode("FaceFX");
+                    AssetNode.Tag = Assets.FaceFX;
+
+                    AssetsParent.Nodes.Add(AssetNode);
+                }
+
                 for(int i = 0; i < Assets.entities.Length; i++)
                 {
                     var Asset = Assets.entities[i];
@@ -84,6 +94,19 @@ namespace Mafia2Tool.Forms
             {
                 AddCutsceneToTreeView(Cutscenes[i]);
             }
+
+            VehicleData = OriginalFile.GetCutsceneLoader().VehicleContent;
+
+            TreeNode GCRParent = new TreeNode("Vehicle Content: (GCR Data)");
+
+            for (int i = 0; i < VehicleData.Length; i++)
+            {
+                TreeNode GCR = new TreeNode(VehicleData[i].Name);
+                GCR.Tag = VehicleData[i];
+                GCRParent.Nodes.Add(GCR);
+            }
+
+            TreeView_Cutscene.Nodes.Add(GCRParent);
         }
 
         private void Save()

@@ -55,6 +55,8 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
             }
 
+            KeyParam = new KeyType_Temp(); //Some keys were broken, don't wanna be fixing those rn
+
             // We should have our type, lets add our type and size to the KeyParameters and then begin reading them from the file.
             KeyParam.KeyType = (int)KeyParamType;
             KeyParam.Size = Size;
