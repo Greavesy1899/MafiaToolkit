@@ -161,6 +161,7 @@ namespace ResourceTypes.Navigation.Traffic
         ushort GetRoadIndexForRoadGraphEdge(int edgeIndex);
         void AddRoadEdge(ushort roadIndex);
         void AddCrossroadJunctionEdge(ushort targetRoadIndex);
+        ushort CalculateRoadCost(IRoadDefinition road);
     }
 
 }

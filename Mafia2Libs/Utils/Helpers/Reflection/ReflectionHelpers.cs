@@ -132,6 +132,12 @@ namespace Utils.Helpers.Reflection
                     TypedObject.GetType().GetProperty(Info.Name).SetValue(TypedObject, ArrayObject);
                     continue;
                 }
+                else if(Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
+                {
+                    object ClassObject = InternalConvertProperty(Node.Element(Info.Name), Info.PropertyType);
+                    Info.SetValue(TypedObject, ClassObject);
+                    continue;
+                }
                 else if (Info.PropertyType.IsClass)
                 {
                     object ClassObject = InternalConvertProperty(Node.Element(Info.Name), Info.PropertyType);
@@ -206,9 +212,9 @@ namespace Utils.Helpers.Reflection
             }
             else if(ElementType.IsClass && CheckForDerivedClass(ElementType))
             {
-                string NameSpace = ElementType.Namespace;
-                string Name = Node.Name.LocalName;
-                Type Test = Type.GetType(NameSpace + "." + Name, true);
+                XAttribute TypeAttribute = Node.Attribute("Type");
+                string Name = TypeAttribute.Value;
+                Type Test = GetTypeByName(Name);
                 if(Test.IsAssignableTo(ElementType))
                 {
                     ElementType = Test;

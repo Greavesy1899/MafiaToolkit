@@ -83,7 +83,7 @@ namespace ResourceTypes.Navigation
             public float Unk10 { get; set; }
             
             // Has an "Easy to use" property, remove from view
-            [Browsable(false)]
+            [LocalisedDescription("Unknown; Unk30[0] appears to be animal type, so maybe the rest can be other animal types too?")]
             public byte[] Unk30 { get; set; } // direct index to animal types array
 
             // A list of points on the AnimalTraffic path.
@@ -256,9 +256,9 @@ namespace ResourceTypes.Navigation
                 byte count4 = reader.ReadByte();
                 path.Unk30 = reader.ReadBytes(count4);
 
-                //ToolkitAssert.Ensure(path.Unk00 == 5.0f, "Unk00 is expected to be 5, but it is [0]", path.Unk00);
-                //ToolkitAssert.Ensure(path.Unk10 == 15.0f, "Unk00 is expected to be 15, but it is [0]", path.Unk10);
-                ToolkitAssert.Ensure(count4 == 1, "Unk30 is supposed to have the size of 1. It is: {0}.\nThis suggests bad data. Saving may not be possible.", path.Unk30.Length);
+                // NB: Unk30 can have a size greater than 1.
+                // I believe the first one is animal type, but the rest im uncertain of.
+                // Could it be referencing some data perhaps? Need to check if it causes problems.
 
                 // Load Path points
                 path.Points = new PathPoint[pathSize];

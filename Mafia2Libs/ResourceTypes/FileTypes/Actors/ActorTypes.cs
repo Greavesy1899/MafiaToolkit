@@ -2755,4 +2755,331 @@ namespace ResourceTypes.Actors
             return 328;
         }
     }
+
+    public class ActorLift : ActorPhysicsBase
+    {
+        [Category("C_Lift")]
+        public int InitialFloor { get; set; }
+        [Category("C_Lift")]
+        public float MotionSpeed { get; set; }
+        [Category("C_Lift")]
+        public float AcceleratingDistance { get; set; }
+        [Category("C_Lift")]
+        public float BreakingDistance { get; set; }
+        [Category("C_Lift")]
+        public string LightFrameName { get; set; } // limited to 32
+        [Category("C_Lift")]
+        public string LinkerPrefix { get; set; } // limited to 32
+        [Category("C_Lift")]
+        public int SoundCategoryId { get; set; }
+        [Category("C_Lift")]
+        public int AcceleratingSoundId { get; set; }
+        [Category("C_Lift")]
+        public int BreakingSoundId { get; set; }
+        [Category("C_Lift")]
+        public int MovingSoundId { get; set; }
+        [Category("C_Lift")]
+        public int ButtonSoundId { get; set; }
+        [Category("C_Lift")]
+        public bool bAutomaticDoorOpen { get; set; }
+        [Category("C_Lift")]
+        public string Door1Name { get; set; }
+        [Category("C_Lift")]
+        public string Door2Name { get; set; }
+        [Category("C_Lift")]
+        public bool bScriptControlled { get; set; }
+        [Category("C_Lift")]
+        public int InnerSpaceGraphIndex { get; set; }
+        [Category("C_Lift")]
+        public int OverrideFloors { get; set; }
+        [Category("C_Lift")]
+        public int SplineType { get; set; }
+        [Category("C_Lift")]
+        public float SplineInRange { get; set; }
+        [Category("C_Lift")]
+        public int SplineNavigation { get; set; }
+        [Category("C_Lift")]
+        public ulong SplineLock0 { get; set; }
+        [Category("C_Lift")]
+        public ulong SplineLock1 { get; set; }
+        [Category("C_Lift")]
+        public float Unk0 { get; set; }
+        [Category("C_Lift")]
+        public float Unk1 { get; set; }
+        [Category("C_Lift")]
+        public float Unk2 { get; set; }
+
+
+        public ActorLift()
+        {
+            LightFrameName = string.Empty;
+            LinkerPrefix = string.Empty;
+            Door1Name = string.Empty;
+            Door2Name = string.Empty;
+        }
+
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            base.ReadFromFile(reader, isBigEndian);
+
+            reader.Seek(240, SeekOrigin.Begin);
+
+            InitialFloor = reader.ReadInt32(isBigEndian);
+            MotionSpeed = reader.ReadSingle(isBigEndian);
+            AcceleratingDistance = reader.ReadSingle(isBigEndian);
+            BreakingDistance = reader.ReadSingle(isBigEndian);
+            LightFrameName = reader.ReadStringBuffer(32);
+            LinkerPrefix = reader.ReadStringBuffer(32);
+            SoundCategoryId = reader.ReadInt32(isBigEndian);
+            AcceleratingSoundId = reader.ReadInt32(isBigEndian);
+            BreakingSoundId = reader.ReadInt32(isBigEndian);
+            MovingSoundId = reader.ReadInt32(isBigEndian);
+            ButtonSoundId = reader.ReadInt32(isBigEndian);
+            bAutomaticDoorOpen = Convert.ToBoolean(reader.ReadByte8());
+            Door1Name = reader.ReadStringBuffer(64);
+            Door2Name = reader.ReadStringBuffer(64);
+            bScriptControlled = Convert.ToBoolean(reader.ReadByte8());
+            reader.Seek(2, SeekOrigin.Current); // padding?
+            InnerSpaceGraphIndex = reader.ReadInt32(isBigEndian);
+            OverrideFloors = reader.ReadInt32(isBigEndian);
+            SplineType = reader.ReadInt32(isBigEndian);
+            SplineInRange = reader.ReadSingle(isBigEndian);
+            SplineNavigation = reader.ReadInt32(isBigEndian);
+            SplineLock0 = reader.ReadUInt64(isBigEndian);
+            SplineLock1 = reader.ReadUInt64(isBigEndian);
+            Unk0 = reader.ReadSingle(isBigEndian);
+            Unk1 = reader.ReadSingle(isBigEndian);
+            Unk2 = reader.ReadSingle(isBigEndian);
+
+        }
+
+        public override void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            base.WriteToFile(writer, isBigEndian);
+
+            // Write padding
+            writer.Write(new byte[GetSize() - writer.Length]);
+            writer.Position = 240;
+
+            writer.Write(InitialFloor, isBigEndian);
+            writer.Write(MotionSpeed, isBigEndian);
+            writer.Write(AcceleratingDistance, isBigEndian);
+            writer.Write(BreakingDistance, isBigEndian);
+            writer.WriteStringBuffer(32, LightFrameName);
+            writer.WriteStringBuffer(32, LinkerPrefix);
+            writer.Write(SoundCategoryId, isBigEndian);
+            writer.Write(AcceleratingSoundId, isBigEndian);
+            writer.Write(BreakingSoundId, isBigEndian);
+            writer.Write(MovingSoundId, isBigEndian);
+            writer.Write(ButtonSoundId, isBigEndian);
+            writer.WriteByte(Convert.ToByte(bAutomaticDoorOpen));
+            writer.WriteStringBuffer(64, Door1Name);
+            writer.WriteStringBuffer(64, Door2Name);
+            writer.WriteByte(Convert.ToByte(bScriptControlled));
+            writer.Write((ushort)0, isBigEndian); // padding
+            writer.Write(InnerSpaceGraphIndex, isBigEndian);
+            writer.Write(OverrideFloors, isBigEndian);
+            writer.Write(SplineType, isBigEndian);
+            writer.Write(SplineInRange, isBigEndian);
+            writer.Write(SplineNavigation, isBigEndian);
+            writer.Write(SplineLock0, isBigEndian);
+            writer.Write(SplineLock1, isBigEndian);
+            writer.Write(Unk0, isBigEndian);
+            writer.Write(Unk1, isBigEndian);
+            writer.Write(Unk2, isBigEndian);
+        }
+
+        public override int GetSize()
+        {
+            return 520;
+        }
+    }
+
+    public class ActorSoundMixer : IActorExtraDataInterface
+    {
+        public class Mixer
+        {
+            public class FadePoint
+            {
+                public int MixValue { get; set; }
+                public float MixVolume { get; set; }
+
+                public override string ToString()
+                {
+                    return string.Format("{0} -> {1}", MixValue, MixVolume);
+                }
+            }
+
+            public uint SoundType { get; set; }
+            public float SoundVolume { get; set; }
+            public float SoundPitch { get; set; }
+            public string SoundWave { get; set; }
+            public int Unk0 { get; set; }
+            public float Near { get; set; }
+            public float Far { get; set; }
+            public int CurveId { get; set; }
+
+            // This may only be present if SoundType == 30
+            public float MonoDistance { get; set; }
+            public float InnerAngle { get; set; } // stored in rad
+            public float OuterAngle { get; set; } // stored in rad
+            public float OuterVolume { get; set; }
+            public FadePoint[] FadePoints { get; set; }
+
+            private const uint MAX_FADE_POINTS = 5;
+
+            public Mixer()
+            {
+                SoundWave = string.Empty;
+                FadePoints = new FadePoint[MAX_FADE_POINTS];
+                for(int i = 0; i < MAX_FADE_POINTS; i++)
+                {
+                    FadePoints[i] = new FadePoint();
+                }
+            }
+
+            public void Read(MemoryStream InStream, bool bIsBigEndian)
+            {
+                SoundType = InStream.ReadUInt32(bIsBigEndian);
+                SoundVolume = InStream.ReadSingle(bIsBigEndian);
+                SoundPitch = InStream.ReadSingle(bIsBigEndian);
+                SoundWave = InStream.ReadStringBuffer(80);
+                Unk0 = InStream.ReadInt32(bIsBigEndian); // always zero?
+                Near = InStream.ReadSingle(bIsBigEndian);
+                Far = InStream.ReadSingle(bIsBigEndian);
+                CurveId = InStream.ReadInt32(bIsBigEndian);
+                MonoDistance = InStream.ReadSingle(bIsBigEndian);
+                InnerAngle = InStream.ReadSingle(bIsBigEndian);
+                OuterAngle = InStream.ReadSingle(bIsBigEndian);
+                OuterVolume = InStream.ReadSingle(bIsBigEndian);
+
+                for (int i = 0; i < MAX_FADE_POINTS; i++)
+                {
+                    FadePoints[i].MixValue = InStream.ReadInt32(bIsBigEndian);
+                    FadePoints[i].MixVolume = InStream.ReadSingle(bIsBigEndian);
+                }
+            }
+
+            public void Write(MemoryStream InStream, bool bIsBigEndian)
+            {
+                InStream.Write(SoundType, bIsBigEndian);
+                InStream.Write(SoundVolume, bIsBigEndian);
+                InStream.Write(SoundPitch, bIsBigEndian);
+                InStream.WriteStringBuffer(80, SoundWave);
+                InStream.Write(Unk0, bIsBigEndian);
+                InStream.Write(Near, bIsBigEndian);
+                InStream.Write(Far, bIsBigEndian);
+                InStream.Write(CurveId, bIsBigEndian);
+                InStream.Write(MonoDistance, bIsBigEndian);
+                InStream.Write(InnerAngle, bIsBigEndian);
+                InStream.Write(OuterAngle, bIsBigEndian);
+                InStream.Write(OuterVolume, bIsBigEndian);
+
+                for (int i = 0; i < MAX_FADE_POINTS; i++)
+                {
+                    InStream.Write(FadePoints[i].MixValue, bIsBigEndian);
+                    InStream.Write(FadePoints[i].MixVolume, bIsBigEndian);
+                }
+            }
+
+            public override string ToString()
+            {
+                string ActualSoundWave = (SoundWave == string.Empty ? "[UNSET]" :  SoundWave);
+                return string.Format("Type: {0} Sound: {1}", SoundType, ActualSoundWave);
+            }
+        }
+
+        public int Unk0 { get; set; }
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public ActorSoundMixerFlags Flags { get; set; }
+        public Mixer[] Mixers { get; set; }
+
+        private const uint MAX_MIXERS = 3;
+
+        public ActorSoundMixer()
+        {
+            // Initialise array
+            Mixers = new Mixer[MAX_MIXERS];
+            for (int i = 0; i < MAX_MIXERS; i++)
+            {
+                Mixers[i] = new Mixer();
+            }
+        }
+
+        public void ReadFromFile(MemoryStream InStream, bool bIsBigEndian)
+        {
+            Unk0 = InStream.ReadInt32(bIsBigEndian);
+            Flags = (ActorSoundMixerFlags)InStream.ReadInt32(bIsBigEndian);
+
+            for(int i = 0; i < MAX_MIXERS; i++)
+            {
+                Mixers[i] = new Mixer();
+                Mixers[i].Read(InStream, bIsBigEndian);
+            }
+        }
+
+        public void WriteToFile(MemoryStream InStream, bool bIsBigEndian)
+        {
+            InStream.Write(Unk0, bIsBigEndian);
+            InStream.Write((int)Flags, bIsBigEndian);
+
+            for(int i = 0; i < MAX_MIXERS; i++)
+            {
+                Mixers[i].Write(InStream, bIsBigEndian);
+            }
+        }
+
+        public int GetSize()
+        {
+            return 500;
+        }
+    }
+
+    public class ActorFireTarget : IActorExtraDataInterface
+    {
+        public int FireTargetType { get; set; }
+        public float Timeout { get; set; }
+        public float Range { get; set; }
+        public float Radius { get; set; }
+        public float Height { get; set; }
+        public Vector3 BoxExtents { get; set; }
+        public int ParticleId { get; set; }
+        public float ParticleScale { get; set; }
+        public int Probability { get; set; }
+        public int SoundId { get; set; }
+
+        public void ReadFromFile(MemoryStream InStream, bool bIsBigEndian)
+        {
+            FireTargetType = InStream.ReadInt32(bIsBigEndian);
+            Timeout = InStream.ReadSingle(bIsBigEndian);
+            Range = InStream.ReadSingle(bIsBigEndian);
+            Radius = InStream.ReadSingle(bIsBigEndian);
+            Height = InStream.ReadSingle(bIsBigEndian);
+            BoxExtents = Vector3Utils.ReadFromFile(InStream, bIsBigEndian);
+            ParticleId = InStream.ReadInt32(bIsBigEndian);
+            ParticleScale = InStream.ReadSingle(bIsBigEndian);
+            Probability = InStream.ReadInt32(bIsBigEndian);
+            SoundId = InStream.ReadInt32(bIsBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream InStream, bool bIsBigEndian)
+        {
+            InStream.Write(FireTargetType, bIsBigEndian);
+            InStream.Write(Timeout, bIsBigEndian);
+            InStream.Write(Range, bIsBigEndian);
+            InStream.Write(Radius, bIsBigEndian);
+            InStream.Write(Height, bIsBigEndian);
+            BoxExtents.WriteToFile(InStream, bIsBigEndian);
+            InStream.Write(ParticleId, bIsBigEndian);
+            InStream.Write(ParticleScale, bIsBigEndian);
+            InStream.Write(Probability, bIsBigEndian);
+            InStream.Write(SoundId, bIsBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 48;
+        }
+    }
+
 }

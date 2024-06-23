@@ -22,6 +22,9 @@ namespace ResourceTypes.Misc
         Police_Char = 9,
         Car_Universe = 10,
         Car = 11,
+        Car_Big = 12,
+        Car_Police = 13,
+        Car_Script = 14,
         Base_Anim = 15,
         Weapons = 16,
         GUI = 17,
@@ -35,6 +38,8 @@ namespace ResourceTypes.Misc
         TwoH_Char_In_One = 26,
         FiveL_Char_In_One = 27,
         ThreeCar_In_One = 28,
+        Char_Police = 29,
+        Trees = 30,
         City_Crash = 31,
         Small = 33,
         Generate = 32,
@@ -43,12 +48,14 @@ namespace ResourceTypes.Misc
         Mapa = 36,
         Sound_City = 37,
         Anims_City = 38,
+        Kyn_City_Part = 39,
+        Kyn_City_Shop = 40,
         Generic_Speech_Normal = 41,
         Generic_Speech_Gangster = 42,
         Generic_Speeh_Various = 43,
         Generic_Speech_Story = 44,
         Big_Script = 45,
-        Big_Mission_Scrippt = 46,
+        Big_Mission_Script = 46,
         Generic_Speech_Police = 47,
         Text = 48,
         Ingame = 50,
@@ -64,7 +71,6 @@ namespace ResourceTypes.Misc
         private StreamLine[] lines;
         private StreamLoader[] loaders;
         private StreamBlock[] blocks;
-        private ulong[] hashes;
 
         public StreamGroup[] Groups {
             get { return groups; }
@@ -512,7 +518,7 @@ namespace ResourceTypes.Misc
 
             ToolkitAssert.Ensure(reader.BaseStream.Position == hashOffset, "Did not reach the block hashes starting offset!");
 
-            hashes = new ulong[numHashes];
+            ulong[] hashes = new ulong[numHashes];
 
             for (int i = 0; i < numHashes; i++)
             {
@@ -721,15 +727,18 @@ namespace ResourceTypes.Misc
 
             blockOffset = (int)writer.BaseStream.Position;
 
+            List<ulong> hashesArray = new List<ulong>();
             foreach (var block in blocks)
             {
-                writer.Write(block.startOffset);
-                writer.Write(block.endOffset);
+                // add and update offsets
+                writer.Write(hashesArray.Count); // Start Offset
+                hashesArray.AddRange(block.Hashes);
+                writer.Write(hashesArray.Count); // End Offset
             }
 
             hashOffset = (int)writer.BaseStream.Position;
 
-            foreach (var value in hashes)
+            foreach (var value in hashesArray)
             {
                 writer.Write(value);
             }
@@ -753,7 +762,7 @@ namespace ResourceTypes.Misc
             writer.Write(loadersOffset);
             writer.Write(blocks.Length);
             writer.Write(blockOffset);
-            writer.Write(hashes.Length);
+            writer.Write(hashesArray.Count);
             writer.Write(hashOffset);
             writer.Write(rawPool.Length);
             writer.Write(poolOffset);

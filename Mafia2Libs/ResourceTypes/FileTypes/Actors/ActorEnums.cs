@@ -105,6 +105,14 @@ namespace ResourceTypes.Actors
         Hidden = 4,
     }
 
+    [Flags]
+    public enum ActorSoundMixerFlags : int
+    {
+        None = 0,
+        UseAdvancedScene = 4,
+        SectorRestricted = 8
+    }
+
     public enum HumanAIType : int
     {
         CIVILIAN,

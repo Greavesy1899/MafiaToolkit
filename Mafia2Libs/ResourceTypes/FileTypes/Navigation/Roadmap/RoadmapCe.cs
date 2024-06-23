@@ -861,5 +861,42 @@ namespace ResourceTypes.Navigation.Traffic
         {
             RoadGraphEdges.Add((ushort) (targetRoadIndex * 2));
         }
+
+        public ushort CalculateRoadCost(IRoadDefinition road)
+        {
+            float splineLength = Splines[road.RoadSplineIndex].Length;
+
+            bool hasHighwayFlag = false;
+            bool hasMainRoadLaneType = false;
+
+            foreach (ILaneDefinition lane in road.Lanes)
+            {
+                if (lane.LaneFlags.HasFlag(LaneFlags.Highway))
+                {
+                    hasHighwayFlag = true;
+                }
+
+                if (lane.LaneType == LaneType.MainRoad)
+                {
+                    hasMainRoadLaneType = true;
+                }
+            }
+
+            float multCoef = 1.0f;
+            if (hasHighwayFlag)
+            {
+                multCoef = 0.5f;
+            }
+            else if (hasMainRoadLaneType)
+            {
+                multCoef = 0.75f;
+            }
+            else
+            {
+                multCoef = 1.5f;
+            }
+
+            return (ushort)(splineLength * multCoef);
+        }
     }
 }

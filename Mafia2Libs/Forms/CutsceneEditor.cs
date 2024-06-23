@@ -83,6 +83,23 @@ namespace Mafia2Tool.Forms
                 CutsceneParent.Nodes.Add(AssetsParent);
             }
 
+            if(Cutscene.VehicleContent != null)
+            {
+                var Assets = Cutscene.VehicleContent;
+                TreeNode AssetsParent = new TreeNode("Vehicle Content: (GCR Data)");
+
+                for(int i = 0; i < Assets.Length; i++)
+                {
+                    var Asset = Assets[i];
+                    TreeNode AssetNode = new TreeNode(string.Format("Asset: {0}", i));
+                    AssetNode.Tag = Asset;
+
+                    AssetsParent.Nodes.Add(AssetNode);
+                }
+
+                CutsceneParent.Nodes.Add(AssetsParent);
+            }
+
             TreeView_Cutscene.Nodes.Add(CutsceneParent);
         }
 

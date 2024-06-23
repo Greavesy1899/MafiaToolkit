@@ -5,14 +5,47 @@ using System.Numerics;
 using Utils.StringHelpers;
 using Utils.Helpers.Reflection;
 using Utils.Logging;
+using Utils.MathHelpers;
 
 namespace ResourceTypes.Navigation
 {
     [PropertyClassAllowReflection, PropertyClassCheckInherited]
     public class HPDData : INavigationData
     {
+        [PropertyClassAllowReflection, PropertyClassCheckInherited]
+        public class ADDITIONNALDATADESC
+        {
+            public uint ID { get; set; }
+            public uint Offset { get; set; }
+            public uint Size { get; set; }
+
+            public void ReadFromFile(BinaryReader Reader)
+            {
+                ID = Reader.ReadUInt32();
+                Offset = Reader.ReadUInt32();
+                Size = Reader.ReadUInt32();
+            }
+
+            public void WriteToFile(BinaryWriter Writer)
+            {
+                Writer.Write(ID);
+                Writer.Write(Offset);
+                Writer.Write(Size);
+            }
+        }
+
         public int Unk0 { get; set; }
-        public byte[] UnkHeader { get; set; } // 132, todo, figure out what they are
+        public int ProjectType { get; set; }
+        public float BalancedDirect_OriginX { get; set; }
+        public float BalancedDirect_OriginY { get; set; }
+        public float BalancedDirect_OriginZ { get; set; }
+        public float BalancedDirect_EdgeLength { get; set; }
+        public ADDITIONNALDATADESC[] NodesAdditionalData { get; set; }
+        public ADDITIONNALDATADESC[] EdgesAdditionalData { get; set; }
+        public uint ConcreteNodeTotalSize { get; set; }
+        public uint ConcreteEdgeTotalSize { get; set; }
+        public uint AiMeshManagement { get; set; }
+        public uint NumPODEntries { get; set; }
         public HPDEntry[] HPDEntries { get; set; }
         public string Unk2 { get; set; }
         public int Unk3 { get; set; }
@@ -22,18 +55,18 @@ namespace ResourceTypes.Navigation
         public class HPDEntry
         {
             /* Unk00 and Unk01 is Nodes bounding box */
-            public int FileID { get; set; }
+            public int UniqueID { get; set; }
             public Vector3 BBoxMin { get; set; } // Calculated from OBJ_DATA Nodes
             public Vector3 BBoxMax { get; set; } // Calculated from OBJ_DATA Nodes
-            public int Unk2 { get; set; } // 0
-            public int FileSize { get; set; }
-            public int AccumulatingSize { get; set; }
-            public int Unk5 { get; set; } // 100412
-            public int Flags { get; set; }
+            public int Level { get; set; } // 0
+            public uint FileSize { get; set; }
+            public uint FileOffset { get; set; }
+            public uint Tag1 { get; set; } // 100412
+            public uint Tag2 { get; set; }
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2}", FileID, BBoxMin.ToString(), BBoxMax.ToString());
+                return string.Format("{0} {1} {2}", UniqueID, BBoxMin.ToString(), BBoxMax.ToString());
             }
         }
 
@@ -45,7 +78,30 @@ namespace ResourceTypes.Navigation
         {
             Unk0 = reader.ReadInt32();
             int entryCount = reader.ReadInt32();
-            UnkHeader = reader.ReadBytes(132);
+            ProjectType = reader.ReadInt32();
+            BalancedDirect_OriginX = reader.ReadSingle();
+            BalancedDirect_OriginY = reader.ReadSingle();
+            BalancedDirect_OriginZ = reader.ReadSingle();
+            BalancedDirect_EdgeLength = reader.ReadSingle();
+
+            NodesAdditionalData = new ADDITIONNALDATADESC[4];
+            EdgesAdditionalData = new ADDITIONNALDATADESC[4];
+            for(uint i = 0; i < NodesAdditionalData.Length; i++)
+            {
+                NodesAdditionalData[i] = new ADDITIONNALDATADESC();
+                NodesAdditionalData[i].ReadFromFile(reader);
+            }
+
+            for (uint i = 0; i < EdgesAdditionalData.Length; i++)
+            {
+                EdgesAdditionalData[i] = new ADDITIONNALDATADESC();
+                EdgesAdditionalData[i].ReadFromFile(reader);
+            }
+
+            ConcreteNodeTotalSize = reader.ReadUInt32();
+            ConcreteEdgeTotalSize = reader.ReadUInt32();
+            AiMeshManagement = reader.ReadUInt32();
+            NumPODEntries = reader.ReadUInt32();
 
 
             HPDEntries = new HPDEntry[entryCount];
@@ -53,29 +109,24 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i < entryCount; i++)
             {
                 HPDEntry data = new HPDEntry();
-                data.FileID = reader.ReadInt32();
+                data.UniqueID = reader.ReadInt32();
 
                 // The bounding box here is stored as X X -Y -Y Z Z
                 // So we have to take this into account, rather than using or util function.
                 float minX = reader.ReadSingle();
                 float maxX = reader.ReadSingle();
-                float minY = -reader.ReadSingle();
-                float maxY = -reader.ReadSingle();
+                float minY = reader.ReadSingle();
+                float maxY = reader.ReadSingle();
                 float minZ = reader.ReadSingle();
                 float maxZ = reader.ReadSingle();
                 data.BBoxMin = new Vector3(minX, minY, minZ);
                 data.BBoxMax = new Vector3(maxX, maxY, maxZ);
 
-                // And then after we have deserialized it properly we have to swap it, using a 
-                // util function only specific to this type of navigation file.
-                data.BBoxMin = SwapVector3(data.BBoxMin);
-                data.BBoxMax = SwapVector3(data.BBoxMax);
-
-                data.Unk2 = reader.ReadInt32();
-                data.FileSize = reader.ReadInt32();
-                data.AccumulatingSize = reader.ReadInt32();
-                data.Unk5 = reader.ReadInt32();
-                data.Flags = reader.ReadInt32();
+                data.Level = reader.ReadInt32();
+                data.FileSize = reader.ReadUInt32();
+                data.FileOffset = reader.ReadUInt32();
+                data.Tag1 = reader.ReadUInt32();
+                data.Tag2 = reader.ReadUInt32();
                 HPDEntries[i] = data;
             } 
             
@@ -90,72 +141,50 @@ namespace ResourceTypes.Navigation
         {
             writer.Write(Unk0);
             writer.Write(HPDEntries.Length);
-            writer.Write(UnkHeader);
+            writer.Write(ProjectType);
+            writer.Write(BalancedDirect_OriginX);
+            writer.Write(BalancedDirect_OriginY);
+            writer.Write(BalancedDirect_OriginZ);
+            writer.Write(BalancedDirect_EdgeLength);
 
+            for(uint i = 0; i < NodesAdditionalData.Length; i++)
+            {
+                NodesAdditionalData[i].WriteToFile(writer);
+            }
+
+            for (uint i = 0; i < EdgesAdditionalData.Length; i++)
+            {
+                EdgesAdditionalData[i].WriteToFile(writer);
+            }
+
+            writer.Write(ConcreteNodeTotalSize);
+            writer.Write(ConcreteEdgeTotalSize);
+            writer.Write(AiMeshManagement);
+            writer.Write(NumPODEntries);
+
+            uint CurrentOffset = 0;
             for (int i = 0; i < HPDEntries.Length; i++)
             {
                 var data = HPDEntries[i];
-                writer.Write(data.FileID);
-
-                // We have to do the opposite; so flip Z and Y and inverse Y.
-                Vector3 min = SwapVector3(data.BBoxMin);
-                Vector3 max = SwapVector3(data.BBoxMax);
-
-                // And then serialize it as usual; X X -Y -Y Z Z
-                writer.Write(min.X);
-                writer.Write(max.X);
-                writer.Write(-min.Y);
-                writer.Write(-max.Y);
-                writer.Write(min.Z);
-                writer.Write(max.Z);
-
-                writer.Write(data.Unk2);
+                writer.Write(data.UniqueID);
+                writer.Write(data.BBoxMin.X);
+                writer.Write(data.BBoxMax.X);
+                writer.Write(data.BBoxMin.Y);
+                writer.Write(data.BBoxMax.Y);
+                writer.Write(data.BBoxMin.Z);
+                writer.Write(data.BBoxMax.Z);
+                writer.Write(data.Level);
                 writer.Write(data.FileSize);
-                writer.Write(data.AccumulatingSize);
-                writer.Write(data.Unk5);
-                writer.Write(data.Flags);
+                writer.Write(CurrentOffset);
+                writer.Write(data.Tag1);
+                writer.Write(data.Tag2);
+
+                CurrentOffset += data.FileSize;
             }
 
             StringHelpers.WriteString(writer, Unk2);
             writer.Write(Unk3);
             writer.Write(Unk4);
-        }
-
-        private Vector3 SwapVector3(Vector3 vector)
-        {
-            Vector3 pos = vector;
-            float y = pos.Y;
-            pos.Y = -pos.Z;
-            pos.Z = y;
-            return pos;
-        }
-
-        private void DebugWriteToFile()
-        {
-            StreamWriter writer = new StreamWriter("NAV_HPD_DATA content.txt");
-            writer.WriteLine(Unk0);
-            writer.WriteLine(HPDEntries.Length);
-            writer.WriteLine("");
-
-            for(int i = 0; i < HPDEntries.Length; i++)
-            {
-                var data = HPDEntries[i];
-                writer.WriteLine(string.Format("FileID: {0}", data.FileID));
-                writer.WriteLine(string.Format("Unk00: {0}", data.BBoxMin));
-                writer.WriteLine(string.Format("Unk01: {0}", data.BBoxMax));
-                writer.WriteLine(string.Format("Unk02: {0}", data.Unk2));
-                writer.WriteLine(string.Format("FileSize: {0}", data.FileSize));
-                writer.WriteLine(string.Format("AccumulatingSize: {0}", data.AccumulatingSize));
-                writer.WriteLine(string.Format("Unk5: {0}", data.Unk5));
-                writer.WriteLine(string.Format("FileFlags: {0}", data.Flags));
-                writer.WriteLine("");
-            }
-
-            writer.WriteLine("");
-            writer.WriteLine(Unk2);
-            writer.WriteLine(Unk3);
-            writer.WriteLine(Unk4);
-            writer.Close();
         }
     }
 }

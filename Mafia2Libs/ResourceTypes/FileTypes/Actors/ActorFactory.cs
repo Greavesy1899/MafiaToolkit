@@ -32,8 +32,12 @@ namespace ResourceTypes.Actors
                     return new ActorDoor();
                 case ActorTypes.Tree:
                     return new ActorTree();
+                case ActorTypes.Lift:
+                    return new ActorLift();
                 case ActorTypes.C_Sound:
                     return new ActorSoundEntity();
+                case ActorTypes.SoundMixer:
+                    return new ActorSoundMixer();
                 case ActorTypes.StaticEntity:
                     return new ActorStaticEntity();
                 case ActorTypes.Garage:
@@ -48,6 +52,8 @@ namespace ResourceTypes.Actors
                     return new ActorStaticWeapon();
                 case ActorTypes.C_StaticParticle:
                     return new ActorStaticParticle();
+                case ActorTypes.FireTarget:
+                    return new ActorFireTarget();
                 case ActorTypes.LightEntity:
                     return new ActorLight();
                 case ActorTypes.C_Cutscene:
@@ -64,6 +70,8 @@ namespace ResourceTypes.Actors
                     return new ActorBoat();
                 case ActorTypes.Airplane:
                     return new ActorAircraft();
+                case ActorTypes.Wardrobe:
+                    return new ActorWardrobe();
                 case ActorTypes.CleanEntity:
                     return new ActorCleanEntity();
                 case ActorTypes.Radio:

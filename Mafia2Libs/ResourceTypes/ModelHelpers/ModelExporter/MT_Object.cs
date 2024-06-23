@@ -239,15 +239,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Collision.Vertices = new Vector3[TriMesh.Vertices.Count];
             TriMesh.Vertices.CopyTo(Collision.Vertices, 0);
 
-            // Copy triangles to our array
-            Collision.Indices = new uint[TriMesh.Triangles.Count * 3];
-            for (int triIdx = 0, idxIdx = 0; triIdx < TriMesh.Triangles.Count; triIdx++, idxIdx += 3)
-            {
-                Collision.Indices[idxIdx] = TriMesh.Triangles[triIdx].v0;
-                Collision.Indices[idxIdx + 1] = TriMesh.Triangles[triIdx].v1;
-                Collision.Indices[idxIdx + 2] = TriMesh.Triangles[triIdx].v2;
-            }
-
             // sort materials in order:
             // MTO doesn't support unorganised triangles, only triangles in order by material.
             // basically like mafia itself, so we have to reorder them and then save.
@@ -288,6 +279,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 FaceGroupObject.Material = MaterialInstance;
                 Collision.FaceGroups[x] = FaceGroupObject;
             }
+
+            // Copy sorted triangles in our collision object
+            Collision.Indices = inds.ToArray();
         }
 
         public void BuildStandardObject(FrameObjectBase FrameObject)

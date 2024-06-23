@@ -98,6 +98,27 @@ namespace Core.IO
             if (openFile.ShowDialog() == true)
             {
                 IRoadmap NewRoadmap = ConvertFromXml(GetNewRoadmapFactory(), openFile.FileName);
+                
+                // Update spline lengths (todo add this on roadmap probs)
+                foreach(IRoadSpline Spline in NewRoadmap.Splines)
+                {
+                    Spline.CalculateLength();
+                }
+
+                foreach(ICostMapEntry CostEntry in NewRoadmap.CostMap)
+                {
+                    // TODO: Make it work for crossroad/junctions, not been determined
+                    if(CostEntry.RoadGraphEdgeType == RoadGraphEdgeType.Road)
+                    {
+                        IRoadDefinition Road = NewRoadmap.Roads[CostEntry.RoadGraphEdgeLink];
+                        if(Road != null && Road.RoadType == RoadType.Road) // Only for roads for now.
+                        {
+                            CostEntry.Cost = NewRoadmap.CalculateRoadCost(Road);
+                        }
+                    }
+                }
+
+                // now save
                 using (FileStream FStream = File.Open(file.FullName, FileMode.Open))
                 {
                     NewRoadmap.Write(FStream);

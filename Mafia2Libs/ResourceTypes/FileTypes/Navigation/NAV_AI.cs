@@ -24,7 +24,6 @@ namespace ResourceTypes.Navigation
     //Type 10: AI Action Point 3?
     //Type 11: AI Hiding Place
     //Type 12: AI Action Point 4?
-    [PropertyClassAllowReflection]
     public class NAVData
     {
         //unk01_flags could be types; AIWORLDS seem to have 1005, while OBJDATA is 3604410608.
@@ -33,7 +32,7 @@ namespace ResourceTypes.Navigation
         int fileSize; //size - 4;
 
         public uint Flags { get; set; }
-        public byte[] Filename { get; set; }
+        public string Filename { get; set; }
         public INavigationData Data { get; set; }
 
         public NAVData(BinaryReader reader)
@@ -53,6 +52,11 @@ namespace ResourceTypes.Navigation
             {
                 WriteToFile();
             }
+        }
+
+        public NAVData()
+        {
+            // empty, for reflection system
         }
 
         public void WriteToFile(bool bIsTest = true)
@@ -77,8 +81,8 @@ namespace ResourceTypes.Navigation
             //file name seems to be earlier.
             if (Flags == 3604410608)
             {
-                int NumChars = reader.ReadInt32();
-                Filename = reader.ReadBytes(NumChars);
+                Filename = StringHelpers.ReadString32(reader);
+                Filename = Filename.Replace('\0', '_');
 
                 long start = reader.BaseStream.Position;
                 string hpdString = new string(reader.ReadChars(11));
@@ -112,8 +116,10 @@ namespace ResourceTypes.Navigation
 
             if (Flags == 3604410608)
             {
-                writer.Write(Filename.Length);
-                writer.Write(Filename);
+                writer.Write(88);
+                writer.Write(("BRNB-KYNAPSE-02 12.05.2010 16:14:31 /kynapserelease/missions/city_trick/city_trick.hpd").ToCharArray());
+                writer.Write('\0');
+                writer.Write('a');
                 if (Data is OBJData)
                 {
                     (Data as OBJData).WriteToFile(writer);
@@ -124,7 +130,7 @@ namespace ResourceTypes.Navigation
 
                     // Our HPD file here actually should subtract 12 of the total.
                     writer.BaseStream.Position = 0;
-                    writer.Write((uint)(writer.BaseStream.Length - 12));
+                    writer.Write((uint)(writer.BaseStream.Length - 4));
                     return;
                 }
             }

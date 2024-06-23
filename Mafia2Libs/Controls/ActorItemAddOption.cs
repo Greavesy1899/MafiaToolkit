@@ -22,13 +22,16 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.C_Item);
             TypeCombo.Items.Add(ActorTypes.C_Door);
             TypeCombo.Items.Add(ActorTypes.Tree);
+            TypeCombo.Items.Add(ActorTypes.Lift);
             TypeCombo.Items.Add(ActorTypes.C_Sound);
+            TypeCombo.Items.Add(ActorTypes.SoundMixer);
             TypeCombo.Items.Add(ActorTypes.StaticEntity);
             TypeCombo.Items.Add(ActorTypes.Garage);
             TypeCombo.Items.Add(ActorTypes.FrameWrapper);
             TypeCombo.Items.Add(ActorTypes.C_ActorDetector);
             TypeCombo.Items.Add(ActorTypes.Blocker);
             TypeCombo.Items.Add(ActorTypes.C_StaticWeapon);
+            TypeCombo.Items.Add(ActorTypes.FireTarget);
             TypeCombo.Items.Add(ActorTypes.LightEntity);
             TypeCombo.Items.Add(ActorTypes.C_Cutscene);
             TypeCombo.Items.Add(ActorTypes.C_ScriptEntity);
@@ -43,6 +46,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.Radio);
             TypeCombo.Items.Add(ActorTypes.Telephone);
             TypeCombo.Items.Add(ActorTypes.FramesController);
+            TypeCombo.Items.Add(ActorTypes.Wardrobe);
             TypeCombo.SelectedIndex = 0;
         }
 
