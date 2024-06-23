@@ -41,11 +41,11 @@ namespace Mafia2Tool.Forms
         {
             TreeNode CutsceneParent = new TreeNode(Cutscene.CutsceneName);
 
-            if(Cutscene.AssetContent != null)
+            if (Cutscene.AssetContent != null)
             {
                 var Assets = Cutscene.AssetContent;
                 TreeNode AssetsParent = new TreeNode("Game Cutscene Content: (GCS Data)");
-                
+
                 if (Assets.FaceFX != null)
                 {
                     TreeNode AssetNode = new TreeNode("FaceFX");
@@ -54,7 +54,7 @@ namespace Mafia2Tool.Forms
                     AssetsParent.Nodes.Add(AssetNode);
                 }
 
-                for(int i = 0; i < Assets.entities.Length; i++)
+                for (int i = 0; i < Assets.entities.Length; i++)
                 {
                     var Asset = Assets.entities[i];
                     TreeNode AssetNode = new TreeNode(string.Format("Asset: {0}", i));
@@ -74,23 +74,6 @@ namespace Mafia2Tool.Forms
                 for (int i = 0; i < Assets.EntityDefinitions.Length; i++)
                 {
                     var Asset = Assets.EntityDefinitions[i];
-                    TreeNode AssetNode = new TreeNode(string.Format("Asset: {0}", i));
-                    AssetNode.Tag = Asset;
-
-                    AssetsParent.Nodes.Add(AssetNode);
-                }
-
-                CutsceneParent.Nodes.Add(AssetsParent);
-            }
-
-            if(Cutscene.VehicleContent != null)
-            {
-                var Assets = Cutscene.VehicleContent;
-                TreeNode AssetsParent = new TreeNode("Vehicle Content: (GCR Data)");
-
-                for(int i = 0; i < Assets.Length; i++)
-                {
-                    var Asset = Assets[i];
                     TreeNode AssetNode = new TreeNode(string.Format("Asset: {0}", i));
                     AssetNode.Tag = Asset;
 
@@ -147,7 +130,7 @@ namespace Mafia2Tool.Forms
 
         private void TreeView_Cutscene_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if(e.Action == TreeViewAction.ByKeyboard || e.Action == TreeViewAction.ByMouse)
+            if (e.Action == TreeViewAction.ByKeyboard || e.Action == TreeViewAction.ByMouse)
             {
                 PropertyGrid_Cutscene.SelectedObject = e.Node.Tag;
             }
