@@ -48,8 +48,6 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public virtual void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
-            stream.Write(DataType, isBigEndian);
-            stream.Write(Size, isBigEndian);
             stream.Write(Unk00, isBigEndian);
             stream.Write(KeyDataSize, isBigEndian);
             stream.Write(Unk01, isBigEndian);

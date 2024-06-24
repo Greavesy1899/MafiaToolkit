@@ -32,7 +32,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public override AnimEntityTypes GetEntityType()
         {
-            return AnimEntityTypes.AeFrame;
+            return AnimEntityTypes.AeVehicle;
         }
     }
 

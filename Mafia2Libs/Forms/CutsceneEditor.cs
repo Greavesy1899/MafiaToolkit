@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
+using static ResourceTypes.Cutscene.CutsceneLoader;
 
 namespace Mafia2Tool.Forms
 {
@@ -14,6 +15,7 @@ namespace Mafia2Tool.Forms
         private FileCutscene OriginalFile;
 
         private CutsceneLoader.Cutscene[] Cutscenes;
+        private CutsceneLoader.GCRData[] VehicleData;
 
         private bool bIsFileEdited = false;
 
@@ -39,12 +41,20 @@ namespace Mafia2Tool.Forms
         {
             TreeNode CutsceneParent = new TreeNode(Cutscene.CutsceneName);
 
-            if(Cutscene.AssetContent != null)
+            if (Cutscene.AssetContent != null)
             {
                 var Assets = Cutscene.AssetContent;
                 TreeNode AssetsParent = new TreeNode("Game Cutscene Content: (GCS Data)");
-                
-                for(int i = 0; i < Assets.entities.Length; i++)
+
+                if (Assets.FaceFX != null)
+                {
+                    TreeNode AssetNode = new TreeNode("FaceFX");
+                    AssetNode.Tag = Assets.FaceFX;
+
+                    AssetsParent.Nodes.Add(AssetNode);
+                }
+
+                for (int i = 0; i < Assets.entities.Length; i++)
                 {
                     var Asset = Assets.entities[i];
                     TreeNode AssetNode = new TreeNode(string.Format("Asset: {0}", i));
@@ -73,23 +83,6 @@ namespace Mafia2Tool.Forms
                 CutsceneParent.Nodes.Add(AssetsParent);
             }
 
-            if(Cutscene.VehicleContent != null)
-            {
-                var Assets = Cutscene.VehicleContent;
-                TreeNode AssetsParent = new TreeNode("Vehicle Content: (GCR Data)");
-
-                for(int i = 0; i < Assets.Length; i++)
-                {
-                    var Asset = Assets[i];
-                    TreeNode AssetNode = new TreeNode(string.Format("Asset: {0}", i));
-                    AssetNode.Tag = Asset;
-
-                    AssetsParent.Nodes.Add(AssetNode);
-                }
-
-                CutsceneParent.Nodes.Add(AssetsParent);
-            }
-
             TreeView_Cutscene.Nodes.Add(CutsceneParent);
         }
 
@@ -101,6 +94,19 @@ namespace Mafia2Tool.Forms
             {
                 AddCutsceneToTreeView(Cutscenes[i]);
             }
+
+            VehicleData = OriginalFile.GetCutsceneLoader().VehicleContent;
+
+            TreeNode GCRParent = new TreeNode("Vehicle Content: (GCR Data)");
+
+            for (int i = 0; i < VehicleData.Length; i++)
+            {
+                TreeNode GCR = new TreeNode(VehicleData[i].Name);
+                GCR.Tag = VehicleData[i];
+                GCRParent.Nodes.Add(GCR);
+            }
+
+            TreeView_Cutscene.Nodes.Add(GCRParent);
         }
 
         private void Save()
@@ -124,7 +130,7 @@ namespace Mafia2Tool.Forms
 
         private void TreeView_Cutscene_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if(e.Action == TreeViewAction.ByKeyboard || e.Action == TreeViewAction.ByMouse)
+            if (e.Action == TreeViewAction.ByKeyboard || e.Action == TreeViewAction.ByMouse)
             {
                 PropertyGrid_Cutscene.SelectedObject = e.Node.Tag;
             }
