@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -28,50 +29,50 @@ namespace ResourceTypes.Cutscene.KeyParams
         public AnimationData[] Animations { get; set; }
         public ushort Unk01 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
+            base.ReadFromFile(br);
 
-            int animationCount = stream.ReadInt32(isBigEndian);
+            int animationCount = br.ReadInt32();
             Animations = new AnimationData[animationCount];
 
             for (int i = 0; i < Animations.Length; i++)
             {
                 AnimationData animation = new AnimationData();
-                animation.Unk01 = stream.ReadInt32(isBigEndian);
-                animation.Unk02 = stream.ReadInt32(isBigEndian);
-                animation.Unk03 = stream.ReadInt32(isBigEndian);
-                animation.Unk04 = stream.ReadByte8();
-                animation.AnimationName = stream.ReadString16(isBigEndian);
-                animation.Unk05 = stream.ReadInt32(isBigEndian);
-                animation.Unk06 = stream.ReadSingle(isBigEndian);
-                animation.Unk07 = stream.ReadInt32(isBigEndian);
-                animation.Unk08 = stream.ReadSingle(isBigEndian);
+                animation.Unk01 = br.ReadInt32();
+                animation.Unk02 = br.ReadInt32();
+                animation.Unk03 = br.ReadInt32();
+                animation.Unk04 = br.ReadByte();
+                animation.AnimationName = br.ReadString16();
+                animation.Unk05 = br.ReadInt32();
+                animation.Unk06 = br.ReadSingle();
+                animation.Unk07 = br.ReadInt32();
+                animation.Unk08 = br.ReadSingle();
                 Animations[i] = animation;
             }
 
-            Unk01 = stream.ReadUInt16(isBigEndian);
+            Unk01 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(Animations.Length, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(Animations.Length);
 
             foreach(AnimationData Animation in Animations)
             {
-                stream.Write(Animation.Unk01, isBigEndian);
-                stream.Write(Animation.Unk02, isBigEndian);
-                stream.Write(Animation.Unk03, isBigEndian);
-                stream.WriteByte(Animation.Unk04);
-                stream.WriteString16(Animation.AnimationName, isBigEndian);
-                stream.Write(Animation.Unk05, isBigEndian);
-                stream.Write(Animation.Unk06, isBigEndian);
-                stream.Write(Animation.Unk07, isBigEndian);
-                stream.Write(Animation.Unk08, isBigEndian);
+                bw.Write(Animation.Unk01);
+                bw.Write(Animation.Unk02);
+                bw.Write(Animation.Unk03);
+                bw.Write(Animation.Unk04);
+                bw.WriteString16(Animation.AnimationName);
+                bw.Write(Animation.Unk05);
+                bw.Write(Animation.Unk06);
+                bw.Write(Animation.Unk07);
+                bw.Write(Animation.Unk08);
             }
 
-            stream.Write(Unk01, isBigEndian);
+            bw.Write(Unk01);
         }
 
         public override string ToString()

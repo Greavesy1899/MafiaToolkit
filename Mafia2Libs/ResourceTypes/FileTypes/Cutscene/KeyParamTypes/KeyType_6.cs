@@ -24,41 +24,41 @@ namespace ResourceTypes.Cutscene.KeyParams
         public PositionData[] Positions { get; set; }
         public ushort Unk05 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
+            base.ReadFromFile(br);
 
-            NumPositions = stream.ReadInt32(isBigEndian);
+            NumPositions = br.ReadInt32();
             Positions = new PositionData[NumPositions];
 
             for (int i = 0; i < NumPositions; i++)
             {
                 PositionData position = new PositionData();
-                position.Unk01 = stream.ReadInt32(isBigEndian);
-                position.Unk02 = stream.ReadInt32(isBigEndian);
-                position.Unk03 = stream.ReadByte8();
-                position.Position = Vector3Utils.ReadFromFile(stream, isBigEndian);
+                position.Unk01 = br.ReadInt32();
+                position.Unk02 = br.ReadInt32();
+                position.Unk03 = br.ReadByte();
+                position.Position = Vector3Utils.ReadFromFile(br);
                 Positions[i] = position;
             }
 
-            Unk05 = stream.ReadUInt16(isBigEndian);
+            Unk05 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(NumPositions, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(NumPositions);
 
             for(int i = 0; i < Positions.Length; i++)
             {
                 PositionData Entry = Positions[i];
-                stream.Write(Entry.Unk01, isBigEndian);
-                stream.Write(Entry.Unk02, isBigEndian);
-                stream.WriteByte(Entry.Unk03);
-                Entry.Position.WriteToFile(stream, isBigEndian);
+                bw.Write(Entry.Unk01);
+                bw.Write(Entry.Unk02);
+                bw.Write(Entry.Unk03);
+                Entry.Position.WriteToFile(bw);
             }
 
-            stream.Write(Unk05, isBigEndian);
+            bw.Write(Unk05);
         }
 
         public override string ToString()

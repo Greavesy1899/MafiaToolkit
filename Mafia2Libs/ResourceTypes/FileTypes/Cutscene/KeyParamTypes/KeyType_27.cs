@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using System.Numerics;
-using Utils.Extensions;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
@@ -31,40 +30,40 @@ namespace ResourceTypes.Cutscene.KeyParams
             public uint NumRotations { get; set; }
             public QuaternionData[] RotationData { get; set; }
 
-            public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+            public void ReadFromFile(BinaryReader br)
             {
-                Unk0 = stream.ReadUInt32(isBigEndian);
-                NumRotations = stream.ReadUInt32(isBigEndian);
+                Unk0 = br.ReadUInt32();
+                NumRotations = br.ReadUInt32();
                 RotationData = new QuaternionData[NumRotations];
 
                 for(int i = 0; i < NumRotations; i++)
                 {
                     QuaternionData RotationInfo = new QuaternionData();
-                    RotationInfo.KeyFrameStart = stream.ReadUInt32(isBigEndian);
-                    RotationInfo.KeyFrameEnd = stream.ReadUInt32(isBigEndian);
-                    RotationInfo.Unk0 = stream.ReadUInt16(isBigEndian);
-                    RotationInfo.KeyType = stream.ReadUInt16(isBigEndian);
-                    RotationInfo.Unk01 = stream.ReadByte8();
-                    RotationInfo.Rotation = QuaternionExtensions.ReadFromFile(stream, isBigEndian);
-                    RotationInfo.Unk03 = stream.ReadSingle(isBigEndian);
+                    RotationInfo.KeyFrameStart = br.ReadUInt32();
+                    RotationInfo.KeyFrameEnd = br.ReadUInt32();
+                    RotationInfo.Unk0 = br.ReadUInt16();
+                    RotationInfo.KeyType = br.ReadUInt16();
+                    RotationInfo.Unk01 = br.ReadByte();
+                    RotationInfo.Rotation = QuaternionExtensions.ReadFromFile(br);
+                    RotationInfo.Unk03 = br.ReadSingle();
                     RotationData[i] = RotationInfo;
                 }
             }
 
-            public void WriteToFile(MemoryStream stream, bool isBigEndian)
+            public void WriteToFile(BinaryWriter bw)
             {
-                stream.Write(Unk0, isBigEndian);
-                stream.Write(RotationData.Length, isBigEndian);
+                bw.Write(Unk0);
+                bw.Write(RotationData.Length);
 
                 foreach(QuaternionData Info in RotationData)
                 {
-                    stream.Write(Info.KeyFrameStart, isBigEndian);
-                    stream.Write(Info.KeyFrameEnd, isBigEndian);
-                    stream.Write(Info.Unk0, isBigEndian);
-                    stream.Write(Info.KeyType, isBigEndian);
-                    stream.WriteByte(Info.Unk01);
-                    Info.Rotation.WriteToFile(stream, isBigEndian);
-                    stream.Write(Info.Unk03, isBigEndian);
+                    bw.Write(Info.KeyFrameStart);
+                    bw.Write(Info.KeyFrameEnd);
+                    bw.Write(Info.Unk0);
+                    bw.Write(Info.KeyType);
+                    bw.Write(Info.Unk01);
+                    Info.Rotation.WriteToFile(bw);
+                    bw.Write(Info.Unk03);
                 }
             }
 
@@ -81,31 +80,31 @@ namespace ResourceTypes.Cutscene.KeyParams
         public QuaternionWrapper RotationWrapper2 { get; set; }
         public ushort Unk1 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
-            Unk0 = stream.ReadUInt32(isBigEndian);
+            base.ReadFromFile(br);
+            Unk0 = br.ReadUInt32();
 
             RotationWrapper0 = new QuaternionWrapper();
-            RotationWrapper0.ReadFromFile(stream, isBigEndian);
+            RotationWrapper0.ReadFromFile(br);
             RotationWrapper1 = new QuaternionWrapper();
-            RotationWrapper1.ReadFromFile(stream, isBigEndian);
+            RotationWrapper1.ReadFromFile(br);
             RotationWrapper2 = new QuaternionWrapper();
-            RotationWrapper2.ReadFromFile(stream, isBigEndian);
+            RotationWrapper2.ReadFromFile(br);
 
-            Unk1 = stream.ReadUInt16(isBigEndian);
+            Unk1 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.ReadFromFile(stream, isBigEndian);
-            stream.Write(Unk0, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(Unk0);
 
-            RotationWrapper0.WriteToFile(stream, isBigEndian);
-            RotationWrapper1.WriteToFile(stream, isBigEndian);
-            RotationWrapper2.WriteToFile(stream, isBigEndian);
+            RotationWrapper0.WriteToFile(bw);
+            RotationWrapper1.WriteToFile(bw);
+            RotationWrapper2.WriteToFile(bw);
 
-            stream.Write(Unk1, isBigEndian);
+            bw.Write(Unk1);
         }
     }
 }

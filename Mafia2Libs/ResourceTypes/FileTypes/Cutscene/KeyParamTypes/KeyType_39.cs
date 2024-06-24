@@ -19,7 +19,7 @@ namespace ResourceTypes.Cutscene.KeyParams
             public int Unk08 { get; set; }
             public HashName NameHash { get; set; } // Another Name?
             public int Unk09 { get; set; } // 4?
-
+            public int[] UnkInts { get; set; } = new int[0];
             public override string ToString()
             {
                 return string.Format("{0} {1} {2} {3}", KeyFrameStart, KeyFrameEnd, Unk05, NameHash.ToString());
@@ -30,53 +30,56 @@ namespace ResourceTypes.Cutscene.KeyParams
         public KeyTypeData_39[] Unk01Data { get; set; }
         public ushort Unk02 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
+            base.ReadFromFile(br);
 
-            Unk01 = stream.ReadInt32(isBigEndian);
+            Unk01 = br.ReadInt32();
             Unk01Data = new KeyTypeData_39[Unk01];
 
             for(int i = 0; i < Unk01; i++)
             {
                 KeyTypeData_39 KeyData = new KeyTypeData_39();
-                KeyData.KeyFrameStart = stream.ReadInt32(isBigEndian);
-                KeyData.KeyFrameEnd = stream.ReadInt32(isBigEndian);
-                KeyData.Unk03 = stream.ReadByte8();
-                KeyData.Unk04 = stream.ReadInt32(isBigEndian);
-                KeyData.Unk05 = stream.ReadString16(isBigEndian);
-                KeyData.Unk06 = stream.ReadInt32(isBigEndian);
-                KeyData.Unk07 = stream.ReadInt32(isBigEndian);
-                KeyData.Unk08 = stream.ReadInt32(isBigEndian);
+                KeyData.KeyFrameStart = br.ReadInt32();
+                KeyData.KeyFrameEnd = br.ReadInt32();
+                KeyData.Unk03 = br.ReadByte();
+                KeyData.Unk04 = br.ReadInt32();
+                KeyData.Unk05 = br.ReadString16();
+                KeyData.Unk06 = br.ReadInt32();
+                KeyData.Unk07 = br.ReadInt32();
+                KeyData.Unk08 = br.ReadInt32();
                 KeyData.NameHash = new HashName();
-                KeyData.NameHash.ReadFromFile(stream, isBigEndian);
-                KeyData.Unk09 = stream.ReadInt32(isBigEndian);
+                KeyData.NameHash.ReadFromFile(br);
+                KeyData.Unk09 = br.ReadInt32();
+
+
+
                 Unk01Data[i] = KeyData;
             }
 
-            Unk02 = stream.ReadUInt16(isBigEndian);
+            Unk02 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk01, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(Unk01);
 
             foreach(KeyTypeData_39 Entry in Unk01Data)
             {
-                stream.Write(Entry.KeyFrameStart, isBigEndian);
-                stream.Write(Entry.KeyFrameEnd, isBigEndian);
-                stream.WriteByte(Entry.Unk03);
-                stream.Write(Entry.Unk04, isBigEndian);
-                stream.WriteString16(Entry.Unk05, isBigEndian);
-                stream.Write(Entry.Unk06, isBigEndian);
-                stream.Write(Entry.Unk07, isBigEndian);
-                stream.Write(Entry.Unk08, isBigEndian);
-                Entry.NameHash.WriteToFile(stream, isBigEndian);
-                stream.Write(Entry.Unk09, isBigEndian);
+                bw.Write(Entry.KeyFrameStart);
+                bw.Write(Entry.KeyFrameEnd);
+                bw.Write(Entry.Unk03);
+                bw.Write(Entry.Unk04);
+                bw.WriteString16(Entry.Unk05);
+                bw.Write(Entry.Unk06);
+                bw.Write(Entry.Unk07);
+                bw.Write(Entry.Unk08);
+                Entry.NameHash.WriteToFile(bw);
+                bw.Write(Entry.Unk09);
             }
 
-            stream.Write(Unk02, isBigEndian);
+            bw.Write(Unk02);
         }
     }
 }

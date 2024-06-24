@@ -15,7 +15,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public int Size { get; set; } // Total Size of the data. includes Size and DataType.
         [Browsable(false)]
         public int KeyDataSize { get; set; } // Size of all the keyframes? Also count and the Unk01?
-        public int Unk00 { get; set; }
+        public int Unk00 { get; set; } //KeyData header?
         public int Unk01 { get; set; }
         public int NumKeyFrames { get; set; } // Number of keyframes. Start with 0xE803 or 1000
         public IKeyType[] KeyFrames { get; set; }
@@ -37,39 +37,53 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
                 int Header = stream.ReadInt32(isBigEndian);
                 ToolkitAssert.Ensure(Header == 1000, "Keyframe magic did not equal 1000");
-                int Size = stream.ReadInt32(isBigEndian);
-                int KeyType = stream.ReadInt32(isBigEndian);
-                AnimKeyParamTypes KeyParamType = (AnimKeyParamTypes)KeyType;
 
-                IKeyType KeyParam = CutsceneKeyParamFactory.ReadAnimEntityFromFile(KeyParamType, Size, stream);
-                KeyFrames[i] = KeyParam;
+                using (BinaryReader br = new(new MemoryStream(stream.ReadBytes(stream.ReadInt32(isBigEndian) - 8))))
+                {
+                    IKeyType KeyParam = CutsceneKeyParamFactory.ReadAnimEntityFromFile(br);
+                    KeyFrames[i] = KeyParam;
+                }
             }
         }
 
         public virtual void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             stream.Write(Unk00, isBigEndian);
-            stream.Write(KeyDataSize, isBigEndian);
-            stream.Write(Unk01, isBigEndian);
-            stream.Write(NumKeyFrames, isBigEndian);
 
-            for(int i = 0; i < NumKeyFrames; i++)
+            using (MemoryStream ms = new())
             {
-                using (MemoryStream KeyParamStream = new MemoryStream())
+                using (BinaryWriter bw = new(ms))
                 {
-                    // Get KeyParam
-                    IKeyType KeyParam = KeyFrames[i];
-                    KeyParamStream.Write(1000, isBigEndian); // Write the header
-                    KeyParamStream.Write(KeyParam.Size, isBigEndian);
-                    KeyParamStream.Write(KeyParam.KeyType, isBigEndian);
-                    KeyParam.WriteToFile(KeyParamStream, isBigEndian);
+                    bw.Write(Unk01);
+                    bw.Write(NumKeyFrames);
 
-                    KeyParamStream.Seek(4, SeekOrigin.Begin);
-                    KeyParamStream.Write((uint)KeyParamStream.Length, isBigEndian);
-                    KeyParamStream.Seek(0, SeekOrigin.End);
-                    stream.Write(KeyParamStream.ToArray());
+                    for (int i = 0; i < NumKeyFrames; i++)
+                    {
+                        IKeyType KeyParam = KeyFrames[i];
+                        bw.Write(1000); // Write the header
+
+                        byte[] keyData;
+
+                        using (MemoryStream keyMs = new())
+                        {
+                            using (BinaryWriter keyBw = new(keyMs))
+                            {
+                                KeyParam.WriteToFile(keyBw);
+                            }
+
+                            keyData = keyMs.ToArray();
+                        }
+
+                        bw.Write(keyData.Length + 8);
+                        bw.Write(keyData);
+                    }
                 }
-            }
+
+                byte[] data = ms.ToArray();
+
+                stream.Write(data.Length + 8, isBigEndian);
+                stream.Write(data);
+            }   
         }
 
         public override string ToString()

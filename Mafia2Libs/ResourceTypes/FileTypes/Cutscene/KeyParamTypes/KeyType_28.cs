@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -32,32 +31,32 @@ namespace ResourceTypes.Cutscene.KeyParams
         public UnkWrapper[] Wrappers { get; set; }
         public ushort Unk05 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
+            base.ReadFromFile(br);
 
             Wrappers = new UnkWrapper[3];
-            Unk01 = stream.ReadUInt32(isBigEndian);
+            Unk01 = br.ReadUInt32();
             for (int x = 0; x < 3; x++)
             {
                 UnkWrapper data = new UnkWrapper();
-                data.Unk0 = stream.ReadInt32(isBigEndian);
-                data.NumUnkData = stream.ReadInt32(isBigEndian);
+                data.Unk0 = br.ReadInt32();
+                data.NumUnkData = br.ReadInt32();
                 data.Frames = new UnkWrapper.UnkData[data.NumUnkData];
 
                 for (int i = 0; i < data.NumUnkData; i++)
                 {
                     UnkWrapper.UnkData frames = new UnkWrapper.UnkData();
-                    frames.Unk01 = stream.ReadInt32(isBigEndian);
-                    frames.Unk02 = stream.ReadInt32(isBigEndian);
-                    frames.Unk03 = stream.ReadUInt16(isBigEndian);
-                    frames.Unk04 = stream.ReadUInt16(isBigEndian);
-                    frames.Unk05 = stream.ReadByte8();
+                    frames.Unk01 = br.ReadInt32();
+                    frames.Unk02 = br.ReadInt32();
+                    frames.Unk03 = br.ReadUInt16();
+                    frames.Unk04 = br.ReadUInt16();
+                    frames.Unk05 = br.ReadByte();
                     frames.Unk06 = new float[5];
 
                     for (int z = 0; z < 5; z++)
                     {
-                        frames.Unk06[z] = stream.ReadSingle(isBigEndian);
+                        frames.Unk06[z] = br.ReadSingle();
                     }
 
                     data.Frames[i] = frames;
@@ -66,35 +65,35 @@ namespace ResourceTypes.Cutscene.KeyParams
                 Wrappers[x] = data;
             }
 
-            Unk05 = stream.ReadUInt16(isBigEndian);
+            Unk05 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk01, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(Unk01);
 
             foreach(UnkWrapper Wrapper in Wrappers)
             {
-                stream.Write(Wrapper.Unk0, isBigEndian);
-                stream.Write(Wrapper.NumUnkData, isBigEndian);
+                bw.Write(Wrapper.Unk0);
+                bw.Write(Wrapper.NumUnkData);
 
                 foreach(UnkWrapper.UnkData Info in Wrapper.Frames)
                 {
-                    stream.Write(Info.Unk01, isBigEndian);
-                    stream.Write(Info.Unk02, isBigEndian);
-                    stream.Write(Info.Unk03, isBigEndian);
-                    stream.Write(Info.Unk04, isBigEndian);
-                    stream.WriteByte(Info.Unk05);
+                    bw.Write(Info.Unk01);
+                    bw.Write(Info.Unk02);
+                    bw.Write(Info.Unk03);
+                    bw.Write(Info.Unk04);
+                    bw.Write(Info.Unk05);
 
                     foreach(float Value in Info.Unk06)
                     {
-                        stream.Write(Value, isBigEndian);
+                        bw.Write(Value);
                     }
                 }
             }
 
-            stream.Write(Unk05, isBigEndian);
+            bw.Write(Unk05);
         }
     }
 }
