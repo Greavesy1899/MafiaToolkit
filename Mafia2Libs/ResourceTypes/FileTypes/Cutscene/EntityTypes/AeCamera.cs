@@ -42,9 +42,9 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public int Unk06 { get; set; }
         public int Unk07 { get; set; }
         public Matrix4x4 Transform { get; set; }
-        public float Unk08 { get; set; }
-        public float Unk09 { get; set; }
-        public float Unk10 { get; set; }
+        public float FOV { get; set; }
+        public float Near { get; set; }
+        public float Far { get; set; }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -53,9 +53,9 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk06 = stream.ReadInt32(isBigEndian);
             Unk07 = stream.ReadInt32(isBigEndian);
             Transform = MatrixUtils.ReadFromFile(stream, isBigEndian);
-            Unk08 = stream.ReadSingle(isBigEndian);
-            Unk09 = stream.ReadSingle(isBigEndian);
-            Unk10 = stream.ReadSingle(isBigEndian);
+            FOV = stream.ReadSingle(isBigEndian);
+            Near = stream.ReadSingle(isBigEndian);
+            Far = stream.ReadSingle(isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
@@ -65,9 +65,9 @@ namespace ResourceTypes.Cutscene.AnimEntities
             stream.Write(Unk06, isBigEndian);
             stream.Write(Unk07, isBigEndian);
             Transform.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk08, isBigEndian);
-            stream.Write(Unk09, isBigEndian);
-            stream.Write(Unk10, isBigEndian);
+            stream.Write(FOV, isBigEndian);
+            stream.Write(Near, isBigEndian);
+            stream.Write(Far, isBigEndian);
             UpdateSize(stream, isBigEndian);
         }
         public override AnimEntityTypes GetEntityType()
