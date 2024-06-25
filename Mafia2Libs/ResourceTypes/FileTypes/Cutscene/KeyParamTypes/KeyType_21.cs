@@ -61,7 +61,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Num Keys: {0}", KeyInformation.Length);
+            return string.Format("Keys: {0}", KeyInformation.Length);
         }
     }
 }

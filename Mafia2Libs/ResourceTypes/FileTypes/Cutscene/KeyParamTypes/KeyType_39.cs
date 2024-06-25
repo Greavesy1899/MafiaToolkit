@@ -22,7 +22,7 @@ namespace ResourceTypes.Cutscene.KeyParams
             public int[] UnkInts { get; set; } = new int[0];
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3}", KeyFrameStart, KeyFrameEnd, Unk05, NameHash.ToString());
+                return string.Format("Start: {0} End: {1} Frame Name: {2} Name Hash: {3}", KeyFrameStart, KeyFrameEnd, Unk05, NameHash.ToString());
             }
         }
 
@@ -79,6 +79,11 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
 
             bw.Write(Unk02);
+        }
+
+        public override string ToString()
+        {
+            return "KeyType: 39";
         }
     }
 }

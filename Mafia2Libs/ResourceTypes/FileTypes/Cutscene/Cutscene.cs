@@ -201,8 +201,8 @@ namespace ResourceTypes.Cutscene
             public class GCSData
             {
                 private string header; //usually equals !GCS.
-                public int unk02 { get; set; } //cutscene flags? 
-                public float unk03 { get; set; } //0?
+                public int Type { get; set; } //cutscene flags? 
+                public float FPS { get; set; } //0?
                 public short unk04 { get; set; } //25.0f;
                 public short unk05 { get; set; } //sometimes 0xFF
                 public int unk06 { get; set; } //100000.
@@ -212,7 +212,7 @@ namespace ResourceTypes.Cutscene
                 public int unk10 { get; set; }
                 public float unk11 { get; set; }
                 public float unk12 { get; set; }
-                public float unk13 { get; set; }
+                public float FrameCount { get; set; }
                 public int unk14 { get; set; }
 
                 private string CutsceneName;
@@ -222,12 +222,19 @@ namespace ResourceTypes.Cutscene
                     CutsceneName = name;
 
                     header = new string(reader.ReadChars(4));
-                    unk02 = reader.ReadInt32();
-                    unk03 = reader.ReadSingle();
-                    unk04 = reader.ReadInt16();
-                    unk05 = reader.ReadInt16();
+                    Type = reader.ReadInt32();
+                    FPS = reader.ReadSingle();
+
+                    if (Type != 101)
+                    {
+                        unk04 = reader.ReadInt16();
+                        unk05 = reader.ReadInt16();
+                    }
+                    
                     unk06 = reader.ReadInt32();
                     FaceFX = new FaceFX(reader);
+
+                    ToolkitAssert.Ensure(reader.ReadInt32() == 100, "Missed the Entity Block Magic!");
 
                     using (BinaryReader br = new(new MemoryStream(reader.ReadBytes(reader.ReadInt32() - 8))))
                     {
@@ -278,19 +285,26 @@ namespace ResourceTypes.Cutscene
                     unk10 = reader.ReadInt32();
                     unk11 = reader.ReadSingle();
                     unk12 = reader.ReadSingle();
-                    unk13 = reader.ReadSingle();
+                    FrameCount = reader.ReadSingle();
                     unk14 = reader.ReadInt32();
                 }
 
                 public void WriteToFile(BinaryWriter writer)
                 {
                     writer.Write(header.ToCharArray());
-                    writer.Write(unk02);
-                    writer.Write(unk03);
-                    writer.Write(unk04);
-                    writer.Write(unk05);
+                    writer.Write(Type);
+                    writer.Write(FPS);
+
+                    if (Type != 101)
+                    {
+                        writer.Write(unk04);
+                        writer.Write(unk05);
+                    }
+
                     writer.Write(unk06);
                     FaceFX.Write(writer);
+
+                    writer.Write(100); //Entity block magic
 
                     using (MemoryStream ms = new())
                     {
@@ -342,7 +356,7 @@ namespace ResourceTypes.Cutscene
                     writer.Write(unk10);
                     writer.Write(unk11);
                     writer.Write(unk12);
-                    writer.Write(unk13);
+                    writer.Write(FrameCount);
                     writer.Write(unk14);
                 }
             }

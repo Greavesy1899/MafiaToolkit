@@ -7,7 +7,6 @@ namespace ResourceTypes.Cutscene
     public class FaceFX
     {
         public FaceFXBlock[] FaceFXBlocks { get; set; } = new FaceFXBlock[0];
-        public int Unk00 { get; set; }
 
         public FaceFX(BinaryReader br)
         {
@@ -16,7 +15,7 @@ namespace ResourceTypes.Cutscene
 
         public void Read(BinaryReader baseBr)
         {
-            using (BinaryReader br = new(new MemoryStream(baseBr.ReadBytes(baseBr.ReadInt32() - 4))))
+            using (BinaryReader br = new(new MemoryStream(baseBr.ReadBytes(baseBr.ReadInt32() - 8))))
             {
                 int Count = br.ReadInt32();
 
@@ -26,8 +25,6 @@ namespace ResourceTypes.Cutscene
                 {
                     FaceFXBlocks[i] = new(br);
                 }
-
-                Unk00 = br.ReadInt32();
             }
         }
 
@@ -43,13 +40,11 @@ namespace ResourceTypes.Cutscene
                     {
                         block.Write(bw);
                     }
-
-                    bw.Write(Unk00);
                 }
 
                 byte[] data = ms.ToArray();
 
-                baseBw.Write(data.Length + 4);
+                baseBw.Write(data.Length + 8);
                 baseBw.Write(data);
             }
         }

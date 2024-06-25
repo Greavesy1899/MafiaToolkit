@@ -61,7 +61,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("NumWeathers: {0}", Weathers.Length);
+            return string.Format("Weathers: {0}", Weathers.Length);
         }
     }
 }

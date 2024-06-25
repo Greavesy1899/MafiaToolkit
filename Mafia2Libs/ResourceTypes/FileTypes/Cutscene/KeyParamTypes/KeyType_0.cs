@@ -6,14 +6,14 @@ namespace ResourceTypes.Cutscene.KeyParams
     {
         public class FrameData
         {
-            public int Unk01 { get; set; } // Key Frame Start?
-            public int Unk02 { get; set; } // Key Frame End?
+            public int KeyFrameStart { get; set; } // Key Frame Start?
+            public int KeyFrameEnd { get; set; } // Key Frame End?
             public byte Unk03 { get; set; } // Is Available?
             public float Unk04 { get; set; } // Could be new position
 
             public override string ToString()
             {
-                return string.Format("{0} Start: {1} End: {2}", Unk04, Unk02, Unk03);
+                return string.Format("{0} Start: {1} End: {2}", Unk04, KeyFrameEnd, Unk03);
             }
         }
 
@@ -30,8 +30,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             for (int i = 0; i < NumFrames; i++)
             {
                 FrameData frames = new FrameData();
-                frames.Unk01 = br.ReadInt32();
-                frames.Unk02 = br.ReadInt32();
+                frames.KeyFrameStart = br.ReadInt32();
+                frames.KeyFrameEnd = br.ReadInt32();
                 frames.Unk03 = br.ReadByte();
                 frames.Unk04 = br.ReadSingle();
                 Frames[i] = frames;
@@ -47,8 +47,8 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             foreach (FrameData Entry in Frames)
             {
-                bw.Write(Entry.Unk01);
-                bw.Write(Entry.Unk02);
+                bw.Write(Entry.KeyFrameStart);
+                bw.Write(Entry.KeyFrameEnd);
                 bw.Write(Entry.Unk03);
                 bw.Write(Entry.Unk04);
             }
@@ -58,7 +58,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("NumFrames: {0}", Frames.Length);
+            return string.Format("Frames: {0}", Frames.Length);
         }
     }
 }

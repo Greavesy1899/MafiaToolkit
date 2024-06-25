@@ -8,8 +8,8 @@ namespace ResourceTypes.Cutscene.KeyParams
     {
         public class FrameData
         {
-            public int Unk01 { get; set; } // Key Frame Start?
-            public int Unk02 { get; set; } // Key Frame End?
+            public int KeyFrameStart { get; set; } // Key Frame Start?
+            public int KeyFrameEnd { get; set; } // Key Frame End?
             public byte Unk03 { get; set; } // Is Available?
             public string SoundFile { get; set; } // Sound to play.
             public int Unk04 { get; set; }
@@ -23,7 +23,7 @@ namespace ResourceTypes.Cutscene.KeyParams
             public float Unk12 { get; set; }
             public override string ToString()
             {
-                return string.Format("Sound: {0} Start: {1} End: {2}", SoundFile, Unk01, Unk02);
+                return string.Format("Sound: {0} Start: {1} End: {2}", SoundFile, KeyFrameStart, KeyFrameEnd);
             }
         }
 
@@ -40,8 +40,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             for (int i = 0; i < NumSounds; i++)
             {
                 FrameData frames = new FrameData();
-                frames.Unk01 = br.ReadInt32();
-                frames.Unk02 = br.ReadInt32();
+                frames.KeyFrameStart = br.ReadInt32();
+                frames.KeyFrameEnd = br.ReadInt32();
                 frames.Unk03 = br.ReadByte();
                 frames.SoundFile = br.ReadString16();
                 frames.Unk04 = br.ReadInt32();
@@ -66,8 +66,8 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             foreach(FrameData FrameInfo in Sounds)
             {
-                bw.Write(FrameInfo.Unk01);
-                bw.Write(FrameInfo.Unk02);
+                bw.Write(FrameInfo.KeyFrameStart);
+                bw.Write(FrameInfo.KeyFrameEnd);
                 bw.Write(FrameInfo.Unk03);
                 bw.WriteString16(FrameInfo.SoundFile);
                 bw.Write(FrameInfo.Unk04);
@@ -86,7 +86,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("NumSounds: {0}", Sounds.Length);
+            return string.Format("Sounds: {0}", Sounds.Length);
         }
     }
 }

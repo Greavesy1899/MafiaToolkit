@@ -8,14 +8,14 @@ namespace ResourceTypes.Cutscene.KeyParams
     {
         public class PositionData
         {
-            public int Unk01 { get; set; } // Key Frame Start?
-            public int Unk02 { get; set; } // Key Frame End?
+            public int KeyFrameStart { get; set; } // Key Frame Start?
+            public int KeyFrameEnd { get; set; } // Key Frame End?
             public byte Unk03 { get; set; } // Is Available?
             public Vector3 Position { get; set; } // Could be new position
 
             public override string ToString()
             {
-                return string.Format("{0} Start: {1} End: {2}", Position, Unk01, Unk02);
+                return string.Format("{0} Start: {1} End: {2}", Position, KeyFrameStart, KeyFrameEnd);
             }
         }
 
@@ -32,8 +32,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             for (int i = 0; i < NumPositions; i++)
             {
                 PositionData position = new PositionData();
-                position.Unk01 = br.ReadInt32();
-                position.Unk02 = br.ReadInt32();
+                position.KeyFrameStart = br.ReadInt32();
+                position.KeyFrameEnd = br.ReadInt32();
                 position.Unk03 = br.ReadByte();
                 position.Position = Vector3Utils.ReadFromFile(br);
                 Positions[i] = position;
@@ -50,8 +50,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             for(int i = 0; i < Positions.Length; i++)
             {
                 PositionData Entry = Positions[i];
-                bw.Write(Entry.Unk01);
-                bw.Write(Entry.Unk02);
+                bw.Write(Entry.KeyFrameStart);
+                bw.Write(Entry.KeyFrameEnd);
                 bw.Write(Entry.Unk03);
                 Entry.Position.WriteToFile(bw);
             }
@@ -61,7 +61,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("NumPositions: {0}", Positions.Length);
+            return string.Format("Positions: {0}", Positions.Length);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             public class UnkData
             {
-                public int Unk01 { get; set; } // Key Frame Start?
-                public int Unk02 { get; set; } // Key Frame End?
+                public int KeyFrameStart { get; set; } // Key Frame Start?
+                public int KeyFrameEnd { get; set; } // Key Frame End?
                 public ushort Unk03 { get; set; } // Always 1?
                 public ushort Unk04 { get; set; } //0x1B?
                 public byte Unk05 { get; set; } // ??
@@ -19,7 +19,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
                 public override string ToString()
                 {
-                    return string.Format("Start: {0} End: {1}", Unk01, Unk02);
+                    return string.Format("Start: {0} End: {1}", KeyFrameStart, KeyFrameEnd);
                 }
             }
 
@@ -48,8 +48,8 @@ namespace ResourceTypes.Cutscene.KeyParams
                 for (int i = 0; i < NumUnkData; i++)
                 {
                     UnkWrapper.UnkData frames = new UnkWrapper.UnkData();
-                    frames.Unk01 = br.ReadInt32();
-                    frames.Unk02 = br.ReadInt32();
+                    frames.KeyFrameStart = br.ReadInt32();
+                    frames.KeyFrameEnd = br.ReadInt32();
                     frames.Unk03 = br.ReadUInt16();
                     frames.Unk04 = br.ReadUInt16();
                     frames.Unk05 = br.ReadByte();
@@ -81,8 +81,8 @@ namespace ResourceTypes.Cutscene.KeyParams
 
                 foreach(UnkWrapper.UnkData Info in Wrapper.Frames)
                 {
-                    bw.Write(Info.Unk01);
-                    bw.Write(Info.Unk02);
+                    bw.Write(Info.KeyFrameStart);
+                    bw.Write(Info.KeyFrameEnd);
                     bw.Write(Info.Unk03);
                     bw.Write(Info.Unk04);
                     bw.Write(Info.Unk05);
@@ -99,7 +99,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Num Frames: {0}", Wrappers[0].Frames.Length + Wrappers[1].Frames.Length + Wrappers[2].Frames.Length);
+            return string.Format("Frames: {0}", Wrappers[0].Frames.Length + Wrappers[1].Frames.Length + Wrappers[2].Frames.Length);
         }
     }
 }

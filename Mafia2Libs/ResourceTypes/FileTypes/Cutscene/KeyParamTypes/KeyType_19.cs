@@ -10,8 +10,8 @@ namespace ResourceTypes.Cutscene.KeyParams
     {
         public class SoundData_Type19
         {
-            public int Unk01 { get; set; } // Key Frame Start?
-            public int Unk02 { get; set; } // Key Frame End?
+            public int KeyFrameStart { get; set; } // Key Frame Start?
+            public int KeyFrameEnd { get; set; } // Key Frame End?
             public byte Unk03 { get; set; } // Is Available?
             public string SoundFile { get; set; } // Sound to play.
             public byte[] RestOfTheData { get; set; } // The rest of the data.
@@ -42,7 +42,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             public override string ToString()
             {
-                return string.Format("Sound: {0} Start: {1} End: {2} Frame: {3}", SoundFile, Unk01, Unk02, FrameName);
+                return string.Format("Sound: {0} Start: {1} End: {2} Frame: {3}", SoundFile, KeyFrameStart, KeyFrameEnd, FrameName);
             }
         }
 
@@ -59,8 +59,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             for (int i = 0; i < NumSounds; i++)
             {
                 SoundData_Type19 SoundInfo = new SoundData_Type19();
-                SoundInfo.Unk01 = br.ReadInt32();
-                SoundInfo.Unk02 = br.ReadInt32();
+                SoundInfo.KeyFrameStart = br.ReadInt32();
+                SoundInfo.KeyFrameEnd = br.ReadInt32();
                 SoundInfo.Unk03 = br.ReadByte();
                 SoundInfo.SoundFile = br.ReadString16();
                 SoundInfo.Unk04 = br.ReadByte();
@@ -111,8 +111,8 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             foreach(SoundData_Type19 Info in Sounds)
             {
-                bw.Write(Info.Unk01);
-                bw.Write(Info.Unk02);
+                bw.Write(Info.KeyFrameStart);
+                bw.Write(Info.KeyFrameEnd);
                 bw.Write(Info.Unk03);
                 bw.WriteString16(Info.SoundFile);
                 bw.Write(Info.Unk04);
@@ -153,7 +153,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         }
         public override string ToString()
         {
-            return string.Format("NumSounds (19): {0}", Sounds.Length);
+            return string.Format("Sounds: {0}", Sounds.Length);
         }
     }
 }

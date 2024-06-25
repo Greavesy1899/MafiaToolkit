@@ -11,8 +11,8 @@ namespace ResourceTypes.Cutscene.KeyParams
         public class AnimationData
         {
             public int Unk01 { get; set; }
-            public int Unk02 { get; set; } // Key Frame Start?
-            public int Unk03 { get; set; } // Key Frame End?
+            public int KeyFrameStart { get; set; } // Key Frame Start?
+            public int KeyFrameEnd { get; set; } // Key Frame End?
             public byte Unk04 { get; set; } // Is Name Available?
             public string AnimationName { get; set; } // Links too .an2 file
             public int Unk05 { get; set; }
@@ -22,7 +22,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             public override string ToString()
             {
-                return string.Format("{0} Start: {1} End: {2}", AnimationName, Unk02, Unk03);
+                return string.Format("{0} Start: {1} End: {2}", AnimationName, KeyFrameStart, KeyFrameEnd);
             }
         }
 
@@ -40,8 +40,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             {
                 AnimationData animation = new AnimationData();
                 animation.Unk01 = br.ReadInt32();
-                animation.Unk02 = br.ReadInt32();
-                animation.Unk03 = br.ReadInt32();
+                animation.KeyFrameStart = br.ReadInt32();
+                animation.KeyFrameEnd = br.ReadInt32();
                 animation.Unk04 = br.ReadByte();
                 animation.AnimationName = br.ReadString16();
                 animation.Unk05 = br.ReadInt32();
@@ -62,8 +62,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             foreach(AnimationData Animation in Animations)
             {
                 bw.Write(Animation.Unk01);
-                bw.Write(Animation.Unk02);
-                bw.Write(Animation.Unk03);
+                bw.Write(Animation.KeyFrameStart);
+                bw.Write(Animation.KeyFrameEnd);
                 bw.Write(Animation.Unk04);
                 bw.WriteString16(Animation.AnimationName);
                 bw.Write(Animation.Unk05);
@@ -77,7 +77,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("NumAnimations: {0}", Animations.Length);
+            return string.Format("Animations: {0}", Animations.Length);
         }
     }
 }

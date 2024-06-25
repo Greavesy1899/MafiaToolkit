@@ -9,23 +9,23 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeHumanFxWrapper : AnimEntityWrapper
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public AeHumanFx Unk23Entity { get; set; }
+        public AeHumanFx HumanEntity { get; set; }
 
         public AeHumanFxWrapper() : base()
         {
-            Unk23Entity = new AeHumanFx();
+            HumanEntity = new AeHumanFx();
             AnimEntityData = new AeUnk23Data();
         }
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            Unk23Entity.ReadFromFile(stream, isBigEndian);
+            HumanEntity.ReadFromFile(stream, isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-            Unk23Entity.WriteToFile(stream, isBigEndian);
+            HumanEntity.WriteToFile(stream, isBigEndian);
         }
 
         public override AnimEntityTypes GetEntityType()
