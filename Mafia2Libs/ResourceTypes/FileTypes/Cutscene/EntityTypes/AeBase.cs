@@ -1,6 +1,5 @@
 ﻿using ResourceTypes.Cutscene.KeyParams;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
 using Utils.Logging;
@@ -15,19 +14,20 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public int Size { get; set; } // Total Size of the data. includes Size and DataType.
         [Browsable(false)]
         public int KeyDataSize { get; set; } // Size of all the keyframes? Also count and the Unk01?
-        public int Unk00 { get; set; } //KeyData header?
         public int Unk01 { get; set; }
-        public int NumKeyFrames { get; set; } // Number of keyframes. Start with 0xE803 or 1000
         public IKeyType[] KeyFrames { get; set; }
 
         public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             DataType = stream.ReadInt32(isBigEndian);
             Size = stream.ReadInt32(isBigEndian);
-            Unk00 = stream.ReadInt32(isBigEndian);
+            int KeyDataHeader = stream.ReadInt32(isBigEndian);
+
+            ToolkitAssert.Ensure(KeyDataHeader == 101, "Keyheader magic did not equal 101");
+
             KeyDataSize = stream.ReadInt32(isBigEndian);
             Unk01 = stream.ReadInt32(isBigEndian);
-            NumKeyFrames = stream.ReadInt32(isBigEndian);
+            int NumKeyFrames = stream.ReadInt32(isBigEndian);
 
             KeyFrames = new IKeyType[NumKeyFrames];
 
@@ -48,16 +48,16 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public virtual void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
-            stream.Write(Unk00, isBigEndian);
+            stream.Write(101, isBigEndian);
 
             using (MemoryStream ms = new())
             {
                 using (BinaryWriter bw = new(ms))
                 {
                     bw.Write(Unk01);
-                    bw.Write(NumKeyFrames);
+                    bw.Write(KeyFrames.Length);
 
-                    for (int i = 0; i < NumKeyFrames; i++)
+                    for (int i = 0; i < KeyFrames.Length; i++)
                     {
                         IKeyType KeyParam = KeyFrames[i];
                         bw.Write(1000); // Write the header
@@ -88,7 +88,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public override string ToString()
         {
-            return string.Format("{0}", DataType);
+            return string.Format("Type: {0}", DataType);
         }
     }
 }

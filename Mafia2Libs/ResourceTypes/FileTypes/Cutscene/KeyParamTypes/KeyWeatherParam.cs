@@ -19,7 +19,6 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public int NumWeathers { get; set; }
         public WeatherParam[] Weathers { get; set; }
         public ushort Unk05 { get; set; }
 
@@ -27,7 +26,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             base.ReadFromFile(br);
 
-            NumWeathers = br.ReadInt32();
+            int NumWeathers = br.ReadInt32();
             Weathers = new WeatherParam[NumWeathers];
 
             for (int i = 0; i < NumWeathers; i++)

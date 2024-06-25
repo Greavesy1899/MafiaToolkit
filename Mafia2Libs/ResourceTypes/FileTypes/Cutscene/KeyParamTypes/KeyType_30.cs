@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -18,7 +17,6 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public int NumUnkData { get; set; }
         public UnkData[] Frames { get; set; }
         public ushort Unk05 { get; set; }
 
@@ -26,7 +24,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             base.ReadFromFile(br);
 
-            NumUnkData = br.ReadInt32();
+            int NumUnkData = br.ReadInt32();
             Frames = new UnkData[NumUnkData];
 
             for (int i = 0; i < NumUnkData; i++)
@@ -45,7 +43,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         public override void WriteToFile(BinaryWriter bw)
         {
             base.WriteToFile(bw);
-            bw.Write(NumUnkData);
+            bw.Write(Frames.Length);
             
             foreach(UnkData Entry in Frames)
             {

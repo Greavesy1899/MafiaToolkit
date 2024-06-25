@@ -37,7 +37,6 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public int NumFrames { get; set; }
         public FrameData[] Frames { get; set; }
         public ushort Unk05 { get; set; }
 
@@ -45,7 +44,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             base.ReadFromFile(br);
 
-            NumFrames = br.ReadInt32();
+            int NumFrames = br.ReadInt32();
             Frames = new FrameData[NumFrames];
 
             for (int i = 0; i < NumFrames; i++)
@@ -79,7 +78,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         public override void WriteToFile(BinaryWriter bw)
         {
             base.WriteToFile(bw);
-            bw.Write(NumFrames);
+            bw.Write(Frames.Length);
 
             foreach(FrameData Entry in Frames)
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -26,6 +25,11 @@ namespace ResourceTypes.Cutscene.KeyParams
             base.WriteToFile(bw);
             bw.Write(Unk01);
             bw.Write(Unk02);
+        }
+
+        public override string ToString()
+        {
+            return "KeyType: 40";
         }
     }
 }

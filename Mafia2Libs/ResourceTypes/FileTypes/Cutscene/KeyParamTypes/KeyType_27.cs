@@ -154,5 +154,11 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             bw.Write(Unk1);
         }
+
+        public override string ToString()
+        {
+            return string.Format("Num Rotations: {0} Num Floats: {1}", Type27DataWrapper0.RotationData.Length + Type27DataWrapper1.RotationData.Length + Type27DataWrapper2.RotationData.Length,
+                                                                       Type27DataWrapper0.FloatData.Length + Type27DataWrapper1.FloatData.Length + Type27DataWrapper2.FloatData.Length);
+        }
     }
 }

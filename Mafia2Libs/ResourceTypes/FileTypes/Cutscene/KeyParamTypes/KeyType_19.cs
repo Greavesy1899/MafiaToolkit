@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Numerics;
 using Utils.Extensions;
-using Utils.VorticeUtils;
 using Utils.StringHelpers;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -46,7 +46,6 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public int NumSounds { get; set; }
         public SoundData_Type19[] Sounds { get; set; }
         public ushort Unk05 { get; set; }
 
@@ -54,7 +53,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             base.ReadFromFile(br);
 
-            NumSounds = br.ReadInt32();
+            int NumSounds = br.ReadInt32();
             Sounds = new SoundData_Type19[NumSounds];
 
             for (int i = 0; i < NumSounds; i++)
@@ -108,7 +107,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             base.WriteToFile(bw);
 
-            bw.Write(NumSounds);
+            bw.Write(Sounds.Length);
 
             foreach(SoundData_Type19 Info in Sounds)
             {

@@ -1,7 +1,6 @@
-﻿using System.IO;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+﻿using System;
+using System.IO;
 using Utils.Logging;
-using System;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {

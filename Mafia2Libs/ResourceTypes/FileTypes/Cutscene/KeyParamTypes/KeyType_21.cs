@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {

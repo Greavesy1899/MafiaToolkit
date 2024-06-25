@@ -26,18 +26,17 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public int Unk01 { get; set; }
-        public KeyTypeData_39[] Unk01Data { get; set; }
+        public KeyTypeData_39[] Data { get; set; }
         public ushort Unk02 { get; set; }
 
         public override void ReadFromFile(BinaryReader br)
         {
             base.ReadFromFile(br);
 
-            Unk01 = br.ReadInt32();
-            Unk01Data = new KeyTypeData_39[Unk01];
+            int Count = br.ReadInt32();
+            Data = new KeyTypeData_39[Count];
 
-            for(int i = 0; i < Unk01; i++)
+            for(int i = 0; i < Count; i++)
             {
                 KeyTypeData_39 KeyData = new KeyTypeData_39();
                 KeyData.KeyFrameStart = br.ReadInt32();
@@ -54,7 +53,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
 
 
-                Unk01Data[i] = KeyData;
+                Data[i] = KeyData;
             }
 
             Unk02 = br.ReadUInt16();
@@ -63,9 +62,9 @@ namespace ResourceTypes.Cutscene.KeyParams
         public override void WriteToFile(BinaryWriter bw)
         {
             base.WriteToFile(bw);
-            bw.Write(Unk01);
+            bw.Write(Data.Length);
 
-            foreach(KeyTypeData_39 Entry in Unk01Data)
+            foreach(KeyTypeData_39 Entry in Data)
             {
                 bw.Write(Entry.KeyFrameStart);
                 bw.Write(Entry.KeyFrameEnd);

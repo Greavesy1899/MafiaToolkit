@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
     public class KeyType_28 : IKeyType
     {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public class UnkWrapper
         {
             public class UnkData
@@ -22,7 +24,6 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
 
             public int Unk0 { get; set; }
-            public int NumUnkData { get; set; }
             public UnkData[] Frames { get; set; }
 
         }
@@ -41,10 +42,10 @@ namespace ResourceTypes.Cutscene.KeyParams
             {
                 UnkWrapper data = new UnkWrapper();
                 data.Unk0 = br.ReadInt32();
-                data.NumUnkData = br.ReadInt32();
-                data.Frames = new UnkWrapper.UnkData[data.NumUnkData];
+                int NumUnkData = br.ReadInt32();
+                data.Frames = new UnkWrapper.UnkData[NumUnkData];
 
-                for (int i = 0; i < data.NumUnkData; i++)
+                for (int i = 0; i < NumUnkData; i++)
                 {
                     UnkWrapper.UnkData frames = new UnkWrapper.UnkData();
                     frames.Unk01 = br.ReadInt32();
@@ -76,7 +77,7 @@ namespace ResourceTypes.Cutscene.KeyParams
             foreach(UnkWrapper Wrapper in Wrappers)
             {
                 bw.Write(Wrapper.Unk0);
-                bw.Write(Wrapper.NumUnkData);
+                bw.Write(Wrapper.Frames.Length);
 
                 foreach(UnkWrapper.UnkData Info in Wrapper.Frames)
                 {
@@ -94,6 +95,11 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
 
             bw.Write(Unk05);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Num Frames: {0}", Wrappers[0].Frames.Length + Wrappers[1].Frames.Length + Wrappers[2].Frames.Length);
         }
     }
 }

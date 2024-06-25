@@ -27,7 +27,6 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public int NumSounds { get; set; }
         public FrameData[] Sounds { get; set; }
         public ushort Unk05 { get; set; }
 
@@ -35,7 +34,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             base.ReadFromFile(br);
 
-            NumSounds = br.ReadInt32();
+            int NumSounds = br.ReadInt32();
             Sounds = new FrameData[NumSounds];
 
             for (int i = 0; i < NumSounds; i++)
@@ -63,7 +62,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         public override void WriteToFile(BinaryWriter bw)
         {
             base.WriteToFile(bw);
-            bw.Write(NumSounds);
+            bw.Write(Sounds.Length);
 
             foreach(FrameData FrameInfo in Sounds)
             {

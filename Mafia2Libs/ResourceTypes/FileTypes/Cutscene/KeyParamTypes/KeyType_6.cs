@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Numerics;
-using Utils.Extensions;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
@@ -20,7 +19,6 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public int NumPositions { get; set; }
         public PositionData[] Positions { get; set; }
         public ushort Unk05 { get; set; }
 
@@ -28,7 +26,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             base.ReadFromFile(br);
 
-            NumPositions = br.ReadInt32();
+            int NumPositions = br.ReadInt32();
             Positions = new PositionData[NumPositions];
 
             for (int i = 0; i < NumPositions; i++)
@@ -47,7 +45,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         public override void WriteToFile(BinaryWriter bw)
         {
             base.WriteToFile(bw);
-            bw.Write(NumPositions);
+            bw.Write(Positions.Length);
 
             for(int i = 0; i < Positions.Length; i++)
             {

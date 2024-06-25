@@ -1,11 +1,8 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Numerics;
 using Toolkit.Mathematics;
 using Utils.Extensions;
 using Utils.Logging;
-using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {

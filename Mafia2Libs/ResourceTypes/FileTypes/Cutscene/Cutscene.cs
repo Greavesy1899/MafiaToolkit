@@ -1,10 +1,8 @@
 ﻿using ResourceTypes.Cutscene.AnimEntities;
-using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.StringHelpers;
-using static ResourceTypes.Cutscene.CutsceneLoader.Cutscene;
 
 namespace ResourceTypes.Cutscene
 {
@@ -204,7 +202,6 @@ namespace ResourceTypes.Cutscene
                 private short unk05; //sometimes 0xFF
                 private int unk06; //100000.
                 public FaceFX FaceFX { get; set; }
-                private ushort numEntities; //numEntities;
                 public AnimEntityWrapper[] entities;
                 public float unk10;
                 public float unk11;
@@ -228,7 +225,7 @@ namespace ResourceTypes.Cutscene
 
                     using (BinaryReader br = new(new MemoryStream(reader.ReadBytes(reader.ReadInt32() - 8))))
                     {
-                        numEntities = br.ReadUInt16();
+                        int numEntities = br.ReadUInt16();
                         entities = new AnimEntityWrapper[numEntities];
 
                         for (int i = 0; i < numEntities; i++)
@@ -293,7 +290,7 @@ namespace ResourceTypes.Cutscene
                     {
                         using (BinaryWriter bw = new(ms))
                         {
-                            bw.Write(numEntities);
+                            bw.Write((short)entities.Length);
 
                             foreach (var Entity in entities)
                             {
