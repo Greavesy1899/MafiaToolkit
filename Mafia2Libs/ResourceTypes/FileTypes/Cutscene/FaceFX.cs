@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 
 namespace ResourceTypes.Cutscene
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FaceFX
     {
         public FaceFXBlock[] FaceFXBlocks { get; set; } = new FaceFXBlock[0];

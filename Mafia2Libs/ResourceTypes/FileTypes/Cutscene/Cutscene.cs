@@ -201,18 +201,19 @@ namespace ResourceTypes.Cutscene
             public class GCSData
             {
                 private string header; //usually equals !GCS.
-                private int unk02; //cutscene flags? 
-                private float unk03; //0?
-                private short unk04; //25.0f;
-                private short unk05; //sometimes 0xFF
-                private int unk06; //100000.
+                public int unk02 { get; set; } //cutscene flags? 
+                public float unk03 { get; set; } //0?
+                public short unk04 { get; set; } //25.0f;
+                public short unk05 { get; set; } //sometimes 0xFF
+                public int unk06 { get; set; } //100000.
                 public FaceFX FaceFX { get; set; }
-                public AnimEntityWrapper[] entities;
-                public float unk10;
-                public float unk11;
-                public int unk12;
-                public float unk13;
-                public int unk14;
+                [Browsable(false)]
+                public AnimEntityWrapper[] entities { get; set; } = new AnimEntityWrapper[0];
+                public int unk10 { get; set; }
+                public float unk11 { get; set; }
+                public float unk12 { get; set; }
+                public float unk13 { get; set; }
+                public int unk14 { get; set; }
 
                 private string CutsceneName;
 
@@ -274,9 +275,9 @@ namespace ResourceTypes.Cutscene
                         }
                     }
 
-                    unk10 = reader.ReadSingle();
+                    unk10 = reader.ReadInt32();
                     unk11 = reader.ReadSingle();
-                    unk12 = reader.ReadInt32();
+                    unk12 = reader.ReadSingle();
                     unk13 = reader.ReadSingle();
                     unk14 = reader.ReadInt32();
                 }
@@ -350,6 +351,7 @@ namespace ResourceTypes.Cutscene
             {
                 public int Unk01 { get; set; }
                 public float Unk02 { get; set; } // For GCS this is FPS i think.
+                [Browsable(false)]
                 public AnimEntityWrapper[] EntityDefinitions { get; set; }
                 private string CutsceneName; // For debugging
 

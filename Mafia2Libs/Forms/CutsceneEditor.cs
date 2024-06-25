@@ -47,13 +47,7 @@ namespace Mafia2Tool.Forms
                 var Assets = Cutscene.AssetContent;
                 TreeNode AssetsParent = new TreeNode("Game Cutscene Content: (GCS Data)");
 
-                if (Assets.FaceFX != null)
-                {
-                    TreeNode AssetNode = new TreeNode("FaceFX");
-                    AssetNode.Tag = Assets.FaceFX;
-
-                    AssetsParent.Nodes.Add(AssetNode);
-                }
+                AssetsParent.Tag = Assets;
 
                 for (int i = 0; i < Assets.entities.Length; i++)
                 {
@@ -71,6 +65,8 @@ namespace Mafia2Tool.Forms
             {
                 var Assets = Cutscene.SoundContent;
                 TreeNode AssetsParent = new TreeNode("Sound Content: (SPD Data)");
+
+                AssetsParent.Tag = Assets;
 
                 for (int i = 0; i < Assets.EntityDefinitions.Length; i++)
                 {
