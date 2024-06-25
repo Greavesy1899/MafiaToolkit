@@ -93,6 +93,50 @@ namespace Utils.Extensions
             }
             return floats;
         }
+
+        public static float ToSingle(this string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return 0f;
+            }
+
+            s = TrimString(s);
+            s = s.Replace(',', '.');
+            if (s == "-INF") return Single.NegativeInfinity;
+            if (s == "INF") return Single.PositiveInfinity;
+            float f = float.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture);
+            if (f == 0 && s[0] == '-')
+            {
+                return -0f;
+            }
+            return f;
+        }
+
+        public static double ToDouble(this string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return 0f;
+            }
+
+            s = TrimString(s);
+            s = s.Replace(',', '.');
+            if (s == "-INF") return Double.NegativeInfinity;
+            if (s == "INF") return Double.PositiveInfinity;
+            double dVal = double.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture);
+            if (dVal == 0 && s[0] == '-')
+            {
+                return -0d;
+            }
+            return dVal;
+        }
+
+        internal static readonly char[] WhitespaceChars = new char[] { ' ', '\t', '\n', '\r' };
+        internal static string TrimString(string value)
+        {
+            return value.Trim(WhitespaceChars);
+        }
     }
 
     public class Vector2Converter : TypeConverter

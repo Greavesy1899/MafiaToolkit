@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -22,47 +21,47 @@ namespace ResourceTypes.Cutscene.KeyParams
         public KeyInfo_21[] KeyInformation { get; set; }
         public ushort Unk0 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
+            base.ReadFromFile(br);
 
-            uint NumInformations = stream.ReadUInt32(isBigEndian);
+            uint NumInformations = br.ReadUInt32();
             KeyInformation = new KeyInfo_21[NumInformations];
 
             for(int i = 0; i < NumInformations; i++)
             {
                 KeyInfo_21 Info = new KeyInfo_21();
-                Info.KeyFrameStart = stream.ReadUInt32(isBigEndian);
-                Info.KeyFrameEnd = stream.ReadUInt32(isBigEndian);
-                Info.Unk0 = stream.ReadByte8();
-                Info.Unk1 = stream.ReadUInt32(isBigEndian);
-                Info.Unk2 = stream.ReadUInt16(isBigEndian);
+                Info.KeyFrameStart = br.ReadUInt32();
+                Info.KeyFrameEnd = br.ReadUInt32();
+                Info.Unk0 = br.ReadByte();
+                Info.Unk1 = br.ReadUInt32();
+                Info.Unk2 = br.ReadUInt16();
                 KeyInformation[i] = Info;
             }
 
-            Unk0 = stream.ReadUInt16(isBigEndian);
+            Unk0 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(KeyInformation.Length, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(KeyInformation.Length);
 
             foreach(KeyInfo_21 Info in KeyInformation)
             {
-                stream.Write(Info.KeyFrameStart, isBigEndian);
-                stream.Write(Info.KeyFrameEnd, isBigEndian);
-                stream.WriteByte(Info.Unk0);
-                stream.Write(Info.Unk1, isBigEndian);
-                stream.Write(Info.Unk2, isBigEndian);
+                bw.Write(Info.KeyFrameStart);
+                bw.Write(Info.KeyFrameEnd);
+                bw.Write(Info.Unk0);
+                bw.Write(Info.Unk1);
+                bw.Write(Info.Unk2);
             }
 
-            stream.Write(Unk0, isBigEndian);
+            bw.Write(Unk0);
         }
 
         public override string ToString()
         {
-            return string.Format("Num Keys: {0}", KeyInformation.Length);
+            return string.Format("Keys: {0}", KeyInformation.Length);
         }
     }
 }

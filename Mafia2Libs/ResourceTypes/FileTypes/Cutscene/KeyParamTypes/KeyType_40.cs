@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -9,11 +8,11 @@ namespace ResourceTypes.Cutscene.KeyParams
         public int Unk01 { get; set; }
         public ushort Unk02 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
-            Unk01 = stream.ReadInt32(isBigEndian);
-            Unk02 = stream.ReadUInt16(isBigEndian);
+            base.ReadFromFile(br);
+            Unk01 = br.ReadInt32();
+            Unk02 = br.ReadUInt16();
 
             if (Unk01 != 0 || Unk02 != 1)
             {
@@ -21,11 +20,16 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk01, isBigEndian);
-            stream.Write(Unk02, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(Unk01);
+            bw.Write(Unk02);
+        }
+
+        public override string ToString()
+        {
+            return "KeyType: 40";
         }
     }
 }

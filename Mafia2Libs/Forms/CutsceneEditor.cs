@@ -40,19 +40,14 @@ namespace Mafia2Tool.Forms
         private void AddCutsceneToTreeView(CutsceneLoader.Cutscene Cutscene)
         {
             TreeNode CutsceneParent = new TreeNode(Cutscene.CutsceneName);
+            CutsceneParent.Tag = Cutscene;
 
             if (Cutscene.AssetContent != null)
             {
                 var Assets = Cutscene.AssetContent;
                 TreeNode AssetsParent = new TreeNode("Game Cutscene Content: (GCS Data)");
 
-                if (Assets.FaceFX != null)
-                {
-                    TreeNode AssetNode = new TreeNode("FaceFX");
-                    AssetNode.Tag = Assets.FaceFX;
-
-                    AssetsParent.Nodes.Add(AssetNode);
-                }
+                AssetsParent.Tag = Assets;
 
                 for (int i = 0; i < Assets.entities.Length; i++)
                 {
@@ -70,6 +65,8 @@ namespace Mafia2Tool.Forms
             {
                 var Assets = Cutscene.SoundContent;
                 TreeNode AssetsParent = new TreeNode("Sound Content: (SPD Data)");
+
+                AssetsParent.Tag = Assets;
 
                 for (int i = 0; i < Assets.EntityDefinitions.Length; i++)
                 {
@@ -138,7 +135,7 @@ namespace Mafia2Tool.Forms
 
         private void PropertyGrid_Cutscene_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
         {
-            if (e.ChangedItem.Label == "Name")
+            if (e.ChangedItem.Label == "Name" || e.ChangedItem.Label == "CutsceneName")
                 TreeView_Cutscene.SelectedNode.Text = e.ChangedItem.Value.ToString();
 
             Text = Language.GetString("$CUTSCENE_EDITOR") + "*";

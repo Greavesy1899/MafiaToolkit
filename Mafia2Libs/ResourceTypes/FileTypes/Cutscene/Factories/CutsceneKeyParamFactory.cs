@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using Utils.Logging;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -6,12 +8,12 @@ namespace ResourceTypes.Cutscene.KeyParams
     {
         // Finds the correct type of KeyParam and returns the data.
         // TODO: Ideally move this to our friend MemoryStream.
-        public static IKeyType ReadAnimEntityFromFile(AnimKeyParamTypes KeyParamType, int Size, MemoryStream Reader)
+        public static IKeyType ReadAnimEntityFromFile(BinaryReader br)
         {
             IKeyType KeyParam = null;
-            bool isBigEndian = false;
 
-            
+            AnimKeyParamTypes KeyParamType = (AnimKeyParamTypes)br.ReadInt32();
+
             switch (KeyParamType)
             {
                 case AnimKeyParamTypes.KeyType_0:
@@ -19,6 +21,9 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
                 case AnimKeyParamTypes.KeyType_6:
                     KeyParam = new KeyType_6();
+                    break;
+                case AnimKeyParamTypes.KeyType_7:
+                    KeyParam = new KeyType_7();
                     break;
                 case AnimKeyParamTypes.KeyType_13:
                     KeyParam = new KeyType_13();
@@ -38,9 +43,9 @@ namespace ResourceTypes.Cutscene.KeyParams
                 case AnimKeyParamTypes.KeyType_28:
                     KeyParam = new KeyType_28();
                     break;
-                case AnimKeyParamTypes.KeyType_39:
-                    KeyParam = new KeyType_39();
-                    break;
+                //case AnimKeyParamTypes.KeyType_39:
+                //    KeyParam = new KeyType_39();
+                //    break;
                 case AnimKeyParamTypes.KeyType_40:
                     KeyParam = new KeyType_40();
                     break;
@@ -55,14 +60,36 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
             }
 
-            KeyParam = new KeyType_Temp(); //Some keys were broken, don't wanna be fixing those rn
+            //KeyParam = new KeyType_Temp(); //Some keys were broken, don't wanna be fixing those rn
 
             // We should have our type, lets add our type and size to the KeyParameters and then begin reading them from the file.
             KeyParam.KeyType = (int)KeyParamType;
-            KeyParam.Size = Size;
-            KeyParam.ReadFromFile(Reader, isBigEndian);
+
+            KeyParam.ReadFromFile(br);
+
+            ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, $"Failed to read key type: {KeyParamType}");
 
             return KeyParam;
+        }
+
+        private static void DumpKeyData(IKeyType KeyParam, BinaryReader br)
+        {
+            string folderPath = "%userprofile%\\Desktop\\KeyParams";
+            string path = Environment.ExpandEnvironmentVariables(folderPath);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            switch (KeyParam.KeyType)
+            {
+                case 27:
+                    var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
+                    File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{KeyParam.KeyType}_{data.GetHashCode()}.bin"), data);
+                    br.BaseStream.Position = 4;
+                    break;
+            }
         }
     }
 }

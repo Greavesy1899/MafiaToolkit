@@ -4,7 +4,6 @@ using System.IO;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.StringHelpers;
-using static ResourceTypes.Cutscene.CutsceneLoader.Cutscene;
 
 namespace ResourceTypes.Cutscene
 {
@@ -120,11 +119,15 @@ namespace ResourceTypes.Cutscene
 
         public class Cutscene
         {
+            [Browsable(false)]
             private int unk05; // Padding?
+            [Browsable(false)]
             private byte unk06; // Compressed?
 
             public string CutsceneName { get; set; }
+            [Browsable(false)]
             public GCSData AssetContent { get; set; }
+            [Browsable(false)]
             public SPDData SoundContent { get; set; }
 
             public Cutscene(BinaryReader reader)
@@ -198,19 +201,19 @@ namespace ResourceTypes.Cutscene
             public class GCSData
             {
                 private string header; //usually equals !GCS.
-                private int unk02; //cutscene flags? 
-                private float unk03; //0?
-                private short unk04; //25.0f;
-                private short unk05; //sometimes 0xFF
-                private int unk06; //100000.
+                public int Type { get; set; } //cutscene flags? 
+                public float FPS { get; set; } //0?
+                public short unk04 { get; set; } //25.0f;
+                public short unk05 { get; set; } //sometimes 0xFF
+                public int unk06 { get; set; } //100000.
                 public FaceFX FaceFX { get; set; }
-                private ushort numEntities; //numEntities;
-                public AnimEntityWrapper[] entities;
-                public float unk10;
-                public float unk11;
-                public int unk12;
-                public float unk13;
-                public int unk14;
+                [Browsable(false)]
+                public AnimEntityWrapper[] entities { get; set; } = new AnimEntityWrapper[0];
+                public int unk10 { get; set; }
+                public float unk11 { get; set; }
+                public float unk12 { get; set; }
+                public float FrameCount { get; set; }
+                public int unk14 { get; set; }
 
                 private string CutsceneName;
 
@@ -219,16 +222,23 @@ namespace ResourceTypes.Cutscene
                     CutsceneName = name;
 
                     header = new string(reader.ReadChars(4));
-                    unk02 = reader.ReadInt32();
-                    unk03 = reader.ReadSingle();
-                    unk04 = reader.ReadInt16();
-                    unk05 = reader.ReadInt16();
+                    Type = reader.ReadInt32();
+                    FPS = reader.ReadSingle();
+
+                    if (Type != 101)
+                    {
+                        unk04 = reader.ReadInt16();
+                        unk05 = reader.ReadInt16();
+                    }
+                    
                     unk06 = reader.ReadInt32();
                     FaceFX = new FaceFX(reader);
 
+                    ToolkitAssert.Ensure(reader.ReadInt32() == 100, "Missed the Entity Block Magic!");
+
                     using (BinaryReader br = new(new MemoryStream(reader.ReadBytes(reader.ReadInt32() - 8))))
                     {
-                        numEntities = br.ReadUInt16();
+                        int numEntities = br.ReadUInt16();
                         entities = new AnimEntityWrapper[numEntities];
 
                         for (int i = 0; i < numEntities; i++)
@@ -272,28 +282,35 @@ namespace ResourceTypes.Cutscene
                         }
                     }
 
-                    unk10 = reader.ReadSingle();
+                    unk10 = reader.ReadInt32();
                     unk11 = reader.ReadSingle();
-                    unk12 = reader.ReadInt32();
-                    unk13 = reader.ReadSingle();
+                    unk12 = reader.ReadSingle();
+                    FrameCount = reader.ReadSingle();
                     unk14 = reader.ReadInt32();
                 }
 
                 public void WriteToFile(BinaryWriter writer)
                 {
                     writer.Write(header.ToCharArray());
-                    writer.Write(unk02);
-                    writer.Write(unk03);
-                    writer.Write(unk04);
-                    writer.Write(unk05);
+                    writer.Write(Type);
+                    writer.Write(FPS);
+
+                    if (Type != 101)
+                    {
+                        writer.Write(unk04);
+                        writer.Write(unk05);
+                    }
+
                     writer.Write(unk06);
                     FaceFX.Write(writer);
+
+                    writer.Write(100); //Entity block magic
 
                     using (MemoryStream ms = new())
                     {
                         using (BinaryWriter bw = new(ms))
                         {
-                            bw.Write(numEntities);
+                            bw.Write((short)entities.Length);
 
                             foreach (var Entity in entities)
                             {
@@ -339,7 +356,7 @@ namespace ResourceTypes.Cutscene
                     writer.Write(unk10);
                     writer.Write(unk11);
                     writer.Write(unk12);
-                    writer.Write(unk13);
+                    writer.Write(FrameCount);
                     writer.Write(unk14);
                 }
             }
@@ -348,6 +365,7 @@ namespace ResourceTypes.Cutscene
             {
                 public int Unk01 { get; set; }
                 public float Unk02 { get; set; } // For GCS this is FPS i think.
+                [Browsable(false)]
                 public AnimEntityWrapper[] EntityDefinitions { get; set; }
                 private string CutsceneName; // For debugging
 

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Utils.Extensions;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -18,50 +19,49 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        public int NumWeathers { get; set; }
         public WeatherParam[] Weathers { get; set; }
         public ushort Unk05 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
+            base.ReadFromFile(br);
 
-            NumWeathers = stream.ReadInt32(isBigEndian);
+            int NumWeathers = br.ReadInt32();
             Weathers = new WeatherParam[NumWeathers];
 
             for (int i = 0; i < NumWeathers; i++)
             {
                 WeatherParam param = new WeatherParam();
-                param.KeyFrameStart = stream.ReadInt32(isBigEndian);
-                param.KeyFrameEnd = stream.ReadInt32(isBigEndian);
-                param.Unk03 = stream.ReadByte8();
-                param.WeatherName = stream.ReadString16(isBigEndian);
+                param.KeyFrameStart = br.ReadInt32();
+                param.KeyFrameEnd = br.ReadInt32();
+                param.Unk03 = br.ReadByte();
+                param.WeatherName = br.ReadString16();
                 Weathers[i] = param;
             }
 
-            Unk05 = stream.ReadUInt16(isBigEndian);
+            Unk05 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
+            base.WriteToFile(bw);
 
-            stream.Write(Weathers.Length, isBigEndian);
+            bw.Write(Weathers.Length);
 
             foreach(var Weather in Weathers)
             {
-                stream.Write(Weather.KeyFrameStart, isBigEndian);
-                stream.Write(Weather.KeyFrameEnd, isBigEndian);
-                stream.WriteByte(Weather.Unk03);
-                stream.WriteString16(Weather.WeatherName, isBigEndian);
+                bw.Write(Weather.KeyFrameStart);
+                bw.Write(Weather.KeyFrameEnd);
+                bw.Write(Weather.Unk03);
+                bw.WriteString16(Weather.WeatherName);
             }
 
-            stream.Write(Unk05, isBigEndian);
+            bw.Write(Unk05);
         }
 
         public override string ToString()
         {
-            return string.Format("NumWeathers: {0}", Weathers.Length);
+            return string.Format("Weathers: {0}", Weathers.Length);
         }
     }
 }

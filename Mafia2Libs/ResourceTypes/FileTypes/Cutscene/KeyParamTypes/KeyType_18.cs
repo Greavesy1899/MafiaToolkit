@@ -1,13 +1,15 @@
 ﻿using System.IO;
 using Utils.Extensions;
+using Utils.StringHelpers;
+
 namespace ResourceTypes.Cutscene.KeyParams
 {
     public class KeyType_18 : IKeyType
     {
         public class FrameData
         {
-            public int Unk01 { get; set; } // Key Frame Start?
-            public int Unk02 { get; set; } // Key Frame End?
+            public int KeyFrameStart { get; set; } // Key Frame Start?
+            public int KeyFrameEnd { get; set; } // Key Frame End?
             public byte Unk03 { get; set; } // Is Available?
             public string SoundFile { get; set; } // Sound to play.
             public int Unk04 { get; set; }
@@ -21,71 +23,70 @@ namespace ResourceTypes.Cutscene.KeyParams
             public float Unk12 { get; set; }
             public override string ToString()
             {
-                return string.Format("Sound: {0} Start: {1} End: {2}", SoundFile, Unk01, Unk02);
+                return string.Format("Sound: {0} Start: {1} End: {2}", SoundFile, KeyFrameStart, KeyFrameEnd);
             }
         }
 
-        public int NumSounds { get; set; }
         public FrameData[] Sounds { get; set; }
         public ushort Unk05 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
+            base.ReadFromFile(br);
 
-            NumSounds = stream.ReadInt32(isBigEndian);
+            int NumSounds = br.ReadInt32();
             Sounds = new FrameData[NumSounds];
 
             for (int i = 0; i < NumSounds; i++)
             {
                 FrameData frames = new FrameData();
-                frames.Unk01 = stream.ReadInt32(isBigEndian);
-                frames.Unk02 = stream.ReadInt32(isBigEndian);
-                frames.Unk03 = stream.ReadByte8();
-                frames.SoundFile = stream.ReadString16(isBigEndian);
-                frames.Unk04 = stream.ReadInt32(isBigEndian);
-                frames.Unk05 = stream.ReadByte8();
-                frames.Unk06 = stream.ReadSingle(isBigEndian);
-                frames.Unk07 = stream.ReadSingle(isBigEndian);
-                frames.Unk08 = stream.ReadSingle(isBigEndian);
-                frames.Unk09 = stream.ReadSingle(isBigEndian);
-                frames.Unk10 = stream.ReadInt32(isBigEndian);
-                frames.Unk11 = stream.ReadSingle(isBigEndian);
-                frames.Unk12 = stream.ReadSingle(isBigEndian);
+                frames.KeyFrameStart = br.ReadInt32();
+                frames.KeyFrameEnd = br.ReadInt32();
+                frames.Unk03 = br.ReadByte();
+                frames.SoundFile = br.ReadString16();
+                frames.Unk04 = br.ReadInt32();
+                frames.Unk05 = br.ReadByte();
+                frames.Unk06 = br.ReadSingle();
+                frames.Unk07 = br.ReadSingle();
+                frames.Unk08 = br.ReadSingle();
+                frames.Unk09 = br.ReadSingle();
+                frames.Unk10 = br.ReadInt32();
+                frames.Unk11 = br.ReadSingle();
+                frames.Unk12 = br.ReadSingle();
                 Sounds[i] = frames;
             }
 
-            Unk05 = stream.ReadUInt16(isBigEndian);
+            Unk05 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(NumSounds, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(Sounds.Length);
 
             foreach(FrameData FrameInfo in Sounds)
             {
-                stream.Write(FrameInfo.Unk01, isBigEndian);
-                stream.Write(FrameInfo.Unk02, isBigEndian);
-                stream.WriteByte(FrameInfo.Unk03);
-                stream.WriteString16(FrameInfo.SoundFile, isBigEndian);
-                stream.Write(FrameInfo.Unk04, isBigEndian);
-                stream.WriteByte(FrameInfo.Unk05);
-                stream.Write(FrameInfo.Unk06, isBigEndian);
-                stream.Write(FrameInfo.Unk07, isBigEndian);
-                stream.Write(FrameInfo.Unk08, isBigEndian);
-                stream.Write(FrameInfo.Unk09, isBigEndian);
-                stream.Write(FrameInfo.Unk10, isBigEndian);
-                stream.Write(FrameInfo.Unk11, isBigEndian);
-                stream.Write(FrameInfo.Unk12, isBigEndian);
+                bw.Write(FrameInfo.KeyFrameStart);
+                bw.Write(FrameInfo.KeyFrameEnd);
+                bw.Write(FrameInfo.Unk03);
+                bw.WriteString16(FrameInfo.SoundFile);
+                bw.Write(FrameInfo.Unk04);
+                bw.Write(FrameInfo.Unk05);
+                bw.Write(FrameInfo.Unk06);
+                bw.Write(FrameInfo.Unk07);
+                bw.Write(FrameInfo.Unk08);
+                bw.Write(FrameInfo.Unk09);
+                bw.Write(FrameInfo.Unk10);
+                bw.Write(FrameInfo.Unk11);
+                bw.Write(FrameInfo.Unk12);
             }
 
-            stream.Write(Unk05, isBigEndian);
+            bw.Write(Unk05);
         }
 
         public override string ToString()
         {
-            return string.Format("NumSounds: {0}", Sounds.Length);
+            return string.Format("Sounds: {0}", Sounds.Length);
         }
     }
 }

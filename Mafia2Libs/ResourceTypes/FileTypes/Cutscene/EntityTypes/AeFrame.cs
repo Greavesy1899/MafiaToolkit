@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using System.Numerics;
+using Toolkit.Mathematics;
 using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
@@ -41,10 +41,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
     {
         public byte Unk06 { get; set; }
         public ulong Hash2 { get; set; }
-        public Matrix4x4 Transform { get; set; }
+        public Matrix44 Transform { get; set; } = new();
         public float Unk07 { get; set; }
         public float Unk08 { get; set; }
-        public Matrix4x4 Transform1 { get; set; }
+        public Matrix44 Transform1 { get; set; } = new();
         public ulong Hash3 { get; set; }
         public byte[] UnknownData { get; set; }
 
@@ -62,13 +62,13 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 Hash3 = stream.ReadUInt64(isBigEndian);
             }
                 
-            Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            Transform.ReadFromFile(stream, isBigEndian);
 
             // TODO: Find out what this actually means.
             // This cannot be distinguished by size alone.
             if(Unk044 == 121)
             {
-                Transform1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                Transform1.ReadFromFile(stream, isBigEndian);
             }
             */
         }

@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Numerics;
-using Utils.Extensions;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
@@ -9,61 +8,60 @@ namespace ResourceTypes.Cutscene.KeyParams
     {
         public class PositionData
         {
-            public int Unk01 { get; set; } // Key Frame Start?
-            public int Unk02 { get; set; } // Key Frame End?
+            public int KeyFrameStart { get; set; } // Key Frame Start?
+            public int KeyFrameEnd { get; set; } // Key Frame End?
             public byte Unk03 { get; set; } // Is Available?
             public Vector3 Position { get; set; } // Could be new position
 
             public override string ToString()
             {
-                return string.Format("{0} Start: {1} End: {2}", Position, Unk01, Unk02);
+                return string.Format("{0} Start: {1} End: {2}", Position, KeyFrameStart, KeyFrameEnd);
             }
         }
 
-        public int NumPositions { get; set; }
         public PositionData[] Positions { get; set; }
         public ushort Unk05 { get; set; }
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
+            base.ReadFromFile(br);
 
-            NumPositions = stream.ReadInt32(isBigEndian);
+            int NumPositions = br.ReadInt32();
             Positions = new PositionData[NumPositions];
 
             for (int i = 0; i < NumPositions; i++)
             {
                 PositionData position = new PositionData();
-                position.Unk01 = stream.ReadInt32(isBigEndian);
-                position.Unk02 = stream.ReadInt32(isBigEndian);
-                position.Unk03 = stream.ReadByte8();
-                position.Position = Vector3Utils.ReadFromFile(stream, isBigEndian);
+                position.KeyFrameStart = br.ReadInt32();
+                position.KeyFrameEnd = br.ReadInt32();
+                position.Unk03 = br.ReadByte();
+                position.Position = Vector3Utils.ReadFromFile(br);
                 Positions[i] = position;
             }
 
-            Unk05 = stream.ReadUInt16(isBigEndian);
+            Unk05 = br.ReadUInt16();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(NumPositions, isBigEndian);
+            base.WriteToFile(bw);
+            bw.Write(Positions.Length);
 
             for(int i = 0; i < Positions.Length; i++)
             {
                 PositionData Entry = Positions[i];
-                stream.Write(Entry.Unk01, isBigEndian);
-                stream.Write(Entry.Unk02, isBigEndian);
-                stream.WriteByte(Entry.Unk03);
-                Entry.Position.WriteToFile(stream, isBigEndian);
+                bw.Write(Entry.KeyFrameStart);
+                bw.Write(Entry.KeyFrameEnd);
+                bw.Write(Entry.Unk03);
+                Entry.Position.WriteToFile(bw);
             }
 
-            stream.Write(Unk05, isBigEndian);
+            bw.Write(Unk05);
         }
 
         public override string ToString()
         {
-            return string.Format("NumPositions: {0}", Positions.Length);
+            return string.Format("Positions: {0}", Positions.Length);
         }
     }
 }

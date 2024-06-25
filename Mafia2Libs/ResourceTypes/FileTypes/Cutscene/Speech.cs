@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using Utils.StringHelpers;
-using static ResourceTypes.Speech.SpeechFile;
 using Utils.Helpers.Reflection;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Speech
 {

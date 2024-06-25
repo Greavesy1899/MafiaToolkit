@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -7,16 +6,16 @@ namespace ResourceTypes.Cutscene.KeyParams
     {
         public byte[] KeyData;
 
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public override void ReadFromFile(BinaryReader br)
         {
-            base.ReadFromFile(stream, isBigEndian);
-            KeyData = stream.ReadBytes(Size - 12);
+            base.ReadFromFile(br);
+            KeyData = br.ReadBytes((int)br.BaseStream.Length - 4);
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        public override void WriteToFile(BinaryWriter bw)
         {
-            base.WriteToFile(stream, isBigEndian);
-            stream.Write(KeyData);
+            base.WriteToFile(bw);
+            bw.Write(KeyData);
         }
 
         public override string ToString()
