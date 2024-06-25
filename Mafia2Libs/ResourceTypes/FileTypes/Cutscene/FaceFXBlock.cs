@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FaceFXBlock
     {
         public string Name { get; set; }

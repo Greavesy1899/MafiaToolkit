@@ -1,4 +1,5 @@
 ﻿using ResourceTypes.Cutscene.AnimEntities;
+using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
 using Utils.Logging;
@@ -118,11 +119,15 @@ namespace ResourceTypes.Cutscene
 
         public class Cutscene
         {
+            [Browsable(false)]
             private int unk05; // Padding?
+            [Browsable(false)]
             private byte unk06; // Compressed?
 
             public string CutsceneName { get; set; }
+            [Browsable(false)]
             public GCSData AssetContent { get; set; }
+            [Browsable(false)]
             public SPDData SoundContent { get; set; }
 
             public Cutscene(BinaryReader reader)
