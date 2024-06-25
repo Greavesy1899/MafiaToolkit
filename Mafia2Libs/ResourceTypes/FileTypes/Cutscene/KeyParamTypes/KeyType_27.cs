@@ -8,15 +8,14 @@ namespace ResourceTypes.Cutscene.KeyParams
     public class KeyType_27 : IKeyType
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class QuaternionWrapper
+        public class Type27DataWrapper
         {
             public class QuaternionData
             {
                 public uint KeyFrameStart { get; set; }
                 public uint KeyFrameEnd { get; set; }
-                public ushort Unk0 { get; set; }
-                public ushort KeyType { get; set; }
-                public byte Unk01 { get; set; }
+                public byte Unk0 { get; set; }
+                public int KeyType { get; set; }
                 public Quaternion Rotation { get; set; }
                 public float Unk03 { get; set; }
 
@@ -26,58 +25,107 @@ namespace ResourceTypes.Cutscene.KeyParams
                 }
             }
 
-            public uint Unk0 { get; set; }
-            public uint NumRotations { get; set; }
-            public QuaternionData[] RotationData { get; set; }
+            public class Float32Data
+            {
+                public uint KeyFrameStart { get; set; }
+                public uint KeyFrameEnd { get; set; }
+                public byte Unk0 { get; set; }
+                public float Value { get; set; }
+
+                public override string ToString()
+                {
+                    return string.Format("Start: {0} End: {1}", KeyFrameStart, KeyFrameEnd);
+                }
+            }
+
+            public uint Type { get; set; }
+            public QuaternionData[] RotationData { get; set; } = new QuaternionData[0];
+            public Float32Data[] FloatData { get; set; } = new Float32Data[0];
 
             public void ReadFromFile(BinaryReader br)
             {
-                Unk0 = br.ReadUInt32();
-                NumRotations = br.ReadUInt32();
-                RotationData = new QuaternionData[NumRotations];
+                Type = br.ReadUInt32();
+                int Count = br.ReadInt32();
 
-                for(int i = 0; i < NumRotations; i++)
+                switch (Type)
                 {
-                    QuaternionData RotationInfo = new QuaternionData();
-                    RotationInfo.KeyFrameStart = br.ReadUInt32();
-                    RotationInfo.KeyFrameEnd = br.ReadUInt32();
-                    RotationInfo.Unk0 = br.ReadUInt16();
-                    RotationInfo.KeyType = br.ReadUInt16();
-                    RotationInfo.Unk01 = br.ReadByte();
-                    RotationInfo.Rotation = QuaternionExtensions.ReadFromFile(br);
-                    RotationInfo.Unk03 = br.ReadSingle();
-                    RotationData[i] = RotationInfo;
+                    case 0:
+                        FloatData = new Float32Data[Count];
+
+                        for (int i = 0; i < Count; i++)
+                        {
+                            Float32Data FloatInfo = new();
+                            FloatInfo.KeyFrameStart = br.ReadUInt32();
+                            FloatInfo.KeyFrameEnd = br.ReadUInt32();
+                            FloatInfo.Unk0 = br.ReadByte();
+                            FloatInfo.Value = br.ReadSingle();
+                            FloatData[i] = FloatInfo;
+                        }
+                        break;
+
+                    case 1:
+                        RotationData = new QuaternionData[Count];
+
+                        for (int i = 0; i < Count; i++)
+                        {
+                            QuaternionData RotationInfo = new();
+                            RotationInfo.KeyFrameStart = br.ReadUInt32();
+                            RotationInfo.KeyFrameEnd = br.ReadUInt32();
+                            RotationInfo.Unk0 = br.ReadByte();
+                            RotationInfo.KeyType = br.ReadInt32();
+                            RotationInfo.Rotation = QuaternionExtensions.ReadFromFile(br);
+                            RotationInfo.Unk03 = br.ReadSingle();
+                            RotationData[i] = RotationInfo;
+                        }
+                        break;
                 }
             }
 
             public void WriteToFile(BinaryWriter bw)
             {
-                bw.Write(Unk0);
-                bw.Write(RotationData.Length);
+                bw.Write(Type);
 
-                foreach(QuaternionData Info in RotationData)
+                switch (Type)
                 {
-                    bw.Write(Info.KeyFrameStart);
-                    bw.Write(Info.KeyFrameEnd);
-                    bw.Write(Info.Unk0);
-                    bw.Write(Info.KeyType);
-                    bw.Write(Info.Unk01);
-                    Info.Rotation.WriteToFile(bw);
-                    bw.Write(Info.Unk03);
+                    case 0:
+                        bw.Write(FloatData.Length);
+
+                        foreach (var Info in FloatData)
+                        {
+                            bw.Write(Info.KeyFrameStart);
+                            bw.Write(Info.KeyFrameEnd);
+                            bw.Write(Info.Unk0);
+                            bw.Write(Info.Value);
+                        }
+                        break;
+
+                    case 1:
+                        bw.Write(RotationData.Length);
+
+                        foreach (var Info in RotationData)
+                        {
+                            bw.Write(Info.KeyFrameStart);
+                            bw.Write(Info.KeyFrameEnd);
+                            bw.Write(Info.Unk0);
+                            bw.Write(Info.KeyType);
+                            Info.Rotation.WriteToFile(bw);
+                            bw.Write(Info.Unk03);
+                        }
+                        break;
                 }
             }
 
             public override string ToString()
             {
-                return string.Format("Num Rotations: {0}", NumRotations);
+                return string.Format("Num Rotations: {0} Num Floats: {1}", RotationData.Length, FloatData.Length);
             }
 
         }
 
         public uint Unk0 { get; set; }
-        public QuaternionWrapper RotationWrapper0 { get; set; }
-        public QuaternionWrapper RotationWrapper1 { get; set; }
-        public QuaternionWrapper RotationWrapper2 { get; set; }
+        public Type27DataWrapper Type27DataWrapper0 { get; set; }
+        public Type27DataWrapper Type27DataWrapper1 { get; set; }
+        public Type27DataWrapper Type27DataWrapper2 { get; set; }
         public ushort Unk1 { get; set; }
 
         public override void ReadFromFile(BinaryReader br)
@@ -85,12 +133,12 @@ namespace ResourceTypes.Cutscene.KeyParams
             base.ReadFromFile(br);
             Unk0 = br.ReadUInt32();
 
-            RotationWrapper0 = new QuaternionWrapper();
-            RotationWrapper0.ReadFromFile(br);
-            RotationWrapper1 = new QuaternionWrapper();
-            RotationWrapper1.ReadFromFile(br);
-            RotationWrapper2 = new QuaternionWrapper();
-            RotationWrapper2.ReadFromFile(br);
+            Type27DataWrapper0 = new Type27DataWrapper();
+            Type27DataWrapper0.ReadFromFile(br);
+            Type27DataWrapper1 = new Type27DataWrapper();
+            Type27DataWrapper1.ReadFromFile(br);
+            Type27DataWrapper2 = new Type27DataWrapper();
+            Type27DataWrapper2.ReadFromFile(br);
 
             Unk1 = br.ReadUInt16();
         }
@@ -100,9 +148,9 @@ namespace ResourceTypes.Cutscene.KeyParams
             base.WriteToFile(bw);
             bw.Write(Unk0);
 
-            RotationWrapper0.WriteToFile(bw);
-            RotationWrapper1.WriteToFile(bw);
-            RotationWrapper2.WriteToFile(bw);
+            Type27DataWrapper0.WriteToFile(bw);
+            Type27DataWrapper1.WriteToFile(bw);
+            Type27DataWrapper2.WriteToFile(bw);
 
             bw.Write(Unk1);
         }

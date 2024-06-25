@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using Toolkit.Mathematics;
 using Utils.Extensions;
 using Utils.VorticeUtils;
 
@@ -35,7 +36,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public byte Unk05 { get; set; }
         public int Unk06 { get; set; }
         public int Unk07 { get; set; }
-        public Matrix4x4 Transform { get; set; }
+        public Matrix44 Transform { get; set; } = new();
         public int Unk09 { get; set; }
         public int Unk10 { get; set; }
         public float[] Unk08 { get; set; }
@@ -52,7 +53,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk05 = stream.ReadByte8();
             Unk06 = stream.ReadInt32(isBigEndian);
             Unk07 = stream.ReadInt32(isBigEndian);
-            Transform = MatrixUtils.ReadFromFile(stream, isBigEndian);
+            Transform.ReadFromFile(stream, isBigEndian);
             Unk09 = stream.ReadInt32(isBigEndian);
             Unk10 = stream.ReadInt32(isBigEndian);
             Unk08 = new float[10];

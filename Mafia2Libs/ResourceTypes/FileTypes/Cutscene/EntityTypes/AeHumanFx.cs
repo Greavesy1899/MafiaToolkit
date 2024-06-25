@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using Toolkit.Mathematics;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.VorticeUtils;
@@ -39,8 +40,9 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeHumanFx : AnimEntity
     {
         public byte Unk06 { get; set; }
-        public ulong Unk07 { get; set; }
-        public Matrix4x4 Transform { get; set; }
+        public ulong Unk07 { get; set; } //Parent Hash?
+        public ulong Unk08 { get; set; }
+        public Matrix44 Transform { get; set; } = new();
         public string Name4 { get; set; }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -48,7 +50,13 @@ namespace ResourceTypes.Cutscene.AnimEntities
             base.ReadFromFile(stream, isBigEndian);
             Unk06 = stream.ReadByte8();
             Unk07 = stream.ReadUInt64(isBigEndian);
-            Transform = MatrixUtils.ReadFromFile(stream, isBigEndian);
+
+            if (Unk07 != 0)
+            {
+                Unk08 = stream.ReadUInt64(isBigEndian);
+            }
+
+            Transform.ReadFromFile(stream, isBigEndian);
             Name4 = stream.ReadString16(isBigEndian);
         }
 
@@ -57,6 +65,12 @@ namespace ResourceTypes.Cutscene.AnimEntities
             base.WriteToFile(stream, isBigEndian);
             stream.WriteByte(Unk06);
             stream.Write(Unk07, isBigEndian);
+
+            if (Unk07 != 0)
+            {
+                stream.Write(Unk08, isBigEndian);
+            }
+
             Transform.WriteToFile(stream, isBigEndian);
             stream.WriteString16(Name4, isBigEndian);
             UpdateSize(stream, isBigEndian);

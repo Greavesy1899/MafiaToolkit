@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using Toolkit.Mathematics;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.VorticeUtils;
@@ -47,7 +48,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public byte Unk14 { get; set; }
         public ulong Hash6 { get; set; }
         public ulong Hash7 { get; set; }
-        public Matrix4x4 Transform1 { get; set; }
+        public Matrix44 Transform1 { get; set; } = new();
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -58,11 +59,11 @@ namespace ResourceTypes.Cutscene.AnimEntities
             if (Hash6 != 0)
             {
                 Hash7 = stream.ReadUInt64(isBigEndian);
-                Transform1 = MatrixUtils.ReadFromFile(stream, isBigEndian);
+                Transform1.ReadFromFile(stream, isBigEndian);
             }
             else
             {
-                Transform1 = MatrixUtils.ReadFromFile(stream, isBigEndian);
+                Transform1.ReadFromFile(stream, isBigEndian);
                 Hash7 = stream.ReadUInt64(isBigEndian);
             }
         }

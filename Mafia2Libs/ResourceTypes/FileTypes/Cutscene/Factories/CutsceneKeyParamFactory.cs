@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Utils.Logging;
+using System;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -21,6 +22,9 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
                 case AnimKeyParamTypes.KeyType_6:
                     KeyParam = new KeyType_6();
+                    break;
+                case AnimKeyParamTypes.KeyType_7:
+                    KeyParam = new KeyType_7();
                     break;
                 case AnimKeyParamTypes.KeyType_13:
                     KeyParam = new KeyType_13();
@@ -61,11 +65,32 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             // We should have our type, lets add our type and size to the KeyParameters and then begin reading them from the file.
             KeyParam.KeyType = (int)KeyParamType;
+
             KeyParam.ReadFromFile(br);
 
             ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, $"Failed to read key type: {KeyParamType}");
 
             return KeyParam;
+        }
+
+        private static void DumpKeyData(IKeyType KeyParam, BinaryReader br)
+        {
+            string folderPath = "%userprofile%\\Desktop\\KeyParams";
+            string path = Environment.ExpandEnvironmentVariables(folderPath);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            switch (KeyParam.KeyType)
+            {
+                case 27:
+                    var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
+                    File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{KeyParam.KeyType}_{data.GetHashCode()}.bin"), data);
+                    br.BaseStream.Position = 4;
+                    break;
+            }
         }
     }
 }

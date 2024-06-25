@@ -4,6 +4,7 @@
     { 
         KeyType_0 = 0,
         KeyType_6 = 6,
+        KeyType_7 = 7,
         KeyType_13 = 13,
         KeyType_18 = 18,
         KeyType_19 = 19,
