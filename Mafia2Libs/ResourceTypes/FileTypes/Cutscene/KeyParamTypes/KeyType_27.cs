@@ -157,7 +157,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Rotations: {0} Floats: {1}", Type27DataWrapper0.RotationData.Length + Type27DataWrapper1.RotationData.Length + Type27DataWrapper2.RotationData.Length,
+            return string.Format("Type: 27 Rotations: {0} Floats: {1}", Type27DataWrapper0.RotationData.Length + Type27DataWrapper1.RotationData.Length + Type27DataWrapper2.RotationData.Length,
                                                                Type27DataWrapper0.FloatData.Length + Type27DataWrapper1.FloatData.Length + Type27DataWrapper2.FloatData.Length);
         }
     }

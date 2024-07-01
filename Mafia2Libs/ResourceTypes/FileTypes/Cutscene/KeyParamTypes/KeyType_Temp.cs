@@ -20,7 +20,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("NOT_REVERSED::KeyType: {0}", KeyType);
+            return string.Format("Type: {0} NOT_REVERSED", KeyType);
         }
     }
 }

@@ -61,7 +61,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Positions: {0}", Positions.Length);
+            return string.Format("Type: 6 Positions: {0}", Positions.Length);
         }
     }
 }

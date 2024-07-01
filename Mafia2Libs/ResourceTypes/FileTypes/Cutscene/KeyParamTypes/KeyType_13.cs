@@ -77,7 +77,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Animations: {0}", Animations.Length);
+            return string.Format("Type: 13 Animations: {0}", Animations.Length);
         }
     }
 }

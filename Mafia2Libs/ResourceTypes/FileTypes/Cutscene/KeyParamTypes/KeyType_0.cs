@@ -58,7 +58,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Frames: {0}", Frames.Length);
+            return string.Format("Type: 0 Frames: {0}", Frames.Length);
         }
     }
 }
