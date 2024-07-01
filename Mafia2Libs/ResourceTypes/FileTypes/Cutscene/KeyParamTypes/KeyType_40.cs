@@ -29,7 +29,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return "KeyType: 40";
+            return "Type: 40";
         }
     }
 }

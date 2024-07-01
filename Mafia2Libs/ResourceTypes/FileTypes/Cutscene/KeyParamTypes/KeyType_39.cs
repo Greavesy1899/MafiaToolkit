@@ -83,7 +83,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return "KeyType: 39";
+            return "Type: 39";
         }
     }
 }

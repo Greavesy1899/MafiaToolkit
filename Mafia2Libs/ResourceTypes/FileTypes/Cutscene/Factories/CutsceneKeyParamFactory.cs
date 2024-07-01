@@ -19,6 +19,9 @@ namespace ResourceTypes.Cutscene.KeyParams
                 case AnimKeyParamTypes.KeyType_0:
                     KeyParam = new KeyType_0();
                     break;
+                case AnimKeyParamTypes.KeyType_1:
+                    KeyParam = new KeyType_1();
+                    break;
                 case AnimKeyParamTypes.KeyType_6:
                     KeyParam = new KeyType_6();
                     break;

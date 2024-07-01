@@ -86,7 +86,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Sounds: {0}", Sounds.Length);
+            return string.Format("Type: 18 Sounds: {0}", Sounds.Length);
         }
     }
 }

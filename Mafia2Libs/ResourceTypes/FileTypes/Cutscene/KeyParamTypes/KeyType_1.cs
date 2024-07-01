@@ -1,39 +1,46 @@
 ﻿using System.IO;
+using System.Numerics;
+using Vortice.Mathematics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
-    public class KeyType_30 : IKeyType
+    public class KeyType_1 : IKeyType
     {
-        public class UnkData
+        public class FrameData
         {
             public int KeyFrameStart { get; set; } // Key Frame Start?
             public int KeyFrameEnd { get; set; } // Key Frame End?
             public byte Unk03 { get; set; } // Is Available?
-            public float Unk04 { get; set; } // Could be new position
+            public uint Unk04 { get; set; }
+            public uint Unk05 { get; set; }
+            public Vector4 UnkVec { get; set; } = Vector4.One;
 
             public override string ToString()
             {
-                return string.Format("{0} Start: {1} End: {2}", Unk04, KeyFrameEnd, Unk03);
+                return string.Format("Start: {0} End: {1}", KeyFrameStart, KeyFrameEnd);
             }
         }
 
-        public UnkData[] Frames { get; set; }
+        public FrameData[] Frames { get; set; } = new FrameData[0];
         public ushort Unk05 { get; set; }
 
         public override void ReadFromFile(BinaryReader br)
         {
             base.ReadFromFile(br);
 
-            int NumUnkData = br.ReadInt32();
-            Frames = new UnkData[NumUnkData];
+            int NumFrames = br.ReadInt32();
+            Frames = new FrameData[NumFrames];
 
-            for (int i = 0; i < NumUnkData; i++)
+            for (int i = 0; i < NumFrames; i++)
             {
-                UnkData frames = new UnkData();
+                FrameData frames = new FrameData();
                 frames.KeyFrameStart = br.ReadInt32();
                 frames.KeyFrameEnd = br.ReadInt32();
                 frames.Unk03 = br.ReadByte();
-                frames.Unk04 = br.ReadSingle();
+                frames.Unk04 = br.ReadUInt32();
+                frames.Unk05 = br.ReadUInt32();
+                frames.UnkVec = Vector4Extenders.ReadFromFile(br);
                 Frames[i] = frames;
             }
 
@@ -44,13 +51,15 @@ namespace ResourceTypes.Cutscene.KeyParams
         {
             base.WriteToFile(bw);
             bw.Write(Frames.Length);
-            
-            foreach(UnkData Entry in Frames)
+
+            foreach (FrameData Entry in Frames)
             {
                 bw.Write(Entry.KeyFrameStart);
                 bw.Write(Entry.KeyFrameEnd);
                 bw.Write(Entry.Unk03);
-                bw.Write(Entry.KeyFrameStart);
+                bw.Write(Entry.Unk04);
+                bw.Write(Entry.Unk05);
+                Entry.UnkVec.WriteToFile(bw);
             }
 
             bw.Write(Unk05);
@@ -58,7 +67,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Type: 30 Frames: {0}", Frames.Length);
+            return string.Format("Type: 1 Frames: {0}", Frames.Length);
         }
     }
 }

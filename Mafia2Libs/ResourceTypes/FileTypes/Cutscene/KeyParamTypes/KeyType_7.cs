@@ -6,7 +6,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 {
     public class KeyType_7 : IKeyType
     {
-        public class Type7Data
+        public class FrameData
         {
             public int KeyFrameStart { get; set; }
             public int KeyFrameEnd { get; set; }
@@ -18,7 +18,7 @@ namespace ResourceTypes.Cutscene.KeyParams
             public Vector3 Unk08 { get; set; }
             public Vector3 Position { get; set; }
 
-            public Type7Data(BinaryReader br)
+            public FrameData(BinaryReader br)
             {
                 Read(br);
             }
@@ -54,7 +54,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                 return string.Format("Start: {0} End: {1}", KeyFrameStart, KeyFrameEnd);
             }
         }
-        public Type7Data[] Data { get; set; }
+        public FrameData[] Data { get; set; }
         public ushort Unk01 { get; set; }
 
         public override void ReadFromFile(BinaryReader br)
@@ -62,7 +62,7 @@ namespace ResourceTypes.Cutscene.KeyParams
             base.ReadFromFile(br);
 
             int Count = br.ReadInt32();
-            Data = new Type7Data[Count];
+            Data = new FrameData[Count];
 
             for (int i = 0; i < Count; i++)
             {
@@ -87,7 +87,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Datas: {0}", Data.Length);
+            return string.Format("Frames: {0}", Data.Length);
         }
     }
 }

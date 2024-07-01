@@ -99,7 +99,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Frames: {0}", Wrappers[0].Frames.Length + Wrappers[1].Frames.Length + Wrappers[2].Frames.Length);
+            return string.Format("Type: 28 Frames: {0}", Wrappers[0].Frames.Length + Wrappers[1].Frames.Length + Wrappers[2].Frames.Length);
         }
     }
 }
