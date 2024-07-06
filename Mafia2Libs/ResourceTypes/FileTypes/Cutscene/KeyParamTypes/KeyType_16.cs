@@ -4,22 +4,14 @@ using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
-    public class KeyType_26 : IKeyType
+    public class KeyType_16 : IKeyType
     {
         public class FrameData
         {
             public int KeyFrameStart { get; set; }
             public int KeyFrameEnd { get; set; }
             public byte Unk03 { get; set; } // Is Available?
-            public float Unk04 { get; set; }
-            public float Unk05 { get; set; }
-            public int Unk06 { get; set; }
-            public int Unk07 { get; set; }
-            public int Unk08 { get; set; }
-            public float Unk09 { get; set; }
-            public float Unk10 { get; set; }
-            public float Unk11 { get; set; }
-            public float Unk12 { get; set; }
+            public int Unk04 { get; set; }
 
             public FrameData(BinaryReader br)
             {
@@ -31,15 +23,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                 KeyFrameStart = br.ReadInt32();
                 KeyFrameEnd = br.ReadInt32();
                 Unk03 = br.ReadByte();
-                Unk04 = br.ReadSingle();
-                Unk05 = br.ReadSingle();
-                Unk06 = br.ReadInt32();
-                Unk07 = br.ReadInt32();
-                Unk08 = br.ReadInt32();
-                Unk09 = br.ReadSingle();
-                Unk10 = br.ReadSingle();
-                Unk11 = br.ReadSingle();
-                Unk12 = br.ReadSingle();
+                Unk04 = br.ReadInt32();
             }
 
             public void Write(BinaryWriter bw)
@@ -48,14 +32,6 @@ namespace ResourceTypes.Cutscene.KeyParams
                 bw.Write(KeyFrameEnd);
                 bw.Write(Unk03);
                 bw.Write(Unk04);
-                bw.Write(Unk05);
-                bw.Write(Unk06);
-                bw.Write(Unk07);
-                bw.Write(Unk08);
-                bw.Write(Unk09);
-                bw.Write(Unk10);
-                bw.Write(Unk11);
-                bw.Write(Unk12);
             }
 
             public override string ToString()
@@ -96,7 +72,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Type: 26 Frames: {0}", Data.Length);
+            return string.Format("Type: 16 Frames: {0}", Data.Length);
         }
     }
 }

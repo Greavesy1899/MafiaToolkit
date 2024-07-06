@@ -22,6 +22,9 @@ namespace ResourceTypes.Cutscene.KeyParams
                 case AnimKeyParamTypes.KeyType_1:
                     KeyParam = new KeyType_1();
                     break;
+                case AnimKeyParamTypes.KeyType_3:
+                    KeyParam = new KeyType_3();
+                    break;
                 case AnimKeyParamTypes.KeyType_6:
                     KeyParam = new KeyType_6();
                     break;
@@ -30,6 +33,12 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
                 case AnimKeyParamTypes.KeyType_13:
                     KeyParam = new KeyType_13();
+                    break;
+                case AnimKeyParamTypes.KeyType_16:
+                    KeyParam = new KeyType_16();
+                    break;
+                case AnimKeyParamTypes.KeyType_17:
+                    KeyParam = new KeyType_17();
                     break;
                 case AnimKeyParamTypes.KeyType_18:
                     KeyParam = new KeyType_18();
@@ -66,8 +75,6 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
             }
 
-            //KeyParam = new KeyType_Temp(); //Some keys were broken, don't wanna be fixing those rn
-
             // We should have our type, lets add our type and size to the KeyParameters and then begin reading them from the file.
             KeyParam.KeyType = (int)KeyParamType;
 
@@ -92,7 +99,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             switch (KeyParam.KeyType)
             {
-                case 39:
+                case 3:
                     var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
                     File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{KeyParam.KeyType}_{data.GetHashCode()}.bin"), data);
                     br.BaseStream.Position = 4;

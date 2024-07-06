@@ -4,9 +4,12 @@
     { 
         KeyType_0 = 0,
         KeyType_1 = 1,
+        KeyType_3 = 3,
         KeyType_6 = 6,
         KeyType_7 = 7,
         KeyType_13 = 13,
+        KeyType_16 = 16,
+        KeyType_17 = 17,
         KeyType_18 = 18,
         KeyType_19 = 19,
         KeyType_21 = 21,
