@@ -10,6 +10,7 @@
         KeyType_18 = 18,
         KeyType_19 = 19,
         KeyType_21 = 21,
+        KeyType_26 = 26,
         KeyType_27 = 27,
         KeyType_28 = 28,
         KeyType_39 = 39,

@@ -40,6 +40,9 @@ namespace ResourceTypes.Cutscene.KeyParams
                 case AnimKeyParamTypes.KeyType_21:
                     KeyParam = new KeyType_21();
                     break;
+                case AnimKeyParamTypes.KeyType_26:
+                    KeyParam = new KeyType_26();
+                    break;
                 case AnimKeyParamTypes.KeyType_27:
                     KeyParam = new KeyType_27();
                     break;
@@ -68,6 +71,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             // We should have our type, lets add our type and size to the KeyParameters and then begin reading them from the file.
             KeyParam.KeyType = (int)KeyParamType;
 
+            //DumpKeyData(KeyParam, br);
+
             KeyParam.ReadFromFile(br);
 
             ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, $"Failed to read key type: {KeyParamType}");
@@ -87,7 +92,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             switch (KeyParam.KeyType)
             {
-                case 27:
+                case 39:
                     var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
                     File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{KeyParam.KeyType}_{data.GetHashCode()}.bin"), data);
                     br.BaseStream.Position = 4;
