@@ -72,8 +72,15 @@ namespace ResourceTypes.Cutscene.AnimEntities
             }
             else if (Unk10 == 2) // Mostly the same as AeOmniLight, but with 12 floats rather than 10.
             {
-                LightInfo = new AeLightType2();
-                LightInfo.ReadFromFile(stream, isBigEndian);
+                var LightType2 = new AeLightType2();
+
+                if (Unk09 == 0)
+                {
+                    LightType2.SetNumFloats(10);
+                }
+
+                LightType2.ReadFromFile(stream, isBigEndian);
+                LightInfo = LightType2;
             }
             else
             {
