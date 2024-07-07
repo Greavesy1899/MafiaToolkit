@@ -58,9 +58,9 @@ namespace ResourceTypes.Cutscene.KeyParams
                 case AnimKeyParamTypes.KeyType_28:
                     KeyParam = new KeyType_28();
                     break;
-                //case AnimKeyParamTypes.KeyType_39:
-                //    KeyParam = new KeyType_39();
-                //    break;
+                case AnimKeyParamTypes.KeyType_39:
+                    KeyParam = new KeyType_39();
+                    break;
                 case AnimKeyParamTypes.KeyType_40:
                     KeyParam = new KeyType_40();
                     break;
@@ -99,7 +99,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             switch (KeyParam.KeyType)
             {
-                case 28:
+                case 39:
                     var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
                     File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{KeyParam.KeyType}_{data.GetHashCode()}.bin"), data);
                     br.BaseStream.Position = 4;

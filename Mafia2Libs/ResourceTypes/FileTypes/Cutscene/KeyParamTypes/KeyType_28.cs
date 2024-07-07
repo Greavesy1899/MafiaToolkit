@@ -9,18 +9,48 @@ namespace ResourceTypes.Cutscene.KeyParams
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class DataWrapper
         {
-            public class Type0Data
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class DefaultData
+            {
+                public DefaultData()
+                {
+
+                }
+
+                public DefaultData(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public virtual void Read(BinaryReader br)
+                {
+
+                }
+
+                public virtual void Write(BinaryWriter bw)
+                {
+
+                }
+            }
+
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type0Data : DefaultData
             {
                 public int KeyFrameStart { get; set; } // Key Frame Start?
                 public int KeyFrameEnd { get; set; } // Key Frame End?
                 public byte Unk00 { get; set; } // Always 1?
                 public float Unk01 { get; set; }
+                public Type0Data()
+                {
+                    
+                }
+
                 public Type0Data(BinaryReader br)
                 {
                     Read(br);
                 }
 
-                public void Read(BinaryReader br)
+                public override void Read(BinaryReader br)
                 {
                     KeyFrameStart = br.ReadInt32();
                     KeyFrameEnd = br.ReadInt32();
@@ -28,7 +58,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                     Unk01 = br.ReadSingle();
                 }
 
-                public void Write(BinaryWriter bw)
+                public override void Write(BinaryWriter bw)
                 {
                     bw.Write(KeyFrameStart);
                     bw.Write(KeyFrameEnd);
@@ -41,7 +71,8 @@ namespace ResourceTypes.Cutscene.KeyParams
                 }
             }
 
-            public class Type1Data
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type1Data : DefaultData
             {
                 public int KeyFrameStart { get; set; } // Key Frame Start?
                 public int KeyFrameEnd { get; set; } // Key Frame End?
@@ -50,12 +81,17 @@ namespace ResourceTypes.Cutscene.KeyParams
                 public ushort Unk02 { get; set; }
                 public float[] Unk03 { get; set; }
 
+                public Type1Data()
+                {
+                    
+                }
+
                 public Type1Data(BinaryReader br)
                 {
                     Read(br);
                 }
 
-                public void Read(BinaryReader br)
+                public override void Read(BinaryReader br)
                 {
                     KeyFrameStart = br.ReadInt32();
                     KeyFrameEnd = br.ReadInt32();
@@ -70,7 +106,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                     }
                 }
 
-                public void Write(BinaryWriter bw)
+                public override void Write(BinaryWriter bw)
                 {
                     bw.Write(KeyFrameStart);
                     bw.Write(KeyFrameEnd);
@@ -91,8 +127,7 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
 
             public int Type { get; set; }
-            public Type0Data[] FramesType0 { get; set; } = new Type0Data[0];
-            public Type1Data[] FramesType1 { get; set; } = new Type1Data[0];
+            public DefaultData[] Frames { get; set; } = new Type0Data[0];
             public DataWrapper(BinaryReader br)
             {
                 Read(br);
@@ -106,20 +141,20 @@ namespace ResourceTypes.Cutscene.KeyParams
                 switch (Type)
                 {
                     case 0:
-                        FramesType0 = new Type0Data[Count];
+                        Frames = new Type0Data[Count];
 
-                        for (int i = 0; i < FramesType0.Length; i++)
+                        for (int i = 0; i < Frames.Length; i++)
                         {
-                            FramesType0[i] = new Type0Data(br);
+                            Frames[i] = new Type0Data(br);
                         }
                         break;
 
                     case 1:
-                        FramesType1 = new Type1Data[Count];
+                        Frames = new Type1Data[Count];
 
-                        for (int i = 0; i < FramesType1.Length; i++)
+                        for (int i = 0; i < Frames.Length; i++)
                         {
-                            FramesType1[i] = new Type1Data(br);
+                            Frames[i] = new Type1Data(br);
                         }
                         break;
                 }
@@ -128,26 +163,11 @@ namespace ResourceTypes.Cutscene.KeyParams
             public void Write(BinaryWriter bw)
             {
                 bw.Write(Type);
+                bw.Write(Frames.Length);
 
-                switch (Type)
+                foreach (var frame in Frames)
                 {
-                    case 0:
-                        bw.Write(FramesType0.Length);
-
-                        foreach (var frame in FramesType0)
-                        {
-                            frame.Write(bw);
-                        }
-                        break;
-
-                    case 1:
-                        bw.Write(FramesType1.Length);
-
-                        foreach (var frame in FramesType1)
-                        {
-                            frame.Write(bw);
-                        }
-                        break;
+                    frame.Write(bw);
                 }
             }
         }
@@ -186,7 +206,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Type: 28 Frames: {0}", Wrappers[0].FramesType0.Length + Wrappers[1].FramesType0.Length + Wrappers[2].FramesType0.Length + Wrappers[0].FramesType1.Length + Wrappers[1].FramesType1.Length + Wrappers[2].FramesType1.Length);
+            return string.Format("Type: 28 Frames: {0}", Wrappers[0].Frames.Length + Wrappers[1].Frames.Length + Wrappers[2].Frames.Length);
         }
     }
 }

@@ -1,21 +1,150 @@
-﻿using System.IO;
-using System.Numerics;
-using Utils.VorticeUtils;
+﻿using System.ComponentModel;
+using System.IO;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
     public class KeyType_17 : IKeyType
     {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public class FrameData
         {
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class DefaultData
+            {
+                public DefaultData()
+                {
+
+                }
+
+                public DefaultData(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public virtual void Read(BinaryReader br)
+                {
+                    
+                }
+
+                public virtual void Write(BinaryWriter bw)
+                {
+                    
+                }
+            }
+
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type1Data : DefaultData
+            {
+                public int Unk00 { get; set; }
+                public float Unk01 { get; set; }
+                public float Unk02 { get; set; }
+                public int Unk03 { get; set; }
+                public Type1Data()
+                {
+
+                }
+
+                public Type1Data(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public override void Read(BinaryReader br)
+                {
+                    Unk00 = br.ReadInt32();
+                    Unk01 = br.ReadSingle();
+                    Unk02 = br.ReadSingle();
+                    Unk03 = br.ReadInt32();
+                }
+
+                public override void Write(BinaryWriter bw)
+                {
+                    bw.Write(Unk00);
+                    bw.Write(Unk01);
+                    bw.Write(Unk02);
+                    bw.Write(Unk03);
+                }
+            }
+
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type2Data : DefaultData
+            {
+                public int Unk00 { get; set; }
+                public float Unk01 { get; set; }
+                public float Unk02 { get; set; }
+                public float Unk03 { get; set; }
+                public Type2Data()
+                {
+
+                }
+
+                public Type2Data(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public override void Read(BinaryReader br)
+                {
+                    Unk00 = br.ReadInt32();
+                    Unk01 = br.ReadSingle();
+                    Unk02 = br.ReadSingle();
+                    Unk03 = br.ReadSingle();
+                }
+
+                public override void Write(BinaryWriter bw)
+                {
+                    bw.Write(Unk00);
+                    bw.Write(Unk01);
+                    bw.Write(Unk02);
+                    bw.Write(Unk03);
+                }
+            }
+
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type3Data : DefaultData
+            {
+                public float Unk00 { get; set; }
+                public float Unk01 { get; set; }
+                public float Unk02 { get; set; }
+                public float Unk03 { get; set; }
+                public float Unk04 { get; set; }
+                public float Unk05 { get; set; }
+                public Type3Data()
+                {
+
+                }
+
+                public Type3Data(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public override void Read(BinaryReader br)
+                {
+                    Unk00 = br.ReadSingle();
+                    Unk01 = br.ReadSingle();
+                    Unk02 = br.ReadSingle();
+                    Unk03 = br.ReadSingle();
+                    Unk04 = br.ReadSingle();
+                    Unk05 = br.ReadSingle();
+                }
+
+                public override void Write(BinaryWriter bw)
+                {
+                    bw.Write(Unk00);
+                    bw.Write(Unk01);
+                    bw.Write(Unk02);
+                    bw.Write(Unk03);
+                    bw.Write(Unk04);
+                    bw.Write(Unk05);
+                }
+            }
+
             public int KeyFrameStart { get; set; }
             public int KeyFrameEnd { get; set; }
             public byte Unk03 { get; set; } // Is Available?
-            public int Unk04 { get; set; }
-            public int Unk05 { get; set; }
-            public int Unk06 { get; set; }
-            public int Unk07 { get; set; }
-            public int Unk08 { get; set; }
+            public int Type { get; set; }
+            public DefaultData Data { get; set; } = new Type1Data();
 
             public FrameData(BinaryReader br)
             {
@@ -27,11 +156,22 @@ namespace ResourceTypes.Cutscene.KeyParams
                 KeyFrameStart = br.ReadInt32();
                 KeyFrameEnd = br.ReadInt32();
                 Unk03 = br.ReadByte();
-                Unk04 = br.ReadInt32();
-                Unk05 = br.ReadInt32();
-                Unk06 = br.ReadInt32();
-                Unk07 = br.ReadInt32();
-                Unk08 = br.ReadInt32();
+                Type = br.ReadInt32();
+
+                switch (Type)
+                {
+                    case 2:
+                        Data = new Type2Data(br);
+                        break;
+
+                    case 3:
+                        Data = new Type3Data(br);
+                        break;
+
+                    default:
+                        Data = new Type1Data(br);
+                        break;
+                }
             }
 
             public void Write(BinaryWriter bw)
@@ -39,11 +179,8 @@ namespace ResourceTypes.Cutscene.KeyParams
                 bw.Write(KeyFrameStart);
                 bw.Write(KeyFrameEnd);
                 bw.Write(Unk03);
-                bw.Write(Unk04);
-                bw.Write(Unk05);
-                bw.Write(Unk06);
-                bw.Write(Unk07);
-                bw.Write(Unk08);
+                bw.Write(Type);
+                Data.Write(bw);
             }
 
             public override string ToString()

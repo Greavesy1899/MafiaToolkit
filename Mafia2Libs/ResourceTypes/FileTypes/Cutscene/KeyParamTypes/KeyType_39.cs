@@ -1,32 +1,196 @@
-﻿using System.IO;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
 using Utils.Extensions;
 using Utils.StringHelpers;
 using Utils.Types;
+using static UnluacNET.TableLiteral;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
     public class KeyType_39 : IKeyType
     {
-        public class KeyTypeData_39
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class DataWrapper
         {
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class DefaultData
+            {
+                public DefaultData()
+                {
+
+                }
+
+                public DefaultData(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public virtual void Read(BinaryReader br)
+                {
+
+                }
+
+                public virtual void Write(BinaryWriter bw)
+                {
+
+                }
+            }
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type1Data : DefaultData
+            {
+                public string Unk00 { get; set; } // Frame Name?
+                public int Unk01 { get; set; }
+                public int Unk02 { get; set; } // Possible ending KeyFrame?
+                public int Unk03 { get; set; }
+                public HashName NameHash { get; set; } // Another Name?
+                public int Unk04 { get; set; } // 4?
+                public float[] Unk05 { get; set; } = new float[0];
+                public Type1Data()
+                {
+
+                }
+
+                public Type1Data(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public override void Read(BinaryReader br)
+                {
+                    Unk00 = br.ReadString16();
+                    Unk01 = br.ReadInt32();
+                    Unk02 = br.ReadInt32();
+                    Unk03 = br.ReadInt32();
+                    NameHash = new HashName();
+                    NameHash.ReadFromFile(br);
+                    Unk04 = br.ReadInt32();
+
+                    if (Unk04 == 6)
+                    {
+                        Unk05 = new float[7];
+
+                        for (int i = 0; i < Unk05.Length; i++)
+                        {
+                            Unk05[i] = br.ReadSingle();
+                        }
+                    }
+                }
+
+                public override void Write(BinaryWriter bw)
+                {
+                    bw.WriteString16(Unk00);
+                    bw.Write(Unk01);
+                    bw.Write(Unk02);
+                    bw.Write(Unk03);
+                    NameHash.WriteToFile(bw);
+                    bw.Write(Unk04);
+
+                    if (Unk04 == 6)
+                    {
+                        if (Unk05.Length < 7)
+                        {
+                            float[] floats = new float[7];
+                            Array.Copy(Unk05, 0, floats, 0, Unk05.Length);
+                            Unk05 = floats;
+                        }
+
+                        for (int i = 0; i < 7; i++)
+                        {
+                            bw.Write(Unk05[i]);
+                        }
+                    }
+                }
+            }
+
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type3Data : DefaultData
+            {
+                public string Unk00 { get; set; } // Frame Name?
+                public int Unk01 { get; set; }
+                public ulong Unk02 { get; set; }
+                public int Unk03 { get; set; }
+                public int Unk04 { get; set; }
+                public int Unk05 { get; set; }
+                public short Unk06 { get; set; }
+                public Type3Data()
+                {
+
+                }
+
+                public Type3Data(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public override void Read(BinaryReader br)
+                {
+                    Unk00 = br.ReadString16();
+                    Unk01 = br.ReadInt32();
+                    Unk02 = br.ReadUInt64();
+                    Unk03 = br.ReadInt32();
+                    Unk04 = br.ReadInt32();
+                    Unk05 = br.ReadInt32();
+                    Unk06 = br.ReadInt16();
+                }
+
+                public override void Write(BinaryWriter bw)
+                {
+                    bw.WriteString16(Unk00);
+                    bw.Write(Unk01);
+                    bw.Write(Unk02);
+                    bw.Write(Unk03);
+                    bw.Write(Unk04);
+                    bw.Write(Unk05);
+                    bw.Write(Unk06);
+                }
+            }
+
             public int KeyFrameStart { get; set; } // Key Frame Start?
             public int KeyFrameEnd { get; set; } // Key Frame End?
-            public byte Unk03 { get; set; } // Is Available?
-            public int Unk04 { get; set; }
-            public string Unk05 { get; set; } // Frame Name?
-            public int Unk06 { get; set; }
-            public int Unk07 { get; set; } // Possible ending KeyFrame?
-            public int Unk08 { get; set; }
-            public HashName NameHash { get; set; } // Another Name?
-            public int Unk09 { get; set; } // 4?
-            public int[] UnkInts { get; set; } = new int[0];
+            public byte Unk00 { get; set; } // Is Available?
+            public int Type { get; set; }
+            public DefaultData Data { get; set; } = new Type1Data();
+            public DataWrapper(BinaryReader br)
+            {
+                Read(br);
+            }
+
+            public void Read(BinaryReader br)
+            {
+                KeyFrameStart = br.ReadInt32();
+                KeyFrameEnd = br.ReadInt32();
+                Unk00 = br.ReadByte();
+                Type = br.ReadInt32();
+
+                switch (Type)
+                {
+                    case 3:
+                        Data = new Type3Data(br);
+                        break;
+
+                    default:
+                        Data = new Type1Data(br);
+                        break;
+                }
+            }
+
+            public void Write(BinaryWriter bw)
+            {
+                bw.Write(KeyFrameStart);
+                bw.Write(KeyFrameEnd);
+                bw.Write(Unk00);
+                bw.Write(Type);
+                Data.Write(bw);
+            }
+
             public override string ToString()
             {
-                return string.Format("Start: {0} End: {1} Frame Name: {2} Name Hash: {3}", KeyFrameStart, KeyFrameEnd, Unk05, NameHash.ToString());
+                return string.Format("Start: {0} End: {1}", KeyFrameStart, KeyFrameEnd);
             }
         }
 
-        public KeyTypeData_39[] Data { get; set; }
+        public DataWrapper[] Data { get; set; }
         public ushort Unk02 { get; set; }
 
         public override void ReadFromFile(BinaryReader br)
@@ -34,26 +198,11 @@ namespace ResourceTypes.Cutscene.KeyParams
             base.ReadFromFile(br);
 
             int Count = br.ReadInt32();
-            Data = new KeyTypeData_39[Count];
+            Data = new DataWrapper[Count];
 
             for(int i = 0; i < Count; i++)
             {
-                KeyTypeData_39 KeyData = new KeyTypeData_39();
-                KeyData.KeyFrameStart = br.ReadInt32();
-                KeyData.KeyFrameEnd = br.ReadInt32();
-                KeyData.Unk03 = br.ReadByte();
-                KeyData.Unk04 = br.ReadInt32();
-                KeyData.Unk05 = br.ReadString16();
-                KeyData.Unk06 = br.ReadInt32();
-                KeyData.Unk07 = br.ReadInt32();
-                KeyData.Unk08 = br.ReadInt32();
-                KeyData.NameHash = new HashName();
-                KeyData.NameHash.ReadFromFile(br);
-                KeyData.Unk09 = br.ReadInt32();
-
-
-
-                Data[i] = KeyData;
+                Data[i] = new DataWrapper(br);
             }
 
             Unk02 = br.ReadUInt16();
@@ -64,18 +213,9 @@ namespace ResourceTypes.Cutscene.KeyParams
             base.WriteToFile(bw);
             bw.Write(Data.Length);
 
-            foreach(KeyTypeData_39 Entry in Data)
+            foreach(DataWrapper Entry in Data)
             {
-                bw.Write(Entry.KeyFrameStart);
-                bw.Write(Entry.KeyFrameEnd);
-                bw.Write(Entry.Unk03);
-                bw.Write(Entry.Unk04);
-                bw.WriteString16(Entry.Unk05);
-                bw.Write(Entry.Unk06);
-                bw.Write(Entry.Unk07);
-                bw.Write(Entry.Unk08);
-                Entry.NameHash.WriteToFile(bw);
-                bw.Write(Entry.Unk09);
+                Entry.Write(bw);
             }
 
             bw.Write(Unk02);
