@@ -80,6 +80,8 @@ namespace Core.IO
                     return new FileRoadmapDE(info);
                 case "GSD":
                     return new FileRoadmapClassic(info);
+                case "IFL":
+                    return new FileIFL(info);
                 default:
                     return new FileBase(info);
             }
