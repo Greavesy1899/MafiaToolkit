@@ -1,24 +1,22 @@
 ﻿using Microsoft.Win32;
-using ResourceTypes.SoundTable;
+using ResourceTypes.ImageFileList;
 using System.IO;
 
 namespace Core.IO
 {
-    public class FileSoundTable : FileBase
+    public class FileIFL : FileBase
     {
-        public FileSoundTable(FileInfo info) : base(info)
+        public FileIFL(FileInfo info) : base(info)
         {
         }
 
         public override string GetExtensionUpper()
         {
-            return "STBL";
+            return "IFL";
         }
 
         public override bool Open()
         {
-            // TODO: Make editor
-
             SaveFileDialog saveFile = new SaveFileDialog()
             {
                 InitialDirectory = Path.GetDirectoryName(file.FullName),
@@ -28,14 +26,14 @@ namespace Core.IO
 
             if (saveFile.ShowDialog() == true)
             {
-                SoundTable Table = new SoundTable();
+                ImageFileList IMGFileList = new ImageFileList();
 
                 using (MemoryStream ReaderStream = new MemoryStream(File.ReadAllBytes(file.FullName)))
                 {
-                    Table.ReadFromFile(ReaderStream, false);
+                    IMGFileList.ReadFromFile(ReaderStream, false);
                 }
 
-                Table.ConvertToXML(saveFile.FileName);
+                IMGFileList.ConvertToXML(saveFile.FileName);
             }
 
             return true;
@@ -52,11 +50,11 @@ namespace Core.IO
 
             if (openFile.ShowDialog() == true)
             {
-                SoundTable Table = new SoundTable();
-                Table.ConvertFromXML(openFile.FileName);
+                ImageFileList IMGFileList = new ImageFileList();
+                IMGFileList.ConvertFromXML(openFile.FileName);
 
                 File.Copy(file.FullName, file.FullName + "_old", true);
-                Table.WriteToFile(file.FullName, false);
+                IMGFileList.WriteToFile(file.FullName, false);
             }
         }
 

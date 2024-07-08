@@ -96,6 +96,8 @@ namespace ResourceTypes.FrameResource
         public string Type {
             get { return GetType().ToString(); }
         }
+        [ReadOnly(true)]
+        public int Index { get; set; }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public FrameProps.FrameInfo OurFrameProps { get; set; }

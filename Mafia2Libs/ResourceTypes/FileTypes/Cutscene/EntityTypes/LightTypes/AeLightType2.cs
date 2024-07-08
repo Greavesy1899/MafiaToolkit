@@ -16,11 +16,18 @@ namespace ResourceTypes.Cutscene.AnimEntities.LightTypes
         public float[] Unk10_1_Floats_1 { get; set; }
         public string[] Unk10_1_Strings { get; set; }
         public string ProjectorTexture { get; set; }
+        private int NumFloats = 12;
 
+        // TODO: Why does Omnilight have 10 and SpotLight have 12? 
+        // We need to find this out.
+        public void SetNumFloats(int NumFloats)
+        {
+            this.NumFloats = NumFloats;
+        }
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            Unk08 = new float[12];
-            for (int i = 0; i < 12; i++)
+            Unk08 = new float[NumFloats];
+            for (int i = 0; i < NumFloats; i++)
             {
                 Unk08[i] = stream.ReadSingle(isBigEndian);
             }

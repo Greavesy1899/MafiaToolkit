@@ -22,6 +22,9 @@ namespace ResourceTypes.Cutscene.KeyParams
                 case AnimKeyParamTypes.KeyType_1:
                     KeyParam = new KeyType_1();
                     break;
+                case AnimKeyParamTypes.KeyType_3:
+                    KeyParam = new KeyType_3();
+                    break;
                 case AnimKeyParamTypes.KeyType_6:
                     KeyParam = new KeyType_6();
                     break;
@@ -30,6 +33,12 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
                 case AnimKeyParamTypes.KeyType_13:
                     KeyParam = new KeyType_13();
+                    break;
+                case AnimKeyParamTypes.KeyType_16:
+                    KeyParam = new KeyType_16();
+                    break;
+                case AnimKeyParamTypes.KeyType_17:
+                    KeyParam = new KeyType_17();
                     break;
                 case AnimKeyParamTypes.KeyType_18:
                     KeyParam = new KeyType_18();
@@ -40,15 +49,18 @@ namespace ResourceTypes.Cutscene.KeyParams
                 case AnimKeyParamTypes.KeyType_21:
                     KeyParam = new KeyType_21();
                     break;
+                case AnimKeyParamTypes.KeyType_26:
+                    KeyParam = new KeyType_26();
+                    break;
                 case AnimKeyParamTypes.KeyType_27:
                     KeyParam = new KeyType_27();
                     break;
                 case AnimKeyParamTypes.KeyType_28:
                     KeyParam = new KeyType_28();
                     break;
-                //case AnimKeyParamTypes.KeyType_39:
-                //    KeyParam = new KeyType_39();
-                //    break;
+                case AnimKeyParamTypes.KeyType_39:
+                    KeyParam = new KeyType_39();
+                    break;
                 case AnimKeyParamTypes.KeyType_40:
                     KeyParam = new KeyType_40();
                     break;
@@ -63,10 +75,10 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
             }
 
-            //KeyParam = new KeyType_Temp(); //Some keys were broken, don't wanna be fixing those rn
-
             // We should have our type, lets add our type and size to the KeyParameters and then begin reading them from the file.
             KeyParam.KeyType = (int)KeyParamType;
+
+            //DumpKeyData(KeyParam, br);
 
             KeyParam.ReadFromFile(br);
 
@@ -87,7 +99,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             switch (KeyParam.KeyType)
             {
-                case 27:
+                case 39:
                     var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
                     File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{KeyParam.KeyType}_{data.GetHashCode()}.bin"), data);
                     br.BaseStream.Position = 4;

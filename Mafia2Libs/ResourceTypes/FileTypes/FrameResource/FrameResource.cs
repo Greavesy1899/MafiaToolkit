@@ -161,6 +161,8 @@ namespace ResourceTypes.FrameResource
                 {
                     FrameObjectBase newObject = FrameFactory.ReadFrameByObjectID(reader, isBigEndian, this, objectTypes[i]);
 
+                    newObject.Index = i;
+
                     if (objectTypes[i] == FrameResourceObjectType.SingleMesh)
                     {
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;

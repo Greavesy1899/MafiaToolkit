@@ -4,19 +4,15 @@ using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
-    public class KeyType_7 : IKeyType
+    public class KeyType_3 : IKeyType
     {
         public class FrameData
         {
             public int KeyFrameStart { get; set; }
             public int KeyFrameEnd { get; set; }
             public byte Unk03 { get; set; } // Is Available?
-            public int Unk04 { get; set; } //Key Type?
-            public Vector3 Unk05 { get; set; }
-            public Vector3 Unk06 { get; set; }
-            public Vector3 Unk07 { get; set; }
-            public Vector3 Unk08 { get; set; }
-            public Vector3 Position { get; set; }
+            public int Unk04 { get; set; }
+            public int Unk05 { get; set; }
 
             public FrameData(BinaryReader br)
             {
@@ -29,11 +25,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                 KeyFrameEnd = br.ReadInt32();
                 Unk03 = br.ReadByte();
                 Unk04 = br.ReadInt32();
-                Unk05 = Vector3Utils.ReadFromFile(br);
-                Unk06 = Vector3Utils.ReadFromFile(br);
-                Unk07 = Vector3Utils.ReadFromFile(br);
-                Unk08 = Vector3Utils.ReadFromFile(br);
-                Position = Vector3Utils.ReadFromFile(br);
+                Unk05 = br.ReadInt32();
             }
 
             public void Write(BinaryWriter bw)
@@ -42,11 +34,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                 bw.Write(KeyFrameEnd);
                 bw.Write(Unk03);
                 bw.Write(Unk04);
-                Unk05.WriteToFile(bw);
-                Unk06.WriteToFile(bw);
-                Unk07.WriteToFile(bw);
-                Unk08.WriteToFile(bw);
-                Position.WriteToFile(bw);
+                bw.Write(Unk05);
             }
 
             public override string ToString()
@@ -87,7 +75,7 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public override string ToString()
         {
-            return string.Format("Type: 7 Frames: {0}", Data.Length);
+            return string.Format("Type: 3 Frames: {0}", Data.Length);
         }
     }
 }
