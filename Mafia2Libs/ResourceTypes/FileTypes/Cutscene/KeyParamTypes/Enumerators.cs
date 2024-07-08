@@ -7,6 +7,7 @@
         KeyType_3 = 3,
         KeyType_6 = 6,
         KeyType_7 = 7,
+        KeyType_9 = 9,
         KeyType_13 = 13,
         KeyType_16 = 16,
         KeyType_17 = 17,
