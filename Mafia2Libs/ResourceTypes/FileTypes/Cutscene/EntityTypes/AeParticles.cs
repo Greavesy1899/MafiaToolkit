@@ -20,18 +20,29 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeParticlesData : AeBaseData
     {
         public int Unk02 { get; set; }
+        public short Unk03 { get; set; }
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
             ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
             Unk02 = stream.ReadInt32(isBigEndian);
+
+            if (Unk02 == 1)
+            {
+                Unk03 = stream.ReadInt16(isBigEndian);
+            }
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
             stream.Write(Unk02, isBigEndian);
+
+            if (Unk02 == 1)
+            {
+                stream.Write(Unk03, isBigEndian);
+            }
         }
     }
 }
