@@ -106,7 +106,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeOmniLightData : AeBaseData
     {
         public byte Unk02 { get; set; }
-        public int Unk03 { get; set; }
+        public ulong[] Unk03 { get; set; } = new ulong[0];
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
@@ -117,7 +117,13 @@ namespace ResourceTypes.Cutscene.AnimEntities
             // Could be an array of integers
             if (Unk02 == 1)
             {
-                Unk03 = stream.ReadInt32(isBigEndian);
+                int Count = stream.ReadInt32(isBigEndian);
+                Unk03 = new ulong[Count];
+
+                for (int i = 0; i < Count; i++)
+                {
+                    Unk03[i] = stream.ReadUInt64(isBigEndian);
+                }
             }
             else if (Unk02 != 0)
             {
@@ -133,7 +139,12 @@ namespace ResourceTypes.Cutscene.AnimEntities
             // Could be an array of integers
             if (Unk02 == 1)
             {
-                stream.Write(Unk03, isBigEndian);
+                stream.Write(Unk03.Length, isBigEndian);
+
+                foreach (var val in Unk03)
+                {
+                    stream.Write(val, isBigEndian);
+                }
             }
             else if (Unk02 != 0)
             {

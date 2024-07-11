@@ -48,6 +48,8 @@ namespace ResourceTypes.Cutscene.KeyParams
                 {
                     case 0:
                     case 1:
+                    case 4:
+                    case 5:
                     case 8:
                     case 9:
 
@@ -82,6 +84,8 @@ namespace ResourceTypes.Cutscene.KeyParams
                 {
                     case 0:
                     case 1:
+                    case 4:
+                    case 5:
                     case 8:
                     case 9:
 
