@@ -4,7 +4,6 @@ using System.IO;
 using Utils.Extensions;
 using Utils.StringHelpers;
 using Utils.Types;
-using static UnluacNET.TableLiteral;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -191,7 +190,7 @@ namespace ResourceTypes.Cutscene.KeyParams
         }
 
         public DataWrapper[] Data { get; set; }
-        public ushort Unk02 { get; set; }
+        public ushort Unk00 { get; set; }
 
         public override void ReadFromFile(BinaryReader br)
         {
@@ -205,7 +204,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                 Data[i] = new DataWrapper(br);
             }
 
-            Unk02 = br.ReadUInt16();
+            Unk00 = br.ReadUInt16();
         }
 
         public override void WriteToFile(BinaryWriter bw)
@@ -218,12 +217,12 @@ namespace ResourceTypes.Cutscene.KeyParams
                 Entry.Write(bw);
             }
 
-            bw.Write(Unk02);
+            bw.Write(Unk00);
         }
 
         public override string ToString()
         {
-            return "Type: 39";
+            return string.Format("Type: 39 Frames: {0}", Data.Length);
         }
     }
 }

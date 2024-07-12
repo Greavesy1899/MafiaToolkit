@@ -1,4 +1,5 @@
 ﻿using ResourceTypes.Cutscene.AnimEntities;
+using System;
 using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
@@ -270,8 +271,17 @@ namespace ResourceTypes.Cutscene
                             br.BaseStream.Position -= 8;
                             byte[] dataBytes = br.ReadBytes(size);
 
-                            //string format = string.Format("CutsceneInfo/{2}/{0}_{1}.bin", entities[z], z, CutsceneName);
-                            //File.WriteAllBytes(format, dataBytes);
+                            //string folderPath = "%userprofile%\\Desktop\\CutsceneInfo\\" + CutsceneName;
+                            //string path = Environment.ExpandEnvironmentVariables(folderPath);
+                            //
+                            //if (!Directory.Exists(path))
+                            //{
+                            //    Directory.CreateDirectory(path);
+                            //}
+                            //
+                            //string format = string.Format("\\{0}_{1}.bin", z.ToString("0000"), entities[z].GetType().Name);
+                            //path = path + format;
+                            //File.WriteAllBytes(path, dataBytes);
 
                             // And then This
                             using (MemoryStream stream = new MemoryStream(dataBytes))
