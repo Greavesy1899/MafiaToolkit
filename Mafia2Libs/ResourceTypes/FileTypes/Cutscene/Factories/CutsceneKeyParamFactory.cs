@@ -9,7 +9,8 @@ namespace ResourceTypes.Cutscene.KeyParams
     {
         // Finds the correct type of KeyParam and returns the data.
         // TODO: Ideally move this to our friend MemoryStream.
-        public static IKeyType ReadAnimEntityFromFile(BinaryReader br)
+
+        public static IKeyType ReadAnimEntityFromFile(BinaryReader br, string CutsceneName = "")
         {
             IKeyType KeyParam = null;
 
@@ -82,10 +83,12 @@ namespace ResourceTypes.Cutscene.KeyParams
                     break;
             }
 
+            KeyParam = new KeyType_Temp();
+
             // We should have our type, lets add our type and size to the KeyParameters and then begin reading them from the file.
             KeyParam.KeyType = (int)KeyParamType;
 
-            //DumpKeyData(KeyParam, br);
+            DumpKeyData(KeyParam, br, CutsceneName);
 
             KeyParam.ReadFromFile(br);
 
@@ -94,25 +97,21 @@ namespace ResourceTypes.Cutscene.KeyParams
             return KeyParam;
         }
 
-        private static void DumpKeyData(IKeyType KeyParam, BinaryReader br)
+        private static void DumpKeyData(IKeyType KeyParam, BinaryReader br, string CutsceneName)
         {
             string folderPath = "%userprofile%\\Desktop\\KeyParams";
             string path = Environment.ExpandEnvironmentVariables(folderPath);
+            path = Path.Combine(path, CutsceneName);
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            switch (KeyParam.KeyType)
-            {
-                case 22:
-                    var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
-                    File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{KeyParam.KeyType}_{data.GetHashCode()}.bin"), data);
-                    br.BaseStream.Position = 4;
-                    Debug.WriteLine(data.GetHashCode());
-                    break;
-            }
+            var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
+            File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{KeyParam.KeyType}_{data.GetHashCode()}.bin"), data);
+            br.BaseStream.Position = 4;
+            Debug.WriteLine(data.GetHashCode());
         }
     }
 }

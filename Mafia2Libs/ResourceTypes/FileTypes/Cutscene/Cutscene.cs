@@ -256,6 +256,8 @@ namespace ResourceTypes.Cutscene
                             {
                                 AnimEntityWrapper EntityWrapper = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
 
+                                EntityWrapper.CutsceneName = CutsceneName;
+
                                 //string format = string.Format("CutsceneInfo/{2}/Entity_{0}_{1}.bin", AnimEntityType, i, CutsceneName);
                                 //File.WriteAllBytes(format, DefintionData);
 
@@ -286,6 +288,7 @@ namespace ResourceTypes.Cutscene
                             // And then This
                             using (MemoryStream stream = new MemoryStream(dataBytes))
                             {
+                                entities[z].AnimEntityData.CutsceneName = CutsceneName;
                                 entities[z].AnimEntityData.ReadFromFile(stream, false);
                                 ToolkitAssert.Ensure(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
                             }
@@ -417,6 +420,7 @@ namespace ResourceTypes.Cutscene
                             // And then This
                             using (MemoryStream stream = new MemoryStream(dataBytes))
                             {
+                                EntityDefinitions[z].AnimEntityData.CutsceneName = CutsceneName;
                                 EntityDefinitions[z].AnimEntityData.ReadFromFile(stream, false);
                             }
                         }

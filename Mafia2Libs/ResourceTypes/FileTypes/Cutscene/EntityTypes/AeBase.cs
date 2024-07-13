@@ -1,4 +1,4 @@
-﻿using ResourceTypes.Cutscene.KeyParams;
+﻿using ResourceTypes.Cutscene.CurveParams;
 using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
@@ -15,7 +15,9 @@ namespace ResourceTypes.Cutscene.AnimEntities
         [Browsable(false)]
         public int KeyDataSize { get; set; } // Size of all the keyframes? Also count and the Unk01?
         public int Unk01 { get; set; }
-        public IKeyType[] KeyFrames { get; set; }
+        public ICurveParam[] KeyFrames { get; set; }
+        [Browsable(false)]
+        public string CutsceneName { get; set; }
 
         public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -29,7 +31,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk01 = stream.ReadInt32(isBigEndian);
             int NumKeyFrames = stream.ReadInt32(isBigEndian);
 
-            KeyFrames = new IKeyType[NumKeyFrames];
+            KeyFrames = new ICurveParam[NumKeyFrames];
 
             for (int i = 0; i < NumKeyFrames; i++)
             {
@@ -40,8 +42,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
                 using (BinaryReader br = new(new MemoryStream(stream.ReadBytes(stream.ReadInt32(isBigEndian) - 8))))
                 {
-                    IKeyType KeyParam = CutsceneKeyParamFactory.ReadAnimEntityFromFile(br);
-                    KeyFrames[i] = KeyParam;
+                    KeyFrames[i] = CutsceneCurveParamFactory.ReadFromFile(br, CutsceneName);
                 }
             }
         }
@@ -59,7 +60,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
                     for (int i = 0; i < KeyFrames.Length; i++)
                     {
-                        IKeyType KeyParam = KeyFrames[i];
+                        ICurveParam CurveParam = KeyFrames[i];
                         bw.Write(1000); // Write the header
 
                         byte[] keyData;
@@ -68,7 +69,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
                         {
                             using (BinaryWriter keyBw = new(keyMs))
                             {
-                                KeyParam.WriteToFile(keyBw);
+                                CurveParam.Write(keyBw);
                             }
 
                             keyData = keyMs.ToArray();
