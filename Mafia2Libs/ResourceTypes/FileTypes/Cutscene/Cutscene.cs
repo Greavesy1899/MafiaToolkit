@@ -1,5 +1,4 @@
 ﻿using ResourceTypes.Cutscene.AnimEntities;
-using System;
 using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;

@@ -13,7 +13,7 @@ namespace ResourceTypes.Cutscene.CurveParams
 
             int Type = br.ReadInt32();
 
-            DumpParamData(br, Type, CutsceneName);
+            //DumpParamData(br, Type, CutsceneName);
 
             switch (Type)
             {
@@ -93,6 +93,18 @@ namespace ResourceTypes.Cutscene.CurveParams
                     param = new SoundObjectPoint(br);
                     break;
 
+                case 21:
+                    param = new Script(br);
+                    break;
+
+                case 22:
+                    param = new ModelAction(br);
+                    break;
+
+                case 26:
+                    param = new DOF(br);
+                    break;
+
                 case 27:
                     param = new PositionXYZ(br);
                     break;
@@ -101,12 +113,40 @@ namespace ResourceTypes.Cutscene.CurveParams
                     param = new EulerXYZ(br);
                     break;
 
+                case 30:
+                    param = new Unk30Action(br);
+                    break;
+
+                case 39:
+                    param = new CameraAction(br);
+                    break;
+
+                case 40:
+                    param = new CameraTargetAction(br);
+                    break;
+
+                case 42:
+                    param = new EffectAction(br);
+                    break;
+
                 case 43:
                     param = new SoundObjectSphereAmbient(br);
                     break;
 
+                case 45:
+                    param = new SoundListener(br);
+                    break;
+
                 case 46:
                     param = new SoundEntityAction(br);
+                    break;
+
+                case 47:
+                    param = new WeatherPreset(br);
+                    break;
+
+                case 48:
+                    param = new RadioAction(br);
                     break;
 
                 case 31:
@@ -127,17 +167,9 @@ namespace ResourceTypes.Cutscene.CurveParams
                 case 20:
                     param = new TempParam(br, Type); //SoundObjectCone //SoundParam //Couldn't find any
                     break;
-                
-                case 21:
-                    param = new TempParam(br, Type); //Script Object //ScriptParam //Couldn't find any
-                    break;
 
-                case 22:
                 case 24:
-                case 30:
                 case 36:
-                case 39:
-                case 40:
                 case 41:
                     param = new TempParam(br, Type); //ActionParam
                     break;
@@ -147,31 +179,16 @@ namespace ResourceTypes.Cutscene.CurveParams
                     break;
 
                 case 25:
-                    param = new TempParam(br, Type); //HumanParam
-                    break;
-                case 26:
-                    param = new TempParam(br, Type); //CameraParam
+                    param = new TempParam(br, Type); //HumanParam //Couldn't find any
                     break;
                 case 35:
-                    param = new TempParam(br, Type); //HumanMRParam
+                    param = new TempParam(br, Type); //HumanMRParam //Couldn't find any
                     break;
                 case 37:
-                    param = new TempParam(br, Type); //ContestParam
+                    param = new TempParam(br, Type); //ContestParam //Couldn't find any
                     break;
                 case 38:
-                    param = new TempParam(br, Type); //GameEventParam
-                    break;
-                case 42:
-                    param = new TempParam(br, Type); //EffectActionParam
-                    break;
-                case 45:
-                    param = new TempParam(br, Type); //SoundListenerParam
-                    break;
-                case 47:
-                    param = new TempParam(br, Type); //EffectWeatherParam
-                    break;
-                case 48:
-                    param = new TempParam(br, Type); //RadioActionParam
+                    param = new TempParam(br, Type); //GameEventParam //Couldn't find any
                     break;
                 default:
                     param = new TempParam(br, Type);
