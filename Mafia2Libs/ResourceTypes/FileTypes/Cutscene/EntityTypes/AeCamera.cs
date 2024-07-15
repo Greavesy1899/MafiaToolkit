@@ -9,22 +9,22 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeCameraWrapper : AnimEntityWrapper
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public AeCamera Unk4Entity { get; set; }
+        public AeCamera CameraEntity { get; set; }
         public AeCameraWrapper() : base()
         {
-            Unk4Entity = new AeCamera();
+            CameraEntity = new AeCamera();
             AnimEntityData = new AeCameraData();
         }
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            Unk4Entity.ReadFromFile(stream, isBigEndian);
+            CameraEntity.ReadFromFile(stream, isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-            Unk4Entity.WriteToFile(stream, isBigEndian);
+            CameraEntity.WriteToFile(stream, isBigEndian);
         }
 
         public override AnimEntityTypes GetEntityType()

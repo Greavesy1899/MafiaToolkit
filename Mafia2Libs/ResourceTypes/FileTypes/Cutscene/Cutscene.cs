@@ -1,4 +1,5 @@
 ﻿using ResourceTypes.Cutscene.AnimEntities;
+using System;
 using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
@@ -67,6 +68,14 @@ namespace ResourceTypes.Cutscene
         public CutsceneLoader(FileInfo file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
+        public CutsceneLoader(string file)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
                 ReadFromFile(reader);
             }
@@ -225,10 +234,16 @@ namespace ResourceTypes.Cutscene
                     Type = reader.ReadInt32();
                     FPS = reader.ReadSingle();
 
-                    if (Type != 101)
+                    switch (Type)
                     {
-                        unk04 = reader.ReadInt16();
-                        unk05 = reader.ReadInt16();
+                        case 96:
+                        case 101:
+                            break;
+                        
+                        default:
+                            unk04 = reader.ReadInt16();
+                            unk05 = reader.ReadInt16();
+                            break;
                     }
                     
                     unk06 = reader.ReadInt32();
@@ -257,8 +272,17 @@ namespace ResourceTypes.Cutscene
 
                                 EntityWrapper.CutsceneName = CutsceneName;
 
-                                //string format = string.Format("CutsceneInfo/{2}/Entity_{0}_{1}.bin", AnimEntityType, i, CutsceneName);
-                                //File.WriteAllBytes(format, DefintionData);
+                                //string folderPath = "%userprofile%\\Desktop\\CutsceneInfo\\" + CutsceneName + "\\Entities";
+                                //string path = Environment.ExpandEnvironmentVariables(folderPath);
+                                //
+                                //if (!Directory.Exists(path))
+                                //{
+                                //    Directory.CreateDirectory(path);
+                                //}
+                                //
+                                //string format = string.Format("\\{0}_{1}.bin", i.ToString("0000"), AnimEntityType);
+                                //path = path + format;
+                                //File.WriteAllBytes(path, DefintionData);
 
                                 entities[i] = EntityWrapper;
                             }
@@ -307,10 +331,16 @@ namespace ResourceTypes.Cutscene
                     writer.Write(Type);
                     writer.Write(FPS);
 
-                    if (Type != 101)
+                    switch (Type)
                     {
-                        writer.Write(unk04);
-                        writer.Write(unk05);
+                        case 96:
+                        case 101:
+                            break;
+
+                        default:
+                            writer.Write(unk04);
+                            writer.Write(unk05);
+                            break;
                     }
 
                     writer.Write(unk06);

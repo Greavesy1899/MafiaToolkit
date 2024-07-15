@@ -88,14 +88,25 @@ namespace ResourceTypes.Cutscene.CurveParams
                 NameHash.ReadFromFile(br);
                 Unk06 = br.ReadInt32();
 
-                if (Unk06 == 6)
+                switch (Unk06)
                 {
-                    Unk07 = new float[7];
+                    case 0:
+                    case 1:
+                    case 4:
+                    case 5:
+                    case 8:
+                    case 9:
 
-                    for (int i = 0; i < Unk07.Length; i++)
-                    {
-                        Unk07[i] = br.ReadSingle();
-                    }
+                        break;
+
+                    default:
+                        Unk07 = new float[7];
+
+                        for (int i = 0; i < Unk07.Length; i++)
+                        {
+                            Unk07[i] = br.ReadSingle();
+                        }
+                        break;
                 }
             }
 
@@ -109,19 +120,30 @@ namespace ResourceTypes.Cutscene.CurveParams
                 NameHash.WriteToFile(bw);
                 bw.Write(Unk06);
 
-                if (Unk06 == 6)
+                switch (Unk06)
                 {
-                    if (Unk07.Length < 7)
-                    {
-                        float[] floats = new float[7];
-                        Array.Copy(Unk07, 0, floats, 0, Unk07.Length);
-                        Unk07 = floats;
-                    }
+                    case 0:
+                    case 1:
+                    case 4:
+                    case 5:
+                    case 8:
+                    case 9:
 
-                    for (int i = 0; i < 7; i++)
-                    {
-                        bw.Write(Unk07[i]);
-                    }
+                        break;
+
+                    default:
+                        if (Unk07.Length < 7)
+                        {
+                            float[] floats = new float[7];
+                            Array.Copy(Unk07, 0, floats, 0, Unk07.Length);
+                            Unk07 = floats;
+                        }
+
+                        for (int i = 0; i < 7; i++)
+                        {
+                            bw.Write(Unk07[i]);
+                        }
+                        break;
                 }
             }
         }
@@ -413,23 +435,9 @@ namespace ResourceTypes.Cutscene.CurveParams
             for (int i = 0; i < Data.Length; i++)
             {
                 FrameData baseData = new FrameData(br);
-
-                switch (baseData.Type)
-                {
-                    case 0:
-                    case 2:
-                    case 3:
-                        ModelFrameData modelData = new(baseData);
-                        modelData.Read(br);
-                        Data[i] = modelData;
-                        break;
-
-                    default:
-                        CameraFrameData unk01Data = new(baseData);
-                        unk01Data.Read(br);
-                        Data[i] = unk01Data;
-                        break;
-                }
+                CameraFrameData cameraFrameData = new(baseData);
+                cameraFrameData.Read(br);
+                Data[i] = cameraFrameData;
             }
 
             Unk00 = br.ReadInt16();
@@ -541,7 +549,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             for (int i = 0; i < Data.Length; i++)
             {
                 FrameData baseData = new FrameData(br);
-                CameraTargetFrameData modelData = new(baseData);
+                CameraFrameData modelData = new(baseData);
                 modelData.Read(br);
                 Data[i] = modelData;
             }

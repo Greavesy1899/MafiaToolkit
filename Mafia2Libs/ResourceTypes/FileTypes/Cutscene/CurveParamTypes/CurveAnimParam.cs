@@ -430,9 +430,13 @@ namespace ResourceTypes.Cutscene.CurveParams
             public bool Unk00 { get; set; } = true;
             public int Unk01 { get; set; }
             [TypeConverter(typeof(Vector3Converter))]
-            public Vector3 AnchorA { get; set; } = Vector3.Zero;
+            public Vector2 AnchorA { get; set; } = Vector2.Zero;
             [TypeConverter(typeof(Vector3Converter))]
-            public Vector3 AnchorB { get; set; } = Vector3.Zero;
+            public Vector2 AnchorB { get; set; } = Vector2.Zero;
+            [TypeConverter(typeof(Vector3Converter))]
+            public Vector2 AnchorC { get; set; } = Vector2.Zero;
+            [TypeConverter(typeof(Vector3Converter))]
+            public Vector2 AnchorD { get; set; } = Vector2.Zero;
             [TypeConverter(typeof(Vector2Converter))]
             public Vector2 Value { get; set; } = Vector2.Zero;
             public FrameData()
@@ -451,8 +455,10 @@ namespace ResourceTypes.Cutscene.CurveParams
                 EndFrame = br.ReadInt32();
                 Unk00 = br.ReadBoolean();
                 Unk01 = br.ReadInt32();
-                AnchorA = Vector3Utils.ReadFromFile(br);
-                AnchorB = Vector3Utils.ReadFromFile(br);
+                AnchorA = Vector2Extenders.ReadFromFile(br);
+                AnchorB = Vector2Extenders.ReadFromFile(br);
+                AnchorC = Vector2Extenders.ReadFromFile(br);
+                AnchorD = Vector2Extenders.ReadFromFile(br);
                 Value = Vector2Extenders.ReadFromFile(br);
             }
 
@@ -464,6 +470,8 @@ namespace ResourceTypes.Cutscene.CurveParams
                 bw.Write(Unk01);
                 AnchorA.WriteToFile(bw);
                 AnchorB.WriteToFile(bw);
+                AnchorC.WriteToFile(bw);
+                AnchorD.WriteToFile(bw);
                 Value.WriteToFile(bw);
             }
         }

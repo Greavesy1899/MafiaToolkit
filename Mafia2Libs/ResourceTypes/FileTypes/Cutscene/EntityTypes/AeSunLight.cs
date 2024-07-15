@@ -8,7 +8,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeSunLightWrapper : AnimEntityWrapper
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public AeSunLight SunLightEntity { get; set; }
+        public AeSunLight SunLightEntity { get; set; } = new();
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -24,7 +24,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public override AnimEntityTypes GetEntityType()
         {
-            return AnimEntityTypes.AeSound_Type33;
+            return AnimEntityTypes.AeSunLight;
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene.CurveParams
 {
@@ -47,7 +48,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
             public int Unk01 { get; set; } //EFF Index?
-            public short Unk02 { get; set; }
+            public string Description { get; set; }
             public FrameData()
             {
 
@@ -64,7 +65,7 @@ namespace ResourceTypes.Cutscene.CurveParams
                 EndFrame = br.ReadInt32();
                 Unk00 = br.ReadBoolean();
                 Unk01 = br.ReadInt32();
-                Unk02 = br.ReadInt16();
+                Description = br.ReadString16();
             }
 
             public void Write(BinaryWriter bw)
@@ -73,7 +74,7 @@ namespace ResourceTypes.Cutscene.CurveParams
                 bw.Write(EndFrame);
                 bw.Write(Unk00);
                 bw.Write(Unk01);
-                bw.Write(Unk02);
+                bw.WriteString16(Description);
             }
         }
 
