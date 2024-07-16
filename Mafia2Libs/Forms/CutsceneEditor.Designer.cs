@@ -42,6 +42,8 @@
             TreeView_Cutscene = new Controls.MTreeView();
             TreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(components);
             ContextMenu_Duplicate = new System.Windows.Forms.ToolStripMenuItem();
+            ContextMenu_Import = new System.Windows.Forms.ToolStripMenuItem();
+            ContextMenu_Export = new System.Windows.Forms.ToolStripMenuItem();
             Tool_Strip.SuspendLayout();
             TreeViewContextMenu.SuspendLayout();
             SuspendLayout();
@@ -137,9 +139,9 @@
             // 
             // TreeViewContextMenu
             // 
-            TreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { ContextMenu_Duplicate });
+            TreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { ContextMenu_Import, ContextMenu_Export, ContextMenu_Duplicate });
             TreeViewContextMenu.Name = "TreeViewContextMenu";
-            TreeViewContextMenu.Size = new System.Drawing.Size(244, 48);
+            TreeViewContextMenu.Size = new System.Drawing.Size(244, 92);
             TreeViewContextMenu.Opening += TreeViewContextMenu_Opening;
             // 
             // ContextMenu_Duplicate
@@ -148,6 +150,20 @@
             ContextMenu_Duplicate.Size = new System.Drawing.Size(243, 22);
             ContextMenu_Duplicate.Text = "$CUTSCENE_DUPLICATE_ENTITY";
             ContextMenu_Duplicate.Click += ContextMenu_Duplicate_Click;
+            // 
+            // ContextMenu_Import
+            // 
+            ContextMenu_Import.Name = "ContextMenu_Import";
+            ContextMenu_Import.Size = new System.Drawing.Size(243, 22);
+            ContextMenu_Import.Text = "$CUTSCENE_IMPORT_ENTITY";
+            ContextMenu_Import.Click += ContextMenu_Import_Click;
+            // 
+            // ContextMenu_Export
+            // 
+            ContextMenu_Export.Name = "ContextMenu_Export";
+            ContextMenu_Export.Size = new System.Drawing.Size(243, 22);
+            ContextMenu_Export.Text = "$CUTSCENE_EXPORT_ENTITY";
+            ContextMenu_Export.Click += ContextMenu_Export_Click;
             // 
             // CutsceneEditor
             // 
@@ -186,5 +202,7 @@
         private System.Windows.Forms.ToolStripMenuItem Button_Exit;
         private System.Windows.Forms.ContextMenuStrip TreeViewContextMenu;
         private System.Windows.Forms.ToolStripMenuItem ContextMenu_Duplicate;
+        private System.Windows.Forms.ToolStripMenuItem ContextMenu_Import;
+        private System.Windows.Forms.ToolStripMenuItem ContextMenu_Export;
     }
 }

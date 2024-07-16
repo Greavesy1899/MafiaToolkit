@@ -5,9 +5,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Utils.Language;
-using static ResourceTypes.Cutscene.CutsceneLoader;
 using Utils.Extensions;
+using Utils.Language;
+using Utils.Logging;
+using static ResourceTypes.Cutscene.CutsceneLoader;
+using static ResourceTypes.Cutscene.CutsceneLoader.Cutscene;
 
 namespace Mafia2Tool.Forms
 {
@@ -54,7 +56,7 @@ namespace Mafia2Tool.Forms
                 for (int i = 0; i < Assets.entities.Length; i++)
                 {
                     var Asset = Assets.entities[i];
-                    TreeNode AssetNode = new TreeNode(string.Format("Asset: {0}", i));
+                    TreeNode AssetNode = new TreeNode(string.Format("{0}: {1}", Asset.GetType().Name, i));
                     AssetNode.Tag = Asset;
 
                     AssetsParent.Nodes.Add(AssetNode);
@@ -73,7 +75,7 @@ namespace Mafia2Tool.Forms
                 for (int i = 0; i < Assets.EntityDefinitions.Length; i++)
                 {
                     var Asset = Assets.EntityDefinitions[i];
-                    TreeNode AssetNode = new TreeNode(string.Format("Asset: {0}", i));
+                    TreeNode AssetNode = new TreeNode(string.Format("{0}: {1}", Asset.GetType().Name, i));
                     AssetNode.Tag = Asset;
 
                     AssetsParent.Nodes.Add(AssetNode);
@@ -175,11 +177,21 @@ namespace Mafia2Tool.Forms
 
         private void TreeViewContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            ContextMenu_Import.Enabled = false;
+            ContextMenu_Export.Enabled = false;
             ContextMenu_Duplicate.Enabled = false;
 
             if (TreeView_Cutscene.SelectedNode.Tag is AnimEntityWrapper)
             {
+                ContextMenu_Import.Enabled = true;
+                ContextMenu_Export.Enabled = true;
                 ContextMenu_Duplicate.Enabled = true;
+            }
+            else if (TreeView_Cutscene.SelectedNode.Tag is GCSData ||  TreeView_Cutscene.SelectedNode.Tag is SPDData)
+            {
+                ContextMenu_Import.Enabled = true;
+                ContextMenu_Export.Enabled = false;
+                ContextMenu_Duplicate.Enabled = false;
             }
         }
 
@@ -251,6 +263,162 @@ namespace Mafia2Tool.Forms
                     bIsFileEdited = true;
                     return;
                 }
+            }
+        }
+
+        private void ContextMenu_Import_Click(object sender, EventArgs e)
+        {
+            GCSData gcsData = null;
+            SPDData spdData = null;
+            TreeNode gcsNode = null;
+            TreeNode spdNode = null;
+
+            if (TreeView_Cutscene.SelectedNode.Tag is GCSData)
+            {
+                gcsData = (GCSData)TreeView_Cutscene.SelectedNode.Tag;
+                gcsNode = TreeView_Cutscene.SelectedNode;
+            }
+            else if (TreeView_Cutscene.SelectedNode.Tag is SPDData)
+            {
+                spdData = (SPDData)TreeView_Cutscene.SelectedNode.Tag;
+                spdNode = TreeView_Cutscene.SelectedNode;
+            }
+            else if (TreeView_Cutscene.SelectedNode.Tag is AnimEntityWrapper)
+            {
+                if (TreeView_Cutscene.SelectedNode.Parent.Tag is GCSData)
+                {
+                    gcsData = (GCSData)TreeView_Cutscene.SelectedNode.Parent.Tag;
+                    gcsNode = TreeView_Cutscene.SelectedNode.Parent;
+                }
+                else if (TreeView_Cutscene.SelectedNode.Parent.Tag is SPDData)
+                {
+                    spdData = (SPDData)TreeView_Cutscene.SelectedNode.Parent.Tag;
+                    spdNode = TreeView_Cutscene.SelectedNode.Parent;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            OpenFileDialog openFile = new();
+            openFile.InitialDirectory = OriginalFile.GetUnderlyingFileInfo().DirectoryName;
+            openFile.CheckFileExists = true;
+            openFile.CheckPathExists = true;
+            openFile.Title = "Import Cutscene entity data";
+            openFile.Filter = "Cutscene entity data|*.CutEntityData";
+            openFile.FileName = "Open file";
+
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+                AnimEntityWrapper EntityWrapper = null;
+
+                using (MemoryStream ms = new(File.ReadAllBytes(openFile.FileName)))
+                {
+                    int Size = ms.ReadInt32(false);
+                    AnimEntityTypes AnimEntityType = (AnimEntityTypes)ms.ReadInt32(false);
+
+                    using (MemoryStream Reader = new(ms.ReadBytes(Size - 4)))
+                    {
+                        EntityWrapper = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
+                    }
+
+                    if (EntityWrapper == null)
+                    {
+                        return;
+                    }
+
+                    Size = ms.ReadInt32(false);
+
+                    using (MemoryStream stream = new(ms.ReadBytes(Size)))
+                    {
+                        EntityWrapper.AnimEntityData.ReadFromFile(stream, false);
+                    }
+                }
+
+                if (gcsData != null)
+                {
+                    var entities = gcsData.entities.ToList();
+                    entities.Add(EntityWrapper);
+                    gcsData.entities = entities.ToArray();
+
+                    var Asset = gcsData.entities[^1];
+                    TreeNode AssetNode = new TreeNode(string.Format("{0}: {1}", Asset.GetType().Name, gcsData.entities.Length - 1));
+                    AssetNode.Tag = Asset;
+
+                    gcsNode.Nodes.Add(AssetNode);
+
+                    TreeView_Cutscene.SelectedNode = AssetNode;
+                }
+                else if (spdData != null)
+                {
+                    var entities = spdData.EntityDefinitions.ToList();
+                    entities.Add(EntityWrapper);
+                    spdData.EntityDefinitions = entities.ToArray();
+
+                    var Asset = spdData.EntityDefinitions[^1];
+                    TreeNode AssetNode = new TreeNode(string.Format("{0}: {1}", Asset.GetType().Name, spdData.EntityDefinitions.Length - 1));
+                    AssetNode.Tag = Asset;
+
+                    spdNode.Nodes.Add(AssetNode);
+
+                    TreeView_Cutscene.SelectedNode = AssetNode;
+                }
+            }
+
+            Text = Language.GetString("$CUTSCENE_EDITOR") + "*";
+            bIsFileEdited = true;
+        }
+
+        private void ContextMenu_Export_Click(object sender, EventArgs e)
+        {
+            AnimEntityWrapper entity = (AnimEntityWrapper)TreeView_Cutscene.SelectedNode.Tag;
+            string name = TreeView_Cutscene.SelectedNode.Text.Replace(": ", "_");
+
+            SaveFileDialog saveFile = new();
+            saveFile.InitialDirectory = OriginalFile.GetUnderlyingFileInfo().DirectoryName;
+            saveFile.CheckFileExists = false;
+            saveFile.CheckPathExists = true;
+            saveFile.Title = "Export Cutscene entity data";
+            saveFile.Filter = "Cutscene entity data|*.CutEntityData";
+            saveFile.FileName = TreeView_Cutscene.SelectedNode.Parent.Parent.Text + "_" + name + ".CutEntityData";
+
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                byte[] entityData = new byte[0];
+                byte[] animEntityData = new byte[0];
+                byte[] data = new byte[0];
+
+                using (MemoryStream stream = new())
+                {
+                    stream.Write((int)entity.GetEntityType(), false);
+                    CutsceneEntityFactory.WriteAnimEntityToFile(stream, entity);
+                    entityData = stream.ToArray();
+                }
+
+                using (MemoryStream EntityStream = new())
+                {
+                    bool isBigEndian = false;
+                    entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
+                    animEntityData = EntityStream.ToArray();
+                }
+
+                using (MemoryStream dataStream = new())
+                {
+                    dataStream.Write(entityData.Length, false);
+                    dataStream.Write(entityData);
+                    dataStream.Write(animEntityData.Length + 8, false);
+                    dataStream.Write(entity.AnimEntityData.DataType, false);
+                    dataStream.Write(animEntityData.Length + 8, false);
+                    dataStream.Write(animEntityData);
+                    data = dataStream.ToArray();
+                }
+
+                File.WriteAllBytes(saveFile.FileName, data);
             }
         }
     }
