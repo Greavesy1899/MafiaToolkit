@@ -149,55 +149,6 @@ namespace ResourceTypes.Cutscene.CurveParams
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class CameraTargetFrameData : FrameData
-        {
-            public int Unk02 { get; set; }
-            public int Unk03 { get; set; }
-            public int Unk04 { get; set; }
-            public int Unk05 { get; set; }
-            public int Unk06 { get; set; }
-            public int Unk07 { get; set; }
-            public int Unk08 { get; set; }
-            public CameraTargetFrameData()
-            {
-
-            }
-
-            public CameraTargetFrameData(FrameData _base) : base(_base)
-            {
-
-            }
-
-            public CameraTargetFrameData(BinaryReader br)
-            {
-                Read(br);
-            }
-
-            public override void Read(BinaryReader br)
-            {
-                Unk02 = br.ReadInt32();
-                Unk03 = br.ReadInt32();
-                Unk04 = br.ReadInt32();
-                Unk05 = br.ReadInt32();
-                Unk06 = br.ReadInt32();
-                Unk07 = br.ReadInt32();
-                Unk08 = br.ReadInt32();
-            }
-
-            public override void Write(BinaryWriter bw)
-            {
-                base.Write(bw);
-                bw.Write(Unk02);
-                bw.Write(Unk03);
-                bw.Write(Unk04);
-                bw.Write(Unk05);
-                bw.Write(Unk06);
-                bw.Write(Unk07);
-                bw.Write(Unk08);
-            }
-        }
-
-        [TypeConverter(typeof(ExpandableObjectConverter))]
         public class Unk30FrameData : FrameData
         {
             public float Unk02 { get; set; }
@@ -492,7 +443,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             for (int i = 0; i < Data.Length; i++)
             {
                 FrameData baseData = new FrameData(br);
-                CameraTargetFrameData modelData = new(baseData);
+                CameraFrameData modelData = new(baseData);
                 modelData.Read(br);
                 Data[i] = modelData;
             }

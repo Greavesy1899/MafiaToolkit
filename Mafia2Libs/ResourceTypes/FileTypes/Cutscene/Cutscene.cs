@@ -110,6 +110,14 @@ namespace ResourceTypes.Cutscene
             }
         }
 
+        public void WriteToStream(Stream s)
+        {
+            using (BinaryWriter Writer = new BinaryWriter(s))
+            {
+                InternalWriteToFile(Writer);
+            }
+        }
+
         private void InternalWriteToFile(BinaryWriter Writer)
         {
             Writer.Write(Cutscenes.Length);
@@ -223,6 +231,10 @@ namespace ResourceTypes.Cutscene
                 public float unk12 { get; set; }
                 public float FrameCount { get; set; }
                 public int unk14 { get; set; }
+                public int unk15 { get; set; }
+                public int unk16 { get; set; }
+                public int unk17 { get; set; }
+                public int unk18 { get; set; }
 
                 private string CutsceneName;
 
@@ -268,10 +280,6 @@ namespace ResourceTypes.Cutscene
 
                             using (MemoryStream Reader = new MemoryStream(DefintionData))
                             {
-                                AnimEntityWrapper EntityWrapper = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
-
-                                EntityWrapper.CutsceneName = CutsceneName;
-
                                 //string folderPath = "%userprofile%\\Desktop\\CutsceneInfo\\" + CutsceneName + "\\Entities";
                                 //string path = Environment.ExpandEnvironmentVariables(folderPath);
                                 //
@@ -283,6 +291,10 @@ namespace ResourceTypes.Cutscene
                                 //string format = string.Format("\\{0}_{1}.bin", i.ToString("0000"), AnimEntityType);
                                 //path = path + format;
                                 //File.WriteAllBytes(path, DefintionData);
+
+                                AnimEntityWrapper EntityWrapper = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
+
+                                EntityWrapper.CutsceneName = CutsceneName;
 
                                 entities[i] = EntityWrapper;
                             }
@@ -323,6 +335,19 @@ namespace ResourceTypes.Cutscene
                     unk12 = reader.ReadSingle();
                     FrameCount = reader.ReadSingle();
                     unk14 = reader.ReadInt32();
+
+                    switch (unk14)
+                    {
+                        case 2:
+                            unk15 = reader.ReadInt32();
+                            unk16 = reader.ReadInt32();
+                            unk17 = reader.ReadInt32();
+                            unk18 = reader.ReadInt32();
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
 
                 public void WriteToFile(BinaryWriter writer)
@@ -400,6 +425,19 @@ namespace ResourceTypes.Cutscene
                     writer.Write(unk12);
                     writer.Write(FrameCount);
                     writer.Write(unk14);
+
+                    switch (unk14)
+                    {
+                        case 2:
+                            writer.Write(unk15);
+                            writer.Write(unk16);
+                            writer.Write(unk17);
+                            writer.Write(unk18);
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
             }
 

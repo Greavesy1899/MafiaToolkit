@@ -49,7 +49,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int StartFrame { get; set; }
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
-            public int Unk01 { get; set; } //EFF Index?
+            public int EffectID { get; set; }
             public short Unk02 { get; set; }
             public int Unk03 { get; set; }
             [TypeConverter(typeof(Vector3Converter))]
@@ -71,7 +71,7 @@ namespace ResourceTypes.Cutscene.CurveParams
                 StartFrame = br.ReadInt32();
                 EndFrame = br.ReadInt32();
                 Unk00 = br.ReadBoolean();
-                Unk01 = br.ReadInt32();
+                EffectID = br.ReadInt32();
                 Unk02 = br.ReadInt16();
                 Unk03 = br.ReadInt32();
                 Position = Vector3Utils.ReadFromFile(br);
@@ -83,7 +83,7 @@ namespace ResourceTypes.Cutscene.CurveParams
                 bw.Write(StartFrame);
                 bw.Write(EndFrame);
                 bw.Write(Unk00);
-                bw.Write(Unk01);
+                bw.Write(EffectID);
                 bw.Write(Unk02);
                 bw.Write(Unk03);
                 Position.WriteToFile(bw);

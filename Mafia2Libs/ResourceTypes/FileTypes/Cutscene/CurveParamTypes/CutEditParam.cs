@@ -263,6 +263,34 @@ namespace ResourceTypes.Cutscene.CurveParams
                 }
             }
 
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type32Data : DefaultData
+            {
+                public int Unk00 { get; set; }
+                public int Unk01 { get; set; }
+                public Type32Data()
+                {
+
+                }
+
+                public Type32Data(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public override void Read(BinaryReader br)
+                {
+                    Unk00 = br.ReadInt32();
+                    Unk01 = br.ReadInt32();
+                }
+
+                public override void Write(BinaryWriter bw)
+                {
+                    bw.Write(Unk00);
+                    bw.Write(Unk01);
+                }
+            }
+
             public int StartFrame { get; set; }
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } // Is Available?
@@ -289,6 +317,10 @@ namespace ResourceTypes.Cutscene.CurveParams
 
                     case 3:
                         Data = new Type3Data(br);
+                        break;
+
+                    case 32:
+                        Data = new Type32Data(br);
                         break;
 
                     default:

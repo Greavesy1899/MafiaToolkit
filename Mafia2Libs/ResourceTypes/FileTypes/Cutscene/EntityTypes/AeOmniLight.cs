@@ -39,8 +39,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeOmniLight : AnimEntity
     {
         public byte Unk05 { get; set; }
-        public int Unk06 { get; set; }
-        public int Unk07 { get; set; }
+        public ulong Unk06 { get; set; }
+        public ulong Unk07 { get; set; }
         public Matrix44 Transform { get; set; } = new();
         public int Unk09 { get; set; }
         public int Unk10 { get; set; }
@@ -51,8 +51,13 @@ namespace ResourceTypes.Cutscene.AnimEntities
         {
             base.ReadFromFile(stream, isBigEndian);
             Unk05 = stream.ReadByte8();
-            Unk06 = stream.ReadInt32(isBigEndian);
-            Unk07 = stream.ReadInt32(isBigEndian);
+            Unk06 = stream.ReadUInt64(isBigEndian);
+
+            if (Unk06 != 0)
+            {
+                Unk07 = stream.ReadUInt64(isBigEndian);
+            }
+
             Transform.ReadFromFile(stream, isBigEndian);
             Unk09 = stream.ReadInt32(isBigEndian);
             Unk10 = stream.ReadInt32(isBigEndian);
@@ -84,7 +89,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             }
             else
             {
-                throw new FileFormatException();
+                //throw new FileFormatException();
             }
         }
 
@@ -93,7 +98,12 @@ namespace ResourceTypes.Cutscene.AnimEntities
             base.WriteToFile(stream, isBigEndian);
             stream.WriteByte(Unk05);
             stream.Write(Unk06, isBigEndian);
-            stream.Write(Unk07, isBigEndian);
+            
+            if (Unk06 != 0)
+            {
+                stream.Write(Unk07, isBigEndian);
+            }
+
             Transform.WriteToFile(stream, isBigEndian);
             stream.Write(Unk09, isBigEndian);
             stream.Write(Unk10, isBigEndian);

@@ -42,7 +42,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
                 using (BinaryReader br = new(new MemoryStream(stream.ReadBytes(stream.ReadInt32(isBigEndian) - 8))))
                 {
-                    KeyFrames[i] = CutsceneCurveParamFactory.ReadFromFile(br, CutsceneName);
+                    KeyFrames[i] = CutsceneCurveParamFactory.ReadFromFile(br, CutsceneName, i);
                 }
             }
         }

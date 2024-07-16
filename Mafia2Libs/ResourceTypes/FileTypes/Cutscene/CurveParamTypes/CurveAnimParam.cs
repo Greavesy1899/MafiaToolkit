@@ -429,13 +429,13 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
             public int Unk01 { get; set; }
-            [TypeConverter(typeof(Vector3Converter))]
+            [TypeConverter(typeof(Vector2Converter))]
             public Vector2 AnchorA { get; set; } = Vector2.Zero;
-            [TypeConverter(typeof(Vector3Converter))]
+            [TypeConverter(typeof(Vector2Converter))]
             public Vector2 AnchorB { get; set; } = Vector2.Zero;
-            [TypeConverter(typeof(Vector3Converter))]
+            [TypeConverter(typeof(Vector2Converter))]
             public Vector2 AnchorC { get; set; } = Vector2.Zero;
-            [TypeConverter(typeof(Vector3Converter))]
+            [TypeConverter(typeof(Vector2Converter))]
             public Vector2 AnchorD { get; set; } = Vector2.Zero;
             [TypeConverter(typeof(Vector2Converter))]
             public Vector2 Value { get; set; } = Vector2.Zero;

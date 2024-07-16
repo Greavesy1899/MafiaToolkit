@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using System;
 using System.Diagnostics;
 using System.IO;
 using Utils.Logging;
@@ -7,13 +8,13 @@ namespace ResourceTypes.Cutscene.CurveParams
 {
     public static class CutsceneCurveParamFactory
     {
-        public static ICurveParam ReadFromFile(BinaryReader br, string CutsceneName)
+        public static ICurveParam ReadFromFile(BinaryReader br, string CutsceneName, int index)
         {
             ICurveParam param = null;
 
             int Type = br.ReadInt32();
 
-            //DumpParamData(br, Type, CutsceneName);
+            //DumpParamData(br, Type, CutsceneName, index);
 
             switch (Type)
             {
@@ -200,7 +201,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             return param;
         }
 
-        private static void DumpParamData(BinaryReader br, int Type, string CutsceneName)
+        private static void DumpParamData(BinaryReader br, int Type, string CutsceneName, int index)
         {
             string folderPath = "%userprofile%\\Desktop\\KeyParams";
             string path = Environment.ExpandEnvironmentVariables(folderPath);
@@ -212,9 +213,8 @@ namespace ResourceTypes.Cutscene.CurveParams
             }
 
             var data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
-            File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{Type}_{data.GetHashCode()}.bin"), data);
+            File.WriteAllBytes(Path.Combine(path, $"KeyParam_Type_{Type}_{index.ToString("0000")}_{FNV32.Hash(data, 0, data.Length)}.bin"), data);
             br.BaseStream.Position = 4;
-            Debug.WriteLine(data.GetHashCode());
         }
     }
 }
