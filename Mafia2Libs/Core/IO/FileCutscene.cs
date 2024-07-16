@@ -17,7 +17,7 @@ namespace Core.IO
 
         public override bool Open()
         {
-            //foreach (string f in Directory.EnumerateFiles(@"G:\Program Files\Mafia II\Cutscenes", "*.cut"))
+            //foreach (string f in Directory.EnumerateFiles(file.DirectoryName, "*.cut"))
             //{
             //    using (MemoryStream ms = new())
             //    {
@@ -34,6 +34,11 @@ namespace Core.IO
             //            throw new Exception("Hash mismatch.");
             //        }
             //    }
+            //}
+
+            //foreach (string f in Directory.EnumerateFiles(file.DirectoryName, "*.cut"))
+            //{
+            //    Loader = new CutsceneLoader(f);
             //}
 
             Loader = new CutsceneLoader(file);

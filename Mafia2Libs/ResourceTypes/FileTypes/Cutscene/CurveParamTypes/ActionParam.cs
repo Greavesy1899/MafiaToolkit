@@ -54,26 +54,120 @@ namespace ResourceTypes.Cutscene.CurveParams
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class CameraFrameData : FrameData
+        public class FrameReferenceData : FrameData
         {
             public string Unk02 { get; set; } // Frame Name?
             public int Unk03 { get; set; }
-            public int Unk04 { get; set; } // Possible ending KeyFrame?
-            public int Unk05 { get; set; }
+            public ulong Unk04 { get; set; }
             public HashName NameHash { get; set; } // Another Name?
-            public int Unk06 { get; set; } // 4?
+            public int Unk05 { get; set; } // 4?
+            public float[] Unk06 { get; set; } = new float[0];
+            public FrameReferenceData()
+            {
+
+            }
+
+            public FrameReferenceData(FrameData _base) : base(_base)
+            {
+
+            }
+
+            public FrameReferenceData(BinaryReader br)
+            {
+                Read(br);
+            }
+
+            public override void Read(BinaryReader br)
+            {
+                Unk02 = br.ReadString16();
+                Unk03 = br.ReadInt32();
+                Unk04 = br.ReadUInt64();
+                NameHash = new HashName();
+                NameHash.ReadFromFile(br);
+                Unk05 = br.ReadInt32();
+
+                switch (Unk05)
+                {
+                    case 0:
+                    case 1:
+                    case 4:
+                    case 5:
+                    case 8:
+                    case 9:
+                    case 65536:
+                    case 131072:
+                    case 196608:
+
+                        break;
+
+                    default:
+                        Unk06 = new float[7];
+
+                        for (int i = 0; i < Unk06.Length; i++)
+                        {
+                            Unk06[i] = br.ReadSingle();
+                        }
+                        break;
+                }
+            }
+
+            public override void Write(BinaryWriter bw)
+            {
+                base.Write(bw);
+                bw.WriteString16(Unk02);
+                bw.Write(Unk03);
+                bw.Write(Unk04);
+                NameHash.WriteToFile(bw);
+                bw.Write(Unk05);
+
+                switch (Unk05)
+                {
+                    case 0:
+                    case 1:
+                    case 4:
+                    case 5:
+                    case 8:
+                    case 9:
+                    case 65536:
+                    case 131072:
+                    case 196608:
+
+                        break;
+
+                    default:
+                        if (Unk06.Length < 7)
+                        {
+                            float[] floats = new float[7];
+                            Array.Copy(Unk06, 0, floats, 0, Unk06.Length);
+                            Unk06 = floats;
+                        }
+
+                        for (int i = 0; i < 7; i++)
+                        {
+                            bw.Write(Unk06[i]);
+                        }
+                        break;
+                }
+            }
+        }
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class ModelFrameReferenecData : FrameData
+        {
+            public string Unk02 { get; set; } // Frame Name?
+            public int Unk03 { get; set; }
+            public int Unk04 { get; set; }
+            public ulong Unk05 { get; set; }
+            public HashName NameHash { get; set; } // Another Name?
+            public int Unk06 { get; set; }
             public float[] Unk07 { get; set; } = new float[0];
-            public CameraFrameData()
+
+            public ModelFrameReferenecData(FrameData _base) : base(_base)
             {
 
             }
 
-            public CameraFrameData(FrameData _base) : base(_base)
-            {
-
-            }
-
-            public CameraFrameData(BinaryReader br)
+            public ModelFrameReferenecData(BinaryReader br)
             {
                 Read(br);
             }
@@ -83,7 +177,7 @@ namespace ResourceTypes.Cutscene.CurveParams
                 Unk02 = br.ReadString16();
                 Unk03 = br.ReadInt32();
                 Unk04 = br.ReadInt32();
-                Unk05 = br.ReadInt32();
+                Unk05 = br.ReadUInt64();
                 NameHash = new HashName();
                 NameHash.ReadFromFile(br);
                 Unk06 = br.ReadInt32();
@@ -96,6 +190,9 @@ namespace ResourceTypes.Cutscene.CurveParams
                     case 5:
                     case 8:
                     case 9:
+                    case 65536:
+                    case 131072:
+                    case 196608:
 
                         break;
 
@@ -128,6 +225,9 @@ namespace ResourceTypes.Cutscene.CurveParams
                     case 5:
                     case 8:
                     case 9:
+                    case 65536:
+                    case 131072:
+                    case 196608:
 
                         break;
 
@@ -142,131 +242,6 @@ namespace ResourceTypes.Cutscene.CurveParams
                         for (int i = 0; i < 7; i++)
                         {
                             bw.Write(Unk07[i]);
-                        }
-                        break;
-                }
-            }
-        }
-
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class Unk30FrameData : FrameData
-        {
-            public float Unk02 { get; set; }
-            public Unk30FrameData()
-            {
-
-            }
-
-            public Unk30FrameData(FrameData _base) : base(_base)
-            {
-
-            }
-
-            public Unk30FrameData(BinaryReader br)
-            {
-                Read(br);
-            }
-
-            public override void Read(BinaryReader br)
-            {
-                Unk02 = br.ReadSingle();
-            }
-
-            public override void Write(BinaryWriter bw)
-            {
-                base.Write(bw);
-                bw.Write(Unk02);
-            }
-        }
-
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class ModelFrameData : FrameData
-        {
-            public string Unk02 { get; set; } // Frame Name?
-            public int Unk03 { get; set; }
-            public int Unk04 { get; set; }
-            public int Unk05 { get; set; } // Possible ending KeyFrame?
-            public int Unk06 { get; set; }
-            public HashName NameHash { get; set; } // Another Name?
-            public int Unk07 { get; set; }
-            public float[] Unk08 { get; set; } = new float[0];
-
-            public ModelFrameData(FrameData _base) : base(_base)
-            {
-
-            }
-
-            public ModelFrameData(BinaryReader br)
-            {
-                Read(br);
-            }
-
-            public override void Read(BinaryReader br)
-            {
-                Unk02 = br.ReadString16();
-                Unk03 = br.ReadInt32();
-                Unk04 = br.ReadInt32();
-                Unk05 = br.ReadInt32();
-                Unk06 = br.ReadInt32();
-                NameHash = new HashName();
-                NameHash.ReadFromFile(br);
-                Unk07 = br.ReadInt32();
-
-                switch (Unk07)
-                {
-                    case 0:
-                    case 1:
-                    case 4:
-                    case 5:
-                    case 8:
-                    case 9:
-
-                        break;
-
-                    default:
-                        Unk08 = new float[7];
-
-                        for (int i = 0; i < Unk08.Length; i++)
-                        {
-                            Unk08[i] = br.ReadSingle();
-                        }
-                        break;
-                }
-            }
-
-            public override void Write(BinaryWriter bw)
-            {
-                base.Write(bw);
-                bw.WriteString16(Unk02);
-                bw.Write(Unk03);
-                bw.Write(Unk04);
-                bw.Write(Unk05);
-                bw.Write(Unk06);
-                NameHash.WriteToFile(bw);
-                bw.Write(Unk07);
-
-                switch (Unk07)
-                {
-                    case 0:
-                    case 1:
-                    case 4:
-                    case 5:
-                    case 8:
-                    case 9:
-
-                        break;
-
-                    default:
-                        if (Unk08.Length < 7)
-                        {
-                            float[] floats = new float[7];
-                            Array.Copy(Unk08, 0, floats, 0, Unk08.Length);
-                            Unk08 = floats;
-                        }
-
-                        for (int i = 0; i < 7; i++)
-                        {
-                            bw.Write(Unk08[i]);
                         }
                         break;
                 }
@@ -329,7 +304,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             for (int i = 0; i < Data.Length; i++)
             {
                 FrameData baseData = new FrameData(br);
-                ModelFrameData modelData = new(baseData);
+                ModelFrameReferenecData modelData = new(baseData);
                 modelData.Read(br);
                 Data[i] = modelData;
             }
@@ -386,7 +361,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             for (int i = 0; i < Data.Length; i++)
             {
                 FrameData baseData = new FrameData(br);
-                CameraFrameData cameraFrameData = new(baseData);
+                FrameReferenceData cameraFrameData = new(baseData);
                 cameraFrameData.Read(br);
                 Data[i] = cameraFrameData;
             }
@@ -443,7 +418,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             for (int i = 0; i < Data.Length; i++)
             {
                 FrameData baseData = new FrameData(br);
-                CameraFrameData modelData = new(baseData);
+                FrameReferenceData modelData = new(baseData);
                 modelData.Read(br);
                 Data[i] = modelData;
             }
@@ -467,6 +442,63 @@ namespace ResourceTypes.Cutscene.CurveParams
         public override int GetParamType()
         {
             return 40;
+        }
+
+        public override string ToString()
+        {
+            return GetType().BaseType.Name + "::" + GetType().Name + " Frames: " + Data.Length;
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class EntityAction : ActionParam
+    {
+        public FrameData[] Data { get; set; } = new FrameData[0];
+        public short Unk00 { get; set; }
+
+        public EntityAction()
+        {
+
+        }
+
+        public EntityAction(BinaryReader br)
+        {
+            Read(br);
+        }
+
+        public override void Read(BinaryReader br)
+        {
+            base.Read(br);
+            int Count = br.ReadInt32();
+            Data = new FrameData[Count];
+
+            for (int i = 0; i < Data.Length; i++)
+            {
+                FrameData baseData = new FrameData(br);
+                FrameReferenceData modelData = new(baseData);
+                modelData.Read(br);
+                Data[i] = modelData;
+            }
+
+            Unk00 = br.ReadInt16();
+        }
+
+        public override void Write(BinaryWriter bw)
+        {
+            base.Write(bw);
+            bw.Write(Data.Length);
+
+            foreach (var data in Data)
+            {
+                data.Write(bw);
+            }
+
+            bw.Write(Unk00);
+        }
+
+        public override int GetParamType()
+        {
+            return 41;
         }
 
         public override string ToString()
@@ -500,7 +532,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             for (int i = 0; i < Data.Length; i++)
             {
                 FrameData baseData = new FrameData(br);
-                CameraFrameData modelData = new(baseData);
+                FrameReferenceData modelData = new(baseData);
                 modelData.Read(br);
                 Data[i] = modelData;
             }
@@ -524,6 +556,63 @@ namespace ResourceTypes.Cutscene.CurveParams
         public override int GetParamType()
         {
             return 30;
+        }
+
+        public override string ToString()
+        {
+            return GetType().BaseType.Name + "::" + GetType().Name + " Frames: " + Data.Length;
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class Unk36Action : ActionParam
+    {
+        public FrameData[] Data { get; set; } = new FrameData[0];
+        public short Unk00 { get; set; }
+
+        public Unk36Action()
+        {
+
+        }
+
+        public Unk36Action(BinaryReader br)
+        {
+            Read(br);
+        }
+
+        public override void Read(BinaryReader br)
+        {
+            base.Read(br);
+            int Count = br.ReadInt32();
+            Data = new FrameData[Count];
+
+            for (int i = 0; i < Data.Length; i++)
+            {
+                FrameData baseData = new FrameData(br);
+                FrameReferenceData modelData = new(baseData);
+                modelData.Read(br);
+                Data[i] = modelData;
+            }
+
+            Unk00 = br.ReadInt16();
+        }
+
+        public override void Write(BinaryWriter bw)
+        {
+            base.Write(bw);
+            bw.Write(Data.Length);
+
+            foreach (var data in Data)
+            {
+                data.Write(bw);
+            }
+
+            bw.Write(Unk00);
+        }
+
+        public override int GetParamType()
+        {
+            return 36;
         }
 
         public override string ToString()

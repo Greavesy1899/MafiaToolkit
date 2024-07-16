@@ -118,12 +118,20 @@ namespace ResourceTypes.Cutscene.CurveParams
                     param = new Unk30Action(br);
                     break;
 
+                case 36:
+                    param = new Unk36Action(br);
+                    break;
+
                 case 39:
                     param = new CameraAction(br);
                     break;
 
                 case 40:
                     param = new CameraTargetAction(br);
+                    break;
+
+                case 41:
+                    param = new EntityAction(br);
                     break;
 
                 case 42:
@@ -156,29 +164,21 @@ namespace ResourceTypes.Cutscene.CurveParams
                 case 34:
                     param = new TempParam(br, Type); //CurveListParam
                     break;
-
                 case 14:
                     param = new TempParam(br, Type); //VideoObject //MultimediaParam //Couldn't find any
                     break;
-
                 case 44:
                     param = new TempParam(br, Type); //ParticleSettings //ParticleParam //Couldn't find any
                     break;
-                
                 case 20:
                     param = new TempParam(br, Type); //SoundObjectCone //SoundParam //Couldn't find any
                     break;
-
                 case 24:
-                case 36:
-                case 41:
-                    param = new TempParam(br, Type); //ActionParam
+                    param = new TempParam(br, Type); //HumanAction //ActionParam //Couldn't find any
                     break;
-
                 case 23:
                     param = new TempParam(br, Type); //Couldn't find any
                     break;
-
                 case 25:
                     param = new TempParam(br, Type); //HumanParam //Couldn't find any
                     break;
