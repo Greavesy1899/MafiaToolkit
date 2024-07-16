@@ -12,12 +12,15 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public byte Unk0 { get; set; }
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public AeBaseData AnimEntityData { get; set; }
+        [Browsable(false)]
+        public string CutsceneName { get; set; }
 
         public AnimEntityWrapper()
         {
             EntityName0 = "";
             EntityName1 = "";
             AnimEntityData = new AeBaseData();
+            AnimEntityData.CutsceneName = CutsceneName;
         }
 
         public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)

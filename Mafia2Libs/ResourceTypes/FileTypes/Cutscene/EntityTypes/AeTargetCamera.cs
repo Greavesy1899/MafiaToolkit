@@ -45,6 +45,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public byte Unk14 { get; set; }
         public ulong Hash6 { get; set; }
         public ulong Hash7 { get; set; }
+        public ulong Hash8 { get; set; }
         public Matrix44 Transform1 { get; set; } = new();
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -56,13 +57,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
             if (Hash6 != 0)
             {
                 Hash7 = stream.ReadUInt64(isBigEndian);
-                Transform1.ReadFromFile(stream, isBigEndian);
             }
-            else
-            {
-                Transform1.ReadFromFile(stream, isBigEndian);
-                Hash7 = stream.ReadUInt64(isBigEndian);
-            }
+
+            Transform1.ReadFromFile(stream, isBigEndian);
+            Hash8 = stream.ReadUInt64(isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
@@ -71,18 +69,14 @@ namespace ResourceTypes.Cutscene.AnimEntities
             stream.WriteByte(Unk14);
             stream.Write(Hash6, isBigEndian);
 
-            if(Hash6 != 0)
+            if (Hash6 != 0)
             {
                 stream.Write(Hash7, isBigEndian);
-                Transform1.WriteToFile(stream, isBigEndian);
             }
-            else
-            {
-                Transform1.WriteToFile(stream, isBigEndian);
-                stream.Write(Hash7, isBigEndian);
-            }
+
+            Transform1.WriteToFile(stream, isBigEndian);
+            stream.Write(Hash8, isBigEndian);
             UpdateSize(stream, isBigEndian);
-            
         }
         public override AnimEntityTypes GetEntityType()
         {

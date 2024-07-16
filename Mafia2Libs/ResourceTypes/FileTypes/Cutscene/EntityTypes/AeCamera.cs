@@ -9,22 +9,22 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeCameraWrapper : AnimEntityWrapper
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public AeCamera Unk4Entity { get; set; }
+        public AeCamera CameraEntity { get; set; }
         public AeCameraWrapper() : base()
         {
-            Unk4Entity = new AeCamera();
+            CameraEntity = new AeCamera();
             AnimEntityData = new AeCameraData();
         }
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            Unk4Entity.ReadFromFile(stream, isBigEndian);
+            CameraEntity.ReadFromFile(stream, isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-            Unk4Entity.WriteToFile(stream, isBigEndian);
+            CameraEntity.WriteToFile(stream, isBigEndian);
         }
 
         public override AnimEntityTypes GetEntityType()
@@ -37,8 +37,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeCamera : AnimEntity
     {
         public byte Unk05 { get; set; }
-        public int Unk06 { get; set; }
-        public int Unk07 { get; set; }
+        public ulong Unk06 { get; set; }
+        public ulong Unk07 { get; set; }
         public Matrix44 Transform { get; set; } = new();
         public float FOV { get; set; }
         public float Near { get; set; }
@@ -48,8 +48,12 @@ namespace ResourceTypes.Cutscene.AnimEntities
         {
             base.ReadFromFile(stream, isBigEndian);
             Unk05 = stream.ReadByte8();
-            Unk06 = stream.ReadInt32(isBigEndian);
-            Unk07 = stream.ReadInt32(isBigEndian);
+            Unk06 = stream.ReadUInt64(isBigEndian);
+
+            if (Unk06 != 0)
+            {
+                Unk07 = stream.ReadUInt64(isBigEndian);
+            }
             Transform.ReadFromFile(stream, isBigEndian);
             FOV = stream.ReadSingle(isBigEndian);
             Near = stream.ReadSingle(isBigEndian);
@@ -61,7 +65,11 @@ namespace ResourceTypes.Cutscene.AnimEntities
             base.WriteToFile(stream, isBigEndian);
             stream.WriteByte(Unk05);
             stream.Write(Unk06, isBigEndian);
-            stream.Write(Unk07, isBigEndian);
+
+            if (Unk06 != 0)
+            {
+                stream.Write(Unk07, isBigEndian);
+            }
             Transform.WriteToFile(stream, isBigEndian);
             stream.Write(FOV, isBigEndian);
             stream.Write(Near, isBigEndian);

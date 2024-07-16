@@ -109,17 +109,30 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
     public class AeFrameData : AeBaseData
     {
-        public int Unk02 { get; set; }
+        public int[] UnkInts { get; set; } = new int[0];
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            Unk02 = stream.ReadInt32(isBigEndian);
+
+            int Count = stream.ReadInt32(isBigEndian) * 2;
+            UnkInts = new int[Count];
+
+            for (int i = 0; i < Count; i++)
+            {
+                UnkInts[i] = stream.ReadInt32(isBigEndian);
+            }
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk02, isBigEndian);
+
+            stream.Write((int)(UnkInts.Length / 2), isBigEndian);
+
+            foreach (var val in UnkInts)
+            {
+                stream.Write(val, isBigEndian);
+            }
         }
     }
 }

@@ -73,6 +73,14 @@ namespace ResourceTypes.Cutscene
             }
         }
 
+        public CutsceneLoader(string file)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             int numCutscenes = reader.ReadInt32();
@@ -97,6 +105,14 @@ namespace ResourceTypes.Cutscene
         {
             File.Copy(Filename, Filename + "_old", true);
             using (BinaryWriter Writer = new BinaryWriter(File.Open(Filename, FileMode.Create)))
+            {
+                InternalWriteToFile(Writer);
+            }
+        }
+
+        public void WriteToStream(Stream s)
+        {
+            using (BinaryWriter Writer = new BinaryWriter(s))
             {
                 InternalWriteToFile(Writer);
             }
@@ -215,6 +231,10 @@ namespace ResourceTypes.Cutscene
                 public float unk12 { get; set; }
                 public float FrameCount { get; set; }
                 public int unk14 { get; set; }
+                public int unk15 { get; set; }
+                public int unk16 { get; set; }
+                public int unk17 { get; set; }
+                public int unk18 { get; set; }
 
                 private string CutsceneName;
 
@@ -226,10 +246,16 @@ namespace ResourceTypes.Cutscene
                     Type = reader.ReadInt32();
                     FPS = reader.ReadSingle();
 
-                    if (Type != 101)
+                    switch (Type)
                     {
-                        unk04 = reader.ReadInt16();
-                        unk05 = reader.ReadInt16();
+                        case 96:
+                        case 101:
+                            break;
+                        
+                        default:
+                            unk04 = reader.ReadInt16();
+                            unk05 = reader.ReadInt16();
+                            break;
                     }
                     
                     unk06 = reader.ReadInt32();
@@ -254,10 +280,21 @@ namespace ResourceTypes.Cutscene
 
                             using (MemoryStream Reader = new MemoryStream(DefintionData))
                             {
+                                //string folderPath = "%userprofile%\\Desktop\\CutsceneInfo\\" + CutsceneName + "\\Entities";
+                                //string path = Environment.ExpandEnvironmentVariables(folderPath);
+                                //
+                                //if (!Directory.Exists(path))
+                                //{
+                                //    Directory.CreateDirectory(path);
+                                //}
+                                //
+                                //string format = string.Format("\\{0}_{1}.bin", i.ToString("0000"), AnimEntityType);
+                                //path = path + format;
+                                //File.WriteAllBytes(path, DefintionData);
+
                                 AnimEntityWrapper EntityWrapper = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
 
-                                //string format = string.Format("CutsceneInfo/{2}/Entity_{0}_{1}.bin", AnimEntityType, i, CutsceneName);
-                                //File.WriteAllBytes(format, DefintionData);
+                                EntityWrapper.CutsceneName = CutsceneName;
 
                                 entities[i] = EntityWrapper;
                             }
@@ -286,6 +323,7 @@ namespace ResourceTypes.Cutscene
                             // And then This
                             using (MemoryStream stream = new MemoryStream(dataBytes))
                             {
+                                entities[z].AnimEntityData.CutsceneName = CutsceneName;
                                 entities[z].AnimEntityData.ReadFromFile(stream, false);
                                 ToolkitAssert.Ensure(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
                             }
@@ -297,6 +335,19 @@ namespace ResourceTypes.Cutscene
                     unk12 = reader.ReadSingle();
                     FrameCount = reader.ReadSingle();
                     unk14 = reader.ReadInt32();
+
+                    switch (unk14)
+                    {
+                        case 2:
+                            unk15 = reader.ReadInt32();
+                            unk16 = reader.ReadInt32();
+                            unk17 = reader.ReadInt32();
+                            unk18 = reader.ReadInt32();
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
 
                 public void WriteToFile(BinaryWriter writer)
@@ -305,10 +356,16 @@ namespace ResourceTypes.Cutscene
                     writer.Write(Type);
                     writer.Write(FPS);
 
-                    if (Type != 101)
+                    switch (Type)
                     {
-                        writer.Write(unk04);
-                        writer.Write(unk05);
+                        case 96:
+                        case 101:
+                            break;
+
+                        default:
+                            writer.Write(unk04);
+                            writer.Write(unk05);
+                            break;
                     }
 
                     writer.Write(unk06);
@@ -368,6 +425,19 @@ namespace ResourceTypes.Cutscene
                     writer.Write(unk12);
                     writer.Write(FrameCount);
                     writer.Write(unk14);
+
+                    switch (unk14)
+                    {
+                        case 2:
+                            writer.Write(unk15);
+                            writer.Write(unk16);
+                            writer.Write(unk17);
+                            writer.Write(unk18);
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
             }
 
@@ -417,6 +487,7 @@ namespace ResourceTypes.Cutscene
                             // And then This
                             using (MemoryStream stream = new MemoryStream(dataBytes))
                             {
+                                EntityDefinitions[z].AnimEntityData.CutsceneName = CutsceneName;
                                 EntityDefinitions[z].AnimEntityData.ReadFromFile(stream, false);
                             }
                         }

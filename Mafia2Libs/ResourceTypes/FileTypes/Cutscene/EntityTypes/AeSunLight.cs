@@ -1,14 +1,22 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using System.Numerics;
 using Toolkit.Mathematics;
 using Utils.Extensions;
+using Utils.Logging;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
     public class AeSunLightWrapper : AnimEntityWrapper
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public AeSunLight SunLightEntity { get; set; }
+        public AeSunLight SunLightEntity { get; set; } = new();
+
+        public AeSunLightWrapper() : base()
+        {
+            AnimEntityData = new AeSunLightData();
+        }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -24,7 +32,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public override AnimEntityTypes GetEntityType()
         {
-            return AnimEntityTypes.AeSound_Type33;
+            return AnimEntityTypes.AeSunLight;
         }
     }
 
@@ -110,6 +118,25 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override AnimEntityTypes GetEntityType()
         {
             return AnimEntityTypes.AeSunLight;
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class AeSunLightData : AeBaseData
+    {
+        public byte Unk00 { get; set; }
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+            ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+
+            Unk00 = stream.ReadByte8();
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.WriteByte(Unk00);
         }
     }
 }

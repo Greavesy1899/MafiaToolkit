@@ -1,4 +1,5 @@
-﻿using Mafia2Tool.Forms;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using Mafia2Tool.Forms;
 using ResourceTypes.Cutscene;
 using System;
 using System.IO;
@@ -16,6 +17,30 @@ namespace Core.IO
 
         public override bool Open()
         {
+            //foreach (string f in Directory.EnumerateFiles(file.DirectoryName, "*.cut"))
+            //{
+            //    using (MemoryStream ms = new())
+            //    {
+            //        Loader = new CutsceneLoader(f);
+            //        Loader.WriteToStream(ms);
+            //
+            //        var originalData = File.ReadAllBytes(f);
+            //        var newData = ms.ToArray();
+            //        var ogHash = FNV32.Hash(originalData, 0, originalData.Length);
+            //        var newHash = FNV32.Hash(newData, 0, newData.Length);
+            //
+            //        if (ogHash != newHash)
+            //        {
+            //            throw new Exception("Hash mismatch.");
+            //        }
+            //    }
+            //}
+
+            //foreach (string f in Directory.EnumerateFiles(file.DirectoryName, "*.cut"))
+            //{
+            //    Loader = new CutsceneLoader(f);
+            //}
+
             Loader = new CutsceneLoader(file);
             CutsceneEditor editor = new CutsceneEditor(this);
             editor.Show();

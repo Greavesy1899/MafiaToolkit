@@ -53,7 +53,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk02 = stream.ReadInt32(isBigEndian);
             Unk03 = stream.ReadInt32(isBigEndian);
             Unk04 = stream.ReadInt32(isBigEndian);
-            Unk05 = stream.ReadBytes(112);
+            Unk05 = stream.ReadBytes((int)(stream.Length - stream.Position));
             /*
             ToolkitAssert.Ensure(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 

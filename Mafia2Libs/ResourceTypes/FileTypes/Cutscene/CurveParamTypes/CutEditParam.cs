@@ -1,9 +1,132 @@
 ﻿using System.ComponentModel;
 using System.IO;
 
-namespace ResourceTypes.Cutscene.KeyParams
+namespace ResourceTypes.Cutscene.CurveParams
 {
-    public class KeyType_17 : IKeyType
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class CutEditParam : ICurveParam
+    {
+        public CutEditParam()
+        {
+
+        }
+
+        public CutEditParam(BinaryReader br)
+        {
+            Read(br);
+        }
+
+        public override void Read(BinaryReader br)
+        {
+            base.Read(br);
+        }
+
+        public override void Write(BinaryWriter bw)
+        {
+            base.Write(bw);
+        }
+
+        public override int GetParamType()
+        {
+            return base.GetParamType();
+        }
+
+        public override string ToString()
+        {
+            return GetType().Name;
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class CameraCut : CutEditParam
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class FrameData
+        {
+            public int StartFrame { get; set; }
+            public int EndFrame { get; set; }
+            public bool Unk00 { get; set; } = true;
+            public int CameraAsset { get; set; }
+            public FrameData()
+            {
+
+            }
+
+            public FrameData(BinaryReader br)
+            {
+                Read(br);
+            }
+
+            public void Read(BinaryReader br)
+            {
+                StartFrame = br.ReadInt32();
+                EndFrame = br.ReadInt32();
+                Unk00 = br.ReadBoolean();
+                CameraAsset = br.ReadInt32();
+            }
+
+            public void Write(BinaryWriter bw)
+            {
+                bw.Write(StartFrame);
+                bw.Write(EndFrame);
+                bw.Write(Unk00);
+                bw.Write(CameraAsset);
+            }
+        }
+
+        public FrameData[] Data { get; set; } = new FrameData[0];
+        public short Unk00 { get; set; }
+
+        public CameraCut()
+        {
+
+        }
+
+        public CameraCut(BinaryReader br)
+        {
+            Read(br);
+        }
+
+        public override void Read(BinaryReader br)
+        {
+            base.Read(br);
+            int Count = br.ReadInt32();
+            Data = new FrameData[Count];
+
+            for (int i = 0; i < Data.Length; i++)
+            {
+                Data[i] = new(br);
+            }
+
+            Unk00 = br.ReadInt16();
+        }
+
+        public override void Write(BinaryWriter bw)
+        {
+            base.Write(bw);
+            bw.Write(Data.Length);
+
+            foreach (var data in Data)
+            {
+                data.Write(bw);
+            }
+
+            bw.Write(Unk00);
+        }
+
+        public override int GetParamType()
+        {
+            return 16;
+        }
+
+        public override string ToString()
+        {
+            return GetType().BaseType.Name + "::" + GetType().Name + " Frames: " + Data.Length;
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class CutChange : CutEditParam
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class FrameData
@@ -23,12 +146,12 @@ namespace ResourceTypes.Cutscene.KeyParams
 
                 public virtual void Read(BinaryReader br)
                 {
-                    
+
                 }
 
                 public virtual void Write(BinaryWriter bw)
                 {
-                    
+
                 }
             }
 
@@ -140,9 +263,37 @@ namespace ResourceTypes.Cutscene.KeyParams
                 }
             }
 
-            public int KeyFrameStart { get; set; }
-            public int KeyFrameEnd { get; set; }
-            public byte Unk03 { get; set; } // Is Available?
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class Type32Data : DefaultData
+            {
+                public int Unk00 { get; set; }
+                public int Unk01 { get; set; }
+                public Type32Data()
+                {
+
+                }
+
+                public Type32Data(BinaryReader br)
+                {
+                    Read(br);
+                }
+
+                public override void Read(BinaryReader br)
+                {
+                    Unk00 = br.ReadInt32();
+                    Unk01 = br.ReadInt32();
+                }
+
+                public override void Write(BinaryWriter bw)
+                {
+                    bw.Write(Unk00);
+                    bw.Write(Unk01);
+                }
+            }
+
+            public int StartFrame { get; set; }
+            public int EndFrame { get; set; }
+            public bool Unk00 { get; set; } // Is Available?
             public int Type { get; set; }
             public DefaultData Data { get; set; } = new Type1Data();
 
@@ -153,9 +304,9 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             public void Read(BinaryReader br)
             {
-                KeyFrameStart = br.ReadInt32();
-                KeyFrameEnd = br.ReadInt32();
-                Unk03 = br.ReadByte();
+                StartFrame = br.ReadInt32();
+                EndFrame = br.ReadInt32();
+                Unk00 = br.ReadBoolean();
                 Type = br.ReadInt32();
 
                 switch (Type)
@@ -168,6 +319,10 @@ namespace ResourceTypes.Cutscene.KeyParams
                         Data = new Type3Data(br);
                         break;
 
+                    case 32:
+                        Data = new Type32Data(br);
+                        break;
+
                     default:
                         Data = new Type1Data(br);
                         break;
@@ -176,52 +331,62 @@ namespace ResourceTypes.Cutscene.KeyParams
 
             public void Write(BinaryWriter bw)
             {
-                bw.Write(KeyFrameStart);
-                bw.Write(KeyFrameEnd);
-                bw.Write(Unk03);
+                bw.Write(StartFrame);
+                bw.Write(EndFrame);
+                bw.Write(Unk00);
                 bw.Write(Type);
                 Data.Write(bw);
             }
-
-            public override string ToString()
-            {
-                return string.Format("Start: {0} End: {1}", KeyFrameStart, KeyFrameEnd);
-            }
         }
-        public FrameData[] Data { get; set; }
-        public ushort Unk01 { get; set; }
 
-        public override void ReadFromFile(BinaryReader br)
+        public FrameData[] Data { get; set; } = new FrameData[0];
+        public short Unk00 { get; set; }
+
+        public CutChange()
         {
-            base.ReadFromFile(br);
 
+        }
+
+        public CutChange(BinaryReader br)
+        {
+            Read(br);
+        }
+
+        public override void Read(BinaryReader br)
+        {
+            base.Read(br);
             int Count = br.ReadInt32();
             Data = new FrameData[Count];
 
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
                 Data[i] = new(br);
             }
 
-            Unk01 = br.ReadUInt16();
+            Unk00 = br.ReadInt16();
         }
 
-        public override void WriteToFile(BinaryWriter bw)
+        public override void Write(BinaryWriter bw)
         {
-            base.WriteToFile(bw);
+            base.Write(bw);
             bw.Write(Data.Length);
 
-            for (int i = 0; i < Data.Length; i++)
+            foreach (var data in Data)
             {
-                Data[i].Write(bw);
+                data.Write(bw);
             }
 
-            bw.Write(Unk01);
+            bw.Write(Unk00);
+        }
+
+        public override int GetParamType()
+        {
+            return 17;
         }
 
         public override string ToString()
         {
-            return string.Format("Type: 17 Frames: {0}", Data.Length);
+            return GetType().BaseType.Name + "::" + GetType().Name + " Frames: " + Data.Length;
         }
     }
 }
