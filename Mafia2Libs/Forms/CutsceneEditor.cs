@@ -1,11 +1,13 @@
 ﻿using Core.IO;
 using ResourceTypes.Cutscene;
+using ResourceTypes.Cutscene.AnimEntities;
 using System;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using Utils.Helpers;
 using Utils.Language;
-using Utils.Settings;
 using static ResourceTypes.Cutscene.CutsceneLoader;
+using Utils.Extensions;
 
 namespace Mafia2Tool.Forms
 {
@@ -127,10 +129,7 @@ namespace Mafia2Tool.Forms
 
         private void TreeView_Cutscene_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (e.Action == TreeViewAction.ByKeyboard || e.Action == TreeViewAction.ByMouse)
-            {
-                PropertyGrid_Cutscene.SelectedObject = e.Node.Tag;
-            }
+            PropertyGrid_Cutscene.SelectedObject = e.Node.Tag;
         }
 
         private void PropertyGrid_Cutscene_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
@@ -170,6 +169,87 @@ namespace Mafia2Tool.Forms
                 else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
+                }
+            }
+        }
+
+        private void TreeViewContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ContextMenu_Duplicate.Enabled = false;
+
+            if (TreeView_Cutscene.SelectedNode.Tag is AnimEntityWrapper)
+            {
+                ContextMenu_Duplicate.Enabled = true;
+            }
+        }
+
+        private void ContextMenu_Duplicate_Click(object sender, EventArgs e)
+        {
+            //Probably not the most optimal code, but cba to make better code
+
+            AnimEntityWrapper entity = (AnimEntityWrapper)TreeView_Cutscene.SelectedNode.Tag;
+            AnimEntityWrapper newEntity;
+            byte[] entityData = new byte[0];
+            byte[] animEntityData = new byte[0];
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                // Write Entity to the Stream
+                CutsceneEntityFactory.WriteAnimEntityToFile(stream, entity);
+                entityData = stream.ToArray();
+            }
+
+            using (MemoryStream EntityStream = new MemoryStream())
+            {
+                bool isBigEndian = false;
+                EntityStream.Write(entity.AnimEntityData.DataType, isBigEndian);
+                EntityStream.Write(0, isBigEndian);
+                entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
+
+                animEntityData = EntityStream.ToArray();
+            }
+
+            using (MemoryStream Reader = new MemoryStream(entityData))
+            {
+                newEntity = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(entity.GetEntityType(), Reader);
+            }
+
+            using (MemoryStream stream = new MemoryStream(animEntityData))
+            {
+                newEntity.AnimEntityData.ReadFromFile(stream, false);
+            }
+
+            var cutscenes = OriginalFile.GetCutsceneLoader().Cutscenes;
+
+            for (int i = 0; i < cutscenes.Length; i++)
+            {
+                var cutscene = cutscenes[i];
+
+                if (cutscene.AssetContent.entities.Contains(entity))
+                {
+                    var list = cutscene.AssetContent.entities.ToList();
+                    var index = list.IndexOf(entity);
+                    list.Insert(index + 1, newEntity);
+                    cutscene.AssetContent.entities = list.ToArray();
+                    Reload();
+                    TreeView_Cutscene.Nodes[i].Nodes[0].Expand();
+                    TreeView_Cutscene.SelectedNode = TreeView_Cutscene.Nodes[i].Nodes[0].Nodes[index];
+                    Text = Language.GetString("$CUTSCENE_EDITOR") + "*";
+                    bIsFileEdited = true;
+                    return;
+                }
+                else if (cutscene.SoundContent.EntityDefinitions.Contains(entity))
+                {
+                    var list = cutscene.SoundContent.EntityDefinitions.ToList();
+                    var index = list.IndexOf(entity);
+                    list.Insert(index + 1, newEntity);
+                    cutscene.SoundContent.EntityDefinitions = list.ToArray();
+                    Reload();
+                    TreeView_Cutscene.Nodes[i].Nodes[1].Expand();
+                    TreeView_Cutscene.SelectedNode = TreeView_Cutscene.Nodes[i].Nodes[1].Nodes[index];
+                    Text = Language.GetString("$CUTSCENE_EDITOR") + "*";
+                    bIsFileEdited = true;
+                    return;
                 }
             }
         }
