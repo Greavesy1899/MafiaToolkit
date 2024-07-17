@@ -47,7 +47,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int StartFrame { get; set; }
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
-            public string PresetName { get; set; }
+            public string PresetName { get; set; } = "";
             public FrameData()
             {
 

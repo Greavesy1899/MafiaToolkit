@@ -51,9 +51,9 @@ namespace ResourceTypes.Cutscene.CurveParams
             public bool Unk00 { get; set; } = true;
             public byte Unk01 { get; set; }
             [TypeConverter(typeof(Vector3Converter))]
-            public Vector3 Position { get; set; }
+            public Vector3 Position { get; set; } = Vector3.Zero;
             [TypeConverter(typeof(QuaternionConverter))]
-            public Quaternion Rotation { get; set; }
+            public Quaternion Rotation { get; set; } = Quaternion.Identity;
             public FrameData()
             {
 

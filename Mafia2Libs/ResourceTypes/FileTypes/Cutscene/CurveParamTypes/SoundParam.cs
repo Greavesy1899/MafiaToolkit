@@ -50,7 +50,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int StartFrame { get; set; }
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
-            public string SoundFile { get; set; }
+            public string SoundFile { get; set; } = "";
             public int Unk01 { get; set; }
             public byte Unk02 { get; set; }
             public float Unk03 { get; set; }
@@ -165,7 +165,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int StartFrame { get; set; }
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
-            public string SoundFile { get; set; }
+            public string SoundFile { get; set; } = "";
             public int Unk01 { get; set; }
             public byte Unk02 { get; set; }
             public float Unk03 { get; set; }
@@ -181,11 +181,11 @@ namespace ResourceTypes.Cutscene.CurveParams
             public float Unk13 { get; set; }
             public byte Unk14 { get; set; }
             [TypeConverter(typeof(Vector3Converter))]
-            public Vector3 Position { get; set; }
+            public Vector3 Position { get; set; } = Vector3.Zero;
             [TypeConverter(typeof(QuaternionConverter))]
-            public Quaternion Rotation { get; set; }
+            public Quaternion Rotation { get; set; } = Quaternion.Identity;
             public byte IsMeshAvailableFlags { get; set; }
-            public string FrameName { get; set; }
+            public string FrameName { get; set; } = "";
             public ulong FrameHash { get; set; }
             public ulong MainJointHash { get; set; }
             public FrameData()
@@ -337,7 +337,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int StartFrame { get; set; }
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
-            public string SoundFile { get; set; }
+            public string SoundFile { get; set; } = "";
             public int Unk01 { get; set; }
             public byte Unk02 { get; set; }
             public float Unk03 { get; set; }
@@ -351,11 +351,11 @@ namespace ResourceTypes.Cutscene.CurveParams
             public float Unk11 { get; set; }
             public byte Unk12 { get; set; }
             [TypeConverter(typeof(Vector3Converter))]
-            public Vector3 Position { get; set; }
+            public Vector3 Position { get; set; } = Vector3.Zero;
             [TypeConverter(typeof(QuaternionConverter))]
-            public Quaternion Rotation { get; set; }
+            public Quaternion Rotation { get; set; } = Quaternion.Identity;
             public byte IsMeshAvailableFlags { get; set; }
-            public string FrameName { get; set; }
+            public string FrameName { get; set; } = "";
             public ulong FrameHash { get; set; }
             public ulong MainJointHash { get; set; }
             public FrameData()

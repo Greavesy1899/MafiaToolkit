@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
-using System;
 using Utils.StringHelpers;
 using Utils.Types;
-using System.Diagnostics;
 
 namespace ResourceTypes.Cutscene.CurveParams
 {
@@ -56,10 +55,10 @@ namespace ResourceTypes.Cutscene.CurveParams
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class FrameReferenceData : FrameData
         {
-            public string Unk02 { get; set; } // Frame Name?
+            public string Unk02 { get; set; } = ""; // Frame Name?
             public int Unk03 { get; set; }
             public ulong Unk04 { get; set; }
-            public HashName NameHash { get; set; } // Another Name?
+            public HashName NameHash { get; set; } = new(); // Another Name?
             public int Unk05 { get; set; } // 4?
             public float[] Unk06 { get; set; } = new float[0];
             public FrameReferenceData()
@@ -154,11 +153,11 @@ namespace ResourceTypes.Cutscene.CurveParams
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class ModelFrameReferenecData : FrameData
         {
-            public string Unk02 { get; set; } // Frame Name?
+            public string Unk02 { get; set; } = ""; // Frame Name?
             public int Unk03 { get; set; }
             public int Unk04 { get; set; }
             public ulong Unk05 { get; set; }
-            public HashName NameHash { get; set; } // Another Name?
+            public HashName NameHash { get; set; } = new(); // Another Name?
             public int Unk06 { get; set; }
             public float[] Unk07 { get; set; } = new float[0];
 
