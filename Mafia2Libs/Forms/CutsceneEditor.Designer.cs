@@ -41,9 +41,10 @@
             PropertyGrid_Cutscene = new System.Windows.Forms.PropertyGrid();
             TreeView_Cutscene = new Controls.MTreeView();
             TreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(components);
-            ContextMenu_Duplicate = new System.Windows.Forms.ToolStripMenuItem();
             ContextMenu_Import = new System.Windows.Forms.ToolStripMenuItem();
             ContextMenu_Export = new System.Windows.Forms.ToolStripMenuItem();
+            ContextMenu_Duplicate = new System.Windows.Forms.ToolStripMenuItem();
+            ContextMenu_Delete = new System.Windows.Forms.ToolStripMenuItem();
             Tool_Strip.SuspendLayout();
             TreeViewContextMenu.SuspendLayout();
             SuspendLayout();
@@ -105,14 +106,14 @@
             // 
             AddItemButton.Enabled = false;
             AddItemButton.Name = "AddItemButton";
-            AddItemButton.Size = new System.Drawing.Size(171, 22);
+            AddItemButton.Size = new System.Drawing.Size(180, 22);
             AddItemButton.Text = "$ADD_ITEM";
             // 
             // AddDefinitionButton
             // 
             AddDefinitionButton.Enabled = false;
             AddDefinitionButton.Name = "AddDefinitionButton";
-            AddDefinitionButton.Size = new System.Drawing.Size(171, 22);
+            AddDefinitionButton.Size = new System.Drawing.Size(180, 22);
             AddDefinitionButton.Text = "$ADD_DEFINITION";
             // 
             // PropertyGrid_Cutscene
@@ -139,17 +140,10 @@
             // 
             // TreeViewContextMenu
             // 
-            TreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { ContextMenu_Import, ContextMenu_Export, ContextMenu_Duplicate });
+            TreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { ContextMenu_Import, ContextMenu_Export, ContextMenu_Duplicate, ContextMenu_Delete });
             TreeViewContextMenu.Name = "TreeViewContextMenu";
-            TreeViewContextMenu.Size = new System.Drawing.Size(244, 92);
+            TreeViewContextMenu.Size = new System.Drawing.Size(244, 114);
             TreeViewContextMenu.Opening += TreeViewContextMenu_Opening;
-            // 
-            // ContextMenu_Duplicate
-            // 
-            ContextMenu_Duplicate.Name = "ContextMenu_Duplicate";
-            ContextMenu_Duplicate.Size = new System.Drawing.Size(243, 22);
-            ContextMenu_Duplicate.Text = "$CUTSCENE_DUPLICATE_ENTITY";
-            ContextMenu_Duplicate.Click += ContextMenu_Duplicate_Click;
             // 
             // ContextMenu_Import
             // 
@@ -164,6 +158,20 @@
             ContextMenu_Export.Size = new System.Drawing.Size(243, 22);
             ContextMenu_Export.Text = "$CUTSCENE_EXPORT_ENTITY";
             ContextMenu_Export.Click += ContextMenu_Export_Click;
+            // 
+            // ContextMenu_Duplicate
+            // 
+            ContextMenu_Duplicate.Name = "ContextMenu_Duplicate";
+            ContextMenu_Duplicate.Size = new System.Drawing.Size(243, 22);
+            ContextMenu_Duplicate.Text = "$CUTSCENE_DUPLICATE_ENTITY";
+            ContextMenu_Duplicate.Click += ContextMenu_Duplicate_Click;
+            // 
+            // ContextMenu_Delete
+            // 
+            ContextMenu_Delete.Name = "ContextMenu_Delete";
+            ContextMenu_Delete.Size = new System.Drawing.Size(243, 22);
+            ContextMenu_Delete.Text = "$CUTSCENE_DELETE_ENTITY";
+            ContextMenu_Delete.Click += ContextMenu_Delete_Click;
             // 
             // CutsceneEditor
             // 
@@ -204,5 +212,6 @@
         private System.Windows.Forms.ToolStripMenuItem ContextMenu_Duplicate;
         private System.Windows.Forms.ToolStripMenuItem ContextMenu_Import;
         private System.Windows.Forms.ToolStripMenuItem ContextMenu_Export;
+        private System.Windows.Forms.ToolStripMenuItem ContextMenu_Delete;
     }
 }

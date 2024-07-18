@@ -187,7 +187,7 @@ namespace Mafia2Tool.Forms
                 ContextMenu_Export.Enabled = true;
                 ContextMenu_Duplicate.Enabled = true;
             }
-            else if (TreeView_Cutscene.SelectedNode.Tag is GCSData ||  TreeView_Cutscene.SelectedNode.Tag is SPDData)
+            else if (TreeView_Cutscene.SelectedNode.Tag is GCSData || TreeView_Cutscene.SelectedNode.Tag is SPDData)
             {
                 ContextMenu_Import.Enabled = true;
                 ContextMenu_Export.Enabled = false;
@@ -419,6 +419,55 @@ namespace Mafia2Tool.Forms
                 }
 
                 File.WriteAllBytes(saveFile.FileName, data);
+            }
+        }
+
+        private void ContextMenu_Delete_Click(object sender, EventArgs e)
+        {
+            GCSData gcsData = null;
+            SPDData spdData = null;
+            TreeNode gcsNode = null;
+            TreeNode spdNode = null;
+
+            if (TreeView_Cutscene.SelectedNode.Tag is AnimEntityWrapper)
+            {
+                if (TreeView_Cutscene.SelectedNode.Parent.Tag is GCSData)
+                {
+                    gcsData = (GCSData)TreeView_Cutscene.SelectedNode.Parent.Tag;
+                    gcsNode = TreeView_Cutscene.SelectedNode.Parent;
+                }
+                else if (TreeView_Cutscene.SelectedNode.Parent.Tag is SPDData)
+                {
+                    spdData = (SPDData)TreeView_Cutscene.SelectedNode.Parent.Tag;
+                    spdNode = TreeView_Cutscene.SelectedNode.Parent;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            var entityNode = TreeView_Cutscene.SelectedNode;
+            AnimEntityWrapper entity = (AnimEntityWrapper)entityNode.Tag;
+            System.Collections.Generic.List<AnimEntityWrapper> entities = null;
+
+            if (gcsData != null)
+            {
+                entities = gcsData.entities.ToList();
+                entities.Remove(entity);
+                gcsData.entities = entities.ToArray();
+                gcsNode.Nodes.Remove(entityNode);
+            }
+            else if (spdData != null)
+            {
+                entities = spdData.EntityDefinitions.ToList();
+                entities.Remove(entity);
+                spdData.EntityDefinitions = entities.ToArray();
+                spdNode.Nodes.Remove(entityNode);
             }
         }
     }
