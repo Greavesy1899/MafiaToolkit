@@ -1338,9 +1338,26 @@ namespace ResourceTypes.Cutscene.CurveParams
                 bw.Write(Type);
                 bw.Write(Data.Length);
 
-                foreach (var val in Data)
+                for (int i = 0; i < Data.Length; i++)
                 {
-                    val.Write(bw);
+                    switch (Type)
+                    {
+                        case 0:
+                            if (Data[i] is not FloatData)
+                            {
+                                Data[i] = new FloatData();
+                            }
+                            break;
+
+                        case 1:
+                            if (Data[i] is not VectorData)
+                            {
+                                Data[i] = new VectorData();
+                            }
+                            break;
+                    }
+
+                    Data[i].Write(bw);
                 }
             }
         }
@@ -1535,9 +1552,26 @@ namespace ResourceTypes.Cutscene.CurveParams
                 bw.Write(Type);
                 bw.Write(Data.Length);
 
-                foreach (var val in Data)
+                for (int i = 0; i < Data.Length; i++)
                 {
-                    val.Write(bw);
+                    switch (Type)
+                    {
+                        case 0:
+                            if (Data[i] is not FloatData)
+                            {
+                                Data[i] = new FloatData();
+                            }
+                            break;
+
+                        case 1:
+                            if (Data[i] is not QuaternionData)
+                            {
+                                Data[i] = new QuaternionData();
+                            }
+                            break;
+                    }
+
+                    Data[i].Write(bw);
                 }
             }
         }
