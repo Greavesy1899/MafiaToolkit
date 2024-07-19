@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
-using System;
 using Utils.StringHelpers;
 using Utils.Types;
-using System.Diagnostics;
 
 namespace ResourceTypes.Cutscene.CurveParams
 {
@@ -56,10 +55,10 @@ namespace ResourceTypes.Cutscene.CurveParams
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class FrameReferenceData : FrameData
         {
-            public string Unk02 { get; set; } // Frame Name?
+            public string Unk02 { get; set; } = ""; // Frame Name?
             public int Unk03 { get; set; }
             public ulong Unk04 { get; set; }
-            public HashName NameHash { get; set; } // Another Name?
+            public HashName NameHash { get; set; } = new(); // Another Name?
             public int Unk05 { get; set; } // 4?
             public float[] Unk06 { get; set; } = new float[0];
             public FrameReferenceData()
@@ -152,22 +151,22 @@ namespace ResourceTypes.Cutscene.CurveParams
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class ModelFrameReferenecData : FrameData
+        public class ModelFrameRefereneceData : FrameData
         {
-            public string Unk02 { get; set; } // Frame Name?
+            public string Unk02 { get; set; } = ""; // Frame Name?
             public int Unk03 { get; set; }
             public int Unk04 { get; set; }
             public ulong Unk05 { get; set; }
-            public HashName NameHash { get; set; } // Another Name?
+            public HashName NameHash { get; set; } = new(); // Another Name?
             public int Unk06 { get; set; }
             public float[] Unk07 { get; set; } = new float[0];
 
-            public ModelFrameReferenecData(FrameData _base) : base(_base)
+            public ModelFrameRefereneceData(FrameData _base) : base(_base)
             {
 
             }
 
-            public ModelFrameReferenecData(BinaryReader br)
+            public ModelFrameRefereneceData(BinaryReader br)
             {
                 Read(br);
             }
@@ -304,7 +303,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             for (int i = 0; i < Data.Length; i++)
             {
                 FrameData baseData = new FrameData(br);
-                ModelFrameReferenecData modelData = new(baseData);
+                ModelFrameRefereneceData modelData = new(baseData);
                 modelData.Read(br);
                 Data[i] = modelData;
             }
@@ -317,9 +316,14 @@ namespace ResourceTypes.Cutscene.CurveParams
             base.Write(bw);
             bw.Write(Data.Length);
 
-            foreach (var data in Data)
+            for (int i = 0; i < Data.Length; i++)
             {
-                data.Write(bw);
+                if (Data[i] is not ModelFrameRefereneceData && Data[i] is FrameData)
+                {
+                    Data[i] = new ModelFrameRefereneceData(Data[i]);
+                }
+
+                Data[i].Write(bw);
             }
 
             bw.Write(Unk00);
@@ -374,9 +378,14 @@ namespace ResourceTypes.Cutscene.CurveParams
             base.Write(bw);
             bw.Write(Data.Length);
 
-            foreach (var data in Data)
+            for (int i = 0; i < Data.Length; i++)
             {
-                data.Write(bw);
+                if (Data[i] is not FrameReferenceData && Data[i] is FrameData)
+                {
+                    Data[i] = new FrameReferenceData(Data[i]);
+                }
+
+                Data[i].Write(bw);
             }
 
             bw.Write(Unk00);
@@ -431,9 +440,14 @@ namespace ResourceTypes.Cutscene.CurveParams
             base.Write(bw);
             bw.Write(Data.Length);
 
-            foreach (var data in Data)
+            for (int i = 0; i < Data.Length; i++)
             {
-                data.Write(bw);
+                if (Data[i] is not FrameReferenceData && Data[i] is FrameData)
+                {
+                    Data[i] = new FrameReferenceData(Data[i]);
+                }
+
+                Data[i].Write(bw);
             }
 
             bw.Write(Unk00);
@@ -488,9 +502,14 @@ namespace ResourceTypes.Cutscene.CurveParams
             base.Write(bw);
             bw.Write(Data.Length);
 
-            foreach (var data in Data)
+            for (int i = 0; i < Data.Length; i++)
             {
-                data.Write(bw);
+                if (Data[i] is not FrameReferenceData && Data[i] is FrameData)
+                {
+                    Data[i] = new FrameReferenceData(Data[i]);
+                }
+
+                Data[i].Write(bw);
             }
 
             bw.Write(Unk00);
@@ -545,9 +564,14 @@ namespace ResourceTypes.Cutscene.CurveParams
             base.Write(bw);
             bw.Write(Data.Length);
 
-            foreach (var data in Data)
+            for (int i = 0; i < Data.Length; i++)
             {
-                data.Write(bw);
+                if (Data[i] is not FrameReferenceData && Data[i] is FrameData)
+                {
+                    Data[i] = new FrameReferenceData(Data[i]);
+                }
+
+                Data[i].Write(bw);
             }
 
             bw.Write(Unk00);
@@ -602,9 +626,14 @@ namespace ResourceTypes.Cutscene.CurveParams
             base.Write(bw);
             bw.Write(Data.Length);
 
-            foreach (var data in Data)
+            for (int i = 0; i < Data.Length; i++)
             {
-                data.Write(bw);
+                if (Data[i] is not FrameReferenceData && Data[i] is FrameData)
+                {
+                    Data[i] = new FrameReferenceData(Data[i]);
+                }
+
+                Data[i].Write(bw);
             }
 
             bw.Write(Unk00);

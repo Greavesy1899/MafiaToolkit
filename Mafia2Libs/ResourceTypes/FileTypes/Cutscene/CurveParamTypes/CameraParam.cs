@@ -1,8 +1,5 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using System.Numerics;
-using Utils.Extensions;
-using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.CurveParams
 {

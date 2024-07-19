@@ -14,7 +14,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int StartFrame { get; set; }
             public int EndFrame { get; set; }
             public bool Unk01 { get; set; } = true;
-            public string AnimationName { get; set; }
+            public string AnimationName { get; set; } = "";
             public int Unk02 { get; set; }
             public float Unk03 { get; set; }
             public int Unk04 { get; set; }

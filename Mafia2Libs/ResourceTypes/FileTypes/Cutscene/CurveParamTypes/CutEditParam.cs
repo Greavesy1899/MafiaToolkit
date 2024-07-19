@@ -297,6 +297,11 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int Type { get; set; }
             public DefaultData Data { get; set; } = new Type1Data();
 
+            public FrameData()
+            {
+
+            }
+
             public FrameData(BinaryReader br)
             {
                 Read(br);
@@ -335,6 +340,38 @@ namespace ResourceTypes.Cutscene.CurveParams
                 bw.Write(EndFrame);
                 bw.Write(Unk00);
                 bw.Write(Type);
+
+                switch (Type)
+                {
+                    case 2:
+                        if (Data is not Type2Data)
+                        {
+                            Data = new Type2Data();
+                        }
+                        break;
+
+                    case 3:
+                        if (Data is not Type3Data)
+                        {
+                            Data = new Type3Data();
+                        }
+                        break;
+
+                    case 32:
+                        if (Data is not Type32Data)
+                        {
+                            Data = new Type32Data();
+                        }
+                        break;
+
+                    default:
+                        if (Data is not Type1Data)
+                        {
+                            Data = new Type1Data();
+                        }
+                        break;
+                }
+
                 Data.Write(bw);
             }
         }

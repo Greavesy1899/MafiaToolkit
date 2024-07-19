@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene.CurveParams
 {

@@ -48,7 +48,7 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
             public int Unk01 { get; set; } //EFF Index?
-            public string Description { get; set; }
+            public string Description { get; set; } = "";
             public FrameData()
             {
 
