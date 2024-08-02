@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using Utils.Extensions;
 using Utils.VorticeUtils;
@@ -21,7 +22,7 @@ namespace ResourceTypes.Animation2
         public float Scale { get; set; }
         public float Duration { get; set; }
         public byte[] KeyFrameData { get; set; }
-        public (int time, Quaternion value)[] KeyFrames { get; set; } = new (int time, Quaternion value)[0];
+        public (float time, Quaternion value)[] KeyFrames { get; set; } = new (float time, Quaternion value)[0];
         public float Unk00 { get; set; }
         public UnkDataBlock[] UnkData { get; set; } = new UnkDataBlock[0];
         public AnimTrack()
@@ -75,7 +76,7 @@ namespace ResourceTypes.Animation2
 
             Dequantize();
 
-            DumpTrackData();
+            //DumpTrackData();
         }
 
         public int GetKeyframeSize(int ComponentSize, int TimeSize)
@@ -93,18 +94,18 @@ namespace ResourceTypes.Animation2
         private void Dequantize() //Code by RoadTrain
         {
             var data = new BigInteger(KeyFrameData);
-            var quats = new List<(int time, Quaternion value)>();
+            var quats = new List<(float time, Quaternion value)>();
             var chunkSize = 3 * ComponentSize + TimeSize + 2;
 
             for (var i = 0; i < NumKeyFrames; i++)
             {
                 var dataCurrent = data >> (i * chunkSize);
 
-                var time = ((int)((dataCurrent) & ((1 << TimeSize) - 1)));
+                var time = Normalize((int)((dataCurrent) & ((1 << TimeSize) - 1)), TimeSize);
                 var component1 = (dataCurrent >> (TimeSize)) & ((1 << ComponentSize) - 1);
                 var component2 = (dataCurrent >> (TimeSize + ComponentSize)) & ((1 << ComponentSize) - 1);
                 var component3 = (dataCurrent >> (TimeSize + ComponentSize * 2)) & ((1 << ComponentSize) - 1);
-                var omittedComponent = (dataCurrent >> (TimeSize + ComponentSize * 2 + 2)) & ((1 << 2) - 1);
+                var omittedComponent = (dataCurrent >> (TimeSize + ComponentSize * 3)) & ((1 << 2) - 1);
 
                 float x;
                 float y;
@@ -146,6 +147,33 @@ namespace ResourceTypes.Animation2
             KeyFrames = quats.ToArray();
         }
 
+        private void Quantize()
+        {
+            List<byte> data = new();
+            ComponentSize = 16;
+            TimeSize = 14;
+
+            foreach (var keyFrame in KeyFrames)
+            {
+                float maxValue = 65535.0f;
+                float maxTimeValue = 16383.0f;
+                ulong quantizedData = ((ulong)((keyFrame.time * maxTimeValue) + (maxTimeValue / 2))) & 0x3FFF;
+                List<float> values = new() { keyFrame.value.X, keyFrame.value.Y, keyFrame.value.Z, keyFrame.value.W };
+                var omittedComponent = ((ulong)(values.IndexOf(values.Max()) & 0x03)) << 62;
+
+                values.Remove(values.Max());
+
+                var component1 = ((ulong)((values[0] * maxValue) + (maxValue / 2))) << 14;
+                var component2 = ((ulong)((values[1] * maxValue) + (maxValue / 2))) << 30;
+                var component3 = ((ulong)((values[2] * maxValue) + (maxValue / 2))) << 46;
+
+                quantizedData = quantizedData | component1 | component2 | component3 | omittedComponent;
+                data.AddRange(BitConverter.GetBytes(quantizedData));
+            }
+
+            KeyFrameData = data.ToArray();
+        }
+
         private static float Normalize(int value, int size)
         {
             var maxValue = (float)((1 << size) - 1);
@@ -177,6 +205,24 @@ namespace ResourceTypes.Animation2
                 var data = ms.ToArray();
 
                 File.WriteAllBytes(Path.Combine(path, $"AnimTrack_{BoneID}_{FNV32.Hash(data, 0, data.Length)}_Decompressed.bin"), data);
+            }
+
+            Quantize();
+            Dequantize();
+
+            using (MemoryStream ms = new())
+            {
+                ms.Write(KeyFrames.Length, false);
+
+                foreach (var val in KeyFrames)
+                {
+                    ms.Write(val.time, false);
+                    val.value.WriteToFile(ms, false);
+                }
+
+                var data = ms.ToArray();
+
+                File.WriteAllBytes(Path.Combine(path, $"AnimTrack_{BoneID}_{FNV32.Hash(data, 0, data.Length)}_Decompressed2.bin"), data);
             }
         }
     }
