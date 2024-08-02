@@ -1,65 +1,97 @@
 ﻿using System.IO;
-using System.Numerics;
+using Utils.Logging;
 
 namespace ResourceTypes.Animation2
 {
-    public class Animation2Loader
+    public class Animation2
     {
-        private int animSetID; //usually in the name. Different types. If not using skeleton, it's 0xFFFF
-        private byte version; //Potentially Version 2, Because why not, it is Animation2. :)
-        private int magic; //IDA says 0xFA5612BC
-        private short unk0;
-        private short unk1;
-        private Vector4 unk2;
-        private Vector3 unk3;
-        private Vector3 unk4;
-        private ulong hash;
-        private byte unk5;
-        private float unk6;
-        private short unk7;
-        private byte unk8;
-        private ulong boneID;
-        private byte unk9;
+        public Header Header { get; set; } = new();
+        public bool IsDataPresent { get; set; } //Not confirmed?
+        public Event[] Events { get; set; } = new Event[0];
+        public ushort Unk00 { get; set; }
+        public ushort Unk01 { get; set; }
+        public AnimTrack[] Tracks { get; set; } = new AnimTrack[0];
+        public short[] UnkShorts00 { get; set; } = new short[0];
+        public short[] UnkShorts01 { get; set; } = new short[0];
 
-
-        //private TransformMatrix matrix; //matrix of the root?
-        //private ulong hash; //hash of the animation?
-        //private byte unk0; //usually 0? right after hash.
-        //private Half[] bonePos = new Half[3]; //potential bone positionings.
-        //private byte unk1; //usually 3? right after the position.
-        //private long traceBone; //Detected trace (1000), or 0
-        //private byte unk2; //usually 1? after the traceBone, and before counts?
-        //private short unkS1; //usually 0xFF?
-        //private short unkS2; //count1? timeline count? (Number of frames?)
-        //private short unkS3; //count2? Bone count.
-        //private TransformMatrix boneMatrix; //matrix of the bone?
-
-        public void ReadFromFile(BinaryReader reader)
+        public Animation2()
         {
-            animSetID = reader.ReadInt32();
-            version = reader.ReadByte();
-            magic = reader.ReadInt32();
-            //matrix = new TransformMatrix(reader);
-            //hash = reader.ReadUInt64();
-            //unk0 = reader.ReadByte();
-            //bonePos[0] = Half.ToHalf(reader.ReadBytes(2), 0);
-            //bonePos[1] = Half.ToHalf(reader.ReadBytes(2), 0);
-            //bonePos[2] = Half.ToHalf(reader.ReadBytes(2), 0);
-            //unk1 = reader.ReadByte(); //usually 3
-            //traceBone = reader.ReadInt64();
 
-            ////if (traceBone != 0 || traceBone != 1000)
-            ////    throw new FormatException("Error, traceBone isn't 0 or 1000");
+        }
 
-            //unkS1 = reader.ReadInt16();
-            //reader.ReadBytes(3); //usually 1 0 0;
-            ////if unkS2 and unkS3 is 0, then thats EOF.
-            //unkS2 = reader.ReadInt16(); //must be counts
-            //unkS3 = reader.ReadInt16(); //must be counts
-            ////boneMatrix = new TransformMatrix(reader);
+        public Animation2(string fileName)
+        {
+            Read(fileName);
+        }
 
-            //long boneID = reader.ReadInt64();
+        public Animation2(Stream s)
+        {
+            Read(s);
+        }
 
+        public Animation2(BinaryReader br)
+        {
+            Read(br);
+        }
+
+        public void Read(string fileName)
+        {
+            using (MemoryStream ms = new(File.ReadAllBytes(fileName)))
+            {
+                Read(ms);
+            }
+        }
+
+        public void Read(Stream s)
+        {
+            using (BinaryReader br = new(s))
+            {
+                Read(br);
+            }
+        }
+
+        public void Read(BinaryReader br)
+        {
+            Header = new(br);
+
+            IsDataPresent = br.ReadBoolean();
+
+            Events = new Event[Header.NumEvents];
+
+            for (int i = 0; i < Events.Length; i++)
+            {
+                Events[i] = new(br);
+            }
+
+            Unk00 = br.ReadUInt16();
+            Unk01 = br.ReadUInt16();
+            short Count2 = br.ReadInt16();
+
+            ToolkitAssert.Ensure(Header.Count == Count2, "Animation2: Count 1 != Count 2");
+
+            Count2 = IsDataPresent ? Count2++ : Count2;
+
+            Tracks = new AnimTrack[Count2];
+
+            for (int i = 0;i < Tracks.Length; i++)
+            {
+                Tracks[i] = new(br);
+            }
+
+            UnkShorts00 = new short[Unk01];
+            UnkShorts01 = new short[Count2];
+
+            for (int i = 0; i < UnkShorts00.Length; i++)
+            {
+                UnkShorts00[i] = br.ReadInt16();
+            }
+
+            for (int i = 0; i < UnkShorts01.Length; i++)
+            {
+                UnkShorts01[i] = br.ReadInt16();
+            }
+
+            ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, "Animation2: Failed to reach EOF.");
         }
     }
 }
