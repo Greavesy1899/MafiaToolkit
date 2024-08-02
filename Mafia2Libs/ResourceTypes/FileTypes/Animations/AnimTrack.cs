@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using Utils.Extensions;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.Animation2
@@ -20,7 +21,7 @@ namespace ResourceTypes.Animation2
         public float Scale { get; set; }
         public float Duration { get; set; }
         public byte[] KeyFrameData { get; set; }
-        public Quaternion[] KeyFrames { get; set; }
+        public (int time, Quaternion value)[] KeyFrames { get; set; } = new (int time, Quaternion value)[0];
         public float Unk00 { get; set; }
         public UnkDataBlock[] UnkData { get; set; } = new UnkDataBlock[0];
         public AnimTrack()
@@ -74,7 +75,7 @@ namespace ResourceTypes.Animation2
 
             Dequantize();
 
-            //DumpTrackData();
+            DumpTrackData();
         }
 
         public int GetKeyframeSize(int ComponentSize, int TimeSize)
@@ -92,14 +93,14 @@ namespace ResourceTypes.Animation2
         private void Dequantize() //Code by RoadTrain
         {
             var data = new BigInteger(KeyFrameData);
-            var quats = new List<Quaternion>();
+            var quats = new List<(int time, Quaternion value)>();
             var chunkSize = 3 * ComponentSize + TimeSize + 2;
 
             for (var i = 0; i < NumKeyFrames; i++)
             {
                 var dataCurrent = data >> (i * chunkSize);
 
-                var time = (dataCurrent) & ((1 << TimeSize) - 1);
+                var time = ((int)((dataCurrent) & ((1 << TimeSize) - 1)));
                 var component1 = (dataCurrent >> (TimeSize)) & ((1 << ComponentSize) - 1);
                 var component2 = (dataCurrent >> (TimeSize + ComponentSize)) & ((1 << ComponentSize) - 1);
                 var component3 = (dataCurrent >> (TimeSize + ComponentSize * 2)) & ((1 << ComponentSize) - 1);
@@ -139,7 +140,7 @@ namespace ResourceTypes.Animation2
                         throw new Exception();
                 }
 
-                quats.Add(new Quaternion(x, y, z, w));
+                quats.Add((time, new Quaternion(x, y, z, w)));
             }
 
             KeyFrames = quats.ToArray();
@@ -165,9 +166,12 @@ namespace ResourceTypes.Animation2
 
             using (MemoryStream ms = new())
             {
+                ms.Write(KeyFrames.Length, false);
+
                 foreach (var val in KeyFrames)
                 {
-                    val.WriteToFile(ms, false);
+                    ms.Write(val.time, false);
+                    val.value.WriteToFile(ms, false);
                 }
 
                 var data = ms.ToArray();
