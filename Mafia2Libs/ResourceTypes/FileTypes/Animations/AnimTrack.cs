@@ -11,7 +11,7 @@ namespace ResourceTypes.Animation2
 {
     public class AnimTrack
     {
-        public ulong BoneID { get; set; }
+        public Utils.Models.SkeletonBoneIDs BoneID { get; set; }
         public byte Flags { get; set; }
         public bool IsDataPresent { get; set; }
         public byte DataFlags { get; set; }
@@ -50,7 +50,7 @@ namespace ResourceTypes.Animation2
 
         public void Read(BinaryReader br)
         {
-            BoneID = br.ReadUInt64();
+            BoneID = (Utils.Models.SkeletonBoneIDs)br.ReadUInt64();
             Flags = br.ReadByte();
             IsDataPresent = br.ReadBoolean();
             DataFlags = br.ReadByte();
@@ -101,11 +101,13 @@ namespace ResourceTypes.Animation2
             {
                 var dataCurrent = data >> (i * chunkSize);
 
-                var time = Normalize((int)((dataCurrent) & ((1 << TimeSize) - 1)), TimeSize);
+                var time = (((int)((dataCurrent) & ((1 << TimeSize) - 1))) / (float)((1 << TimeSize) - 1)) * Duration;
                 var component1 = (dataCurrent >> (TimeSize)) & ((1 << ComponentSize) - 1);
                 var component2 = (dataCurrent >> (TimeSize + ComponentSize)) & ((1 << ComponentSize) - 1);
                 var component3 = (dataCurrent >> (TimeSize + ComponentSize * 2)) & ((1 << ComponentSize) - 1);
                 var omittedComponent = (dataCurrent >> (TimeSize + ComponentSize * 3)) & ((1 << 2) - 1);
+
+                ulong test = (ulong)(dataCurrent & ((((ulong)1) << chunkSize) - 1));
 
                 float x;
                 float y;
@@ -204,25 +206,31 @@ namespace ResourceTypes.Animation2
 
                 var data = ms.ToArray();
 
-                File.WriteAllBytes(Path.Combine(path, $"AnimTrack_{BoneID}_{FNV32.Hash(data, 0, data.Length)}_Decompressed.bin"), data);
+                File.WriteAllBytes(Path.Combine(path, $"AnimTrack_{BoneID}_Decompressed.bin"), data);
             }
-
-            Quantize();
-            Dequantize();
 
             using (MemoryStream ms = new())
             {
-                ms.Write(KeyFrames.Length, false);
-
-                foreach (var val in KeyFrames)
+                using (StreamWriter sw = new(ms))
                 {
-                    ms.Write(val.time, false);
-                    val.value.WriteToFile(ms, false);
+                    foreach (var val in KeyFrames)
+                    {
+                        sw.Write(val.time.ToString("0.000000"));
+                        sw.Write("|");
+                        sw.Write(val.value.X.ToString("0.000000"));
+                        sw.Write(",");
+                        sw.Write(val.value.Y.ToString("0.000000"));
+                        sw.Write(",");
+                        sw.Write(val.value.Z.ToString("0.000000"));
+                        sw.Write(",");
+                        sw.Write(val.value.W.ToString("0.000000"));
+                        sw.Write("\n");
+                    }
                 }
 
                 var data = ms.ToArray();
 
-                File.WriteAllBytes(Path.Combine(path, $"AnimTrack_{BoneID}_{FNV32.Hash(data, 0, data.Length)}_Decompressed2.bin"), data);
+                File.WriteAllBytes(Path.Combine(path, $"AnimTrack_{BoneID}_Decompressed.txt"), data);
             }
         }
     }
