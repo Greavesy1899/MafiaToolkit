@@ -1,8 +1,10 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
 using System.ComponentModel;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Text;
 using Utils.StringHelpers;
 using Utils.VorticeUtils;
 
@@ -14,8 +16,8 @@ namespace ResourceTypes.Actors
         int size; //item size in bytes;
         string actorTypeName; //actor type (string)
         string entityName; //entity name
-        string unkString;
-        string unk2String;
+        string unkString; //Name1
+        string unk2String; //SceneSectorName
         string definitionName; //actor name
         string frameName; //frame name
         int actortypeID;
@@ -28,77 +30,110 @@ namespace ResourceTypes.Actors
         short dataID;
         ActorExtraData data;
 
-        public int Size {
+        public int Size
+        {
             get { return size; }
         }
-        public string EntityName {
+
+        public string EntityName
+        {
             get { return entityName; }
-            set { 
+            set
+            {
                 entityName = value;
                 entityHash = FNV64.Hash(value);
             }
         }
-        public string ActorTypeName {
+
+        public string ActorTypeName
+        {
             get { return actorTypeName; }
             set { actorTypeName = value; }
         }
-        public string UnkString {
+
+        public string Name1
+        {
             get { return unkString; }
             set { unkString = value; }
         }
-        public string Unk2String {
+
+        public string SceneSectorName
+        {
             get { return unk2String; }
             set { unk2String = value; }
         }
-        public string DefinitionName {
+
+        public string DefinitionName
+        {
             get { return definitionName; }
             set { definitionName = value; }
         }
-        public string FrameName {
+
+        public string FrameName
+        {
             get { return frameName; }
-            set { 
+            set
+            {
                 frameName = value;
                 frameNameHash = FNV64.Hash(value);
             }
         }
-        public int ActorTypeID {
+
+        public int ActorTypeID
+        {
             get { return actortypeID; }
             set { actortypeID = value; }
         }
-        public ulong EntityHash {
+
+        public ulong EntityHash
+        {
             get { return entityHash; }
             set { entityHash = value; }
         }
-        public ulong FrameNameHash {
+
+        public ulong FrameNameHash
+        {
             get { return frameNameHash; }
             set { frameNameHash = value; }
         }
-        public Vector3 Position {
+
+        public Vector3 Position
+        {
             get { return position; }
             set { position = value; }
         }
-        public Quaternion Rotation {
+
+        public Quaternion Rotation
+        {
             get { return rotation; }
             set { rotation = value; }
         }
-        public Vector3 Scale {
+
+        public Vector3 Scale
+        {
             get { return scale; }
             set { scale = value; }
         }
-        public bool bActivateOnInit {
+
+        public bool bActivateOnInit
+        {
             get { return ActivateOnInit; }
             set { ActivateOnInit = value; }
         }
-        public short DataID {
+
+        public short DataID
+        {
             get { return dataID; }
             set { dataID = value; }
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public ActorExtraData Data {
+        public ActorExtraData Data
+        {
             get { return data; }
             set { data = value; }
         }
+
 
         public ActorEntry()
         {
@@ -112,9 +147,16 @@ namespace ResourceTypes.Actors
             definitionName = "";
         }
 
-        public ActorEntry(BinaryReader reader)
+        public ActorEntry(BinaryReader reader, bool compressed)
         {
-            ReadFromFile(reader);
+            if (compressed)
+            {
+                ReadFromFile(reader);
+            }
+            else
+            {
+                ReadFromUncompressedFile(reader);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -134,6 +176,67 @@ namespace ResourceTypes.Actors
             scale = Vector3Utils.ReadFromFile(reader);
             ActivateOnInit = Convert.ToBoolean(reader.ReadUInt16());
             dataID = reader.ReadInt16();
+        }
+
+        public void ReadFromUncompressedFile(BinaryReader reader)
+        {
+            long initPos = reader.BaseStream.Position;
+            size = reader.ReadInt32();
+            byte[] actorBytes = reader.ReadBytes((int)size);
+
+            using (MemoryStream memoryStream = new MemoryStream(actorBytes)) //poor way of reading and parsing strings
+            {
+                string[] parts = new string[6]; // 6 should be maximum number of whole strings
+                int partIndex = 0;
+
+                while (partIndex < parts.Length)
+                {
+                    // reading array until it hits zero byte for splitting
+                    List<byte> byteList = new List<byte>();
+                    int b;
+                    while ((b = memoryStream.ReadByte()) != 0 && b != -1)
+                    {
+                        byteList.Add((byte)b);
+                    }
+
+                    if (byteList.Count == 0 && b == -1)
+                    {
+                        // end of stream
+                        break;
+                    }
+
+                    parts[partIndex] = Encoding.UTF8.GetString(byteList.ToArray());
+                    partIndex++;
+                }
+
+                actorTypeName = parts.Length > 0 ? parts[0] : "";
+                entityName = parts.Length > 1 ? parts[1] : "";
+                unkString = parts.Length > 2 ? parts[2] : "";
+                unk2String = parts.Length > 3 ? parts[3] : "";
+                definitionName = parts.Length > 4 ? parts[4] : "";
+                frameName = parts.Length > 5 ? parts[5] : "";
+                // sets reader position to the end of string array
+
+                reader.BaseStream.Seek(initPos + memoryStream.Position + 4, SeekOrigin.Begin); //+4 because reading size
+            }
+
+            position = Vector3Utils.ReadFromFile(reader);
+            rotation = QuaternionExtensions.ReadFromFile(reader);
+            scale = Vector3Utils.ReadFromFile(reader);
+            ActivateOnInit = Convert.ToBoolean(reader.ReadUInt16());
+            dataID = reader.ReadInt16();
+
+            if (actorTypeName.Equals("FrameWrapper")) //didn't encounter any other type in uncompressed yet
+            {
+                actortypeID = 55;
+            }
+            //entityHash = reader.ReadUInt64();
+            //isnt in uncompressed?
+
+            //frameNameHash = reader.ReadUInt64();
+            //TODO load matching framehash as in definition?
+
+            reader.BaseStream.Seek(initPos + size, SeekOrigin.Begin);//moving onto next item or the end of stream
         }
 
         public int CalculateSize()

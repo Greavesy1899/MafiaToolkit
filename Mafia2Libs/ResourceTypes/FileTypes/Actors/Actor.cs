@@ -12,27 +12,34 @@ namespace ResourceTypes.Actors
     {
         List<ActorDefinition> definitions;
         List<ActorEntry> items;
-        string pool;
+
+        string bufferSize;
+
         //temp_unk start
         int filesize; //size of sector in bits. After this integer (so filesize - 4)
-        short const6; //always 6
-        short const2; //2 or 0
-        byte[] unk02; //only full when const 2 == 0;
+        short version; //always 6, expected binary version
+        short flags; //2 is compressed, 0 is uncompressed
+        byte[] unk02; //only full when flags == 0;
         int const16; //always 16
         int size;
-        int unk12;
+        int size1;
         int unk14;
-        int unk13;
+        int numEntityInitProps;
         List<ActorExtraData> extraData;
         string fileName;
 
-        public List<ActorDefinition> Definitions {
+        public List<ActorDefinition> Definitions
+        {
             get { return definitions; }
         }
-        public List<ActorEntry> Items {
+
+        public List<ActorEntry> Items
+        {
             get { return items; }
         }
-        public List<ActorExtraData> ExtraData {
+
+        public List<ActorExtraData> ExtraData
+        {
             get { return extraData; }
             set { extraData = value; }
         }
@@ -49,8 +56,8 @@ namespace ResourceTypes.Actors
             fileName = InFilename;
 
             const16 = 16;
-            const2 = 2;
-            const6 = 6;
+            flags = 2;
+            version = 6;
         }
 
         public Actor(FileInfo InFileInfo)
@@ -64,7 +71,7 @@ namespace ResourceTypes.Actors
 
         private string BuildDefinitions()
         {
-            if(Definitions.Count == 0)
+            if (Definitions.Count == 0)
             {
                 // TODO: Check if this is correct?
                 return string.Empty;
@@ -132,6 +139,7 @@ namespace ResourceTypes.Actors
                     items[i].DataID = reorganisedKeys[items[i].DataID];
                 }
             }
+
             reorganisedKeys.Clear();
         }
 
@@ -166,7 +174,7 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(BinaryReader reader)
         {
             int poolLength = reader.ReadInt32();
-            pool = new string(reader.ReadChars(poolLength));
+            bufferSize = new string(reader.ReadChars(poolLength));
 
             int hashesLength = reader.ReadInt32();
 
@@ -176,7 +184,7 @@ namespace ResourceTypes.Actors
             {
                 ActorDefinition definition = new ActorDefinition(reader);
                 int pos = definition.NamePos;
-                definition.Name = pool.Substring(pos, pool.IndexOf('\0', pos) - pos);
+                definition.Name = bufferSize.Substring(pos, bufferSize.IndexOf('\0', pos) - pos);
                 definitions.Add(definition);
             }
 
@@ -184,26 +192,16 @@ namespace ResourceTypes.Actors
             long actorDataOffset = reader.BaseStream.Position + 4;
 
             filesize = reader.ReadInt32();
-            const6 = reader.ReadInt16();
-            const2 = reader.ReadInt16();
+            version = reader.ReadInt16();
+            flags = reader.ReadInt16();
             const16 = reader.ReadInt32();
-            size = reader.ReadInt32(); //size of sector end.
-            unk12 = reader.ReadInt32();
-            unk13 = reader.ReadInt32();
 
-            //if (const2 != 2)
-            //    throw new Exception("const_6 is not 6");
-
-            //if (const6 != 6)
-            //    throw new Exception("const_2 is not 2");
-
-            //if (const16 != 16)
-            //    throw new Exception("const_16 is not 16");
-
-            unk14 = reader.ReadInt32();
-
-            if (const2 == 2)
+            if (flags == 2) //compressed
             {
+                size = reader.ReadInt32(); //size of sector end.
+                size1 = reader.ReadInt32();
+                numEntityInitProps = reader.ReadInt32();
+                unk14 = reader.ReadInt32();
                 int newpos = (unk14 / 4 - 2) * 4;
                 if (unk14 - 8 != newpos)
                 {
@@ -215,63 +213,97 @@ namespace ResourceTypes.Actors
                 extraData = new List<ActorExtraData>();
                 for (int i = 0; i < count; i++)
                 {
-                    extraData.Add(new ActorExtraData(reader));
+                    extraData.Add(new ActorExtraData(reader, true));
                 }
-            }
-            else
-            {
-                unk02 = reader.ReadBytes(size - unk14);
-            }
 
-            int itemCount = reader.ReadInt32();
-            reader.BaseStream.Seek(itemCount * 4, SeekOrigin.Current);
+                int itemCount = reader.ReadInt32();
+                reader.BaseStream.Seek(itemCount * 4, SeekOrigin.Current);
 
-            items = new List<ActorEntry>();
-            for (int i = 0; i != itemCount; i++)
-            {
-                ActorEntry item = new ActorEntry(reader);
-                if (item.DataID != -1)
+                items = new List<ActorEntry>();
+                for (int i = 0; i != itemCount; i++)
                 {
-                    item.Data = ExtraData[item.DataID];
+                    ActorEntry item = new ActorEntry(reader, true);
+                    if (item.DataID != -1)
+                    {
+                        item.Data = ExtraData[item.DataID];
+                    }
+
+                    items.Add(item);
                 }
 
-                items.Add(item);
-            }
-
-            // Read how many cutscenes and check if we actually need to do anything.
-            int numCutscenes = reader.ReadInt32();
-            if (numCutscenes > 0)
-            {
-                long endPosition = 0;
-                for (int i = 0; i < numCutscenes; i++)
+                // Read how many cutscenes and check if we actually need to do anything.
+                int numCutscenes = reader.ReadInt32();
+                if (numCutscenes > 0)
                 {
-                    // Get the offset, then save the position so we can return.      
-                    uint offset = reader.ReadUInt32();
-                    long currentPosition = reader.BaseStream.Position;
+                    long endPosition = 0;
+                    for (int i = 0; i < numCutscenes; i++)
+                    {
+                        // Get the offset, then save the position so we can return.      
+                        uint offset = reader.ReadUInt32();
+                        long currentPosition = reader.BaseStream.Position;
 
-                    // Seek to the offset and read cutscene name
-                    reader.BaseStream.Seek(actorDataOffset + offset, SeekOrigin.Begin);
-                    string cutsceneName = StringHelpers.ReadString(reader);
-                    ushort cutscene_unk01 = reader.ReadUInt16();
+                        // Seek to the offset and read cutscene name
+                        reader.BaseStream.Seek(actorDataOffset + offset, SeekOrigin.Begin);
+                        string cutsceneName = StringHelpers.ReadString(reader);
+                        ushort cutscene_unk01 = reader.ReadUInt16();
 
-                    // End position so we can make sure we have reached the end of file.
-                    endPosition = reader.BaseStream.Position;
+                        // End position so we can make sure we have reached the end of file.
+                        endPosition = reader.BaseStream.Position;
 
-                    // Return to our offset.
-                    reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+                        // Return to our offset.
+                        reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+                    }
+
+                    // Seek back to our end point and assert if we have not reached the end of file.
+                    reader.BaseStream.Position = endPosition;
                 }
 
-                // Seek back to our end point and assert if we have not reached the end of file.
-                reader.BaseStream.Position = endPosition;
+                ToolkitAssert.Ensure(reader.BaseStream.Position == reader.BaseStream.Length,
+                    "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
             }
+            else //uncompressed
+            {
+                // Size could be offset item block
+                // Size1 could be offset to cutscenes
+                uint size = reader.ReadUInt32(); //only 39 so far
+                uint size1 = reader.ReadUInt32();
 
-            ToolkitAssert.Ensure(reader.BaseStream.Position == reader.BaseStream.Length, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
+                // Read all InitProps
+                uint numEntityInitProps = reader.ReadUInt32(); //only 1 so far
+                extraData = new List<ActorExtraData>();
+                for (int i = 0; i < numEntityInitProps; i++)
+                {
+                    extraData.Add(new ActorExtraData(reader, false));
+                }
+
+                // Read all items
+                int itemCount = reader.ReadInt32();
+                reader.BaseStream.Seek(itemCount * 4, SeekOrigin.Current);
+
+                items = new List<ActorEntry>();
+
+                for (int i = 0; i != itemCount; i++)
+                {
+                    ActorEntry item = new ActorEntry(reader, false);
+                    if (item.DataID != -1)
+                    {
+                        item.Data = ExtraData[item.DataID];
+                    }
+
+                    items.Add(item);
+                }
+
+                int numCutscenes = reader.ReadInt32();//until we find uncompressed cutscenes here
+                long endPosition = reader.BaseStream.Position;
+                ToolkitAssert.Ensure(reader.BaseStream.Position == reader.BaseStream.Length,
+                    "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
+            }
         }
 
         public void WriteToFile()
         {
             Sanitize();
-            pool = BuildDefinitions();
+            bufferSize = BuildDefinitions();
 
             // Write the file
             using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Create)))
@@ -288,10 +320,10 @@ namespace ResourceTypes.Actors
             List<ActorEntry> cutsceneEntries = new List<ActorEntry>();
 
             Sanitize();
-            pool = BuildDefinitions();
+            bufferSize = BuildDefinitions();
 
-            writer.Write(pool.Length);
-            StringHelpers.WriteString(writer, pool, false);
+            writer.Write(bufferSize.Length);
+            StringHelpers.WriteString(writer, bufferSize, false);
             writer.Write(definitions.Count);
             for (int i = 0; i < definitions.Count; i++)
             {
@@ -300,8 +332,8 @@ namespace ResourceTypes.Actors
 
             long instancePos = writer.BaseStream.Position;
             writer.Write(0);
-            writer.Write(const6);
-            writer.Write(const2);
+            writer.Write(version);
+            writer.Write(flags);
             writer.Write(const16);
             writer.Write(int.MinValue); //size
             writer.Write(int.MinValue); //unk12
@@ -313,10 +345,12 @@ namespace ResourceTypes.Actors
             for (int i = 0; i < extraData.Count; i++)
             {
                 writer.Write(instanceOffset);
-                instanceOffset += (extraData[i].Data != null ? extraData[i].Data.GetSize() : extraData[i].GetDataInBytes().Length) + 8;
+                instanceOffset += (extraData[i].Data != null
+                    ? extraData[i].Data.GetSize()
+                    : extraData[i].GetDataInBytes().Length) + 8;
             }
 
-            for(int i = 0; i < extraData.Count; i++)
+            for (int i = 0; i < extraData.Count; i++)
             {
                 extraData[i].WriteToFile(writer);
             }
@@ -324,7 +358,7 @@ namespace ResourceTypes.Actors
             int itemOffset = instanceOffset + (items.Count * sizeof(int)) + 16;
             long itemPos = writer.BaseStream.Position;
             writer.Write(items.Count);
-            for(int i = 0; i < items.Count; i++)
+            for (int i = 0; i < items.Count; i++)
             {
                 writer.Write(itemOffset);
                 itemOffset += items[i].CalculateSize();
@@ -377,15 +411,15 @@ namespace ResourceTypes.Actors
             }
 
             //for that unknown value.
-            long endPos = cutsceneEntryOffset - instancePos-4;
-            long instanceLength = writer.BaseStream.Position - instancePos-4;
+            long endPos = cutsceneEntryOffset - instancePos - 4;
+            long instanceLength = writer.BaseStream.Position - instancePos - 4;
             long unk = writer.BaseStream.Position - itemPos;
             long size = instanceLength - unk;
 
             writer.BaseStream.Seek(instancePos, SeekOrigin.Begin);
             writer.Write((int)(instanceLength));
-            writer.Write(const6);
-            writer.Write(const2);
+            writer.Write(version);
+            writer.Write(flags);
             writer.Write(const16);
             writer.Write((int)size); //size
             writer.Write((int)(endPos)); //unk12
