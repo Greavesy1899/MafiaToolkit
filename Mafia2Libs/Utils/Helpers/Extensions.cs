@@ -137,6 +137,12 @@ namespace Utils.Extensions
         {
             return value.Trim(WhitespaceChars);
         }
+
+        public static int SignExtend(this uint input, int numBits)
+        {
+            int signedInput = (int)input;
+            return (signedInput << numBits) >> numBits;
+        }
     }
 
     public class Vector2Converter : TypeConverter

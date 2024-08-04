@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using Utils.Extensions;
 using Utils.VorticeUtils;
+using ZLibNet;
 
 namespace ResourceTypes.Animation2
 {
@@ -76,7 +77,7 @@ namespace ResourceTypes.Animation2
 
             Dequantize();
 
-            //DumpTrackData();
+            DumpTrackData();
         }
 
         public int GetKeyframeSize(int ComponentSize, int TimeSize)
@@ -97,56 +98,67 @@ namespace ResourceTypes.Animation2
             var quats = new List<(float time, Quaternion value)>();
             var chunkSize = 3 * ComponentSize + TimeSize + 2;
 
+            if (ComponentSize != 10)
+            {
+                return;
+            }
+
+            var refQuat = UnpackQuaternion32(PackedReferenceQuat);
+
             for (var i = 0; i < NumKeyFrames; i++)
             {
                 var dataCurrent = data >> (i * chunkSize);
 
                 var time = (((int)((dataCurrent) & ((1 << TimeSize) - 1))) / (float)((1 << TimeSize) - 1)) * Duration;
-                var component1 = (dataCurrent >> (TimeSize)) & ((1 << ComponentSize) - 1);
-                var component2 = (dataCurrent >> (TimeSize + ComponentSize)) & ((1 << ComponentSize) - 1);
-                var component3 = (dataCurrent >> (TimeSize + ComponentSize * 2)) & ((1 << ComponentSize) - 1);
-                var omittedComponent = (dataCurrent >> (TimeSize + ComponentSize * 3)) & ((1 << 2) - 1);
+                var rawData = (uint)((dataCurrent >> (TimeSize)) & 0xFFFFFFFF);
 
-                ulong test = (ulong)(dataCurrent & ((((ulong)1) << chunkSize) - 1));
-
-                float x;
-                float y;
-                float z;
-                float w;
-                switch ((int)omittedComponent)
-                {
-                    case 0: // x omitted
-                        y = Normalize((int)component1, ComponentSize);
-                        z = Normalize((int)component2, ComponentSize);
-                        w = Normalize((int)component3, ComponentSize);
-                        x = (float)Math.Sqrt(1 - y * y - z * z - w * w);
-                        break;
-                    case 1: // y omitted
-                        x = Normalize((int)component1, ComponentSize);
-                        z = Normalize((int)component2, ComponentSize);
-                        w = Normalize((int)component3, ComponentSize);
-                        y = (float)Math.Sqrt(1 - x * x - z * z - w * w);
-                        break;
-                    case 2: // z omitted
-                        x = Normalize((int)component1, ComponentSize);
-                        y = Normalize((int)component2, ComponentSize);
-                        w = Normalize((int)component3, ComponentSize);
-                        z = (float)Math.Sqrt(1 - x * x - y * y - w * w);
-                        break;
-                    case 3: // w omitted
-                        x = Normalize((int)component1, ComponentSize);
-                        y = Normalize((int)component2, ComponentSize);
-                        z = Normalize((int)component3, ComponentSize);
-                        w = (float)Math.Sqrt(1 - x * x - y * y - z * z);
-                        break;
-                    default:
-                        throw new Exception();
-                }
-
-                quats.Add((time, new Quaternion(x, y, z, w)));
+                quats.Add((time, UnpackQuaternion32(rawData) / refQuat));
             }
 
             KeyFrames = quats.ToArray();
+        }
+
+        private Quaternion UnpackQuaternion32(uint rawData)
+        {
+            double fRatio = 0.001382418;
+
+            uint iValue0 = (uint)((rawData >> 20) & 0x3FF);
+            uint iValue1 = (uint)((rawData >> 10) & 0x3FF);
+            uint iValue2 = (uint)((rawData >> 0) & 0x3FF);
+
+            double fValue0 = (iValue0 - 511.5) * fRatio;
+            double fValue1 = (iValue1 - 511.5) * fRatio;
+            double fValue2 = (iValue2 - 511.5) * fRatio;
+
+            double sum = 1.0 - (fValue0 * fValue0 - fValue1 * fValue1 - fValue2 * fValue2);
+            double reciproq = 1.0 / Math.Sqrt(sum);
+            double fValue3 = sum * reciproq;
+
+            Quaternion q = new(0, 0, 0, 1);
+
+            switch ((rawData >> 30) & 3)
+            {
+                case 0:
+                    q = new((float)fValue3, (float)fValue0, (float)fValue1, (float)fValue2);
+                    break;
+
+                case 1:
+                    q = new((float)fValue0, (float)fValue3, (float)fValue1, (float)fValue2);
+                    break;
+
+                case 2:
+                    q = new((float)fValue0, (float)fValue1, (float)fValue3, (float)fValue2);
+                    break;
+
+                case 3:
+                    q = new((float)fValue0, (float)fValue1, (float)fValue2, (float)fValue3);
+                    break;
+
+                default:
+                    throw new NotSupportedException();
+            }
+
+            return q;
         }
 
         private void Quantize()
