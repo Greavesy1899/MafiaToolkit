@@ -113,6 +113,16 @@ namespace ResourceTypes.Actors
         SectorRestricted = 8
     }
 
+    [Flags]
+    public enum ActorDamageZoneFlags : int
+    {
+        UseParticles = 0x200,
+        UseSounds = 0x400,
+        UNKNOWN_1 = 0x800,
+        PlayerApplicable = 0x1000,
+        NPCApplicable = 0x2000,
+    }
+
     public enum HumanAIType : int
     {
         CIVILIAN,

@@ -78,6 +78,8 @@ namespace ResourceTypes.Actors
                     return new ActorRadio();
                 case ActorTypes.Telephone:
                     return new ActorTelephone();
+                case ActorTypes.DangerZone:
+                    return new ActorDamageZone();
                 case ActorTypes.FramesController:
                     return new ActorFramesController();
                 default:
