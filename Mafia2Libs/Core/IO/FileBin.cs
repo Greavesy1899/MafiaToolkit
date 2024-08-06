@@ -4,6 +4,7 @@ using ResourceTypes.Misc;
 using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;
 using ResourceTypes.Sound;
+using ResourceTypes.Tyres;
 using System.IO;
 using System.Windows.Forms;
 
@@ -19,6 +20,7 @@ namespace Core.IO
         private const uint ShopMenu2Magic = 0x73686D32;
         private const uint CGameMagic = 0x676D7072;
         private const uint EntityActivatorMagic = 0x656E7461;
+        private const uint TyresMagic = 0x12345678;
 
         public FileBin(FileInfo info) : base(info) { }
 
@@ -72,6 +74,22 @@ namespace Core.IO
                 data.ReadFromFile(file);
                 return true;
             }
+            else if(CheckFileMagic(file, TyresMagic))
+            {
+                SaveFileDialog saveFile = new SaveFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
+                    Tyres loader = new Tyres(file);
+                    loader.ConvertToXML(saveFile.FileName);
+                }
+            }
             else
             {
                 SaveFileDialog saveFile = new SaveFileDialog()
@@ -94,20 +112,41 @@ namespace Core.IO
 
         public override void Save()
         {
-            OpenFileDialog openFile = new OpenFileDialog()
+            if (CheckFileMagic(file, TyresMagic))
             {
-                InitialDirectory = Path.GetDirectoryName(file.FullName),
-                FileName = Path.GetFileNameWithoutExtension(file.FullName),
-                Filter = "XML (*.xml)|*.xml"
-            };
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
 
-            if (openFile.ShowDialog() == DialogResult.OK)
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    Tyres loader = new Tyres(file);
+                    loader.ConvertFromXML(openFile.FileName);
+
+                    File.Copy(file.FullName, file.FullName + "_old", true);
+                    loader.WriteToFile(file.FullName);
+                }
+            }
+            else
             {
-                SoundSectorResource loader = new SoundSectorResource(file);
-                loader.ConvertFromXML(openFile.FileName);
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
 
-                File.Copy(file.FullName, file.FullName + "_old", true);
-                loader.WriteToFile(file.FullName, false);
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    SoundSectorResource loader = new SoundSectorResource(file);
+                    loader.ConvertFromXML(openFile.FileName);
+
+                    File.Copy(file.FullName, file.FullName + "_old", true);
+                    loader.WriteToFile(file.FullName, false);
+                }
             }
         }
 
