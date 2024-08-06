@@ -69,7 +69,7 @@ namespace ResourceTypes.Animation2
 
             ToolkitAssert.Ensure(Header.Count == Count2, "Animation2: Count 1 != Count 2");
 
-            Count2 = IsDataPresent ? Count2++ : Count2;
+            Count2 = Header.RootBoneID != 0 ? (short)(Count2 + 1) : Count2;
 
             Tracks = new AnimTrack[Count2];
 
@@ -79,7 +79,7 @@ namespace ResourceTypes.Animation2
             }
 
             UnkShorts00 = new short[Unk01];
-            UnkShorts01 = new short[Count2];
+            UnkShorts01 = new short[Header.Count];
 
             for (int i = 0; i < UnkShorts00.Length; i++)
             {
