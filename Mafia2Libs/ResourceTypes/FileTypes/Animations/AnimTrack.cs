@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 
 namespace ResourceTypes.Animation2
@@ -9,7 +10,6 @@ namespace ResourceTypes.Animation2
     {
         public static byte TargetTimeSize = 22; //Max 31
         public static byte TargetComponentSize = 24; //Max 63
-        public static float TargetScale = 1.0f;
         public bool TrackDataChanged = true;
         public Utils.Models.SkeletonBoneIDs BoneID { get; set; }
         public byte Flags { get; set; } = 0x23;
@@ -19,7 +19,7 @@ namespace ResourceTypes.Animation2
         public byte ComponentSize { get; set; } = TargetComponentSize;
         public byte TimeSize { get; set; } = TargetTimeSize;
         public uint PackedReferenceQuat { get; set; }
-        public float Scale { get; set; } = TargetScale;
+        public float Scale { get; set; } = 1.0f;
         public float Duration { get; set; }
         public byte[] KeyFrameData { get; set; } = new byte[0];
         public (float time, Quaternion value)[] KeyFrames { get; set; } = new (float time, Quaternion value)[0];
@@ -84,7 +84,7 @@ namespace ResourceTypes.Animation2
 
             TrackDataChanged = false;
 
-            DumpTrackData();
+            //DumpTrackData();
         }
 
         public void Write(BinaryWriter bw)
@@ -154,7 +154,6 @@ namespace ResourceTypes.Animation2
         {
             TimeSize = TargetTimeSize;
             ComponentSize = TargetComponentSize;
-            Scale = TargetScale;
             Duration = duration;
             NumKeyFrames = (short)KeyFrames.Length;
 
@@ -163,6 +162,8 @@ namespace ResourceTypes.Animation2
             PackedReferenceQuat = PackReferenceQuaternion(refQuat);
             refQuat = UnpackReferenceQuaternion(PackedReferenceQuat);
             var invRefQuat = Quaternion.Inverse(refQuat);
+
+            Scale = GetOptimalScale(invRefQuat);
 
             var chunkSize = 3 * ComponentSize + TimeSize + 2;
             var data = new BigInteger();
@@ -448,6 +449,23 @@ namespace ResourceTypes.Animation2
         {
             var maxValue = (float)((1 << size) - 1);
             return (value - maxValue / 2) / (maxValue);
+        }
+
+        private float GetOptimalScale(Quaternion invRefQuat)
+        {
+            float scale = 0.0f;
+
+            for (int i = 0; i < KeyFrames.Length; i++)
+            {
+                var frame = KeyFrames[i];
+                var q = invRefQuat * frame.value;
+                List<float> values = new() { Math.Abs(q.X), Math.Abs(q.Y), Math.Abs(q.Z), Math.Abs(q.W) };
+                values.Remove(values.Max());
+                var temp = values.Max();
+                scale = temp > scale ? temp : scale;
+            }
+
+            return scale;
         }
 
         private void DumpTrackData()

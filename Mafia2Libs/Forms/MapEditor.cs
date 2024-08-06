@@ -2084,6 +2084,7 @@ namespace Mafia2Tool
                 Matrix4x4 LocalTransform = MatrixUtils.SetMatrix(ObjectInfo.Rotation, ObjectInfo.Scale, ObjectInfo.Position);
                 NewFrame.LocalTransform = LocalTransform;
                 NewFrame.Name.Set(ObjectInfo.ObjectName);
+                NewFrame.IsOnFrameTable = true;
 
                 // Construct mesh (if applicable)
                 if (ObjectInfo.ObjectType == MT_ObjectType.StaticMesh)
