@@ -45,7 +45,7 @@ private:
 
 	// Construct a Vertex from the passed FbxMesh. Based on the layers Reference/Mapping mode, we will either use the ControlPointIndex OR the PolygonIndex.
 	// Make sure both are correct setup otherwise you may see some wonky mesh outputs.
-	void ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPointIndex, uint32_t PolygonIndex, Vertex& OutVertex);
+	void ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPointIndex, uint32_t PolygonIndex, uint32_t PolygonVertexIndex, Vertex& OutVertex);
 
 	// Get the UVElement by index. Based on how we order each UV in the format.
 	FbxGeometryElementUV* GetUVElementByIndex(FbxMesh* Mesh, uint ElementType) const;

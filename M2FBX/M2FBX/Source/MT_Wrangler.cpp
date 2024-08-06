@@ -35,15 +35,11 @@ namespace WranglerUtils
 			{
 				return Layer->GetDirectArray().GetAt(ControlPointIndex);
 			}
-			break;
-
 			case FbxGeometryElement::eIndexToDirect:
 			{
 				const int32_t Index = Layer->GetIndexArray().GetAt(ControlPointIndex);
 				return Layer->GetDirectArray().GetAt(Index);
 			}
-			break;
-
 			default:
 				throw std::exception("Invalid Reference");
 			}
@@ -56,20 +52,18 @@ namespace WranglerUtils
 			{
 				return Layer->GetDirectArray().GetAt(PolygonIndex);
 			}
-			break;
-
 			case FbxGeometryElement::eIndexToDirect:
 			{
 				const int32_t Index = Layer->GetIndexArray().GetAt(PolygonIndex);
 				return Layer->GetDirectArray().GetAt(Index);
 			}
-			break;
-
 			default:
 				throw std::exception("Invalid Reference");
 			}
 			break;
 		}
+
+		return {};
 	}
 }
 
@@ -503,6 +497,8 @@ MT_Joint* MT_Wrangler::ConstructJoint(FbxNode* Node)
 void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std::vector<Vertex>* Vertices, std::vector<Int3>* Indices, std::vector<MT_FaceGroup>* FaceGroups)
 {
 	FbxMesh* Mesh = TargetNode->GetMesh();
+	Mesh->SplitPoints(FbxLayerElement::eTextureDiffuse);
+	Mesh->GenerateNormals(true, true, false);
 
 	// Get DiffuseMaterial, we'll need to use it to create Indices & FaceGroup
 	FbxGeometryElementMaterial* DiffuseMaterial = Mesh->GetElementMaterial(0);
@@ -514,8 +510,6 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 	{
 		Vertices->resize(Mesh->GetControlPointsCount());
 	}
-
-	uint32_t VertexCounter = 0;
 
 	// Construct Indices & FaceGroups Array
 	std::vector<std::vector<Int3>> FaceGroupLookup = {};
@@ -531,19 +525,18 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 		if (Vertices)
 		{
 			Vertex NewVertex = {};
-			ConstructVertexFromMesh(Mesh, Triangle.i1, VertexCounter + 0, NewVertex);
-			Vertices->operator[](Triangle.i1) = NewVertex;
+			ConstructVertexFromMesh(Mesh, Triangle.i1, i, 0, NewVertex);
 
 			Vertex NewVertex1 = {};
-			ConstructVertexFromMesh(Mesh, Triangle.i2, VertexCounter + 1, NewVertex);
-			Vertices->operator[](Triangle.i2) = NewVertex;
+			ConstructVertexFromMesh(Mesh, Triangle.i2, i, 1, NewVertex1);
 
 			Vertex NewVertex2 = {};
-			ConstructVertexFromMesh(Mesh, Triangle.i3, VertexCounter + 2, NewVertex);
-			Vertices->operator[](Triangle.i3) = NewVertex;
-		}
+			ConstructVertexFromMesh(Mesh, Triangle.i3, i, 2, NewVertex2);
 
-		VertexCounter += 3;
+			Vertices->operator[](Triangle.i1) = NewVertex;
+			Vertices->operator[](Triangle.i2) = NewVertex1;
+			Vertices->operator[](Triangle.i3) = NewVertex2;
+		}
 
 		const int MaterialAssignment = DiffuseMaterial ? DiffuseMaterial->GetIndexArray().GetAt(i) : 0;
 		FaceGroupLookup[MaterialAssignment].push_back(Triangle);	
@@ -607,7 +600,7 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 	}
 }
 
-void MT_Wrangler::ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPointIndex, uint32_t PolygonIndex, Vertex& OutVertex)
+void MT_Wrangler::ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPointIndex, uint32_t PolygonIndex, uint32_t PolygonVertexIndex, Vertex& OutVertex)
 {
 	FbxGeometryElementUV* DiffuseUVElement = GetUVElementByIndex(InMesh, 0);
 	FbxGeometryElementUV* UV0Element = GetUVElementByIndex(InMesh, 1);
@@ -616,13 +609,19 @@ void MT_Wrangler::ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPoint
 	FbxGeometryElementNormal* NormalElement = InMesh->GetElementNormal(0);
 	FbxGeometryElementTangent* TangentElement = InMesh->GetElementTangent(0);
 
+	// data for UVS
+	std::map<uint, std::string>& LookupMap = WranglerUtils::UVLookupMap;
+	FbxVector2 Value;
+	bool bUnMapped;
+
 	FbxVector4 ControlPoint = InMesh->GetControlPointAt(ControlPointIndex);
 	OutVertex.position = { (float)ControlPoint[0], (float)ControlPoint[1], (float)ControlPoint[2] };
 
 	// Add Normal element to Vertex
 	if (NormalElement)
 	{
-		const FbxVector4& Value = WranglerUtils::GetVertexDataFromLayer(NormalElement, ControlPointIndex, PolygonIndex);
+		FbxVector4 Value;
+		InMesh->GetPolygonVertexNormal(PolygonIndex, PolygonVertexIndex, Value);
 		OutVertex.normals = { (float)Value[0], (float)Value[1], (float)Value[2] };
 	}
 
@@ -636,32 +635,32 @@ void MT_Wrangler::ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPoint
 	// Add Diffuse element to Vertex
 	if (DiffuseUVElement)
 	{
-		const auto MappingMode = DiffuseUVElement->GetMappingMode();
-		const auto ReferenceMode = DiffuseUVElement->GetReferenceMode();
+		FbxVector2 Value;
+		bool bUnMapped;
 
-		const FbxVector2& Value = WranglerUtils::GetVertexDataFromLayer(DiffuseUVElement, ControlPointIndex, PolygonIndex);
+		InMesh->GetPolygonVertexUV(PolygonIndex, PolygonVertexIndex, LookupMap[0].data(), Value, bUnMapped);
 		OutVertex.uv0 = { (float)Value[0], (float)Value[1] };
 	}
 
 	// Add UV0 element to Vertex
 	if (UV0Element)
 	{
-		const FbxVector2& Value = WranglerUtils::GetVertexDataFromLayer(UV0Element, ControlPointIndex, PolygonIndex);
+		InMesh->GetPolygonVertexUV(PolygonIndex, PolygonVertexIndex, LookupMap[1].data(), Value, bUnMapped);
 		OutVertex.uv1 = { (float)Value[0], (float)Value[1] };
 	}
 
 	// Add UV1 element to Vertex
 	if (UV1Element)
 	{
-		const FbxVector2& Value = WranglerUtils::GetVertexDataFromLayer(UV1Element, ControlPointIndex, PolygonIndex);
+		InMesh->GetPolygonVertexUV(PolygonIndex, PolygonVertexIndex, LookupMap[2].data(), Value, bUnMapped);
 		OutVertex.uv2 = { (float)Value[0], (float)Value[1] };
 	}
 
 	// Add OMUV element to Vertex
 	if (OMUVElement)
 	{
-		const FbxVector2& Value = WranglerUtils::GetVertexDataFromLayer(OMUVElement, ControlPointIndex, PolygonIndex);
-		OutVertex.uv3 = { (float)Value[0], (float)Value[1] };
+		InMesh->GetPolygonVertexUV(PolygonIndex, PolygonVertexIndex, LookupMap[3].data(), Value, bUnMapped);
+		OutVertex.uv2 = { (float)Value[0], (float)Value[1] };
 	}
 }
 
@@ -677,7 +676,7 @@ FbxGeometryElementUV* MT_Wrangler::GetUVElementByIndex(FbxMesh* Mesh, uint Eleme
 		Element = Mesh->GetElementUV(ElementName.data());
 		if (Element)
 		{
-			Logger->Printf(ELogType::eWarning, "Found Vertex Element:- %s", ElementName.data());
+			//Logger->Printf(ELogType::eWarning, "Found Vertex Element:- %s", ElementName.data());
 
 			return Element;
 		}
