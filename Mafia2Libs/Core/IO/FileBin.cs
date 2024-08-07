@@ -1,6 +1,6 @@
 ﻿using Mafia2Tool;
+using ResourceTypes.CGame;
 using ResourceTypes.EntityActivator;
-using ResourceTypes.Misc;
 using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;
 using ResourceTypes.Sound;
@@ -18,9 +18,9 @@ namespace Core.IO
         private const uint CityShopsMagic = 0x63747368;
         private const uint CityAreasMagic = 0x63746172;
         private const uint ShopMenu2Magic = 0x73686D32;
-        private const uint CGameMagic = 0x676D7072;
         private const uint EntityActivatorMagic = 0x656E7461;
         private const uint TyresMagic = 0x12345678;
+        private const uint CGameMagic = 0x676D7072;
 
         public FileBin(FileInfo info) : base(info) { }
 
@@ -63,11 +63,6 @@ namespace Core.IO
                 StreamEditor editor = new StreamEditor(file); 
                 return true;
             }
-            else if (CheckFileMagic(file, CGameMagic))
-            {
-                CGameData data = new CGameData(file);
-                return true;
-            }
             else if(CheckFileMagic(file, EntityActivatorMagic))
             {
                 EntityActivator data = new EntityActivator();
@@ -87,6 +82,22 @@ namespace Core.IO
                 {
                     // Unsure on how we should handle this. For now we will just try and hope the loader works.
                     Tyres loader = new Tyres(file);
+                    loader.ConvertToXML(saveFile.FileName);
+                }
+            }
+            else if (CheckFileMagic(file, CGameMagic))
+            {
+                SaveFileDialog saveFile = new SaveFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
+                    CGame loader = new CGame(file);
                     loader.ConvertToXML(saveFile.FileName);
                 }
             }
@@ -124,6 +135,24 @@ namespace Core.IO
                 if (openFile.ShowDialog() == DialogResult.OK)
                 {
                     Tyres loader = new Tyres(file);
+                    loader.ConvertFromXML(openFile.FileName);
+
+                    File.Copy(file.FullName, file.FullName + "_old", true);
+                    loader.WriteToFile(file.FullName);
+                }
+            }
+            if (CheckFileMagic(file, CGameMagic))
+            {
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    CGame loader = new CGame(file);
                     loader.ConvertFromXML(openFile.FileName);
 
                     File.Copy(file.FullName, file.FullName + "_old", true);
