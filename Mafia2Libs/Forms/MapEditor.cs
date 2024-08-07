@@ -29,6 +29,7 @@ using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
+using static ResourceTypes.Collisions.Collision;
 using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
@@ -1757,7 +1758,7 @@ namespace Mafia2Tool
         }
 
         // TODO: Cleanup this function, it's atrocious.
-        private Collision.Placement AddCollision(Collision.CollisionModel collisionModel)
+        private Collision.Placement AddCollision(Collision.CollisionModel collisionModel, Vector3 InstancePos, Vector3 InstanceRot)
         {
             ulong CollisionHash = collisionModel.Hash;
             Collision.CollisionModel CollisionModel = null;
@@ -1788,6 +1789,8 @@ namespace Mafia2Tool
             // Create a new placement for this mesh
             Collision.Placement placement = new Collision.Placement();
             placement.Hash = CollisionHash;
+            placement.Position = InstancePos;
+            placement.RotationDegrees = InstanceRot;
 
             // Try and find the collision node
             TreeNode ExistingCollisionNode = dSceneTree.GetTreeNode(CollisionHash.ToString(), collisionRoot, true);
@@ -2123,9 +2126,7 @@ namespace Mafia2Tool
             if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
                 Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromMTCollision(ObjectInfo.ObjectName, ObjectInfo.Collision);
-                Collision.Placement Placement = AddCollision(collisionModel);
-                Placement.Position = ObjectInfo.Position;
-                Placement.RotationDegrees = ObjectInfo.Rotation;
+                AddCollision(collisionModel, ObjectInfo.Position, ObjectInfo.Rotation);
             }
 
             if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))

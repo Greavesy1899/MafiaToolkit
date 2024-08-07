@@ -21,7 +21,7 @@ public:
 
 	MT_Wrangler() = default;
 	MT_Wrangler(const char* InName, const char* InDest);
-	~MT_Wrangler();
+	virtual ~MT_Wrangler();
 
 	bool ConstructMTBFromFbx();
 	bool SaveBundleToFile();
@@ -32,6 +32,7 @@ private:
 
 	MT_Object* ConstructBaseObject(FbxNode* Node);
 	MT_Object* ConstructMesh(FbxNode* Node);
+	MT_Object* ConstructWrappedCollision(FbxNode* Node);
 	MT_Collision* ConstructCollision(FbxNode* Node);
 	MT_Lod* ConstructFromLod(FbxNode* Lod);
 	MT_Skeleton* ConstructSkeleton(FbxNode* Node);

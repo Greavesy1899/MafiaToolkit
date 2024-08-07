@@ -7,6 +7,7 @@ namespace MT_ObjectUtils_Consts
 	const char* ConstMesh = "MESH";
 	const char* ConstRigged = "RIGD";
 	const char* ConstItemDesc = "ITEM";
+	const char* ConstStaticCol = "SCOL";
 	const char* ConstActor = "ACTR";
 	const char* ConstDummy = "DUMY";
 	const char* ConstJoint = "JOIT";
@@ -54,6 +55,10 @@ MT_ObjectType MT_ObjectUtils::GetTypeFromString(const FbxString ObjectName)
 	{
 		return MT_ObjectType::Joint;
 	}
+	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstStaticCol) != std::string::npos)
+	{
+		return MT_ObjectType::StaticCollision;
+	}
 	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstNull) != std::string::npos)
 	{
 		return MT_ObjectType::Null;
@@ -75,29 +80,33 @@ const char* MT_ObjectUtils::GetTypeAsString(const MT_ObjectType ObjectType)
 {
 	switch (ObjectType)
 	{
-	case StaticMesh:
+	case MT_ObjectType::StaticMesh:
 	{
 		return MT_ObjectUtils_Consts::ConstMesh;
 	}
-	case RiggedMesh:
+	case MT_ObjectType::RiggedMesh:
 	{
 		return MT_ObjectUtils_Consts::ConstRigged;
 	}
-	case ItemDesc:
+	case MT_ObjectType::ItemDesc:
 	{
 		return MT_ObjectUtils_Consts::ConstItemDesc;
 	}
-	case Actor:
+	case MT_ObjectType::Actor:
 	{
 		return MT_ObjectUtils_Consts::ConstActor;
 	}
-	case Dummy:
+	case MT_ObjectType::Dummy:
 	{
 		return MT_ObjectUtils_Consts::ConstDummy;
 	}
-	case Joint:
+	case MT_ObjectType::Joint:
 	{
 		return MT_ObjectUtils_Consts::ConstJoint;
+	}
+	case MT_ObjectType::StaticCollision:
+	{
+		return MT_ObjectUtils_Consts::ConstStaticCol;
 	}
 	}
 

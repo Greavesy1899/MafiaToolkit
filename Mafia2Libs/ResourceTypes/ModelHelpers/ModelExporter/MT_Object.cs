@@ -34,6 +34,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         Actor,
         ItemDesc,
         Dummy,
+        StaticCollision,
     }
 
     public class MT_Object : IValidator

@@ -167,7 +167,7 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 	LoadedBundle = new MT_ObjectBundle();
 
 	FbxNode* RootNode = Scene->GetRootNode();
-	std::vector<MT_Object> ObjectsForBundle = {};
+	std::vector<MT_Object*> ObjectsForBundle = {};
 	for (int i = 0; i < RootNode->GetChildCount(); i++)
 	{
 		FbxNode* ChildNode = RootNode->GetChild(i);
@@ -183,14 +183,24 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 			MT_Object* NewObject = ConstructMesh(ChildNode);
 			if (NewObject)
 			{
-				ObjectsForBundle.push_back(*NewObject);
+				ObjectsForBundle.push_back(NewObject);
 			}
 		}
 		else if (Fbx_Utilities::FindInString(NodeName, "[MODEL]"))
 		{
 			Logger->Printf(ELogType::eInfo, "Detected as RIGGED MODEL");
 			// Convert to RIGGED Model.
-		}	
+		}
+		else if (Fbx_Utilities::FindInString(NodeName, "[SCOL]"))
+		{
+			Logger->Printf(ELogType::eInfo, "Detected as STATIC COLLISION MODEL");
+
+			MT_Object* NewObject = ConstructWrappedCollision(ChildNode);
+			if (NewObject)
+			{
+				ObjectsForBundle.push_back(NewObject);
+			}
+		}
 		else 
 		{
 			Logger->Printf(ELogType::eInfo, "Did not detect any special types, exporting as base MT_Object.");
@@ -199,7 +209,7 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 			MT_Object* NewObject = ConstructBaseObject(ChildNode);
 			if (NewObject)
 			{
-				ObjectsForBundle.push_back(*NewObject);
+				ObjectsForBundle.push_back(NewObject);
 			}
 		}
 
@@ -245,7 +255,6 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 	// Construct object and set name
 	MT_Object* ModelObject = new MT_Object();
 	ModelObject->SetName(RawName);
-	ModelObject->SetObjectFlags(MT_ObjectFlags::HasChildren);
 	ModelObject->SetType(MT_ObjectUtils::GetTypeFromString(Node->GetName()));
 
 	// Get Objects transform
@@ -258,16 +267,8 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 	TransformObject.Scale = { (float)Scale[0], (float)Scale[1], (float)Scale[2] };
 	ModelObject->SetTransform(TransformObject);
 
-	// Collision Conversion
-	if (FbxNode* CollisionNode = Node->FindChild("COL"))
-	{
-		// checks are done in SetCollisions, flag is added too.
-		Logger->WriteLine(ELogType::eInfo, "Detected STATIC collision, converting to MT_Collisions");
-		ModelObject->SetCollisions(ConstructCollision(CollisionNode));
-	}
-
 	// Setup Children
-	std::vector<MT_Object> Children = {};
+	std::vector<MT_Object*> Children = {};
 	FbxInt32 NumChildren = Node->GetChildCount();
 	Logger->Printf(ELogType::eInfo, "Detected %i children nodes.", NumChildren);
 	for (int i = 0; i < NumChildren; i++)
@@ -280,14 +281,25 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 		{
 			Logger->Printf(ELogType::eInfo, "CHILD: Constructing MESH:- %s", ChildName.Buffer());
 			NewChildObject = ConstructMesh(ChildNode);
-			Children.push_back(*NewChildObject);
+			Children.push_back(NewChildObject);
+		}
+		else if (Fbx_Utilities::FindInString(ChildName, "COL"))
+		{
+			// checks are done in SetCollisions, flag is added too.
+			Logger->WriteLine(ELogType::eInfo, "Detected STATIC collision, converting to MT_Collisions");
+			ModelObject->SetCollisions(ConstructCollision(ChildNode));
 		}
 		else if(ChildName.Find('[') != std::string::npos && ChildName.Find(']') != std::string::npos)
 		{
 			Logger->Printf(ELogType::eInfo, "CHILD: Constructing MT_Object:- %s", ChildName.Buffer());
 			NewChildObject = ConstructBaseObject(ChildNode);
-			Children.push_back(*NewChildObject);
+			Children.push_back(NewChildObject);
 		}		
+	}
+
+	if (Children.size() > 0)
+	{
+		ModelObject->SetObjectFlags(MT_ObjectFlags::HasChildren);
 	}
 
 	Logger->WriteLine(ELogType::eInfo, "Done handling children nodes.");
@@ -304,7 +316,7 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	MT_Object* ModelObject = ConstructBaseObject(Node);
 
 	// Model Conversion
-	std::vector<MT_Lod> Lods = {};
+	std::vector<MT_Lod*> Lods = {};
 	FbxInt32 NumLods = Node->GetChildCount();
 	for (int i = 0; i < NumLods; i++)
 	{
@@ -319,11 +331,11 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 				// If we fail to return a valid LOD, don't push back into our collection
 				if (MT_Lod* NewLod = ConstructFromLod(LodNode))
 				{
-					Lods.push_back(*NewLod);
+					Lods.push_back(NewLod);
 				}
 				else
 				{
-					Logger->Printf(ELogType::eError, "Found a LOD for %s but failed to contruct the wrangle to Toolkit Format!", ModelObject->GetName().data());
+					Logger->Printf(ELogType::eError, "Found a LOD for %s but failed to construct the wrangle to Toolkit Format!", ModelObject->GetName().data());
 				}
 			}
 		}
@@ -340,6 +352,13 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	}
 
 	return ModelObject;
+}
+
+MT_Object* MT_Wrangler::ConstructWrappedCollision(FbxNode* Node)
+{
+	// ConstructBaseObject will automatically load MT_Collision
+	MT_Object* WrappedObject = ConstructBaseObject(Node);
+	return WrappedObject;
 }
 
 MT_Collision* MT_Wrangler::ConstructCollision(FbxNode* Node)
@@ -401,6 +420,9 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 		Logger->WriteLine(ELogType::eWarning, "This mesh has no vertices");
 
 	}
+
+	Mesh->SplitPoints(FbxLayerElement::eTextureDiffuse);
+	Mesh->GenerateNormals(true, true, false);
 
 	// Pull data out of the FbxNode (and FbxMesh)
 	std::vector<Vertex> Vertices = {};
@@ -497,8 +519,6 @@ MT_Joint* MT_Wrangler::ConstructJoint(FbxNode* Node)
 void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std::vector<Vertex>* Vertices, std::vector<Int3>* Indices, std::vector<MT_FaceGroup>* FaceGroups)
 {
 	FbxMesh* Mesh = TargetNode->GetMesh();
-	Mesh->SplitPoints(FbxLayerElement::eTextureDiffuse);
-	Mesh->GenerateNormals(true, true, false);
 
 	// Get DiffuseMaterial, we'll need to use it to create Indices & FaceGroup
 	FbxGeometryElementMaterial* DiffuseMaterial = Mesh->GetElementMaterial(0);
