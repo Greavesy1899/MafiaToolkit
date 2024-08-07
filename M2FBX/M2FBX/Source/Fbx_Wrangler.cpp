@@ -73,7 +73,7 @@ bool Fbx_Wrangler::ConstructScene()
 	DocInfo->mTitle = "FBX Model";
 	DocInfo->mSubject = "FBX Created by M2FBX - Used by MafiaToolkit.";
 	DocInfo->mAuthor = "Greavesy";
-	DocInfo->mRevision = "rev. 0.50";
+	DocInfo->mRevision = "rev. 0.75";
 	DocInfo->mKeywords = "";
 	DocInfo->mComment = "";
 
@@ -131,11 +131,11 @@ bool Fbx_Wrangler::ConvertBundleToFbx()
 		return false;
 	}
 
-	const std::vector<MT_Object>& Objects = Bundle->GetObjects();
-	for (auto& Object : Objects)
+	const std::vector<MT_Object*>& Objects = Bundle->GetObjects();
+	for (const MT_Object* Object : Objects)
 	{
 		FbxNode* ObjectNode = nullptr;
-		ConvertObjectToNode(Object, ObjectNode);
+		ConvertObjectToNode(*Object, ObjectNode);
 	}
 
 	SaveDocument();
@@ -162,7 +162,7 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNo
 	RootNode->LclScaling = { Transform.Scale.x, Transform.Scale.y , Transform.Scale.z };
 
 	FbxSkin* Skin = nullptr;
-	if (Object.HasObjectFlag(HasSkinning))
+	if (Object.HasObjectFlag(MT_ObjectFlags::HasSkinning))
 	{
 		const MT_Skeleton* Skeleton = Object.GetSkeleton();
 		Skin = FbxSkin::Create(SdkManager, "Skin");
@@ -171,40 +171,40 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNo
 		RootNode->AddChild(Joint);
 	}
 
-	if (Object.HasObjectFlag(HasLODs))
+	if (Object.HasObjectFlag(MT_ObjectFlags::HasLODs))
 	{
-		const std::vector<MT_Lod>& ModelLods = Object.GetLods();
+		const std::vector<MT_Lod*>& ModelLods = Object.GetLods();
 		for (size_t i = 0; i < 1; i++)
 		{
 			// Setup name and get lod
 			std::string NodeName = "LOD";
 			NodeName += std::to_string(i);
-			const MT_Lod& Lod = ModelLods[i];
+			const MT_Lod* Lod = ModelLods[i];
 
 			// Create lod and convert to object
 			FbxNode* NewLodNode = FbxNode::Create(SdkManager, NodeName.data());
-			bool bResult = ConvertLodToNode(Lod, NewLodNode);
+			bool bResult = ConvertLodToNode(*Lod, NewLodNode);
 			RootNode->AddChild(NewLodNode);
 
 			if (Object.HasObjectFlag(HasSkinning))
 			{
-				bResult = ApplySkinToMesh(Lod, Skin, NewLodNode);
+				bResult = ApplySkinToMesh(*Lod, Skin, NewLodNode);
 			}
 
 			Logger->Printf(ELogType::eInfo, "Added LODIndex [%i]", i);
 		}
 	}
 
-	if (Object.HasObjectFlag(HasChildren))
+	if (Object.HasObjectFlag(MT_ObjectFlags::HasChildren))
 	{
-		const std::vector<MT_Object>& Children = Object.GetChildren();
+		const std::vector<MT_Object*>& Children = Object.GetChildren();
 		Logger->Printf(ELogType::eInfo, "Detected %i children for object [%s]", Children.size(), ObjectName.data());
 		
 		for (size_t i = 0; i < Children.size(); i++)
 		{
 			// Convert Node
 			FbxNode* ChildNode = nullptr;
-			ConvertObjectToNode(Children[i], ChildNode);
+			ConvertObjectToNode(*Children[i], ChildNode);
 
 			// Add Child to the RootNode
 			if (ChildNode)
@@ -215,7 +215,7 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNo
 		}
 	}
 
-	if (Object.HasObjectFlag(HasCollisions))
+	if (Object.HasObjectFlag(MT_ObjectFlags::HasCollisions))
 	{
 		if (const MT_Collision* Collision = Object.GetCollision())
 		{

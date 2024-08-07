@@ -41,7 +41,7 @@ MT_ObjectBundle* MT_ObjectHandler::ReadBundleFromFile(const std::string& FileNam
 			return nullptr;
 		}
 
-		BundleObject->Objects[i] = *NewObject;
+		BundleObject->Objects[i] = NewObject;
 	}
 
 	return BundleObject;
@@ -63,9 +63,9 @@ void MT_ObjectHandler::WriteBundleToFile(const std::string& FileName, const MT_O
 	FileUtils::Write(OutStream, (uint)Bundle.Objects.size());
 
 	// Write Objects
-	for (auto& Object : Bundle.Objects)
+	for (const MT_Object* Object : Bundle.Objects)
 	{
-		WriteObjectToFile(OutStream, Object);
+		WriteObjectToFile(OutStream, *Object);
 	}
 
 	fclose(OutStream);

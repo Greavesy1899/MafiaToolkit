@@ -27,6 +27,7 @@ enum MT_ObjectType : uint
 	Actor,
 	ItemDesc,
 	Dummy,
+	StaticCollision,
 };
 
 struct TransformStruct
@@ -43,6 +44,8 @@ class MT_Object
 
 public:
 
+	virtual ~MT_Object();
+
 	bool HasObjectFlag(const MT_ObjectFlags FlagToCheck) const;
 	void AddObjectFlag(const MT_ObjectFlags FlagToAdd);
 	void Cleanup();
@@ -51,8 +54,8 @@ public:
 	const std::string& GetName() const { return ObjectName; }
 	const MT_ObjectFlags GetFlags() const { return ObjectFlags; }
 	const MT_ObjectType GetType() const { return ObjectType; }
-	const std::vector<MT_Object> GetChildren() const { return Children; }
-	const std::vector<MT_Lod> GetLods() const { return LodObjects; }
+	const std::vector<MT_Object*> GetChildren() const { return Children; }
+	const std::vector<MT_Lod*> GetLods() const { return LodObjects; }
 	const TransformStruct& GetTransform() const { return Transform; }
 	const MT_Collision* GetCollision() const { return CollisionObject; }
 	const MT_Skeleton* GetSkeleton() const { return SkeletonObject; }
@@ -64,7 +67,7 @@ public:
 	void SetTransform(TransformStruct& InTransform) { Transform = InTransform; }
 
 	// TODO: Move all these to cpp file
-	void SetLods(std::vector<MT_Lod> InLods)
+	void SetLods(const std::vector<MT_Lod*>& InLods)
 	{
 		LodObjects = InLods;
 		if (InLods.size() > 0)
@@ -88,7 +91,7 @@ public:
 			AddObjectFlag(MT_ObjectFlags::HasSkinning);
 		}
 	}
-	void SetChildren(std::vector<MT_Object> InChildren)
+	void SetChildren(const std::vector<MT_Object*>& InChildren)
 	{
 		Children = InChildren;
 		if (InChildren.size() > 0)
@@ -110,8 +113,8 @@ private:
 	MT_ObjectType ObjectType;
 	TransformStruct Transform;
 
-	std::vector<MT_Lod> LodObjects;
-	std::vector<MT_Object> Children;
+	std::vector<MT_Lod*> LodObjects;
+	std::vector<MT_Object*> Children;
 	MT_Collision* CollisionObject = nullptr;
 	MT_Skeleton* SkeletonObject = nullptr;
 };
@@ -123,15 +126,17 @@ class MT_ObjectBundle
 
 public:
 
+	virtual ~MT_ObjectBundle();
+
 	void Cleanup();
 
 	// Accessor
-	const std::vector<MT_Object>& GetObjects() const { return Objects; }
+	const std::vector<MT_Object*>& GetObjects() const { return Objects; }
 
 	// Setter
-	void SetObjects(std::vector<MT_Object> InObjects) { Objects = InObjects; }
+	void SetObjects(const std::vector<MT_Object*>& InObjects) { Objects = InObjects; }
 
 private:
 
-	std::vector<MT_Object> Objects;
+	std::vector<MT_Object*> Objects;
 };

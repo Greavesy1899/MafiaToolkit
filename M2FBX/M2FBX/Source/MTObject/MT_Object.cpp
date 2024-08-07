@@ -4,6 +4,29 @@
 #include "MT_Skeleton.h"
 #include "Utilities/FileUtils.h"
 
+MT_Object::~MT_Object()
+{
+	for (MT_Lod* CurLod : LodObjects)
+	{
+		CurLod->Cleanup();
+
+		delete CurLod;
+		CurLod = nullptr;
+	}
+
+	LodObjects.clear();
+
+	for (MT_Object* CurObj : Children)
+	{
+		CurObj->Cleanup();
+
+		delete CurObj;
+		CurObj = nullptr;
+	}
+
+	Children.clear();
+}
+
 bool MT_Object::HasObjectFlag(const MT_ObjectFlags FlagToCheck) const
 {
 	return (ObjectFlags & FlagToCheck);
@@ -21,17 +44,19 @@ void MT_Object::Cleanup()
 	ObjectName = "";
 
 	// Empty LodObjects
-	for (auto& LodObject : LodObjects)
+	for (MT_Lod* LodObject : LodObjects)
 	{
-		LodObject.Cleanup();
+		LodObject->Cleanup();
+		delete LodObject;
 	}
 
 	LodObjects.clear();
 
 	// Empty Children
-	for (auto& ChildObject : Children)
+	for (MT_Object* ChildObject : Children)
 	{
-		ChildObject.Cleanup();
+		ChildObject->Cleanup();
+		delete ChildObject;
 	}
 
 	Children.clear();
@@ -40,6 +65,7 @@ void MT_Object::Cleanup()
 	if (CollisionObject)
 	{
 		CollisionObject->Cleanup();
+		delete CollisionObject;
 		CollisionObject = nullptr;
 	}
 
@@ -47,6 +73,7 @@ void MT_Object::Cleanup()
 	if (SkeletonObject)
 	{
 		// TODO: Maybe do cleanup?
+		delete SkeletonObject;
 		SkeletonObject = nullptr;
 	}
 }
@@ -79,8 +106,8 @@ bool MT_Object::ReadFromFile(FILE* InStream)
 		for (uint i = 0; i < NumLODs; i++)
 		{
 			// Begin to read LOD
-			MT_Lod LodObject = {};
-			LodObject.ReadFromFile(InStream);
+			MT_Lod* LodObject = new MT_Lod();
+			LodObject->ReadFromFile(InStream);
 			LodObjects[i] = LodObject;
 		}
 	}
@@ -95,8 +122,8 @@ bool MT_Object::ReadFromFile(FILE* InStream)
 
 		for (uint i = 0; i < NumChildren; i++)
 		{
-			MT_Object ChildObject = {};
-			ChildObject.ReadFromFile(InStream);
+			MT_Object* ChildObject = new MT_Object();
+			ChildObject->ReadFromFile(InStream);
 			Children[i] = ChildObject;
 		}
 	}
@@ -137,8 +164,8 @@ void MT_Object::WriteToFile(FILE* OutStream) const
 
 		for (int i = 0; i < LodObjects.size(); i++)
 		{
-			const MT_Lod& LodInfo = LodObjects[i];
-			LodInfo.WriteToFile(OutStream);
+			const MT_Lod* LodInfo = LodObjects[i];
+			LodInfo->WriteToFile(OutStream);
 		}
 	}
 
@@ -147,8 +174,8 @@ void MT_Object::WriteToFile(FILE* OutStream) const
 		FileUtils::Write(OutStream, (uint)Children.size());
 		for (size_t i = 0; i < Children.size(); i++)
 		{
-			const MT_Object& ChildObject = Children[i];
-			ChildObject.WriteToFile(OutStream);
+			const MT_Object* ChildObject = Children[i];
+			ChildObject->WriteToFile(OutStream);
 		}
 	}
 
@@ -176,10 +203,18 @@ bool MT_Object::ValidateHeader(const int Magic) const
 	return false;
 }
 
+MT_ObjectBundle::~MT_ObjectBundle()
+{
+	Cleanup();
+}
+
 void MT_ObjectBundle::Cleanup()
 {
-	for (auto& Object : Objects)
+	for (MT_Object* Object : Objects)
 	{
-		Object.Cleanup();
+		Object->Cleanup();
+		delete Object;
 	}
+
+	Objects.clear();
 }

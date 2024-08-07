@@ -35,15 +35,11 @@ namespace WranglerUtils
 			{
 				return Layer->GetDirectArray().GetAt(ControlPointIndex);
 			}
-			break;
-
 			case FbxGeometryElement::eIndexToDirect:
 			{
 				const int32_t Index = Layer->GetIndexArray().GetAt(ControlPointIndex);
 				return Layer->GetDirectArray().GetAt(Index);
 			}
-			break;
-
 			default:
 				throw std::exception("Invalid Reference");
 			}
@@ -56,20 +52,18 @@ namespace WranglerUtils
 			{
 				return Layer->GetDirectArray().GetAt(PolygonIndex);
 			}
-			break;
-
 			case FbxGeometryElement::eIndexToDirect:
 			{
 				const int32_t Index = Layer->GetIndexArray().GetAt(PolygonIndex);
 				return Layer->GetDirectArray().GetAt(Index);
 			}
-			break;
-
 			default:
 				throw std::exception("Invalid Reference");
 			}
 			break;
 		}
+
+		return {};
 	}
 }
 
@@ -173,7 +167,7 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 	LoadedBundle = new MT_ObjectBundle();
 
 	FbxNode* RootNode = Scene->GetRootNode();
-	std::vector<MT_Object> ObjectsForBundle = {};
+	std::vector<MT_Object*> ObjectsForBundle = {};
 	for (int i = 0; i < RootNode->GetChildCount(); i++)
 	{
 		FbxNode* ChildNode = RootNode->GetChild(i);
@@ -189,14 +183,24 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 			MT_Object* NewObject = ConstructMesh(ChildNode);
 			if (NewObject)
 			{
-				ObjectsForBundle.push_back(*NewObject);
+				ObjectsForBundle.push_back(NewObject);
 			}
 		}
 		else if (Fbx_Utilities::FindInString(NodeName, "[MODEL]"))
 		{
 			Logger->Printf(ELogType::eInfo, "Detected as RIGGED MODEL");
 			// Convert to RIGGED Model.
-		}	
+		}
+		else if (Fbx_Utilities::FindInString(NodeName, "[SCOL]"))
+		{
+			Logger->Printf(ELogType::eInfo, "Detected as STATIC COLLISION MODEL");
+
+			MT_Object* NewObject = ConstructWrappedCollision(ChildNode);
+			if (NewObject)
+			{
+				ObjectsForBundle.push_back(NewObject);
+			}
+		}
 		else 
 		{
 			Logger->Printf(ELogType::eInfo, "Did not detect any special types, exporting as base MT_Object.");
@@ -205,7 +209,7 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 			MT_Object* NewObject = ConstructBaseObject(ChildNode);
 			if (NewObject)
 			{
-				ObjectsForBundle.push_back(*NewObject);
+				ObjectsForBundle.push_back(NewObject);
 			}
 		}
 
@@ -251,7 +255,6 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 	// Construct object and set name
 	MT_Object* ModelObject = new MT_Object();
 	ModelObject->SetName(RawName);
-	ModelObject->SetObjectFlags(MT_ObjectFlags::HasChildren);
 	ModelObject->SetType(MT_ObjectUtils::GetTypeFromString(Node->GetName()));
 
 	// Get Objects transform
@@ -264,16 +267,8 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 	TransformObject.Scale = { (float)Scale[0], (float)Scale[1], (float)Scale[2] };
 	ModelObject->SetTransform(TransformObject);
 
-	// Collision Conversion
-	if (FbxNode* CollisionNode = Node->FindChild("COL"))
-	{
-		// checks are done in SetCollisions, flag is added too.
-		Logger->WriteLine(ELogType::eInfo, "Detected STATIC collision, converting to MT_Collisions");
-		ModelObject->SetCollisions(ConstructCollision(CollisionNode));
-	}
-
 	// Setup Children
-	std::vector<MT_Object> Children = {};
+	std::vector<MT_Object*> Children = {};
 	FbxInt32 NumChildren = Node->GetChildCount();
 	Logger->Printf(ELogType::eInfo, "Detected %i children nodes.", NumChildren);
 	for (int i = 0; i < NumChildren; i++)
@@ -286,14 +281,25 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 		{
 			Logger->Printf(ELogType::eInfo, "CHILD: Constructing MESH:- %s", ChildName.Buffer());
 			NewChildObject = ConstructMesh(ChildNode);
-			Children.push_back(*NewChildObject);
+			Children.push_back(NewChildObject);
+		}
+		else if (Fbx_Utilities::FindInString(ChildName, "COL"))
+		{
+			// checks are done in SetCollisions, flag is added too.
+			Logger->WriteLine(ELogType::eInfo, "Detected STATIC collision, converting to MT_Collisions");
+			ModelObject->SetCollisions(ConstructCollision(ChildNode));
 		}
 		else if(ChildName.Find('[') != std::string::npos && ChildName.Find(']') != std::string::npos)
 		{
 			Logger->Printf(ELogType::eInfo, "CHILD: Constructing MT_Object:- %s", ChildName.Buffer());
 			NewChildObject = ConstructBaseObject(ChildNode);
-			Children.push_back(*NewChildObject);
+			Children.push_back(NewChildObject);
 		}		
+	}
+
+	if (Children.size() > 0)
+	{
+		ModelObject->SetObjectFlags(MT_ObjectFlags::HasChildren);
 	}
 
 	Logger->WriteLine(ELogType::eInfo, "Done handling children nodes.");
@@ -310,7 +316,7 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	MT_Object* ModelObject = ConstructBaseObject(Node);
 
 	// Model Conversion
-	std::vector<MT_Lod> Lods = {};
+	std::vector<MT_Lod*> Lods = {};
 	FbxInt32 NumLods = Node->GetChildCount();
 	for (int i = 0; i < NumLods; i++)
 	{
@@ -325,11 +331,11 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 				// If we fail to return a valid LOD, don't push back into our collection
 				if (MT_Lod* NewLod = ConstructFromLod(LodNode))
 				{
-					Lods.push_back(*NewLod);
+					Lods.push_back(NewLod);
 				}
 				else
 				{
-					Logger->Printf(ELogType::eError, "Found a LOD for %s but failed to contruct the wrangle to Toolkit Format!", ModelObject->GetName().data());
+					Logger->Printf(ELogType::eError, "Found a LOD for %s but failed to construct the wrangle to Toolkit Format!", ModelObject->GetName().data());
 				}
 			}
 		}
@@ -346,6 +352,13 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	}
 
 	return ModelObject;
+}
+
+MT_Object* MT_Wrangler::ConstructWrappedCollision(FbxNode* Node)
+{
+	// ConstructBaseObject will automatically load MT_Collision
+	MT_Object* WrappedObject = ConstructBaseObject(Node);
+	return WrappedObject;
 }
 
 MT_Collision* MT_Wrangler::ConstructCollision(FbxNode* Node)
@@ -407,6 +420,9 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 		Logger->WriteLine(ELogType::eWarning, "This mesh has no vertices");
 
 	}
+
+	Mesh->SplitPoints(FbxLayerElement::eTextureDiffuse);
+	Mesh->GenerateNormals(true, true, false);
 
 	// Pull data out of the FbxNode (and FbxMesh)
 	std::vector<Vertex> Vertices = {};
@@ -515,8 +531,6 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 		Vertices->resize(Mesh->GetControlPointsCount());
 	}
 
-	uint32_t VertexCounter = 0;
-
 	// Construct Indices & FaceGroups Array
 	std::vector<std::vector<Int3>> FaceGroupLookup = {};
 	FaceGroupLookup.resize(MaterialCount);
@@ -531,19 +545,18 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 		if (Vertices)
 		{
 			Vertex NewVertex = {};
-			ConstructVertexFromMesh(Mesh, Triangle.i1, VertexCounter + 0, NewVertex);
-			Vertices->operator[](Triangle.i1) = NewVertex;
+			ConstructVertexFromMesh(Mesh, Triangle.i1, i, 0, NewVertex);
 
 			Vertex NewVertex1 = {};
-			ConstructVertexFromMesh(Mesh, Triangle.i2, VertexCounter + 1, NewVertex);
-			Vertices->operator[](Triangle.i2) = NewVertex;
+			ConstructVertexFromMesh(Mesh, Triangle.i2, i, 1, NewVertex1);
 
 			Vertex NewVertex2 = {};
-			ConstructVertexFromMesh(Mesh, Triangle.i3, VertexCounter + 2, NewVertex);
-			Vertices->operator[](Triangle.i3) = NewVertex;
-		}
+			ConstructVertexFromMesh(Mesh, Triangle.i3, i, 2, NewVertex2);
 
-		VertexCounter += 3;
+			Vertices->operator[](Triangle.i1) = NewVertex;
+			Vertices->operator[](Triangle.i2) = NewVertex1;
+			Vertices->operator[](Triangle.i3) = NewVertex2;
+		}
 
 		const int MaterialAssignment = DiffuseMaterial ? DiffuseMaterial->GetIndexArray().GetAt(i) : 0;
 		FaceGroupLookup[MaterialAssignment].push_back(Triangle);	
@@ -607,7 +620,7 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 	}
 }
 
-void MT_Wrangler::ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPointIndex, uint32_t PolygonIndex, Vertex& OutVertex)
+void MT_Wrangler::ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPointIndex, uint32_t PolygonIndex, uint32_t PolygonVertexIndex, Vertex& OutVertex)
 {
 	FbxGeometryElementUV* DiffuseUVElement = GetUVElementByIndex(InMesh, 0);
 	FbxGeometryElementUV* UV0Element = GetUVElementByIndex(InMesh, 1);
@@ -616,13 +629,19 @@ void MT_Wrangler::ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPoint
 	FbxGeometryElementNormal* NormalElement = InMesh->GetElementNormal(0);
 	FbxGeometryElementTangent* TangentElement = InMesh->GetElementTangent(0);
 
+	// data for UVS
+	std::map<uint, std::string>& LookupMap = WranglerUtils::UVLookupMap;
+	FbxVector2 Value;
+	bool bUnMapped;
+
 	FbxVector4 ControlPoint = InMesh->GetControlPointAt(ControlPointIndex);
 	OutVertex.position = { (float)ControlPoint[0], (float)ControlPoint[1], (float)ControlPoint[2] };
 
 	// Add Normal element to Vertex
 	if (NormalElement)
 	{
-		const FbxVector4& Value = WranglerUtils::GetVertexDataFromLayer(NormalElement, ControlPointIndex, PolygonIndex);
+		FbxVector4 Value;
+		InMesh->GetPolygonVertexNormal(PolygonIndex, PolygonVertexIndex, Value);
 		OutVertex.normals = { (float)Value[0], (float)Value[1], (float)Value[2] };
 	}
 
@@ -636,32 +655,32 @@ void MT_Wrangler::ConstructVertexFromMesh(FbxMesh* InMesh, uint32_t ControlPoint
 	// Add Diffuse element to Vertex
 	if (DiffuseUVElement)
 	{
-		const auto MappingMode = DiffuseUVElement->GetMappingMode();
-		const auto ReferenceMode = DiffuseUVElement->GetReferenceMode();
+		FbxVector2 Value;
+		bool bUnMapped;
 
-		const FbxVector2& Value = WranglerUtils::GetVertexDataFromLayer(DiffuseUVElement, ControlPointIndex, PolygonIndex);
+		InMesh->GetPolygonVertexUV(PolygonIndex, PolygonVertexIndex, LookupMap[0].data(), Value, bUnMapped);
 		OutVertex.uv0 = { (float)Value[0], (float)Value[1] };
 	}
 
 	// Add UV0 element to Vertex
 	if (UV0Element)
 	{
-		const FbxVector2& Value = WranglerUtils::GetVertexDataFromLayer(UV0Element, ControlPointIndex, PolygonIndex);
+		InMesh->GetPolygonVertexUV(PolygonIndex, PolygonVertexIndex, LookupMap[1].data(), Value, bUnMapped);
 		OutVertex.uv1 = { (float)Value[0], (float)Value[1] };
 	}
 
 	// Add UV1 element to Vertex
 	if (UV1Element)
 	{
-		const FbxVector2& Value = WranglerUtils::GetVertexDataFromLayer(UV1Element, ControlPointIndex, PolygonIndex);
+		InMesh->GetPolygonVertexUV(PolygonIndex, PolygonVertexIndex, LookupMap[2].data(), Value, bUnMapped);
 		OutVertex.uv2 = { (float)Value[0], (float)Value[1] };
 	}
 
 	// Add OMUV element to Vertex
 	if (OMUVElement)
 	{
-		const FbxVector2& Value = WranglerUtils::GetVertexDataFromLayer(OMUVElement, ControlPointIndex, PolygonIndex);
-		OutVertex.uv3 = { (float)Value[0], (float)Value[1] };
+		InMesh->GetPolygonVertexUV(PolygonIndex, PolygonVertexIndex, LookupMap[3].data(), Value, bUnMapped);
+		OutVertex.uv2 = { (float)Value[0], (float)Value[1] };
 	}
 }
 
@@ -677,7 +696,7 @@ FbxGeometryElementUV* MT_Wrangler::GetUVElementByIndex(FbxMesh* Mesh, uint Eleme
 		Element = Mesh->GetElementUV(ElementName.data());
 		if (Element)
 		{
-			Logger->Printf(ELogType::eWarning, "Found Vertex Element:- %s", ElementName.data());
+			//Logger->Printf(ELogType::eWarning, "Found Vertex Element:- %s", ElementName.data());
 
 			return Element;
 		}

@@ -3082,4 +3082,89 @@ namespace ResourceTypes.Actors
         }
     }
 
+    public class ActorDamageZone : IActorExtraDataInterface
+    {
+        Vector4 Row1 { get; set; }
+        Vector4 Row2 { get; set; }
+        Vector4 Row3 { get; set; }
+        Vector4 Row4 { get; set; }
+        public uint Unk0 { get; set; }
+        public float DamagePerSecondConstant { get; set; }
+        public float DamagePerSecondMinimum { get; set; }
+        public float DamagePerSecondMaximum { get; set; }
+        public uint Unk1 { get; set; }
+        public float Radius { get; set; }
+        public Vector3 BBoxExtents { get; set; }
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public ActorDamageZoneFlags Flags { get; set; }
+        public int ParticleID { get; set; }
+        public int SoundID { get; set; }
+        public byte[] Unk3 { get; set; }
+
+        public ActorDamageZone() : base()
+        {
+            Unk3 = new byte[8];
+
+            // Bounding Box
+            // (NB: I don't know whether this is truly the order)
+            BBoxExtents = Vector3.One;
+
+            Radius = 2.0f;
+
+            // Game engine defaults to this
+            // I'm assuming this could be sensor type
+            Flags = ActorDamageZoneFlags.UNKNOWN_1;
+
+            // Typically defined in damage zones
+            DamagePerSecondConstant = 20.0f;
+            DamagePerSecondMinimum = 2.0f;
+            DamagePerSecondMaximum = 2.0f;
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            // Actually Matrix3x4
+            Row1 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
+            Row2 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
+            Row3 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
+            Row4 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
+
+            Unk0 = stream.ReadUInt32(isBigEndian);
+            DamagePerSecondConstant = stream.ReadSingle(isBigEndian);
+            DamagePerSecondMinimum = stream.ReadSingle(isBigEndian);
+            DamagePerSecondMaximum = stream.ReadSingle(isBigEndian);
+            Unk1 = stream.ReadUInt32(isBigEndian);
+            Radius = stream.ReadSingle(isBigEndian);
+            BBoxExtents = Vector3Utils.ReadFromFile(stream, isBigEndian);
+            Flags = (ActorDamageZoneFlags)stream.ReadUInt32(isBigEndian);
+            ParticleID = stream.ReadInt32(isBigEndian);
+            SoundID = stream.ReadInt32(isBigEndian);
+            Unk3 = stream.ReadBytes(8);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            Vector4Extenders.WriteToFile(Row1, writer, isBigEndian);
+            Vector4Extenders.WriteToFile(Row2, writer, isBigEndian);
+            Vector4Extenders.WriteToFile(Row3, writer, isBigEndian);
+            Vector4Extenders.WriteToFile(Row4, writer, isBigEndian);
+
+            writer.Write(Unk0, isBigEndian);
+            writer.Write(DamagePerSecondConstant, isBigEndian);
+            writer.Write(DamagePerSecondMinimum, isBigEndian);
+            writer.Write(DamagePerSecondMaximum, isBigEndian);
+            writer.Write(Unk1, isBigEndian);
+            writer.Write(Radius, isBigEndian);
+            Vector3Utils.WriteToFile(BBoxExtents, writer, isBigEndian);
+            writer.Write((uint)Flags, isBigEndian);
+            writer.Write(ParticleID, isBigEndian);
+            writer.Write(SoundID, isBigEndian);
+            writer.Write(Unk3);
+        }
+
+        public int GetSize()
+        {
+            return 120;
+        }
+    }
 }
