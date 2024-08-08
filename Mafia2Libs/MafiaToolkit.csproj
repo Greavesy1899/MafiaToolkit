@@ -309,6 +309,8 @@
   <ItemGroup>
     <PackageReference Include="DockPanelSuite" Version="3.1.0" />
     <PackageReference Include="Octokit" Version="8.0.1" />
+    <PackageReference Include="SharpGLTF.Core" Version="1.0.1" />
+    <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.1" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
     <PackageReference Include="Vortice.D3DCompiler" Version="1.9.143" />
     <PackageReference Include="Vortice.Direct3D11" Version="1.9.143" />
