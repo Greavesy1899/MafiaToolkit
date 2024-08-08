@@ -82,6 +82,8 @@ namespace Core.IO
                     return new FileRoadmapClassic(info);
                 case "IFL":
                     return new FileIFL(info);
+                case "AN2":
+                    return new FileAnimation2(info);
                 default:
                     return new FileBase(info);
             }

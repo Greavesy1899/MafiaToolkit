@@ -48,6 +48,8 @@ namespace Utils.Models
             set { modelObject = value; }
         }
 
+        public MT_Animation AnimationObject { get; set; }
+
         public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             this.frameMesh = frameMesh;
@@ -294,6 +296,7 @@ namespace Utils.Models
             MT_ObjectBundle BundleObject = new MT_ObjectBundle();
             BundleObject.Objects = new MT_Object[1];
             BundleObject.Objects[0] = ModelObject;
+            BundleObject.Animation = AnimationObject;
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(FileToWrite + ".mtb", FileMode.Create)))
             {

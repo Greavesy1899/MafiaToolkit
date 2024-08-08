@@ -4,6 +4,7 @@
 
 #include <map>
 
+class MT_Animation;
 class MT_Collision;
 class MT_FaceGroup;
 class MT_MaterialInstance;
@@ -53,6 +54,8 @@ private:
 
 	FbxTexture* CreateTexture(const std::string& Name);
 
+	void CreateAnimation(const MT_Animation& InAnimation, class FbxAnimLayer* InLayer, class FbxNode* InNode);
+
 	const std::string& GetNameByUVType(const UVElementType Type);
 
 	bool SaveDocument();
@@ -66,6 +69,8 @@ private:
 	// Cached managers
 	std::map<uint64_t, FbxSurfacePhong*> MaterialLookup;
 	std::map<uint64_t, FbxTexture*> TextureLookup;
+
+	std::map<std::string, FbxNode*> BoneLookup;
 
 	// Fbx related
 	FbxManager* SdkManager = nullptr;

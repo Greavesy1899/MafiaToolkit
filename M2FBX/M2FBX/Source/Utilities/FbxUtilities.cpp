@@ -77,11 +77,11 @@ void Fbx_Utilities::ConvertToOppositeSerialization(const char* Source, const cha
 		IOS_REF.SetBoolProp(EXP_FBX_MATERIAL, true);
 		IOS_REF.SetBoolProp(EXP_FBX_TEXTURE, true);
 		IOS_REF.SetBoolProp(EXP_FBX_EMBEDDED, false);
-		IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, false);
+		IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, true);
 		IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
 
 		// attempt to initialise
-		if (Exporter->Initialize(Dest, 0, SdkManager->GetIOSettings()))
+		if (Exporter->Initialize(Dest, 1, SdkManager->GetIOSettings()))
 		{
 			// attempt to export
 			Exporter->Export(Scene);

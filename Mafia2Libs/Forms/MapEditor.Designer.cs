@@ -31,517 +31,425 @@ namespace Mafia2Tool
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.Windows.Forms.StatusStrip StatusStrip;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapEditor));
-            this.CurrentModeButton = new System.Windows.Forms.ToolStripSplitButton();
-            this.PositionXTool = new NumericUpDownToolStrip();
-            this.PositionYTool = new NumericUpDownToolStrip();
-            this.PositionZTool = new NumericUpDownToolStrip();
-            this.CameraSpeedTool = new NumericUpDownToolStrip();
-            this.Label_FPS = new System.Windows.Forms.ToolStripStatusLabel();
-            this.Label_MemoryUsage = new System.Windows.Forms.ToolStripStatusLabel();
-            this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
-            this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.AddButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.Button_ImportFrame = new System.Windows.Forms.ToolStripMenuItem();
-            this.Button_ImportBundle = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.ViewTopButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewFrontButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewSideButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewBottomButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewSide2Button = new System.Windows.Forms.ToolStripMenuItem();
-            this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditLighting = new System.Windows.Forms.ToolStripMenuItem();
-            this.Button_TestConvert32 = new System.Windows.Forms.ToolStripMenuItem();
-            this.Button_TestConvert16 = new System.Windows.Forms.ToolStripMenuItem();
-            this.Button_DumpTexture = new System.Windows.Forms.ToolStripMenuItem();
-            this.WindowButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewOptionProperties = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.RenderPanel = new System.Windows.Forms.Panel();
-            this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.FrameBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            CurrentModeButton = new System.Windows.Forms.ToolStripSplitButton();
+            PositionXTool = new NumericUpDownToolStrip();
+            PositionYTool = new NumericUpDownToolStrip();
+            PositionZTool = new NumericUpDownToolStrip();
+            CameraSpeedTool = new NumericUpDownToolStrip();
+            Label_FPS = new System.Windows.Forms.ToolStripStatusLabel();
+            Label_MemoryUsage = new System.Windows.Forms.ToolStripStatusLabel();
+            ToolbarStrip = new System.Windows.Forms.ToolStrip();
+            FileButton = new System.Windows.Forms.ToolStripDropDownButton();
+            SaveButton = new System.Windows.Forms.ToolStripMenuItem();
+            ExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            EditButton = new System.Windows.Forms.ToolStripDropDownButton();
+            AddButton = new System.Windows.Forms.ToolStripMenuItem();
+            Button_ImportFrame = new System.Windows.Forms.ToolStripMenuItem();
+            Button_ImportBundle = new System.Windows.Forms.ToolStripMenuItem();
+            AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
+            ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
+            ViewTopButton = new System.Windows.Forms.ToolStripMenuItem();
+            ViewFrontButton = new System.Windows.Forms.ToolStripMenuItem();
+            ViewSideButton = new System.Windows.Forms.ToolStripMenuItem();
+            ViewBottomButton = new System.Windows.Forms.ToolStripMenuItem();
+            ViewSide2Button = new System.Windows.Forms.ToolStripMenuItem();
+            OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
+            ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
+            ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
+            EditLighting = new System.Windows.Forms.ToolStripMenuItem();
+            Button_TestConvert32 = new System.Windows.Forms.ToolStripMenuItem();
+            Button_TestConvert16 = new System.Windows.Forms.ToolStripMenuItem();
+            Button_DumpTexture = new System.Windows.Forms.ToolStripMenuItem();
+            WindowButton = new System.Windows.Forms.ToolStripDropDownButton();
+            SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
+            ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
+            ViewOptionProperties = new System.Windows.Forms.ToolStripMenuItem();
+            imageList1 = new System.Windows.Forms.ImageList(components);
+            RenderPanel = new System.Windows.Forms.Panel();
+            MeshBrowser = new System.Windows.Forms.OpenFileDialog();
+            TxtBrowser = new System.Windows.Forms.OpenFileDialog();
+            dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+            FrameBrowser = new System.Windows.Forms.OpenFileDialog();
+            SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            AnimFileDialog = new System.Windows.Forms.OpenFileDialog();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
-            this.ToolbarStrip.SuspendLayout();
-            this.SuspendLayout();
+            ToolbarStrip.SuspendLayout();
+            SuspendLayout();
             // 
             // StatusStrip
             // 
             StatusStrip.AutoSize = false;
-            StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CurrentModeButton,
-            this.PositionXTool,
-            this.PositionYTool,
-            this.PositionZTool,
-            this.CameraSpeedTool,
-            this.Label_FPS,
-            this.Label_MemoryUsage});
-            StatusStrip.Location = new System.Drawing.Point(0, 738);
+            StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { CurrentModeButton, PositionXTool, PositionYTool, PositionZTool, CameraSpeedTool, Label_FPS, Label_MemoryUsage });
+            StatusStrip.Location = new System.Drawing.Point(0, 692);
             StatusStrip.Name = "StatusStrip";
             StatusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            StatusStrip.Size = new System.Drawing.Size(1420, 30);
+            StatusStrip.Size = new System.Drawing.Size(1420, 28);
             StatusStrip.TabIndex = 6;
             StatusStrip.Text = "statusStrip1";
             // 
             // CurrentModeButton
             // 
-            this.CurrentModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.CurrentModeButton.Image = ((System.Drawing.Image)(resources.GetObject("CurrentModeButton.Image")));
-            this.CurrentModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.CurrentModeButton.Name = "CurrentModeButton";
-            this.CurrentModeButton.Size = new System.Drawing.Size(127, 28);
-            this.CurrentModeButton.Text = "$CurrentModeLabel";
-            this.CurrentModeButton.ButtonClick += new System.EventHandler(this.CurrentModeButton_ButtonClick);
+            CurrentModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            CurrentModeButton.Image = (System.Drawing.Image)resources.GetObject("CurrentModeButton.Image");
+            CurrentModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            CurrentModeButton.Name = "CurrentModeButton";
+            CurrentModeButton.Size = new System.Drawing.Size(128, 26);
+            CurrentModeButton.Text = "$CurrentModeLabel";
+            CurrentModeButton.ButtonClick += CurrentModeButton_ButtonClick;
             // 
             // PositionXTool
             // 
-            this.PositionXTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.PositionXTool.AutoSize = false;
-            this.PositionXTool.DecimalPlaces = 5;
-            this.PositionXTool.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.PositionXTool.Margin = new System.Windows.Forms.Padding(3, 0, 1, 0);
-            this.PositionXTool.Maximum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            0});
-            this.PositionXTool.Minimum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            -2147483648});
-            this.PositionXTool.Name = "PositionXTool";
-            this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
-            this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(84, 30);
-            this.PositionXTool.Text = "0.00000";
-            this.PositionXTool.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.PositionXTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            PositionXTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            PositionXTool.AutoSize = false;
+            PositionXTool.DecimalPlaces = 5;
+            PositionXTool.Increment = new decimal(new int[] { 1, 0, 0, 0 });
+            PositionXTool.Margin = new System.Windows.Forms.Padding(3, 0, 1, 0);
+            PositionXTool.Maximum = new decimal(new int[] { 9999999, 0, 0, 0 });
+            PositionXTool.Minimum = new decimal(new int[] { 9999999, 0, 0, int.MinValue });
+            PositionXTool.Name = "PositionXTool";
+            PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            PositionXTool.Size = new System.Drawing.Size(84, 28);
+            PositionXTool.Text = "0.00000";
+            PositionXTool.Value = new decimal(new int[] { 0, 0, 0, 0 });
+            PositionXTool.ValueChanged += CameraToolsOnValueChanged;
             // 
             // PositionYTool
             // 
-            this.PositionYTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.PositionYTool.AutoSize = false;
-            this.PositionYTool.DecimalPlaces = 5;
-            this.PositionYTool.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.PositionYTool.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
-            this.PositionYTool.Maximum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            0});
-            this.PositionYTool.Minimum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            -2147483648});
-            this.PositionYTool.Name = "PositionYTool";
-            this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
-            this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(84, 30);
-            this.PositionYTool.Text = "0.00000";
-            this.PositionYTool.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.PositionYTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            PositionYTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            PositionYTool.AutoSize = false;
+            PositionYTool.DecimalPlaces = 5;
+            PositionYTool.Increment = new decimal(new int[] { 1, 0, 0, 0 });
+            PositionYTool.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+            PositionYTool.Maximum = new decimal(new int[] { 9999999, 0, 0, 0 });
+            PositionYTool.Minimum = new decimal(new int[] { 9999999, 0, 0, int.MinValue });
+            PositionYTool.Name = "PositionYTool";
+            PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            PositionYTool.Size = new System.Drawing.Size(84, 28);
+            PositionYTool.Text = "0.00000";
+            PositionYTool.Value = new decimal(new int[] { 0, 0, 0, 0 });
+            PositionYTool.ValueChanged += CameraToolsOnValueChanged;
             // 
             // PositionZTool
             // 
-            this.PositionZTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.PositionZTool.AutoSize = false;
-            this.PositionZTool.DecimalPlaces = 5;
-            this.PositionZTool.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.PositionZTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
-            this.PositionZTool.Maximum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            0});
-            this.PositionZTool.Minimum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            -2147483648});
-            this.PositionZTool.Name = "PositionZTool";
-            this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
-            this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(84, 30);
-            this.PositionZTool.Text = "0.00000";
-            this.PositionZTool.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.PositionZTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            PositionZTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            PositionZTool.AutoSize = false;
+            PositionZTool.DecimalPlaces = 5;
+            PositionZTool.Increment = new decimal(new int[] { 1, 0, 0, 0 });
+            PositionZTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
+            PositionZTool.Maximum = new decimal(new int[] { 9999999, 0, 0, 0 });
+            PositionZTool.Minimum = new decimal(new int[] { 9999999, 0, 0, int.MinValue });
+            PositionZTool.Name = "PositionZTool";
+            PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            PositionZTool.Size = new System.Drawing.Size(84, 28);
+            PositionZTool.Text = "0.00000";
+            PositionZTool.Value = new decimal(new int[] { 0, 0, 0, 0 });
+            PositionZTool.ValueChanged += CameraToolsOnValueChanged;
             // 
             // CameraSpeedTool
             // 
-            this.CameraSpeedTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.CameraSpeedTool.AutoSize = false;
-            this.CameraSpeedTool.DecimalPlaces = 5;
-            this.CameraSpeedTool.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.CameraSpeedTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
-            this.CameraSpeedTool.Maximum = new decimal(new int[] {
-            999,
-            0,
-            0,
-            0});
-            this.CameraSpeedTool.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.CameraSpeedTool.Name = "CameraSpeedTool";
-            this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
-            this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(84, 30);
-            this.CameraSpeedTool.Text = "0.00000";
-            this.CameraSpeedTool.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.CameraSpeedTool.ValueChanged += new System.EventHandler(this.CameraSpeedUpdate);
+            CameraSpeedTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            CameraSpeedTool.AutoSize = false;
+            CameraSpeedTool.DecimalPlaces = 5;
+            CameraSpeedTool.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
+            CameraSpeedTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
+            CameraSpeedTool.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
+            CameraSpeedTool.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
+            CameraSpeedTool.Name = "CameraSpeedTool";
+            CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            CameraSpeedTool.Size = new System.Drawing.Size(84, 28);
+            CameraSpeedTool.Text = "0.00000";
+            CameraSpeedTool.Value = new decimal(new int[] { 0, 0, 0, 0 });
+            CameraSpeedTool.ValueChanged += CameraSpeedUpdate;
             // 
             // Label_FPS
             // 
-            this.Label_FPS.Name = "Label_FPS";
-            this.Label_FPS.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
-            this.Label_FPS.Padding = new System.Windows.Forms.Padding(41, 0, 0, 0);
-            this.Label_FPS.Size = new System.Drawing.Size(100, 25);
-            this.Label_FPS.Text = "Label_FPS";
+            Label_FPS.Name = "Label_FPS";
+            Label_FPS.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            Label_FPS.Padding = new System.Windows.Forms.Padding(41, 0, 0, 0);
+            Label_FPS.Size = new System.Drawing.Size(100, 23);
+            Label_FPS.Text = "Label_FPS";
             // 
             // Label_MemoryUsage
             // 
-            this.Label_MemoryUsage.Name = "Label_MemoryUsage";
-            this.Label_MemoryUsage.Size = new System.Drawing.Size(116, 25);
-            this.Label_MemoryUsage.Text = "Label_MemoryUsage";
+            Label_MemoryUsage.Name = "Label_MemoryUsage";
+            Label_MemoryUsage.Size = new System.Drawing.Size(117, 23);
+            Label_MemoryUsage.Text = "Label_MemoryUsage";
             // 
             // ToolbarStrip
             // 
-            this.ToolbarStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FileButton,
-            this.EditButton,
-            this.ViewButton,
-            this.OptionsButton,
-            this.WindowButton});
-            this.ToolbarStrip.Location = new System.Drawing.Point(0, 0);
-            this.ToolbarStrip.Name = "ToolbarStrip";
-            this.ToolbarStrip.Size = new System.Drawing.Size(1420, 25);
-            this.ToolbarStrip.TabIndex = 1;
-            this.ToolbarStrip.Text = "toolStrip1";
+            ToolbarStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { FileButton, EditButton, ViewButton, OptionsButton, WindowButton });
+            ToolbarStrip.Location = new System.Drawing.Point(0, 0);
+            ToolbarStrip.Name = "ToolbarStrip";
+            ToolbarStrip.Size = new System.Drawing.Size(1420, 25);
+            ToolbarStrip.TabIndex = 1;
+            ToolbarStrip.Text = "toolStrip1";
             // 
             // FileButton
             // 
-            this.FileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.FileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SaveButton,
-            this.ExitButton});
-            this.FileButton.Image = ((System.Drawing.Image)(resources.GetObject("FileButton.Image")));
-            this.FileButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FileButton.Name = "FileButton";
-            this.FileButton.Size = new System.Drawing.Size(47, 22);
-            this.FileButton.Text = "$FILE";
+            FileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            FileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { SaveButton, ExitButton });
+            FileButton.Image = (System.Drawing.Image)resources.GetObject("FileButton.Image");
+            FileButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            FileButton.Name = "FileButton";
+            FileButton.Size = new System.Drawing.Size(47, 22);
+            FileButton.Text = "$FILE";
             // 
             // SaveButton
             // 
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(106, 22);
-            this.SaveButton.Text = "$SAVE";
-            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            SaveButton.Name = "SaveButton";
+            SaveButton.Size = new System.Drawing.Size(106, 22);
+            SaveButton.Text = "$SAVE";
+            SaveButton.Click += SaveButton_Click;
             // 
             // ExitButton
             // 
-            this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(106, 22);
-            this.ExitButton.Text = "$EXIT";
-            this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            ExitButton.Name = "ExitButton";
+            ExitButton.Size = new System.Drawing.Size(106, 22);
+            ExitButton.Text = "$EXIT";
+            ExitButton.Click += ExitButton_Click;
             // 
             // EditButton
             // 
-            this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddButton,
-            this.Button_ImportFrame,
-            this.Button_ImportBundle,
-            this.AddSceneFolderButton});
-            this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
-            this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.EditButton.Name = "EditButton";
-            this.EditButton.Size = new System.Drawing.Size(65, 22);
-            this.EditButton.Text = "$CREATE";
+            EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { AddButton, Button_ImportFrame, Button_ImportBundle, AddSceneFolderButton });
+            EditButton.Image = (System.Drawing.Image)resources.GetObject("EditButton.Image");
+            EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            EditButton.Name = "EditButton";
+            EditButton.Size = new System.Drawing.Size(66, 22);
+            EditButton.Text = "$CREATE";
             // 
             // AddButton
             // 
-            this.AddButton.Name = "AddButton";
-            this.AddButton.Size = new System.Drawing.Size(190, 22);
-            this.AddButton.Text = "$ADD";
-            this.AddButton.Click += new System.EventHandler(this.AddButtonOnClick);
+            AddButton.Name = "AddButton";
+            AddButton.Size = new System.Drawing.Size(191, 22);
+            AddButton.Text = "$ADD";
+            AddButton.Click += AddButtonOnClick;
             // 
             // Button_ImportFrame
             // 
-            this.Button_ImportFrame.Name = "Button_ImportFrame";
-            this.Button_ImportFrame.Size = new System.Drawing.Size(190, 22);
-            this.Button_ImportFrame.Text = "$IMPORT_FRAME";
-            this.Button_ImportFrame.Click += new System.EventHandler(this.Button_ImportFrame_OnClicked);
+            Button_ImportFrame.Name = "Button_ImportFrame";
+            Button_ImportFrame.Size = new System.Drawing.Size(191, 22);
+            Button_ImportFrame.Text = "$IMPORT_FRAME";
+            Button_ImportFrame.Click += Button_ImportFrame_OnClicked;
             // 
             // Button_ImportBundle
             // 
-            this.Button_ImportBundle.Name = "Button_ImportBundle";
-            this.Button_ImportBundle.Size = new System.Drawing.Size(190, 22);
-            this.Button_ImportBundle.Text = "$IMPORT_BUNDLE";
-            this.Button_ImportBundle.Click += new System.EventHandler(this.Button_ImportBundle_OnClick);
+            Button_ImportBundle.Name = "Button_ImportBundle";
+            Button_ImportBundle.Size = new System.Drawing.Size(191, 22);
+            Button_ImportBundle.Text = "$IMPORT_BUNDLE";
+            Button_ImportBundle.Click += Button_ImportBundle_OnClick;
             // 
             // AddSceneFolderButton
             // 
-            this.AddSceneFolderButton.Name = "AddSceneFolderButton";
-            this.AddSceneFolderButton.Size = new System.Drawing.Size(190, 22);
-            this.AddSceneFolderButton.Text = "$ADD_SCENE_FOLDER";
-            this.AddSceneFolderButton.Click += new System.EventHandler(this.AddSceneFolderButton_Click);
+            AddSceneFolderButton.Name = "AddSceneFolderButton";
+            AddSceneFolderButton.Size = new System.Drawing.Size(191, 22);
+            AddSceneFolderButton.Text = "$ADD_SCENE_FOLDER";
+            AddSceneFolderButton.Click += AddSceneFolderButton_Click;
             // 
             // ViewButton
             // 
-            this.ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.ViewButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ViewTopButton,
-            this.ViewFrontButton,
-            this.ViewSideButton,
-            this.ViewBottomButton,
-            this.ViewSide2Button});
-            this.ViewButton.Image = ((System.Drawing.Image)(resources.GetObject("ViewButton.Image")));
-            this.ViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ViewButton.Name = "ViewButton";
-            this.ViewButton.Size = new System.Drawing.Size(53, 22);
-            this.ViewButton.Text = "$VIEW";
+            ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            ViewButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { ViewTopButton, ViewFrontButton, ViewSideButton, ViewBottomButton, ViewSide2Button });
+            ViewButton.Image = (System.Drawing.Image)resources.GetObject("ViewButton.Image");
+            ViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            ViewButton.Name = "ViewButton";
+            ViewButton.Size = new System.Drawing.Size(53, 22);
+            ViewButton.Text = "$VIEW";
             // 
             // ViewTopButton
             // 
-            this.ViewTopButton.Name = "ViewTopButton";
-            this.ViewTopButton.Size = new System.Drawing.Size(126, 22);
-            this.ViewTopButton.Text = "$TOP";
-            this.ViewTopButton.Click += new System.EventHandler(this.OnViewTopButtonClicked);
+            ViewTopButton.Name = "ViewTopButton";
+            ViewTopButton.Size = new System.Drawing.Size(126, 22);
+            ViewTopButton.Text = "$TOP";
+            ViewTopButton.Click += OnViewTopButtonClicked;
             // 
             // ViewFrontButton
             // 
-            this.ViewFrontButton.Name = "ViewFrontButton";
-            this.ViewFrontButton.Size = new System.Drawing.Size(126, 22);
-            this.ViewFrontButton.Text = "$FRONT";
-            this.ViewFrontButton.Click += new System.EventHandler(this.OnViewFrontButtonClicked);
+            ViewFrontButton.Name = "ViewFrontButton";
+            ViewFrontButton.Size = new System.Drawing.Size(126, 22);
+            ViewFrontButton.Text = "$FRONT";
+            ViewFrontButton.Click += OnViewFrontButtonClicked;
             // 
             // ViewSideButton
             // 
-            this.ViewSideButton.Enabled = false;
-            this.ViewSideButton.Name = "ViewSideButton";
-            this.ViewSideButton.Size = new System.Drawing.Size(126, 22);
-            this.ViewSideButton.Text = "$SIDE";
-            this.ViewSideButton.Visible = false;
-            this.ViewSideButton.Click += new System.EventHandler(this.OnViewSideButtonClicked);
+            ViewSideButton.Enabled = false;
+            ViewSideButton.Name = "ViewSideButton";
+            ViewSideButton.Size = new System.Drawing.Size(126, 22);
+            ViewSideButton.Text = "$SIDE";
+            ViewSideButton.Visible = false;
+            ViewSideButton.Click += OnViewSideButtonClicked;
             // 
             // ViewBottomButton
             // 
-            this.ViewBottomButton.Enabled = false;
-            this.ViewBottomButton.Name = "ViewBottomButton";
-            this.ViewBottomButton.Size = new System.Drawing.Size(126, 22);
-            this.ViewBottomButton.Text = "$BOTTOM";
-            this.ViewBottomButton.Visible = false;
-            this.ViewBottomButton.Click += new System.EventHandler(this.OnViewBottomButtonClicked);
+            ViewBottomButton.Enabled = false;
+            ViewBottomButton.Name = "ViewBottomButton";
+            ViewBottomButton.Size = new System.Drawing.Size(126, 22);
+            ViewBottomButton.Text = "$BOTTOM";
+            ViewBottomButton.Visible = false;
+            ViewBottomButton.Click += OnViewBottomButtonClicked;
             // 
             // ViewSide2Button
             // 
-            this.ViewSide2Button.Enabled = false;
-            this.ViewSide2Button.Name = "ViewSide2Button";
-            this.ViewSide2Button.Size = new System.Drawing.Size(126, 22);
-            this.ViewSide2Button.Text = "$SIDE 2";
-            this.ViewSide2Button.Visible = false;
-            this.ViewSide2Button.Click += new System.EventHandler(this.OnViewSide2ButtonClicked);
+            ViewSide2Button.Enabled = false;
+            ViewSide2Button.Name = "ViewSide2Button";
+            ViewSide2Button.Size = new System.Drawing.Size(126, 22);
+            ViewSide2Button.Text = "$SIDE 2";
+            ViewSide2Button.Visible = false;
+            ViewSide2Button.Click += OnViewSide2ButtonClicked;
             // 
             // OptionsButton
             // 
-            this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToggleWireframeButton,
-            this.ToggleCullingButton,
-            this.EditLighting,
-            this.Button_TestConvert32,
-            this.Button_TestConvert16,
-            this.Button_DumpTexture});
-            this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
-            this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.OptionsButton.Name = "OptionsButton";
-            this.OptionsButton.Size = new System.Drawing.Size(75, 22);
-            this.OptionsButton.Text = "$OPTIONS";
+            OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { ToggleWireframeButton, ToggleCullingButton, EditLighting, Button_TestConvert32, Button_TestConvert16, Button_DumpTexture });
+            OptionsButton.Image = (System.Drawing.Image)resources.GetObject("OptionsButton.Image");
+            OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            OptionsButton.Name = "OptionsButton";
+            OptionsButton.Size = new System.Drawing.Size(75, 22);
+            OptionsButton.Text = "$OPTIONS";
             // 
             // ToggleWireframeButton
             // 
-            this.ToggleWireframeButton.Name = "ToggleWireframeButton";
-            this.ToggleWireframeButton.Size = new System.Drawing.Size(193, 22);
-            this.ToggleWireframeButton.Text = "$TOGGLE_WIREFRAME";
-            this.ToggleWireframeButton.Click += new System.EventHandler(this.FillModeButton_Click);
+            ToggleWireframeButton.Name = "ToggleWireframeButton";
+            ToggleWireframeButton.Size = new System.Drawing.Size(193, 22);
+            ToggleWireframeButton.Text = "$TOGGLE_WIREFRAME";
+            ToggleWireframeButton.Click += FillModeButton_Click;
             // 
             // ToggleCullingButton
             // 
-            this.ToggleCullingButton.Name = "ToggleCullingButton";
-            this.ToggleCullingButton.Size = new System.Drawing.Size(193, 22);
-            this.ToggleCullingButton.Text = "$TOGGLE_CULLING";
-            this.ToggleCullingButton.Click += new System.EventHandler(this.CullModeButton_Click);
+            ToggleCullingButton.Name = "ToggleCullingButton";
+            ToggleCullingButton.Size = new System.Drawing.Size(193, 22);
+            ToggleCullingButton.Text = "$TOGGLE_CULLING";
+            ToggleCullingButton.Click += CullModeButton_Click;
             // 
             // EditLighting
             // 
-            this.EditLighting.Name = "EditLighting";
-            this.EditLighting.Size = new System.Drawing.Size(193, 22);
-            this.EditLighting.Text = "$EDIT_LIGHTING";
-            this.EditLighting.Click += new System.EventHandler(this.EditLighting_Click);
+            EditLighting.Name = "EditLighting";
+            EditLighting.Size = new System.Drawing.Size(193, 22);
+            EditLighting.Text = "$EDIT_LIGHTING";
+            EditLighting.Click += EditLighting_Click;
             // 
             // Button_TestConvert32
             // 
-            this.Button_TestConvert32.Name = "Button_TestConvert32";
-            this.Button_TestConvert32.Size = new System.Drawing.Size(193, 22);
-            this.Button_TestConvert32.Text = "$TEST_CONVERT_32BIT";
-            this.Button_TestConvert32.Click += new System.EventHandler(this.Button_TestConvert32_Click);
+            Button_TestConvert32.Name = "Button_TestConvert32";
+            Button_TestConvert32.Size = new System.Drawing.Size(193, 22);
+            Button_TestConvert32.Text = "$TEST_CONVERT_32BIT";
+            Button_TestConvert32.Click += Button_TestConvert32_Click;
             // 
             // Button_TestConvert16
             // 
-            this.Button_TestConvert16.Name = "Button_TestConvert16";
-            this.Button_TestConvert16.Size = new System.Drawing.Size(193, 22);
-            this.Button_TestConvert16.Text = "$TEST_CONVERT_16BIT";
-            this.Button_TestConvert16.Click += new System.EventHandler(this.Button_TestConvert_Click);
+            Button_TestConvert16.Name = "Button_TestConvert16";
+            Button_TestConvert16.Size = new System.Drawing.Size(193, 22);
+            Button_TestConvert16.Text = "$TEST_CONVERT_16BIT";
+            Button_TestConvert16.Click += Button_TestConvert_Click;
             // 
             // Button_DumpTexture
             // 
-            this.Button_DumpTexture.Name = "Button_DumpTexture";
-            this.Button_DumpTexture.Size = new System.Drawing.Size(193, 22);
-            this.Button_DumpTexture.Text = "$DUMP_TEXTURES";
-            this.Button_DumpTexture.Click += new System.EventHandler(this.Button_DumpTexture_Click);
+            Button_DumpTexture.Name = "Button_DumpTexture";
+            Button_DumpTexture.Size = new System.Drawing.Size(193, 22);
+            Button_DumpTexture.Text = "$DUMP_TEXTURES";
+            Button_DumpTexture.Click += Button_DumpTexture_Click;
             // 
             // WindowButton
             // 
-            this.WindowButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.WindowButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SceneTreeButton,
-            this.ObjectPropertiesButton,
-            this.ViewOptionProperties});
-            this.WindowButton.Image = ((System.Drawing.Image)(resources.GetObject("WindowButton.Image")));
-            this.WindowButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.WindowButton.Name = "WindowButton";
-            this.WindowButton.Size = new System.Drawing.Size(83, 22);
-            this.WindowButton.Text = "$WINDOWS";
+            WindowButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            WindowButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { SceneTreeButton, ObjectPropertiesButton, ViewOptionProperties });
+            WindowButton.Image = (System.Drawing.Image)resources.GetObject("WindowButton.Image");
+            WindowButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            WindowButton.Name = "WindowButton";
+            WindowButton.Size = new System.Drawing.Size(83, 22);
+            WindowButton.Text = "$WINDOWS";
             // 
             // SceneTreeButton
             // 
-            this.SceneTreeButton.Name = "SceneTreeButton";
-            this.SceneTreeButton.Size = new System.Drawing.Size(199, 22);
-            this.SceneTreeButton.Text = "$VIEW_SCENE_TREE";
-            this.SceneTreeButton.Click += new System.EventHandler(this.SceneTreeOnClicked);
+            SceneTreeButton.Name = "SceneTreeButton";
+            SceneTreeButton.Size = new System.Drawing.Size(198, 22);
+            SceneTreeButton.Text = "$VIEW_SCENE_TREE";
+            SceneTreeButton.Click += SceneTreeOnClicked;
             // 
             // ObjectPropertiesButton
             // 
-            this.ObjectPropertiesButton.Name = "ObjectPropertiesButton";
-            this.ObjectPropertiesButton.Size = new System.Drawing.Size(199, 22);
-            this.ObjectPropertiesButton.Text = "$VIEW_PROPERTY_GRID";
-            this.ObjectPropertiesButton.Click += new System.EventHandler(this.PropertyGridOnClicked);
+            ObjectPropertiesButton.Name = "ObjectPropertiesButton";
+            ObjectPropertiesButton.Size = new System.Drawing.Size(198, 22);
+            ObjectPropertiesButton.Text = "$VIEW_PROPERTY_GRID";
+            ObjectPropertiesButton.Click += PropertyGridOnClicked;
             // 
             // ViewOptionProperties
             // 
-            this.ViewOptionProperties.Name = "ViewOptionProperties";
-            this.ViewOptionProperties.Size = new System.Drawing.Size(199, 22);
-            this.ViewOptionProperties.Text = "$VIEW_OPTIONS";
-            this.ViewOptionProperties.Click += new System.EventHandler(this.ViewOptionProperties_Click);
+            ViewOptionProperties.Name = "ViewOptionProperties";
+            ViewOptionProperties.Size = new System.Drawing.Size(198, 22);
+            ViewOptionProperties.Text = "$VIEW_OPTIONS";
+            ViewOptionProperties.Click += ViewOptionProperties_Click;
             // 
             // imageList1
             // 
-            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "StaticIcon");
-            this.imageList1.Images.SetKeyName(1, "LightIcon");
+            imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            imageList1.ImageStream = (System.Windows.Forms.ImageListStreamer)resources.GetObject("imageList1.ImageStream");
+            imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            imageList1.Images.SetKeyName(0, "StaticIcon");
+            imageList1.Images.SetKeyName(1, "LightIcon");
             // 
             // RenderPanel
             // 
-            this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RenderPanel.Location = new System.Drawing.Point(0, 25);
-            this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(1420, 713);
-            this.RenderPanel.TabIndex = 0;
+            RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            RenderPanel.Location = new System.Drawing.Point(0, 25);
+            RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            RenderPanel.Name = "RenderPanel";
+            RenderPanel.Size = new System.Drawing.Size(1420, 667);
+            RenderPanel.TabIndex = 0;
             // 
             // MeshBrowser
             // 
-            this.MeshBrowser.Filter = "Bundle|*.mtb|FBX|*.fbx";
+            MeshBrowser.Filter = "Bundle|*.mtb|FBX|*.fbx";
             // 
             // TxtBrowser
             // 
-            this.TxtBrowser.Filter = "Text Document|*txt";
+            TxtBrowser.Filter = "Text Document|*txt";
             // 
             // dockPanel1
             // 
-            this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dockPanel1.Location = new System.Drawing.Point(0, 25);
-            this.dockPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.dockPanel1.Name = "dockPanel1";
-            this.dockPanel1.Size = new System.Drawing.Size(1420, 713);
-            this.dockPanel1.TabIndex = 0;
+            dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            dockPanel1.Location = new System.Drawing.Point(0, 25);
+            dockPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            dockPanel1.Name = "dockPanel1";
+            dockPanel1.Size = new System.Drawing.Size(1420, 667);
+            dockPanel1.TabIndex = 0;
             // 
             // FrameBrowser
             // 
-            this.FrameBrowser.Filter = "Toolkit Frame Data|*framedata";
+            FrameBrowser.Filter = "Toolkit Frame Data|*framedata";
+            // 
+            // AnimFileDialog
+            // 
+            AnimFileDialog.Filter = "Animation2|*an2";
             // 
             // MapEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1420, 768);
-            this.Controls.Add(this.dockPanel1);
-            this.Controls.Add(this.RenderPanel);
-            this.Controls.Add(StatusStrip);
-            this.Controls.Add(this.ToolbarStrip);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "MapEditor";
-            this.Text = "Map Editor";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1420, 720);
+            Controls.Add(dockPanel1);
+            Controls.Add(RenderPanel);
+            Controls.Add(StatusStrip);
+            Controls.Add(ToolbarStrip);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "MapEditor";
+            Text = "Map Editor";
+            FormClosing += OnFormClosing;
             StatusStrip.ResumeLayout(false);
             StatusStrip.PerformLayout();
-            this.ToolbarStrip.ResumeLayout(false);
-            this.ToolbarStrip.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            ToolbarStrip.ResumeLayout(false);
+            ToolbarStrip.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -585,5 +493,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem Button_DumpTexture;
         private System.Windows.Forms.ToolStripMenuItem Button_ImportBundle;
         private System.Windows.Forms.SaveFileDialog SaveFileDialog;
+        private System.Windows.Forms.OpenFileDialog AnimFileDialog;
     }
 }

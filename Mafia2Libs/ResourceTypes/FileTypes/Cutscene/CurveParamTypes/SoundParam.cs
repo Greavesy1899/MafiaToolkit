@@ -166,8 +166,8 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int EndFrame { get; set; }
             public bool Unk00 { get; set; } = true;
             public string SoundFile { get; set; } = "";
-            public int Unk01 { get; set; }
-            public byte Unk02 { get; set; }
+            public bool Loop { get; set; }
+            public int Unk02 { get; set; }
             public float Unk03 { get; set; }
             public float Unk04 { get; set; }
             public int Unk05 { get; set; }
@@ -175,10 +175,10 @@ namespace ResourceTypes.Cutscene.CurveParams
             public int Unk07 { get; set; }
             public float Unk08 { get; set; }
             public int Unk09 { get; set; }
-            public float Unk10 { get; set; }
+            public float OuterRadius { get; set; }
             public float Unk11 { get; set; }
             public float Unk12 { get; set; }
-            public float Unk13 { get; set; }
+            public float InnerRadius { get; set; }
             public byte Unk14 { get; set; }
             [TypeConverter(typeof(Vector3Converter))]
             public Vector3 Position { get; set; } = Vector3.Zero;
@@ -204,8 +204,8 @@ namespace ResourceTypes.Cutscene.CurveParams
                 EndFrame = br.ReadInt32();
                 Unk00 = br.ReadBoolean();
                 SoundFile = br.ReadString16();
-                Unk01 = br.ReadInt32();
-                Unk02 = br.ReadByte();
+                Loop = br.ReadBoolean();
+                Unk02 = br.ReadInt32();
                 Unk03 = br.ReadSingle();
                 Unk04 = br.ReadSingle();
                 Unk05 = br.ReadInt32();
@@ -213,10 +213,10 @@ namespace ResourceTypes.Cutscene.CurveParams
                 Unk07 = br.ReadInt32();
                 Unk08 = br.ReadSingle();
                 Unk09 = br.ReadInt32();
-                Unk10 = br.ReadSingle();
+                OuterRadius = br.ReadSingle();
                 Unk11 = br.ReadSingle();
                 Unk12 = br.ReadSingle();
-                Unk13 = br.ReadSingle();
+                InnerRadius = br.ReadSingle();
                 Unk14 = br.ReadByte();
                 Position = Vector3Utils.ReadFromFile(br);
                 Rotation = QuaternionExtensions.ReadFromFile(br);
@@ -243,7 +243,7 @@ namespace ResourceTypes.Cutscene.CurveParams
                 bw.Write(EndFrame);
                 bw.Write(Unk00);
                 bw.WriteString16(SoundFile);
-                bw.Write(Unk01);
+                bw.Write(Loop);
                 bw.Write(Unk02);
                 bw.Write(Unk03);
                 bw.Write(Unk04);
@@ -252,10 +252,10 @@ namespace ResourceTypes.Cutscene.CurveParams
                 bw.Write(Unk07);
                 bw.Write(Unk08);
                 bw.Write(Unk09);
-                bw.Write(Unk10);
+                bw.Write(OuterRadius);
                 bw.Write(Unk11);
                 bw.Write(Unk12);
-                bw.Write(Unk13);
+                bw.Write(InnerRadius);
                 bw.Write(Unk14);
                 Position.WriteToFile(bw);
                 Rotation.WriteToFile(bw);
