@@ -712,7 +712,18 @@ void Fbx_Wrangler::CreateAnimation(const MT_Animation& InAnimation, class FbxAni
 		EndTime.SetSecondDouble(Track.GetDuration());
 
 		// Setup Bone, setup hierarchy too
-		FbxNode* BoneNode = BoneLookup.at(Track.GetBoneName());
+		FbxNode* BoneNode = nullptr;
+		auto FoundBoneIt = BoneLookup.find(Track.GetBoneName());
+		if (FoundBoneIt != BoneLookup.end())
+		{
+			BoneNode = FoundBoneIt->second;
+		}
+
+		if (BoneNode == nullptr)
+		{
+			Logger->Printf(ELogType::eError, "Missing Bone ID %s! Cannot create AnimTrack for this bone.", Track.GetBoneName().data());
+			continue;
+		}
 
 		// now do animations for the bone
 		const std::vector<MT_PosKey>& PosKeys = Track.GetPositionKeys();
@@ -746,8 +757,7 @@ void Fbx_Wrangler::CreateAnimation(const MT_Animation& InAnimation, class FbxAni
 		for (const MT_RotKey& Keyframe : RotKeys)
 		{
 			// In blender the quat needs to be inverse of what Mafia provides
-			FbxQuaternion FrameQuat = { Keyframe.Value.x, Keyframe.Value.y, Keyframe.Value.z, Keyframe.Value.w };
-			FrameQuat.Inverse();
+			const FbxQuaternion FrameQuat = { Keyframe.Value.x, Keyframe.Value.y, Keyframe.Value.z, Keyframe.Value.w };
 
 			// convert to euler
 			FbxVector4 ThisBonesEulerRotation = {};
