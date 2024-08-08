@@ -1,5 +1,6 @@
 #include "MT_ObjectHandler.h"
 
+#include "MT_Animation.h"
 #include "MT_Object.h"
 #include "Utilities/FileUtils.h"
 
@@ -43,6 +44,18 @@ MT_ObjectBundle* MT_ObjectHandler::ReadBundleFromFile(const std::string& FileNam
 
 		BundleObject->Objects[i] = NewObject;
 	}
+
+	int32_t Offet = ftell(InStream);
+
+	uint HasAnimation = 0;
+	FileUtils::Read(InStream, &HasAnimation);
+	if (HasAnimation)
+	{
+		BundleObject->Animation = new MT_Animation();
+		BundleObject->Animation->ReadFromFile(InStream);
+	}
+
+	fclose(InStream);
 
 	return BundleObject;
 }
@@ -114,7 +127,6 @@ void MT_ObjectHandler::WriteObjectToFile(const std::string& FileName, const MT_O
 bool MT_ObjectHandler::ReadObjectFromFile(FILE* InStream, MT_Object* NewObject)
 {
 	NewObject->ReadFromFile(InStream);
-	fclose(InStream);
 
 	return true;
 }

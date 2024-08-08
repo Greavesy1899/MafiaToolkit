@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using ResourceTypes.ModelHelpers.ModelExporter;
+using System.IO;
 using Utils.Logging;
 
 namespace ResourceTypes.Animation2
@@ -91,7 +92,59 @@ namespace ResourceTypes.Animation2
                 UnkShorts01[i] = br.ReadInt16();
             }
 
+            ConvertToMTB();
+
             ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, "Animation2: Failed to reach EOF.");
+        }
+
+        private void ConvertToMTB()
+        {
+            MT_ObjectBundle NewBundle = new MT_ObjectBundle();
+            NewBundle.Animation = ConvertToAnimation();
+
+            using(BinaryWriter FileWriter = new BinaryWriter(File.Open("Test.mtb", FileMode.Create)))
+            {
+                NewBundle.WriteToFile(FileWriter);
+                FileWriter.Close();
+            }
+        }
+
+        public MT_Animation ConvertToAnimation()
+        {
+            MT_Animation NewAnimation = new MT_Animation();
+            NewAnimation.Tracks = new MT_AnimTrack[Tracks.Length];
+
+            for (int z = 0; z < Tracks.Length; z++)
+            {
+                AnimTrack Track = Tracks[z];
+
+                MT_AnimTrack NewTrack = new MT_AnimTrack();
+                NewAnimation.Tracks[z] = NewTrack;
+
+                NewTrack.BoneID = Track.BoneID;
+                NewTrack.BoneName = NewTrack.BoneID.ToString();
+                NewTrack.Duration = Track.Duration;
+
+                NewTrack.RotKeyFrames = new MT_RotKey[Track.KeyFrames.Length];
+                for (int i = 0; i < Track.KeyFrames.Length; i++)
+                {
+                    MT_RotKey KeyFrame = new MT_RotKey();
+                    KeyFrame.Time = Track.KeyFrames[i].time;
+                    KeyFrame.Value = Track.KeyFrames[i].value;
+                    NewTrack.RotKeyFrames[i] = KeyFrame;
+                }
+
+                NewTrack.PosKeyFrames = new MT_PosKey[Track.Positions.KeyFrames.Length];
+                for (int i = 0; i < Track.Positions.KeyFrames.Length; i++)
+                {
+                    MT_PosKey KeyFrame = new MT_PosKey();
+                    KeyFrame.Time = Track.Positions.KeyFrames[i].time;
+                    KeyFrame.Value = Track.Positions.KeyFrames[i].value;
+                    NewTrack.PosKeyFrames[i] = KeyFrame;
+                }
+            }
+
+            return NewAnimation;
         }
     }
 }

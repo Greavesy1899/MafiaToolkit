@@ -5,6 +5,7 @@ using Rendering.Factories;
 using Rendering.Graphics;
 using Rendering.Input;
 using ResourceTypes.Actors;
+using ResourceTypes.Animation2;
 using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
 using ResourceTypes.FrameNameTable;
@@ -1684,6 +1685,13 @@ namespace Mafia2Tool
                 if (FrameObject is FrameObjectModel)
                 {
                     ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectModel, indexBuffers, vertexBuffers);
+
+                    if(AnimFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string Filename = AnimFileDialog.FileName;
+                        Animation2 TempAn2 = new Animation2(Filename);
+                        ModelWrapperObject.AnimationObject = TempAn2.ConvertToAnimation();
+                    }
                 }
                 else
                 {

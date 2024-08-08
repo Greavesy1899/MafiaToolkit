@@ -217,4 +217,10 @@ void MT_ObjectBundle::Cleanup()
 	}
 
 	Objects.clear();
+
+	if (Animation)
+	{
+		delete Animation;
+		Animation = nullptr;
+	}
 }

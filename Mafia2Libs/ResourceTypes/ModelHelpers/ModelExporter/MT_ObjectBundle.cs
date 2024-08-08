@@ -9,6 +9,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         private const int FileVersion = 0;
 
         public MT_Object[] Objects { get; set; }
+        public MT_Animation Animation { get; set; }
 
         public bool ReadFromFile(BinaryReader reader)
         {
@@ -40,6 +41,13 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
+            uint HasAnimation = reader.ReadUInt32();
+            if(HasAnimation == 1)
+            {
+                Animation = new MT_Animation();
+                Animation.ReadFromFile(reader);
+            }
+
             return true;
         }
 
@@ -49,10 +57,21 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             writer.Write((byte)FileVersion);
 
             // Write Models to file
-            writer.Write(Objects.Length);
-            foreach(MT_Object ModelObject in Objects)
+            int NumObjects = (Objects != null ?  Objects.Length : 0);
+            writer.Write(NumObjects);
+            if (Objects != null)
             {
-                ModelObject.WriteToFile(writer);
+                foreach (MT_Object ModelObject in Objects)
+                {
+                    ModelObject.WriteToFile(writer);
+                }
+            }
+
+            int HasAnimation = (Animation != null ? 1 : 0);
+            writer.Write(HasAnimation);
+            if (Animation != null)
+            {
+                Animation.WriteToFile(writer);
             }
         }
 
@@ -72,6 +91,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 bool bIsObjectValid = ModelObject.ValidateObject(TrackerObject);
                 bIsValid &= bIsObjectValid;
+            }
+
+            if(Animation != null)
+            {
+                bIsValid &= Animation.ValidateObject(TrackerObject);
             }
 
             return bIsValid;

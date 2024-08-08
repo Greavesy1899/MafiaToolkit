@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+class MT_Animation;
 class MT_Collision;
 class MT_ObjectHandler;
 class MT_Skeleton;
@@ -91,6 +92,7 @@ public:
 			AddObjectFlag(MT_ObjectFlags::HasSkinning);
 		}
 	}
+
 	void SetChildren(const std::vector<MT_Object*>& InChildren)
 	{
 		Children = InChildren;
@@ -132,11 +134,15 @@ public:
 
 	// Accessor
 	const std::vector<MT_Object*>& GetObjects() const { return Objects; }
+	const MT_Animation* GetAnimation() const { return Animation; }
 
 	// Setter
 	void SetObjects(const std::vector<MT_Object*>& InObjects) { Objects = InObjects; }
+	void SetAnimation(MT_Animation* InAnimation) { Animation = InAnimation; }
 
 private:
 
 	std::vector<MT_Object*> Objects;
+
+	MT_Animation* Animation = nullptr;
 };

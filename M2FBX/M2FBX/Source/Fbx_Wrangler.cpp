@@ -1,5 +1,6 @@
 #include "Fbx_Wrangler.h"
 
+#include "MTObject/MT_Animation.h"
 #include "MTObject/MT_Collision.h"
 #include "MTObject/MT_Object.h"
 #include "MTObject/MT_ObjectUtils.h"
@@ -8,6 +9,9 @@
 #include "MTObject/MT_Skeleton.h"
 #include "Utilities/FbxUtilities.h"
 #include "Utilities/LogSystem.h"
+
+// CPP
+#include <format>
 
 namespace WranglerUtils
 {
@@ -136,6 +140,15 @@ bool Fbx_Wrangler::ConvertBundleToFbx()
 	{
 		FbxNode* ObjectNode = nullptr;
 		ConvertObjectToNode(*Object, ObjectNode);
+	}
+
+	if (const MT_Animation* BundleAnimation = Bundle->GetAnimation())
+	{
+		FbxAnimStack* AnimStack = FbxAnimStack::Create(Scene, "AnimStack");
+
+		FbxAnimLayer* AnimLayer1 = FbxAnimLayer::Create(AnimStack, "Test");
+		CreateAnimation(*BundleAnimation, AnimLayer1, Scene->GetRootNode());
+		AnimStack->AddMember(AnimLayer1);
 	}
 
 	SaveDocument();
@@ -580,6 +593,7 @@ bool Fbx_Wrangler::ConvertSkeletonToNode(const MT_Skeleton& Skeleton, FbxSkin*& 
 		Skin->AddCluster(ClusterFbx);
 
 		BoneNodes.push_back(JointNode);
+		BoneLookup.insert({ Name, JointNode });
 	}
 
 	return true;
@@ -685,6 +699,86 @@ FbxTexture* Fbx_Wrangler::CreateTexture(const std::string& Name)
 	return NewTexture;
 }
 
+void Fbx_Wrangler::CreateAnimation(const MT_Animation& InAnimation, class FbxAnimLayer* AnimLayer, class FbxNode* InNode)
+{
+	// Setup animation
+	const std::vector<MT_AnimTrack>& AnimTracks = InAnimation.GetAnimTracks();
+	for(const MT_AnimTrack& Track : AnimTracks)
+	{
+		FbxTime StartTime;
+		StartTime.SetSecondDouble(Track.GetDuration());
+
+		FbxTime EndTime;
+		EndTime.SetSecondDouble(Track.GetDuration());
+
+		// Setup Bone, setup hierarchy too
+		FbxNode* BoneNode = BoneLookup.at(Track.GetBoneName());
+
+		// now do animations for the bone
+		const std::vector<MT_PosKey>& PosKeys = Track.GetPositionKeys();
+		for (const MT_PosKey& Keyframe : PosKeys)
+		{
+			// Add start key
+			FbxAnimCurve* TranslationXCurve = BoneNode->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_X, true);
+			FbxAnimCurve* TranslationYCurve = BoneNode->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Y, true);
+			FbxAnimCurve* TranslationZCurve = BoneNode->LclTranslation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, true);
+
+			FbxTime KeyFrameTime;
+			KeyFrameTime.SetSecondDouble(Keyframe.Time);
+
+			TranslationXCurve->KeyModifyBegin();
+			const int32_t KeyIndexX = TranslationXCurve->KeyAdd(KeyFrameTime);
+			TranslationXCurve->KeySet(KeyIndexX, KeyFrameTime, Keyframe.Value.x);
+			TranslationXCurve->KeyModifyEnd();
+
+			TranslationYCurve->KeyModifyBegin();
+			const int32_t KeyIndexY = TranslationYCurve->KeyAdd(KeyFrameTime);
+			TranslationYCurve->KeySet(KeyIndexY, KeyFrameTime, Keyframe.Value.y);
+			TranslationYCurve->KeyModifyEnd();
+
+			TranslationZCurve->KeyModifyBegin();
+			const int32_t KeyIndexZ = TranslationZCurve->KeyAdd(KeyFrameTime);
+			TranslationZCurve->KeySet(KeyIndexZ, KeyFrameTime, Keyframe.Value.z);
+			TranslationZCurve->KeyModifyEnd();
+		}
+
+		const std::vector<MT_RotKey>& RotKeys = Track.GetRotatationKeys();
+		for (const MT_RotKey& Keyframe : RotKeys)
+		{
+			// In blender the quat needs to be inverse of what Mafia provides
+			FbxQuaternion FrameQuat = { Keyframe.Value.x, Keyframe.Value.y, Keyframe.Value.z, Keyframe.Value.w };
+			FrameQuat.Inverse();
+
+			// convert to euler
+			FbxVector4 ThisBonesEulerRotation = {};
+			ThisBonesEulerRotation.SetXYZ(FrameQuat);
+
+			// Add start key
+			FbxAnimCurve* RotationXCurve = BoneNode->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_X, true);
+			FbxAnimCurve* RotationYCurve = BoneNode->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Y, true);
+			FbxAnimCurve* RotationZCurve = BoneNode->LclRotation.GetCurve(AnimLayer, FBXSDK_CURVENODE_COMPONENT_Z, true);
+
+			FbxTime KeyFrameTime;
+			KeyFrameTime.SetSecondDouble(Keyframe.Time);
+
+			RotationXCurve->KeyModifyBegin();
+			const int32_t KeyIndexX = RotationXCurve->KeyAdd(KeyFrameTime);
+			RotationXCurve->KeySet(KeyIndexX, KeyFrameTime, ThisBonesEulerRotation.mData[0]);
+			RotationXCurve->KeyModifyEnd();
+
+			RotationYCurve->KeyModifyBegin();
+			const int32_t KeyIndexY = RotationYCurve->KeyAdd(KeyFrameTime);
+			RotationYCurve->KeySet(KeyIndexY, KeyFrameTime, ThisBonesEulerRotation.mData[1]);
+			RotationYCurve->KeyModifyEnd();
+
+			RotationZCurve->KeyModifyBegin();
+			const int32_t KeyIndexZ = RotationZCurve->KeyAdd(KeyFrameTime);
+			RotationZCurve->KeySet(KeyIndexZ, KeyFrameTime, ThisBonesEulerRotation.mData[2]);
+			RotationZCurve->KeyModifyEnd();
+		}
+	}
+}
+
 const std::string& Fbx_Wrangler::GetNameByUVType(const UVElementType Type)
 {
 	switch (Type)
@@ -725,7 +819,7 @@ bool Fbx_Wrangler::SaveDocument()
 	IOS_REF.SetBoolProp(EXP_FBX_MATERIAL, true);
 	IOS_REF.SetBoolProp(EXP_FBX_TEXTURE, true);
 	IOS_REF.SetBoolProp(EXP_FBX_EMBEDDED, false);
-	IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, false);
+	IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, true);
 	IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
 
 	bool bWasSuccessful = false;
