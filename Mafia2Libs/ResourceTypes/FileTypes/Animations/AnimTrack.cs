@@ -144,7 +144,7 @@ namespace ResourceTypes.Animation2
                 var time = (((int)((dataCurrent) & ((1 << TimeSize) - 1))) / (float)((1 << TimeSize) - 1)) * Duration;
                 var rawData = dataCurrent >> TimeSize;
 
-                quats.Add((time, refQuat * UnpackQuaternion(ComponentSize, Scale, rawData)));
+                quats.Add((time, Quaternion.Inverse(refQuat * UnpackQuaternion(ComponentSize, Scale, rawData))));
             }
 
             KeyFrames = quats.ToArray();
@@ -175,7 +175,7 @@ namespace ResourceTypes.Animation2
 
                 int offset = chunkSize * i;
                 int time = ((int)Math.Round((frame.time / Duration) * timeMask)) & timeMask;
-                var packedQuaternion = PackQuaternion(ComponentSize, Scale, frame.value, invRefQuat);
+                var packedQuaternion = PackQuaternion(ComponentSize, Scale, Quaternion.Inverse(frame.value), invRefQuat);
                 var bigTime = new BigInteger(time);
                 var bigVal0 = new BigInteger(packedQuaternion.iVal0);
                 var bigVal1 = new BigInteger(packedQuaternion.iVal1);
