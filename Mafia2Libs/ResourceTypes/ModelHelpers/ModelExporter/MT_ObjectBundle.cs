@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
+using System.IO;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
@@ -73,6 +75,26 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 Animation.WriteToFile(writer);
             }
+        }
+
+        public void BuildGLTF()
+        {
+            // TODO: Find a name
+            SceneBuilder Scene = new SceneBuilder("temp name");
+
+            if (Objects != null)
+            {
+                foreach(MT_Object ModelObject in Objects)
+                {
+                    Scene.AddNode(ModelObject.BuildGLTF());
+                }
+            }
+
+            // TODO: This could either be the return value or we pass in file path
+            // Or we pass the ModelRoot and Path to GLTFExporter, which deals with the rest
+            ModelRoot TheModel = Scene.ToGltf2();
+            TheModel.SaveGLTF("output.gltf");
+            TheModel.SaveGLB("output.glb");
         }
 
         public void Accept(IVisitor InVisitor)

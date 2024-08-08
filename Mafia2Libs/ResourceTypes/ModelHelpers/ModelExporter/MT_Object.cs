@@ -3,11 +3,13 @@ using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
+using SharpGLTF.Scenes;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Text.Json.Nodes;
 using Utils.Models;
 using Utils.StringHelpers;
 using Utils.Types;
@@ -41,6 +43,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     {
         private const string FileHeader = "MTO";
         private const byte FileVersion = 3;
+
+        private const string PROP_OBJECT_TYPE_ID = "MT_OBJECT_TYPE";
 
         public string ObjectName { get; set; }
         public MT_ObjectFlags ObjectFlags { get; set; }
@@ -456,6 +460,31 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     Skeleton.WriteToFile(writer);
                 }
             }
+        }
+
+        public NodeBuilder BuildGLTF()
+        {
+            // TODO: Standardise rotations using quats
+            NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(Quaternion.Identity);
+
+            // TODO: Any more required?
+            ThisNode.Extras = new JsonObject();
+            ThisNode.Extras[PROP_OBJECT_TYPE_ID] = (int)ObjectType;
+
+            if (Children != null)
+            {
+                foreach (MT_Object ChildObject in Children)
+                {
+                    ThisNode.AddNode(ChildObject.BuildGLTF());
+                }
+            }
+
+            // TODO:
+            // convert meshes
+            // convert skelly
+            // convert collision
+
+            return ThisNode;
         }
 
         public void Accept(IVisitor InVisitor)

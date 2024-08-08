@@ -266,24 +266,29 @@ namespace Utils.Models
 
         public void ExportObject(string SavePath, int FilterIndex)
         {          
-            switch(FilterIndex)
+            if(ModelObject != null)
             {
-                case 1:
-                    ExportBundle(SavePath);
-                    ExportObjectToFbx(SavePath, true);
-                    File.Delete(SavePath + ".mtb");
-                    break;
-                case 2:
-                    ExportBundle(SavePath);
-                    ExportObjectToFbx(SavePath, false);
-                    File.Delete(SavePath + ".mtb");
-                    break;
-                case 3:
-                    ExportBundle(SavePath);
-                    break;
-                default:
-                    break;
+                ExportBundle(SavePath);
             }
+
+            //switch(FilterIndex)
+            //{
+            //    case 1:
+            //        ExportBundle(SavePath);
+            //        ExportObjectToFbx(SavePath, true);
+            //        File.Delete(SavePath + ".mtb");
+            //        break;
+            //    case 2:
+            //        ExportBundle(SavePath);
+            //        ExportObjectToFbx(SavePath, false);
+            //        File.Delete(SavePath + ".mtb");
+            //        break;
+            //    case 3:
+            //        ExportBundle(SavePath);
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
 
         private void ExportObjectToFbx(string File, bool bIsBinary)
@@ -298,10 +303,12 @@ namespace Utils.Models
             BundleObject.Objects[0] = ModelObject;
             BundleObject.Animation = AnimationObject;
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileToWrite + ".mtb", FileMode.Create)))
-            {
-                MT_ObjectHandler.WriteBundleToFile(writer, BundleObject);
-            }
+            BundleObject.BuildGLTF();
+
+            //using (BinaryWriter writer = new BinaryWriter(File.Open(FileToWrite + ".mtb", FileMode.Create)))
+            //{
+            //    MT_ObjectHandler.WriteBundleToFile(writer, BundleObject);
+            //}
         }
 
         public void UpdateObjectsFromModel()
