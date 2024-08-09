@@ -1,4 +1,5 @@
 ﻿using ResourceTypes.ModelHelpers.ModelExporter;
+using System;
 using System.IO;
 using Utils.Logging;
 
@@ -95,6 +96,67 @@ namespace ResourceTypes.Animation2
             ConvertToMTB();
 
             ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, "Animation2: Failed to reach EOF.");
+        }
+
+        public void WriteToFile(string fileName)
+        {
+            using (MemoryStream ms = new())
+            {
+                using (BinaryWriter bw = new(ms))
+                {
+                    Write(bw);
+                }
+
+                File.WriteAllBytes(fileName, ms.ToArray());
+            }
+        }
+
+        public void Write(BinaryWriter bw)
+        {
+            int Count = Header.RootBoneID != 0 ? (Tracks.Length - 1) : Tracks.Length;
+            Header.Count = (short)Count;
+            Header.NumEvents = (short)Events.Length;
+
+            Header.Write(bw);
+            bw.Write(IsDataPresent);
+
+            foreach (var val in Events)
+            {
+                val.Write(bw);
+            }
+
+            bw.Write(Unk00);
+            bw.Write(Unk01);
+            bw.Write((short)Count);
+
+            foreach (var track in Tracks)
+            {
+                track.Write(bw);
+            }
+
+            if (UnkShorts00.Length < Unk01)
+            {
+                short[] newUnk00Shorts = new short[Unk01];
+                Array.Copy(UnkShorts00, 0, newUnk00Shorts, 0, UnkShorts00.Length);
+                UnkShorts00 = newUnk00Shorts;
+            }
+
+            if (UnkShorts01.Length < Count)
+            {
+                short[] newUnk01Shorts = new short[Count];
+                Array.Copy(UnkShorts01, 0, newUnk01Shorts, 0, UnkShorts01.Length);
+                UnkShorts01 = newUnk01Shorts;
+            }
+
+            foreach (var val in UnkShorts00)
+            {
+                bw.Write(val);
+            }
+
+            foreach (var val in UnkShorts01)
+            {
+                bw.Write(val);
+            }
         }
 
         private void ConvertToMTB()

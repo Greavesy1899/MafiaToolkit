@@ -75,5 +75,27 @@ namespace ResourceTypes.Animation2
             Unk09 = br.ReadByte();
             RootBoneID = br.ReadUInt64();
         }
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(SkeletonID);
+            bw.Write(Version);
+            bw.Write(Magic);
+            bw.Write(NumEvents);
+            bw.Write(Unk00);
+            Unk01.WriteToFile(bw);
+            bw.Write(Unk02);
+            bw.Write(Unk03);
+            bw.Write(Unk04);
+            bw.Write(Unk05);
+            bw.Write(Unk06);
+            bw.Write(Unk07);
+            bw.Write(Hash);
+            bw.Write(Unk08);
+            bw.Write(Duration);
+            bw.Write(Count);
+            bw.Write(Unk09);
+            bw.Write(RootBoneID);
+        }
     }
 }

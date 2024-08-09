@@ -157,7 +157,7 @@ namespace ResourceTypes.Animation2
             Duration = duration;
             NumKeyFrames = (short)KeyFrames.Length;
 
-            var refQuat = KeyFrames.Length > 0 ? KeyFrames[0].value : Quaternion.Identity;
+            var refQuat = KeyFrames.Length > 0 ? Quaternion.Inverse(KeyFrames[0].value) : Quaternion.Identity;
 
             PackedReferenceQuat = PackReferenceQuaternion(refQuat);
             refQuat = UnpackReferenceQuaternion(PackedReferenceQuat);
@@ -458,7 +458,7 @@ namespace ResourceTypes.Animation2
             for (int i = 0; i < KeyFrames.Length; i++)
             {
                 var frame = KeyFrames[i];
-                var q = invRefQuat * frame.value;
+                var q = invRefQuat * Quaternion.Inverse(frame.value);
                 List<float> values = new() { Math.Abs(q.X), Math.Abs(q.Y), Math.Abs(q.Z), Math.Abs(q.W) };
                 values.Remove(values.Max());
                 var temp = values.Max();
@@ -686,8 +686,8 @@ namespace ResourceTypes.Animation2
 
         public void Quantize()
         {
-            Scale = ComputeScale();
-            Scale = Scale > 1.0f ? Scale - 1.0f : 1.0f;
+            Scale = GetOptimalScale();
+            Scale = Scale > 0.0f ? Scale : 1.0f;
 
             var data = new BigInteger();
             var chunkSize = 96;
@@ -717,16 +717,20 @@ namespace ResourceTypes.Animation2
             Data = data.ToByteArray();
         }
 
-        public float ComputeScale()
+        public float GetOptimalScale()
         {
             float scale = 0.0f;
 
-            foreach (var frame in KeyFrames)
+            for (int i = 0; i < KeyFrames.Length; i++)
             {
-                scale += Math.Abs(frame.value.X) + Math.Abs(frame.value.Y) + Math.Abs(frame.value.Z);
+                var frame = KeyFrames[i];
+                var v = frame.value;
+                List<float> values = new() { Math.Abs(v.X), Math.Abs(v.Y), Math.Abs(v.Z) };
+                var temp = values.Max();
+                scale = temp > scale ? temp : scale;
             }
 
-            return (float)Math.Round(scale * 10 / KeyFrames.Length);
+            return scale;
         }
     }
 }

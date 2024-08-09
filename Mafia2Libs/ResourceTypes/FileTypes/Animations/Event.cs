@@ -34,5 +34,11 @@ namespace ResourceTypes.Animation2
             EventID = br.ReadUInt32();
             Time = br.ReadSingle();
         }
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(EventID);
+            bw.Write(Time);
+        }
     }
 }

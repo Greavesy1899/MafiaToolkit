@@ -14,6 +14,7 @@ namespace Core.IO
         public override bool Open()
         {
             Animation2 anim = new(file.FullName);
+            //anim.WriteToFile(file.FullName + "_test");
             return true;
         }
 
