@@ -492,8 +492,17 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 for(int Index = 0; Index < Lods.Length; Index++)
                 {
                     NodeBuilder LodNode = ThisNode.CreateNode(string.Format("LOD_{0}", Index));
-                    var mesh = Lods[Index].BuildGLTF();
-                    Scene.AddRigidMesh(mesh, LodNode);
+
+                    if (Skeleton != null)
+                    {
+                        var mesh = Lods[Index].BuildSkinnedGLTF();
+                        Scene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(Index));
+                    }
+                    else
+                    {
+                        var mesh = Lods[Index].BuildGLTF();
+                        Scene.AddRigidMesh(mesh, LodNode);
+                    }
                 }
             }
 

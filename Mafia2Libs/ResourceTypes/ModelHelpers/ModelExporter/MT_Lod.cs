@@ -15,7 +15,10 @@ using Vortice.Mathematics;
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
     using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
-    using VERTEXBUILDER = VertexBuilder<VertexPositionNormalTangent, VertexTexture1, VertexEmpty>;
+    using VERTEXS4 = VertexJoints4;
+    using VERTEXRIDGEDBUILDER = VertexBuilder<VertexPositionNormalTangent, VertexTexture1, VertexEmpty>;
+    using VERTEXSKINNEDBUILDER = VertexBuilder<VertexPositionNormalTangent, VertexTexture1, VertexJoints4>;
+    using static Octokit.Caching.CachedResponse;
 
     public class MT_Lod : IValidator
     {
@@ -253,12 +256,57 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     VERTEX VB2 = new VERTEX(V2.Position, V2.Normal, new Vector4(V2.Tangent, 1.0f));
                     VERTEX VB3 = new VERTEX(V3.Position, V3.Normal, new Vector4(V3.Tangent, 1.0f));
 
-                    CurFaceGroup.AddTriangle(new VERTEXBUILDER(VB1), new VERTEXBUILDER(VB2), new VERTEXBUILDER(VB3));
+                    CurFaceGroup.AddTriangle(new VERTEXRIDGEDBUILDER(VB1), new VERTEXRIDGEDBUILDER(VB2), new VERTEXRIDGEDBUILDER(VB3));
                 }
             }
 
             return LodMesh;
         }
+
+        public MeshBuilder<VERTEX, VertexTexture1, VertexJoints4> BuildSkinnedGLTF()
+        {
+            MeshBuilder<VERTEX, VertexTexture1, VertexJoints4> LodMesh = new MeshBuilder<VERTEX, VertexTexture1, VertexJoints4>();
+
+            foreach (MT_FaceGroup FaceGroup in FaceGroups)
+            {
+                var material1 = new MaterialBuilder(FaceGroup.Material.Name)
+                    .WithDoubleSide(true)
+                    .WithMetallicRoughnessShader()
+                    .WithChannelParam(KnownChannel.BaseColor, KnownProperty.RGBA, new Vector4(1, 0, 0, 1));
+
+                var CurFaceGroup = LodMesh.UsePrimitive(material1);
+
+                uint StartIndex = FaceGroup.StartIndex;
+                uint EndIndex = StartIndex + (FaceGroup.NumFaces * 3);
+
+                for (uint Idx = StartIndex; Idx < EndIndex; Idx += 3)
+                {
+                    Vertex V1 = Vertices[Indices[Idx]];
+                    Vertex V2 = Vertices[Indices[Idx + 1]];
+                    Vertex V3 = Vertices[Indices[Idx + 2]];
+
+                    CurFaceGroup.AddTriangle(BuildVertex(V1), BuildVertex(V2), BuildVertex(V3));
+                }
+            }
+
+            return LodMesh;
+        }
+
+        private VERTEXSKINNEDBUILDER BuildVertex(Vertex GameVertex)
+        {
+            VERTEX VB1 = new VERTEX(GameVertex.Position, GameVertex.Normal, new Vector4(GameVertex.Tangent, 1.0f));
+
+            VertexTexture1 TB1 = new VertexTexture1(GameVertex.UVs[0]);
+
+            (int JointIndex, float Weight)[] VertexWeights = new (int JointIndex, float Weight)[4];
+            VertexWeights[0] = (GameVertex.BoneIDs[0], GameVertex.BoneWeights[0]);
+            VertexWeights[1] = (GameVertex.BoneIDs[1], GameVertex.BoneWeights[1]);
+            VertexWeights[2] = (GameVertex.BoneIDs[2], GameVertex.BoneWeights[2]);
+            VertexWeights[3] = (GameVertex.BoneIDs[3], GameVertex.BoneWeights[3]);
+
+            return new VERTEXSKINNEDBUILDER(VB1, TB1, VertexWeights);
+        }
+
 
         /** Utility Functions */
         public bool Over16BitLimit()
