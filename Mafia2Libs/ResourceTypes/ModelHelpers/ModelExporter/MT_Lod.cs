@@ -1,4 +1,8 @@
-﻿using System;
+﻿using SharpGLTF.Geometry;
+using SharpGLTF.Geometry.VertexTypes;
+using SharpGLTF.Materials;
+using SharpGLTF.Scenes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
@@ -10,6 +14,9 @@ using Vortice.Mathematics;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
+    using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
+    using VERTEXBUILDER = VertexBuilder<VertexPositionNormalTangent, VertexTexture1, VertexEmpty>;
+
     public class MT_Lod : IValidator
     {
         public VertexFlags VertexDeclaration { get; set; }
@@ -218,6 +225,39 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 writer.Write(Indices[i]);
             }
+        }
+
+        public MeshBuilder<VERTEX> BuildGLTF()
+        {
+            MeshBuilder<VERTEX> LodMesh = new MeshBuilder<VERTEX>();
+
+            foreach (MT_FaceGroup FaceGroup in FaceGroups)
+            {
+                var material1 = new MaterialBuilder(FaceGroup.Material.Name)
+                    .WithDoubleSide(true)
+                    .WithMetallicRoughnessShader()
+                    .WithChannelParam(KnownChannel.BaseColor, KnownProperty.RGBA, new Vector4(1, 0, 0, 1));
+
+                var CurFaceGroup = LodMesh.UsePrimitive(material1);
+
+                uint StartIndex = FaceGroup.StartIndex;
+                uint EndIndex = StartIndex + (FaceGroup.NumFaces * 3);
+
+                for (uint Idx = StartIndex; Idx < EndIndex; Idx+=3)
+                {
+                    Vertex V1 = Vertices[Indices[Idx]];
+                    Vertex V2 = Vertices[Indices[Idx + 1]];
+                    Vertex V3 = Vertices[Indices[Idx + 2]];
+
+                    VERTEX VB1 = new VERTEX(V1.Position, V1.Normal, new Vector4(V1.Tangent, 1.0f));
+                    VERTEX VB2 = new VERTEX(V2.Position, V2.Normal, new Vector4(V2.Tangent, 1.0f));
+                    VERTEX VB3 = new VERTEX(V3.Position, V3.Normal, new Vector4(V3.Tangent, 1.0f));
+
+                    CurFaceGroup.AddTriangle(new VERTEXBUILDER(VB1), new VERTEXBUILDER(VB2), new VERTEXBUILDER(VB3));
+                }
+            }
+
+            return LodMesh;
         }
 
         /** Utility Functions */

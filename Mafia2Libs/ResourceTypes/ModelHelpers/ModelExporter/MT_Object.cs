@@ -487,22 +487,12 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
-            var material1 = new MaterialBuilder()
-                .WithDoubleSide(true)
-                .WithMetallicRoughnessShader()
-                .WithChannelParam(KnownChannel.BaseColor, KnownProperty.RGBA, new Vector4(1, 0, 0, 1));
-
             if (Lods != null)
             {
                 for(int Index = 0; Index < Lods.Length; Index++)
                 {
                     NodeBuilder LodNode = ThisNode.CreateNode(string.Format("LOD_{0}", Index));
-                    var mesh = new MeshBuilder<VERTEX>("mesh");
-
-                    var prim = mesh.UsePrimitive(material1);
-                    prim.AddTriangle(new VERTEX(-10, 0, 0), new VERTEX(10, 0, 0), new VERTEX(0, 10, 0));
-                    prim.AddTriangle(new VERTEX(10, 0, 0), new VERTEX(-10, 0, 0), new VERTEX(0, -10, 0));
-
+                    var mesh = Lods[Index].BuildGLTF();
                     Scene.AddRigidMesh(mesh, LodNode);
                 }
             }
