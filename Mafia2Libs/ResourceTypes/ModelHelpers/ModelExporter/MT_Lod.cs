@@ -252,11 +252,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     Vertex V2 = Vertices[Indices[Idx + 1]];
                     Vertex V3 = Vertices[Indices[Idx + 2]];
 
-                    VERTEX VB1 = new VERTEX(V1.Position, V1.Normal, new Vector4(V1.Tangent, 1.0f));
-                    VERTEX VB2 = new VERTEX(V2.Position, V2.Normal, new Vector4(V2.Tangent, 1.0f));
-                    VERTEX VB3 = new VERTEX(V3.Position, V3.Normal, new Vector4(V3.Tangent, 1.0f));
-
-                    CurFaceGroup.AddTriangle(new VERTEXRIDGEDBUILDER(VB1), new VERTEXRIDGEDBUILDER(VB2), new VERTEXRIDGEDBUILDER(VB3));
+                    CurFaceGroup.AddTriangle(BuildRidgedVertex(V1), BuildRidgedVertex(V2), BuildRidgedVertex(V3));
                 }
             }
 
@@ -285,14 +281,23 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     Vertex V2 = Vertices[Indices[Idx + 1]];
                     Vertex V3 = Vertices[Indices[Idx + 2]];
 
-                    CurFaceGroup.AddTriangle(BuildVertex(V1), BuildVertex(V2), BuildVertex(V3));
+                    CurFaceGroup.AddTriangle(BuildSkinnedVertex(V1), BuildSkinnedVertex(V2), BuildSkinnedVertex(V3));
                 }
             }
 
             return LodMesh;
         }
 
-        private VERTEXSKINNEDBUILDER BuildVertex(Vertex GameVertex)
+        private VERTEXRIDGEDBUILDER BuildRidgedVertex(Vertex GameVertex)
+        {
+            VERTEX VB1 = new VERTEX(GameVertex.Position, GameVertex.Normal, new Vector4(GameVertex.Tangent, 1.0f));
+
+            VertexTexture1 TB1 = new VertexTexture1(GameVertex.UVs[0]);
+
+            return new VERTEXRIDGEDBUILDER(VB1, TB1);
+        }
+
+        private VERTEXSKINNEDBUILDER BuildSkinnedVertex(Vertex GameVertex)
         {
             VERTEX VB1 = new VERTEX(GameVertex.Position, GameVertex.Normal, new Vector4(GameVertex.Tangent, 1.0f));
 
