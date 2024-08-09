@@ -3,7 +3,10 @@ using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
+using SharpGLTF.Geometry;
+using SharpGLTF.Materials;
 using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +21,8 @@ using Collision = ResourceTypes.Collisions.Collision;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
+    using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPosition;
+
     [Flags]
     public enum MT_ObjectFlags
     {
@@ -462,8 +467,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
-        public NodeBuilder BuildGLTF()
+        public SceneBuilder BuildGLTF()
         {
+            SceneBuilder Scene = new SceneBuilder();
+
             // TODO: Standardise rotations using quats
             NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(Quaternion.Identity);
 
@@ -475,7 +482,28 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 foreach (MT_Object ChildObject in Children)
                 {
-                    ThisNode.AddNode(ChildObject.BuildGLTF());
+                    SceneBuilder ChildScene = ChildObject.BuildGLTF();
+                    Scene.AddScene(ChildScene, Matrix4x4.Identity);
+                }
+            }
+
+            var material1 = new MaterialBuilder()
+                .WithDoubleSide(true)
+                .WithMetallicRoughnessShader()
+                .WithChannelParam(KnownChannel.BaseColor, KnownProperty.RGBA, new Vector4(1, 0, 0, 1));
+
+            if (Lods != null)
+            {
+                for(int Index = 0; Index < Lods.Length; Index++)
+                {
+                    NodeBuilder LodNode = ThisNode.CreateNode(string.Format("LOD_{0}", Index));
+                    var mesh = new MeshBuilder<VERTEX>("mesh");
+
+                    var prim = mesh.UsePrimitive(material1);
+                    prim.AddTriangle(new VERTEX(-10, 0, 0), new VERTEX(10, 0, 0), new VERTEX(0, 10, 0));
+                    prim.AddTriangle(new VERTEX(10, 0, 0), new VERTEX(-10, 0, 0), new VERTEX(0, -10, 0));
+
+                    Scene.AddRigidMesh(mesh, LodNode);
                 }
             }
 
@@ -484,7 +512,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             // convert skelly
             // convert collision
 
-            return ThisNode;
+            return Scene;
         }
 
         public void Accept(IVisitor InVisitor)

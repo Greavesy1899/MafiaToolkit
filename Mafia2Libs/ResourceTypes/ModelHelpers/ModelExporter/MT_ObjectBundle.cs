@@ -1,6 +1,7 @@
 ﻿using SharpGLTF.Scenes;
 using SharpGLTF.Schema2;
 using System.IO;
+using System.Numerics;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
@@ -86,7 +87,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 foreach(MT_Object ModelObject in Objects)
                 {
-                    Scene.AddNode(ModelObject.BuildGLTF());
+                    SceneBuilder ChildScene = ModelObject.BuildGLTF();
+                    Scene.AddScene(ChildScene, Matrix4x4.Identity);
                 }
             }
 
