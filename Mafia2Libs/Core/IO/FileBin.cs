@@ -46,12 +46,6 @@ namespace Core.IO
                 ShopMenu2Editor editor = new ShopMenu2Editor(file);
                 return true;
             }
-            else if(CheckFileMagic(file, SDSConfigMagic))
-            {
-                SdsConfigFile SDSConfigEditor = new SdsConfigFile();
-                SDSConfigEditor.ReadFromFile(file);
-                return true;
-            }
             else if(CheckFileMagic(file, TapIndicesMagic))
             {
                 TAPIndices editor = new TAPIndices();
@@ -101,6 +95,22 @@ namespace Core.IO
                     loader.ConvertToXML(saveFile.FileName);
                 }
             }
+            else if (CheckFileMagic(file, SDSConfigMagic))
+            {
+                SaveFileDialog saveFile = new SaveFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (saveFile.ShowDialog() == DialogResult.OK)
+                {
+                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
+                    SdsConfigFile loader = new SdsConfigFile(file);
+                    loader.ConvertToXML(saveFile.FileName);
+                }
+            }
             else
             {
                 SaveFileDialog saveFile = new SaveFileDialog()
@@ -141,7 +151,7 @@ namespace Core.IO
                     loader.WriteToFile(file.FullName);
                 }
             }
-            if (CheckFileMagic(file, CGameMagic))
+            else if (CheckFileMagic(file, CGameMagic))
             {
                 OpenFileDialog openFile = new OpenFileDialog()
                 {
@@ -153,6 +163,24 @@ namespace Core.IO
                 if (openFile.ShowDialog() == DialogResult.OK)
                 {
                     CGame loader = new CGame(file);
+                    loader.ConvertFromXML(openFile.FileName);
+
+                    File.Copy(file.FullName, file.FullName + "_old", true);
+                    loader.WriteToFile(file.FullName);
+                }
+            }
+            else if (CheckFileMagic(file, SDSConfigMagic))
+            {
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    SdsConfigFile loader = new SdsConfigFile(file);
                     loader.ConvertFromXML(openFile.FileName);
 
                     File.Copy(file.FullName, file.FullName + "_old", true);
