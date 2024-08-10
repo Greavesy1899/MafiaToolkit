@@ -1,8 +1,10 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Animation2;
 using ResourceTypes.Materials;
 using ResourceTypes.ModelHelpers.ModelExporter;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Utils.Language;
@@ -69,10 +71,10 @@ namespace Forms.EditorControls
 
             // Generate array for ComboBox_ChooseLibrary
             List<string> ComboEntries = new List<string>();
-            for(int i = 0; i < SplitList.Length; i++)
+            for (int i = 0; i < SplitList.Length; i++)
             {
                 // Should 'fingers crossed' be the last entry
-                if(string.IsNullOrEmpty(SplitList[i]))
+                if (string.IsNullOrEmpty(SplitList[i]))
                 {
                     continue;
                 }
@@ -120,6 +122,17 @@ namespace Forms.EditorControls
                     LodNode.Tag = Object.Lods[i];
                     ValidateObject(LodNode);
                     Root.Nodes.Add(LodNode);
+                }
+            }
+
+            if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
+            {
+                if (Object.Skeleton != null)
+                {
+                    TreeNode SkeletonNode = new TreeNode("Skeleton");
+                    SkeletonNode.Tag = Object.Skeleton;
+                    ValidateObject(SkeletonNode);
+                    Root.Nodes.Add(SkeletonNode);
                 }
             }
 
@@ -173,6 +186,10 @@ namespace Forms.EditorControls
             else if (e.Node.Tag is MT_Collision)
             {
                 NewHelper = new MT_CollisionHelper((MT_Collision)e.Node.Tag);
+            }
+            else if (e.Node.Tag is MT_Skeleton)
+            {
+                NewHelper = new MT_SkeletonHelper((MT_Skeleton)e.Node.Tag);
             }
 
             // Then set it up from the object we pass into the helper,
@@ -245,7 +262,7 @@ namespace Forms.EditorControls
                 CurrentHelper.Store();
             }
 
-            if(CurrentMatHelper != null)
+            if (CurrentMatHelper != null)
             {
                 SaveMaterialChanges(CurrentMatHelper);
             }
@@ -274,7 +291,7 @@ namespace Forms.EditorControls
             // This will essentially move all properties from the helper
             // directly into the object. This is used to avoid bloat on the 
             // property grid.
-            if(CurrentHelper != null)
+            if (CurrentHelper != null)
             {
                 CurrentHelper.Store();
             }
@@ -338,13 +355,13 @@ namespace Forms.EditorControls
             foreach (KeyValuePair<ulong, MT_MaterialInstance> MatPair in MatCollectionVisitor.Materials)
             {
                 // 1. ....
-                if(DoesMaterialExistAlready(MatPair.Value))
+                if (DoesMaterialExistAlready(MatPair.Value))
                 {
                     continue;
                 }
 
                 // 2. ....
-                if(ModifiedMatHelpers.ContainsKey(MatPair.Key))
+                if (ModifiedMatHelpers.ContainsKey(MatPair.Key))
                 {
                     MT_MaterialHelper Helper = ModifiedMatHelpers[MatPair.Key];
                     MaterialAddRequestParams NewParams = new MaterialAddRequestParams(Helper.Material, ComboBox_LibraryEntries[Helper.LibraryIndex]);
@@ -373,7 +390,7 @@ namespace Forms.EditorControls
 
         private void TabControl_Editors_TabIndexChanged(object sender, EventArgs e)
         {
-            if(TabControl_Editors.SelectedTab == TabPage_Material)
+            if (TabControl_Editors.SelectedTab == TabPage_Material)
             {
                 // Make sure to clear the list.
                 ListView_Materials.Items.Clear();
@@ -386,17 +403,17 @@ namespace Forms.EditorControls
                 // Iterate through all collected materials.
                 // If we find a valid Material, then we can add it to the list as valid.
                 // Otherwise it's added as missing.
-                foreach(KeyValuePair<ulong, MT_MaterialInstance> MatPair in MatCollectionVisitor.Materials)
+                foreach (KeyValuePair<ulong, MT_MaterialInstance> MatPair in MatCollectionVisitor.Materials)
                 {
                     MT_MaterialInstance MatInstance = MatPair.Value;
-                    if(MatInstance.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
+                    if (MatInstance.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
                     {
                         // Skip Collisions
                         continue;
                     }
 
                     // If material exists then skip - we shouldn't allow any edits
-                    if(DoesMaterialExistAlready(MatPair.Value))
+                    if (DoesMaterialExistAlready(MatPair.Value))
                     {
                         // skip, not allowed to edit
                         continue;
@@ -430,7 +447,7 @@ namespace Forms.EditorControls
         private void ListView_Materials_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Store current values for the current helper
-            if(CurrentMatHelper != null)
+            if (CurrentMatHelper != null)
             {
                 // Save changes and clear
                 SaveMaterialChanges(CurrentMatHelper);
@@ -451,7 +468,7 @@ namespace Forms.EditorControls
 
             // Then update the controls with the recently selected Item.
             ListViewItem Item = ListView_Materials.SelectedItems[0];
-            if(Item.Tag != null)
+            if (Item.Tag != null)
             {
                 MT_MaterialHelper MatHelper = Item.Tag as MT_MaterialHelper;
                 ComboBox_ChoosePreset.SelectedIndex = MatHelper.LibraryIndex;
@@ -469,6 +486,49 @@ namespace Forms.EditorControls
             // Check is guarded, will handle if we need to update material.
             CurrentMatHelper.SetPreset(NewPreset);
             PropertyGrid_Material.SelectedObject = CurrentMatHelper.Material;
+        }
+
+        private void HelperContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            HelperContextMenu.Items.Clear();
+
+            if (TreeView_Objects.SelectedNode == null)
+            {
+                // nothing selected
+                e.Cancel = true;
+                return;
+            }
+
+            if (CurrentHelper == null)
+            {
+                // no valid helper
+                e.Cancel = true;
+                return;
+            }
+
+            // Let the helper add their own context items
+            string[] HelperItems = CurrentHelper.GetContextItems();
+            foreach(string Item in HelperItems)
+            {
+                HelperContextMenu.Items.Add(Item);
+            }
+
+            // cancel the context strip menu if we don't even have items
+            if (HelperContextMenu.Items.Count == 0)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void HelperContextMenu_OnItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if(CurrentHelper == null)
+            {
+                return;
+            }
+
+            // The Current helper might want to chime in
+            CurrentHelper.OnContextItemSelected(e.ClickedItem.Text);
         }
     }
 }

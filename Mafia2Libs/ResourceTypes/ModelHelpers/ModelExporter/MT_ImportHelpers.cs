@@ -6,6 +6,12 @@ using ResourceTypes.Materials;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Toolkit.Mathematics;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Printing;
+using System.Windows.Forms;
+using System.IO;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -13,6 +19,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     {
         void Setup();
         void Store();
+
+        string[] GetContextItems();
+
+        void OnContextItemSelected(string ItemText);
     }
 
     public class MT_CollisionHelper : IImportHelper
@@ -58,6 +68,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
         }
+
+        public string[] GetContextItems()
+        {
+            return new string[0];
+        }
+
+        public void OnContextItemSelected(string ItemText)
+        {
+            // nothing
+        }
     }
 
     public class MT_ObjectHelper : IImportHelper
@@ -97,6 +117,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 OwningObject.Scale = Scale;
                 OwningObject.ObjectType = ObjectType;
             }
+        }
+
+        public string[] GetContextItems()
+        {
+            return new string[0];
+        }
+
+        public void OnContextItemSelected(string ItemText)
+        {
+            // nothing
         }
     }
 
@@ -189,6 +219,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
+        public string[] GetContextItems()
+        {
+            return new string[0];
+        }
+
+        public void OnContextItemSelected(string ItemText)
+        {
+            // nothing
+        }
+
         private void FlipChannel(int TexIndex)
         {
             foreach(Vertex CurVertex in OwningObject.Vertices)
@@ -247,6 +287,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         }
 
+        public string[] GetContextItems()
+        {
+            return new string[0];
+        }
+
+        public void OnContextItemSelected(string ItemText)
+        {
+            // nothing
+        }
+
         // NB: Not using properties here as I've had the problem of not functions not being called.
         // Just safer with a good old fashioned approach.
         public void SetPreset(MaterialPreset NewPreset)
@@ -266,6 +316,65 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             if (Instance.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.HasDiffuse))
             {
                 Material.SetTextureFor("S000", Instance.DiffuseTexture);
+            }
+        }
+    }
+
+    public class MT_SkeletonHelper : IImportHelper
+    {
+        private string CONTEXT_ITEM_ADD_ANIMATION = "Add Animation";
+
+        private MT_Skeleton OwningObject { get; set; }
+        public List<MT_Joint> Joints { get; private set; }
+        public List<MT_Animation> Animations { get; private set; }
+
+        public MT_SkeletonHelper(MT_Skeleton SkeletonObject)
+        {
+            OwningObject = SkeletonObject;
+        }
+
+        public void Setup()
+        {
+            Joints = OwningObject.Joints.ToList();
+            Animations = OwningObject.Animations.ToList();
+        }
+
+        public void Store()
+        {
+            OwningObject.Joints = Joints.ToArray();
+            OwningObject.Animations = Animations.ToArray();
+        }
+
+        public string[] GetContextItems()
+        {
+            return new string[] { CONTEXT_ITEM_ADD_ANIMATION };
+        }
+
+        public void OnContextItemSelected(string ItemText)
+        {
+            if(ItemText == CONTEXT_ITEM_ADD_ANIMATION)
+            {
+                OpenFileDialog AnimFileDialog = new OpenFileDialog();
+                AnimFileDialog.Multiselect = true;
+                AnimFileDialog.Filter = "Animation2 File (*.an2)|*.an2*";
+
+                if (AnimFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    foreach (string Filename in AnimFileDialog.FileNames)
+                    {
+                        // Convert all AN2 files into bundle animation format
+                        ResourceTypes.Animation2.Animation2 TempAn2 = new ResourceTypes.Animation2.Animation2(Filename);
+                        MT_Animation ConvertedAnim = TempAn2.ConvertToAnimation();
+                        if (ConvertedAnim != null)
+                        {
+                            ConvertedAnim.AnimName = Path.GetFileNameWithoutExtension(Filename);
+                            Animations.Add(ConvertedAnim);
+                        }
+                    }
+                }
+
+                // Force the helper to apply to the original item
+                Store();
             }
         }
     }

@@ -5,7 +5,6 @@ using Rendering.Factories;
 using Rendering.Graphics;
 using Rendering.Input;
 using ResourceTypes.Actors;
-using ResourceTypes.Animation2;
 using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
 using ResourceTypes.FrameNameTable;
@@ -30,7 +29,6 @@ using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
-using static ResourceTypes.Collisions.Collision;
 using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
@@ -1690,20 +1688,6 @@ namespace Mafia2Tool
                 if (FrameObject is FrameObjectModel)
                 {
                     ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectModel, indexBuffers, vertexBuffers);
-
-                    if(AnimFileDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        foreach(string Filename in AnimFileDialog.FileNames)
-                        {
-                            Animation2 TempAn2 = new Animation2(Filename);
-                            MT_Animation ConvertedAnim = TempAn2.ConvertToAnimation();
-                            if(ConvertedAnim != null)
-                            {
-                                ConvertedAnim.AnimName = Path.GetFileNameWithoutExtension(Filename);
-                                ModelWrapperObject.AddAnimation(ConvertedAnim);
-                            }
-                        }
-                    }
                 }
                 else
                 {

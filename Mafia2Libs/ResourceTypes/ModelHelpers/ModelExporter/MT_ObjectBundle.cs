@@ -12,12 +12,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         private const int FileVersion = 0;
 
         public MT_Object[] Objects { get; set; }
-        public MT_Animation[] Animations { get; set; }
 
         public MT_ObjectBundle()
         {
             Objects = new MT_Object[0];
-            Animations = new MT_Animation[0];
         }
 
         public ModelRoot BuildGLTF()
@@ -29,7 +27,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 foreach(MT_Object ModelObject in Objects)
                 {
-                    SceneBuilder ChildScene = ModelObject.BuildGLTF(Animations);
+                    SceneBuilder ChildScene = ModelObject.BuildGLTF();
                     Scene.AddScene(ChildScene, Matrix4x4.Identity);
                 }
             }
@@ -53,11 +51,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 bool bIsObjectValid = ModelObject.ValidateObject(TrackerObject);
                 bIsValid &= bIsObjectValid;
-            }
-
-            foreach (MT_Animation Animation in Animations)
-            {
-                bIsValid &= Animation.ValidateObject(TrackerObject);
             }
 
             return bIsValid;

@@ -74,7 +74,6 @@ namespace Mafia2Tool
             dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             FrameBrowser = new System.Windows.Forms.OpenFileDialog();
             SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            AnimFileDialog = new System.Windows.Forms.OpenFileDialog();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
             ToolbarStrip.SuspendLayout();
@@ -426,11 +425,6 @@ namespace Mafia2Tool
             // 
             FrameBrowser.Filter = "Toolkit Frame Data|*framedata";
             // 
-            // AnimFileDialog
-            // 
-            AnimFileDialog.Filter = "Animation2|*an2";
-            AnimFileDialog.Multiselect = true;
-            // 
             // MapEditor
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -494,6 +488,5 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem Button_DumpTexture;
         private System.Windows.Forms.ToolStripMenuItem Button_ImportBundle;
         private System.Windows.Forms.SaveFileDialog SaveFileDialog;
-        private System.Windows.Forms.OpenFileDialog AnimFileDialog;
     }
 }

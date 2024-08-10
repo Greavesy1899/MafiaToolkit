@@ -50,8 +50,6 @@ namespace Utils.Models
             set { modelObject = value; }
         }
 
-        public List<MT_Animation> AnimationObject { get; private set; } = new List<MT_Animation>();
-
         public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             this.frameMesh = frameMesh;
@@ -258,7 +256,6 @@ namespace Utils.Models
             MT_ObjectBundle BundleObject = new MT_ObjectBundle();
             BundleObject.Objects = new MT_Object[1];
             BundleObject.Objects[0] = ModelObject;
-            BundleObject.Animations = AnimationObject.ToArray();
 
             ModelRoot CompiledModel = BundleObject.BuildGLTF();
             CompiledModel.SaveGLB(FileToWrite);
@@ -491,11 +488,6 @@ namespace Utils.Models
                 HierarchyBlock.UnkData[i] = (byte)(i != NumJoints ? i : 0);
                 SkeletonBlock.JointTransforms[i] = MatrixExtensions.SetMatrix(JointObject.Rotation, JointObject.Scale, JointObject.Position);
             }*/
-        }
-
-        public void AddAnimation(MT_Animation InAnimation)
-        {
-            AnimationObject.Add(InAnimation);
         }
     }
 }

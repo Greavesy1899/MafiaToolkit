@@ -18,9 +18,17 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public int ParentJointIndex { get; set; }
 
     }
-    public class MT_Skeleton
+    public class MT_Skeleton : IValidator
     {
         public MT_Joint[] Joints { get; set; }
+        public MT_Animation[] Animations { get; set; }
+
+        public MT_Skeleton()
+        {
+            Joints = new MT_Joint[0];
+            Animations = new MT_Animation[0];
+        }
+
         public NodeBuilder[] BuildGLTF(int LodIndex)
         {
             NodeBuilder[] JointNodes = new NodeBuilder[Joints.Length];
@@ -45,7 +53,53 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 JointNodes[Index] = JointNode;
             }
 
+            // let the skeleton add any animations
+            AddAnimations(JointNodes);
+
             return JointNodes;
+        }
+
+        private void AddAnimations(NodeBuilder[] JointNodes)
+        {
+            // Dictionary is faster lookups, better then array
+            Dictionary<string, NodeBuilder> JointLookup = new Dictionary<string, NodeBuilder>();
+            foreach (NodeBuilder JointNode in JointNodes)
+            {
+                JointLookup.Add(JointNode.Name, JointNode);
+            }
+
+            // we can build up the animations here, using the joint nodes provided
+            foreach (MT_Animation Animation in Animations)
+            {
+                foreach (MT_AnimTrack Track in Animation.Tracks)
+                {
+                    // TODO: We can likely improve this with some voodoo C# magic
+                    List<(float, Quaternion)> RotationKeyFrames = new List<(float, Quaternion)>();
+                    foreach (MT_RotKey RotKeyFrame in Track.RotKeyFrames)
+                    {
+                        RotationKeyFrames.Add((RotKeyFrame.Time, RotKeyFrame.Value));
+                    }
+
+                    List<(float, Vector3)> PositionKeyFrames = new List<(float, Vector3)>();
+                    foreach (MT_PosKey PosKeyFrame in Track.PosKeyFrames)
+                    {
+                        PositionKeyFrames.Add((PosKeyFrame.Time, PosKeyFrame.Value));
+                    }
+
+                    if (JointLookup.ContainsKey(Track.BoneName))
+                    {
+                        NodeBuilder Joint = JointLookup[Track.BoneName];
+                        Joint.SetRotationTrack(Animation.AnimName, CurveSampler.CreateSampler(RotationKeyFrames.ToArray()));
+                        Joint.SetTranslationTrack(Animation.AnimName, CurveSampler.CreateSampler(PositionKeyFrames.ToArray()));
+                    }
+                }
+            }
+        }
+
+        protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
+        {
+            // TODO
+            return true;
         }
     }
 }

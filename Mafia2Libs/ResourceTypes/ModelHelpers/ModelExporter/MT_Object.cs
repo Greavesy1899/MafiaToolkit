@@ -329,7 +329,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
-        public SceneBuilder BuildGLTF(MT_Animation[] Animations)
+        public SceneBuilder BuildGLTF()
         {
             SceneBuilder Scene = new SceneBuilder();
 
@@ -343,7 +343,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 foreach (MT_Object ChildObject in Children)
                 {
-                    SceneBuilder ChildScene = ChildObject.BuildGLTF(null);
+                    SceneBuilder ChildScene = ChildObject.BuildGLTF();
                     Scene.AddScene(ChildScene, Matrix4x4.Identity);
                 }
             }
@@ -356,14 +356,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     if (Skeleton != null)
                     {
                         var mesh = Lods[Index].BuildSkinnedGLTF();
-                        InstanceBuilder SkinnedMesh = Scene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(Index));
-
-                        SkinnedTransformer SkinnedTransformer = (SkinnedTransformer)SkinnedMesh.Content;
-
-                        foreach(MT_Animation Animation in Animations)
-                        {
-                            Animation.BuildAnimation(SkinnedTransformer);
-                        }
+                        Scene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(Index));
                     }
                     else
                     {
@@ -442,7 +435,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
             {
-                // TODO: 
+                bool bIsSkelValid = Skeleton.ValidateObject(TrackerObject);
+                bValidity &= bIsSkelValid;
             }
 
             return bValidity;
