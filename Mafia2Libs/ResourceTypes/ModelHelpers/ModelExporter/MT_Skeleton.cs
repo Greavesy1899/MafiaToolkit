@@ -4,6 +4,7 @@ using Utils.VorticeUtils;
 using System.Numerics;
 using SharpGLTF.Scenes;
 using System.Collections.Generic;
+using SharpGLTF.Animations;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {

@@ -87,7 +87,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 foreach(MT_Object ModelObject in Objects)
                 {
-                    SceneBuilder ChildScene = ModelObject.BuildGLTF();
+                    SceneBuilder ChildScene = ModelObject.BuildGLTF(Animation);
                     Scene.AddScene(ChildScene, Matrix4x4.Identity);
                 }
             }

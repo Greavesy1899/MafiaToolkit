@@ -467,7 +467,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
-        public SceneBuilder BuildGLTF()
+        public SceneBuilder BuildGLTF(MT_Animation Animation)
         {
             SceneBuilder Scene = new SceneBuilder();
 
@@ -482,7 +482,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 foreach (MT_Object ChildObject in Children)
                 {
-                    SceneBuilder ChildScene = ChildObject.BuildGLTF();
+                    SceneBuilder ChildScene = ChildObject.BuildGLTF(null);
                     Scene.AddScene(ChildScene, Matrix4x4.Identity);
                 }
             }
@@ -492,11 +492,18 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 for(int Index = 0; Index < Lods.Length; Index++)
                 {
                     NodeBuilder LodNode = ThisNode.CreateNode(string.Format("LOD_{0}", Index));
-
                     if (Skeleton != null)
                     {
                         var mesh = Lods[Index].BuildSkinnedGLTF();
-                        Scene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(Index));
+                        InstanceBuilder SkinnedMesh = Scene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(Index));
+
+                        SkinnedTransformer Test = (SkinnedTransformer)SkinnedMesh.Content;
+                        NodeBuilder SkinnedNode = Test.GetArmatureRoot();
+
+                        if(Animation !=  null)
+                        {
+                            Animation.BuildAnimation(Test);
+                        }
                     }
                     else
                     {

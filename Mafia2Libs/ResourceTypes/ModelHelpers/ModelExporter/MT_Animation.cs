@@ -2,6 +2,10 @@
 using Utils.StringHelpers;
 using Utils.Models;
 using System.Numerics;
+using SharpGLTF.Animations;
+using SharpGLTF.Scenes;
+using System.Collections.Generic;
+using System.Windows.Media.Animation;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -171,6 +175,38 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
 
             return true;
+        }
+
+        public void BuildAnimation(SkinnedTransformer SkinnedMesh)
+        {
+            (NodeBuilder, Matrix4x4)[] JointAndMatrices = SkinnedMesh.GetJointBindings();
+            Dictionary<string, NodeBuilder> JointLookup = new Dictionary<string, NodeBuilder>();
+            foreach((NodeBuilder, Matrix4x4) Pair in JointAndMatrices)
+            {
+                JointLookup.Add(Pair.Item1.Name, Pair.Item1);
+            }
+
+            foreach (MT_AnimTrack Track in Tracks)
+            {
+                List<(float, Quaternion)> RotationKeyFrames = new List<(float, Quaternion)>();
+                foreach(MT_RotKey RotKeyFrame in Track.RotKeyFrames)
+                {
+                    RotationKeyFrames.Add((RotKeyFrame.Time, RotKeyFrame.Value));
+                }
+
+                List<(float, Vector3)> PositionKeyFrames = new List<(float, Vector3)>();
+                foreach(MT_PosKey PosKeyFrame in Track.PosKeyFrames)
+                {
+                    PositionKeyFrames.Add((PosKeyFrame.Time, PosKeyFrame.Value));
+                }
+
+                if(JointLookup.ContainsKey(Track.BoneName))
+                {
+                    NodeBuilder Joint = JointLookup[Track.BoneName];
+                    Joint.SetRotationTrack("ANIM_TEST", CurveSampler.CreateSampler(RotationKeyFrames.ToArray()));
+                    Joint.SetTranslationTrack("ANIM_TEST", CurveSampler.CreateSampler(PositionKeyFrames.ToArray()));
+                }
+            }
         }
 
         protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
