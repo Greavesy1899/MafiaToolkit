@@ -48,7 +48,7 @@ namespace Utils.Models
             set { modelObject = value; }
         }
 
-        public MT_Animation AnimationObject { get; set; }
+        public List<MT_Animation> AnimationObject { get; private set; } = new List<MT_Animation>();
 
         public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
@@ -270,25 +270,6 @@ namespace Utils.Models
             {
                 ExportBundle(SavePath);
             }
-
-            //switch(FilterIndex)
-            //{
-            //    case 1:
-            //        ExportBundle(SavePath);
-            //        ExportObjectToFbx(SavePath, true);
-            //        File.Delete(SavePath + ".mtb");
-            //        break;
-            //    case 2:
-            //        ExportBundle(SavePath);
-            //        ExportObjectToFbx(SavePath, false);
-            //        File.Delete(SavePath + ".mtb");
-            //        break;
-            //    case 3:
-            //        ExportBundle(SavePath);
-            //        break;
-            //    default:
-            //        break;
-            //}
         }
 
         private void ExportObjectToFbx(string File, bool bIsBinary)
@@ -301,14 +282,9 @@ namespace Utils.Models
             MT_ObjectBundle BundleObject = new MT_ObjectBundle();
             BundleObject.Objects = new MT_Object[1];
             BundleObject.Objects[0] = ModelObject;
-            BundleObject.Animation = AnimationObject;
+            BundleObject.Animations = AnimationObject.ToArray();
 
             BundleObject.BuildGLTF();
-
-            //using (BinaryWriter writer = new BinaryWriter(File.Open(FileToWrite + ".mtb", FileMode.Create)))
-            //{
-            //    MT_ObjectHandler.WriteBundleToFile(writer, BundleObject);
-            //}
         }
 
         public void UpdateObjectsFromModel()
@@ -538,6 +514,11 @@ namespace Utils.Models
                 HierarchyBlock.UnkData[i] = (byte)(i != NumJoints ? i : 0);
                 SkeletonBlock.JointTransforms[i] = MatrixExtensions.SetMatrix(JointObject.Rotation, JointObject.Scale, JointObject.Position);
             }*/
+        }
+
+        public void AddAnimation(MT_Animation InAnimation)
+        {
+            AnimationObject.Add(InAnimation);
         }
     }
 }

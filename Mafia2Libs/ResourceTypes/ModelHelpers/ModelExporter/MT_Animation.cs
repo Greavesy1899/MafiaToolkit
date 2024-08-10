@@ -5,7 +5,6 @@ using System.Numerics;
 using SharpGLTF.Animations;
 using SharpGLTF.Scenes;
 using System.Collections.Generic;
-using System.Windows.Media.Animation;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -142,6 +141,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
     public class MT_Animation : IValidator
     {
+        public string AnimName { get; set; }
         public MT_AnimTrack[] Tracks { get; set; }
 
         public MT_Animation()
@@ -169,7 +169,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public bool WriteToFile(BinaryWriter Writer)
         {
             Writer.Write((ushort)Tracks.Length);
-            foreach(MT_AnimTrack Track in Tracks)
+            foreach (MT_AnimTrack Track in Tracks)
             {
                 Track.WriteToFile(Writer);
             }
@@ -177,7 +177,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return true;
         }
 
-        public void BuildAnimation(SkinnedTransformer SkinnedMesh)
+        public void BuildAnimation(SkinnedTransformer SkinnedMesh, string AllocatedAnimName)
         {
             (NodeBuilder, Matrix4x4)[] JointAndMatrices = SkinnedMesh.GetJointBindings();
             Dictionary<string, NodeBuilder> JointLookup = new Dictionary<string, NodeBuilder>();
@@ -203,8 +203,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 if(JointLookup.ContainsKey(Track.BoneName))
                 {
                     NodeBuilder Joint = JointLookup[Track.BoneName];
-                    Joint.SetRotationTrack("ANIM_TEST", CurveSampler.CreateSampler(RotationKeyFrames.ToArray()));
-                    Joint.SetTranslationTrack("ANIM_TEST", CurveSampler.CreateSampler(PositionKeyFrames.ToArray()));
+                    Joint.SetRotationTrack(AllocatedAnimName, CurveSampler.CreateSampler(RotationKeyFrames.ToArray()));
+                    Joint.SetTranslationTrack(AllocatedAnimName, CurveSampler.CreateSampler(PositionKeyFrames.ToArray()));
                 }
             }
         }

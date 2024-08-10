@@ -1688,9 +1688,11 @@ namespace Mafia2Tool
 
                     if(AnimFileDialog.ShowDialog() == DialogResult.OK)
                     {
-                        string Filename = AnimFileDialog.FileName;
-                        Animation2 TempAn2 = new Animation2(Filename);
-                        ModelWrapperObject.AnimationObject = TempAn2.ConvertToAnimation();
+                        foreach(string Filename in AnimFileDialog.FileNames)
+                        {
+                            Animation2 TempAn2 = new Animation2(Filename);
+                            ModelWrapperObject.AddAnimation(TempAn2.ConvertToAnimation());
+                        }
                     }
                 }
                 else

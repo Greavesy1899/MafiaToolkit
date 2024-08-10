@@ -35,36 +35,17 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
                 MT_ObjectBundle Bundle = new MT_ObjectBundle();
-                bool bIsValid = Bundle.ReadFromFile(reader);
+                //bool bIsValid = Bundle.ReadFromFile(reader);
 
-                if (bIsValid)
-                {
-                    return Bundle;
-                }
+                //if (bIsValid)
+                //{
+                //    return Bundle;
+                //}
 
                 return null;
             }
         }
 
         /** End Deserialize functions */
-        /** Begin Serialize Functions */
-
-        public static void WriteObjectToFile(BinaryWriter writer, MT_Object ModelObject)
-        {
-            if (ModelObject != null)
-            {
-                ModelObject.WriteToFile(writer);
-            }
-        }
-
-        public static void WriteBundleToFile(BinaryWriter writer, MT_ObjectBundle BundleObject)
-        {
-            if(BundleObject != null)
-            {
-                BundleObject.WriteToFile(writer);
-            }
-        }
-
-        /** End Serialize Functions */
     }
 }

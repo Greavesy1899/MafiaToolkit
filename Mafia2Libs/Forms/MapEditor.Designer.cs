@@ -429,6 +429,7 @@ namespace Mafia2Tool
             // AnimFileDialog
             // 
             AnimFileDialog.Filter = "Animation2|*an2";
+            AnimFileDialog.Multiselect = true;
             // 
             // MapEditor
             // 

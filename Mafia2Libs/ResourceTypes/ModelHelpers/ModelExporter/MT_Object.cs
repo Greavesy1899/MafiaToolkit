@@ -467,7 +467,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
-        public SceneBuilder BuildGLTF(MT_Animation Animation)
+        public SceneBuilder BuildGLTF(MT_Animation[] Animations)
         {
             SceneBuilder Scene = new SceneBuilder();
 
@@ -500,9 +500,12 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                         SkinnedTransformer Test = (SkinnedTransformer)SkinnedMesh.Content;
                         NodeBuilder SkinnedNode = Test.GetArmatureRoot();
 
-                        if(Animation !=  null)
+                        int AnimIndex = 0;
+                        foreach(MT_Animation Animation in Animations)
                         {
-                            Animation.BuildAnimation(Test);
+                            string AnimName = string.Format("ANIM_TEST_{0}", AnimIndex);
+                            Animation.BuildAnimation(Test, AnimName);
+                            AnimIndex++;
                         }
                     }
                     else

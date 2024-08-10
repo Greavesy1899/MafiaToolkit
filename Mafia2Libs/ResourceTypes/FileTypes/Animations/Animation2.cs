@@ -92,21 +92,7 @@ namespace ResourceTypes.Animation2
                 UnkShorts01[i] = br.ReadInt16();
             }
 
-            ConvertToMTB();
-
             ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, "Animation2: Failed to reach EOF.");
-        }
-
-        private void ConvertToMTB()
-        {
-            MT_ObjectBundle NewBundle = new MT_ObjectBundle();
-            NewBundle.Animation = ConvertToAnimation();
-
-            using(BinaryWriter FileWriter = new BinaryWriter(File.Open("Test.mtb", FileMode.Create)))
-            {
-                NewBundle.WriteToFile(FileWriter);
-                FileWriter.Close();
-            }
         }
 
         public MT_Animation ConvertToAnimation()

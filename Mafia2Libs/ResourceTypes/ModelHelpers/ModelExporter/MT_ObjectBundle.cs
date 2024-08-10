@@ -12,71 +12,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         private const int FileVersion = 0;
 
         public MT_Object[] Objects { get; set; }
-        public MT_Animation Animation { get; set; }
-
-        public bool ReadFromFile(BinaryReader reader)
-        {
-            string TempHeader = new string(reader.ReadChars(3));
-            if(!TempHeader.Equals(FileHeader))
-            {
-                return false;
-            }
-
-            int TempFileVersion = reader.ReadByte();
-            if(TempFileVersion != FileVersion)
-            {
-                return false;
-            }
-
-            uint NumObjects = reader.ReadUInt32();
-            Objects = new MT_Object[NumObjects];
-
-            for(int i = 0; i < NumObjects; i++)
-            {
-                MT_Object NewObject = new MT_Object();
-                bool bIsValid = NewObject.ReadFromFile(reader);
-                Objects[i] = NewObject;
-
-                // Failed to read Object, return
-                if(!bIsValid)
-                {
-                    return false;
-                }
-            }
-
-            uint HasAnimation = reader.ReadUInt32();
-            if(HasAnimation == 1)
-            {
-                Animation = new MT_Animation();
-                Animation.ReadFromFile(reader);
-            }
-
-            return true;
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            StringHelpers.WriteString(writer, "MTB", false);
-            writer.Write((byte)FileVersion);
-
-            // Write Models to file
-            int NumObjects = (Objects != null ?  Objects.Length : 0);
-            writer.Write(NumObjects);
-            if (Objects != null)
-            {
-                foreach (MT_Object ModelObject in Objects)
-                {
-                    ModelObject.WriteToFile(writer);
-                }
-            }
-
-            int HasAnimation = (Animation != null ? 1 : 0);
-            writer.Write(HasAnimation);
-            if (Animation != null)
-            {
-                Animation.WriteToFile(writer);
-            }
-        }
+        public MT_Animation[] Animations { get; set; }
 
         public void BuildGLTF()
         {
@@ -87,7 +23,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 foreach(MT_Object ModelObject in Objects)
                 {
-                    SceneBuilder ChildScene = ModelObject.BuildGLTF(Animation);
+                    SceneBuilder ChildScene = ModelObject.BuildGLTF(Animations);
                     Scene.AddScene(ChildScene, Matrix4x4.Identity);
                 }
             }
@@ -117,7 +53,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 bIsValid &= bIsObjectValid;
             }
 
-            if(Animation != null)
+            foreach(MT_Animation Animation in Animations)
             {
                 bIsValid &= Animation.ValidateObject(TrackerObject);
             }
