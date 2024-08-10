@@ -31,16 +31,8 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameResourceModelExporter));
             ImportAOBox = new System.Windows.Forms.CheckBox();
-            Split_ModelPage = new System.Windows.Forms.SplitContainer();
-            TreeView_Objects = new Mafia2Tool.Controls.MTreeView();
             HelperContextMenu = new System.Windows.Forms.ContextMenuStrip(components);
             imageList1 = new System.Windows.Forms.ImageList(components);
-            PropertyGrid_Model = new System.Windows.Forms.PropertyGrid();
-            Panel_Material = new System.Windows.Forms.TableLayoutPanel();
-            Label_ChoosePreset = new System.Windows.Forms.Label();
-            ComboBox_ChoosePreset = new System.Windows.Forms.ComboBox();
-            Label_ChooseLibrary = new System.Windows.Forms.Label();
-            ComboBox_ChooseLibrary = new System.Windows.Forms.ComboBox();
             toolStrip1 = new System.Windows.Forms.ToolStrip();
             Button_Validate = new System.Windows.Forms.ToolStripButton();
             Button_Continue = new System.Windows.Forms.ToolStripButton();
@@ -51,36 +43,24 @@
             ListBox_Validation = new System.Windows.Forms.ListBox();
             TabPage_ConvertLogs = new System.Windows.Forms.TabPage();
             ListBox_ImportLog = new System.Windows.Forms.ListBox();
-            TabControl_Editors = new System.Windows.Forms.TabControl();
-            TabPage_Model = new System.Windows.Forms.TabPage();
-            TabPage_Material = new System.Windows.Forms.TabPage();
-            Split_MaterialPage = new System.Windows.Forms.SplitContainer();
-            ListView_Materials = new Mafia2Tool.Controls.MListView();
-            Split_MaterialEditor = new System.Windows.Forms.SplitContainer();
-            PropertyGrid_Material = new System.Windows.Forms.PropertyGrid();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             AnimFileDialog = new System.Windows.Forms.OpenFileDialog();
-            ((System.ComponentModel.ISupportInitialize)Split_ModelPage).BeginInit();
-            Split_ModelPage.Panel1.SuspendLayout();
-            Split_ModelPage.Panel2.SuspendLayout();
-            Split_ModelPage.SuspendLayout();
-            Panel_Material.SuspendLayout();
+            TabPage_Model = new System.Windows.Forms.TabPage();
+            Split_ModelPage = new System.Windows.Forms.SplitContainer();
+            PropertyGrid_Model = new System.Windows.Forms.PropertyGrid();
+            TreeView_Objects = new Mafia2Tool.Controls.MTreeView();
+            TabControl_Editors = new System.Windows.Forms.TabControl();
             toolStrip1.SuspendLayout();
             Tab_Root.SuspendLayout();
             TabPage_Validation.SuspendLayout();
             TabPage_ConvertLogs.SuspendLayout();
-            TabControl_Editors.SuspendLayout();
-            TabPage_Model.SuspendLayout();
-            TabPage_Material.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)Split_MaterialPage).BeginInit();
-            Split_MaterialPage.Panel1.SuspendLayout();
-            Split_MaterialPage.Panel2.SuspendLayout();
-            Split_MaterialPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)Split_MaterialEditor).BeginInit();
-            Split_MaterialEditor.Panel1.SuspendLayout();
-            Split_MaterialEditor.Panel2.SuspendLayout();
-            Split_MaterialEditor.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
+            TabPage_Model.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)Split_ModelPage).BeginInit();
+            Split_ModelPage.Panel1.SuspendLayout();
+            Split_ModelPage.Panel2.SuspendLayout();
+            Split_ModelPage.SuspendLayout();
+            TabControl_Editors.SuspendLayout();
             SuspendLayout();
             // 
             // ImportAOBox
@@ -93,45 +73,10 @@
             ImportAOBox.Text = "$IMPORT_AO";
             ImportAOBox.UseVisualStyleBackColor = true;
             // 
-            // Split_ModelPage
-            // 
-            Split_ModelPage.Cursor = System.Windows.Forms.Cursors.VSplit;
-            Split_ModelPage.Dock = System.Windows.Forms.DockStyle.Fill;
-            Split_ModelPage.Location = new System.Drawing.Point(3, 3);
-            Split_ModelPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            Split_ModelPage.Name = "Split_ModelPage";
-            // 
-            // Split_ModelPage.Panel1
-            // 
-            Split_ModelPage.Panel1.Controls.Add(TreeView_Objects);
-            // 
-            // Split_ModelPage.Panel2
-            // 
-            Split_ModelPage.Panel2.Controls.Add(PropertyGrid_Model);
-            Split_ModelPage.Size = new System.Drawing.Size(708, 297);
-            Split_ModelPage.SplitterDistance = 236;
-            Split_ModelPage.SplitterWidth = 5;
-            Split_ModelPage.TabIndex = 16;
-            // 
-            // TreeView_Objects
-            // 
-            TreeView_Objects.ContextMenuStrip = HelperContextMenu;
-            TreeView_Objects.Dock = System.Windows.Forms.DockStyle.Fill;
-            TreeView_Objects.ImageIndex = 0;
-            TreeView_Objects.ImageList = imageList1;
-            TreeView_Objects.Location = new System.Drawing.Point(0, 0);
-            TreeView_Objects.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            TreeView_Objects.Name = "TreeView_Objects";
-            TreeView_Objects.SelectedImageIndex = 0;
-            TreeView_Objects.Size = new System.Drawing.Size(236, 297);
-            TreeView_Objects.TabIndex = 0;
-            TreeView_Objects.BeforeSelect += TreeView_OnBeforeSelect;
-            TreeView_Objects.AfterSelect += TreeView_OnAfterSelect;
-            // 
             // HelperContextMenu
             // 
             HelperContextMenu.Name = "EntryMenuStrip";
-            HelperContextMenu.Size = new System.Drawing.Size(181, 26);
+            HelperContextMenu.Size = new System.Drawing.Size(61, 4);
             HelperContextMenu.Opening += HelperContextMenu_Opening;
             HelperContextMenu.ItemClicked += HelperContextMenu_OnItemClicked;
             // 
@@ -146,75 +91,6 @@
             imageList1.Images.SetKeyName(3, "Model3D_16x.png");
             imageList1.Images.SetKeyName(4, "Log_16x.png");
             imageList1.Images.SetKeyName(5, "TestResultFile_16x.png");
-            // 
-            // PropertyGrid_Model
-            // 
-            PropertyGrid_Model.Dock = System.Windows.Forms.DockStyle.Fill;
-            PropertyGrid_Model.Location = new System.Drawing.Point(0, 0);
-            PropertyGrid_Model.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            PropertyGrid_Model.Name = "PropertyGrid_Model";
-            PropertyGrid_Model.Size = new System.Drawing.Size(467, 297);
-            PropertyGrid_Model.TabIndex = 16;
-            PropertyGrid_Model.PropertyValueChanged += PropertyGrid_Model_OnPropertyValueChanged;
-            // 
-            // Panel_Material
-            // 
-            Panel_Material.AutoSize = true;
-            Panel_Material.ColumnCount = 2;
-            Panel_Material.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 39.75904F));
-            Panel_Material.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60.24096F));
-            Panel_Material.Controls.Add(Label_ChoosePreset, 0, 1);
-            Panel_Material.Controls.Add(ComboBox_ChoosePreset, 1, 1);
-            Panel_Material.Controls.Add(Label_ChooseLibrary, 0, 0);
-            Panel_Material.Controls.Add(ComboBox_ChooseLibrary, 1, 0);
-            Panel_Material.Dock = System.Windows.Forms.DockStyle.Fill;
-            Panel_Material.Location = new System.Drawing.Point(0, 0);
-            Panel_Material.Name = "Panel_Material";
-            Panel_Material.RowCount = 2;
-            Panel_Material.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            Panel_Material.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            Panel_Material.Size = new System.Drawing.Size(467, 57);
-            Panel_Material.TabIndex = 0;
-            // 
-            // Label_ChoosePreset
-            // 
-            Label_ChoosePreset.Dock = System.Windows.Forms.DockStyle.Fill;
-            Label_ChoosePreset.Location = new System.Drawing.Point(3, 29);
-            Label_ChoosePreset.Name = "Label_ChoosePreset";
-            Label_ChoosePreset.Size = new System.Drawing.Size(179, 29);
-            Label_ChoosePreset.TabIndex = 2;
-            Label_ChoosePreset.Text = "$MT_CHOOSEPRESET";
-            Label_ChoosePreset.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // ComboBox_ChoosePreset
-            // 
-            ComboBox_ChoosePreset.Dock = System.Windows.Forms.DockStyle.Fill;
-            ComboBox_ChoosePreset.FormattingEnabled = true;
-            ComboBox_ChoosePreset.Location = new System.Drawing.Point(188, 32);
-            ComboBox_ChoosePreset.Name = "ComboBox_ChoosePreset";
-            ComboBox_ChoosePreset.Size = new System.Drawing.Size(276, 23);
-            ComboBox_ChoosePreset.TabIndex = 3;
-            // 
-            // Label_ChooseLibrary
-            // 
-            Label_ChooseLibrary.AutoSize = true;
-            Label_ChooseLibrary.Dock = System.Windows.Forms.DockStyle.Fill;
-            Label_ChooseLibrary.Location = new System.Drawing.Point(3, 0);
-            Label_ChooseLibrary.Name = "Label_ChooseLibrary";
-            Label_ChooseLibrary.Size = new System.Drawing.Size(179, 29);
-            Label_ChooseLibrary.TabIndex = 0;
-            Label_ChooseLibrary.Text = "$MT_CHOOSELIBRARY";
-            Label_ChooseLibrary.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // ComboBox_ChooseLibrary
-            // 
-            ComboBox_ChooseLibrary.Dock = System.Windows.Forms.DockStyle.Fill;
-            ComboBox_ChooseLibrary.FormattingEnabled = true;
-            ComboBox_ChooseLibrary.Location = new System.Drawing.Point(188, 3);
-            ComboBox_ChooseLibrary.Name = "ComboBox_ChooseLibrary";
-            ComboBox_ChooseLibrary.Size = new System.Drawing.Size(276, 23);
-            ComboBox_ChooseLibrary.TabIndex = 1;
-            ComboBox_ChooseLibrary.SelectionChangeCommitted += ComboBox_Preset_SelectionChangeCommitted;
             // 
             // toolStrip1
             // 
@@ -321,109 +197,6 @@
             ListBox_ImportLog.Size = new System.Drawing.Size(704, 107);
             ListBox_ImportLog.TabIndex = 0;
             // 
-            // TabControl_Editors
-            // 
-            TabControl_Editors.Controls.Add(TabPage_Model);
-            TabControl_Editors.Controls.Add(TabPage_Material);
-            TabControl_Editors.Dock = System.Windows.Forms.DockStyle.Fill;
-            TabControl_Editors.ImageList = imageList1;
-            TabControl_Editors.Location = new System.Drawing.Point(3, 28);
-            TabControl_Editors.Name = "TabControl_Editors";
-            TabControl_Editors.SelectedIndex = 0;
-            TabControl_Editors.Size = new System.Drawing.Size(722, 331);
-            TabControl_Editors.TabIndex = 1;
-            TabControl_Editors.SelectedIndexChanged += TabControl_Editors_TabIndexChanged;
-            TabControl_Editors.TabIndexChanged += TabControl_Editors_TabIndexChanged;
-            // 
-            // TabPage_Model
-            // 
-            TabPage_Model.Controls.Add(Split_ModelPage);
-            TabPage_Model.ImageIndex = 3;
-            TabPage_Model.Location = new System.Drawing.Point(4, 24);
-            TabPage_Model.Name = "TabPage_Model";
-            TabPage_Model.Padding = new System.Windows.Forms.Padding(3);
-            TabPage_Model.Size = new System.Drawing.Size(714, 303);
-            TabPage_Model.TabIndex = 0;
-            TabPage_Model.Text = "$TAB_MODEL";
-            TabPage_Model.UseVisualStyleBackColor = true;
-            // 
-            // TabPage_Material
-            // 
-            TabPage_Material.Controls.Add(Split_MaterialPage);
-            TabPage_Material.ImageIndex = 2;
-            TabPage_Material.Location = new System.Drawing.Point(4, 24);
-            TabPage_Material.Name = "TabPage_Material";
-            TabPage_Material.Padding = new System.Windows.Forms.Padding(3);
-            TabPage_Material.Size = new System.Drawing.Size(714, 303);
-            TabPage_Material.TabIndex = 1;
-            TabPage_Material.Text = "$TAB_MATERIAL";
-            TabPage_Material.UseVisualStyleBackColor = true;
-            // 
-            // Split_MaterialPage
-            // 
-            Split_MaterialPage.Cursor = System.Windows.Forms.Cursors.VSplit;
-            Split_MaterialPage.Dock = System.Windows.Forms.DockStyle.Fill;
-            Split_MaterialPage.Location = new System.Drawing.Point(3, 3);
-            Split_MaterialPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            Split_MaterialPage.Name = "Split_MaterialPage";
-            // 
-            // Split_MaterialPage.Panel1
-            // 
-            Split_MaterialPage.Panel1.Controls.Add(ListView_Materials);
-            // 
-            // Split_MaterialPage.Panel2
-            // 
-            Split_MaterialPage.Panel2.Controls.Add(Split_MaterialEditor);
-            Split_MaterialPage.Size = new System.Drawing.Size(708, 297);
-            Split_MaterialPage.SplitterDistance = 236;
-            Split_MaterialPage.SplitterWidth = 5;
-            Split_MaterialPage.TabIndex = 17;
-            // 
-            // ListView_Materials
-            // 
-            ListView_Materials.Dock = System.Windows.Forms.DockStyle.Fill;
-            ListView_Materials.FullRowSelect = true;
-            ListView_Materials.GridLines = true;
-            ListView_Materials.GroupImageList = imageList1;
-            ListView_Materials.LargeImageList = imageList1;
-            ListView_Materials.Location = new System.Drawing.Point(0, 0);
-            ListView_Materials.Name = "ListView_Materials";
-            ListView_Materials.Size = new System.Drawing.Size(236, 297);
-            ListView_Materials.SmallImageList = imageList1;
-            ListView_Materials.TabIndex = 0;
-            ListView_Materials.UseCompatibleStateImageBehavior = false;
-            ListView_Materials.View = System.Windows.Forms.View.List;
-            ListView_Materials.SelectedIndexChanged += ListView_Materials_SelectedIndexChanged;
-            // 
-            // Split_MaterialEditor
-            // 
-            Split_MaterialEditor.Cursor = System.Windows.Forms.Cursors.HSplit;
-            Split_MaterialEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            Split_MaterialEditor.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            Split_MaterialEditor.IsSplitterFixed = true;
-            Split_MaterialEditor.Location = new System.Drawing.Point(0, 0);
-            Split_MaterialEditor.Name = "Split_MaterialEditor";
-            Split_MaterialEditor.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // Split_MaterialEditor.Panel1
-            // 
-            Split_MaterialEditor.Panel1.Controls.Add(Panel_Material);
-            // 
-            // Split_MaterialEditor.Panel2
-            // 
-            Split_MaterialEditor.Panel2.Controls.Add(PropertyGrid_Material);
-            Split_MaterialEditor.Size = new System.Drawing.Size(467, 297);
-            Split_MaterialEditor.SplitterDistance = 57;
-            Split_MaterialEditor.TabIndex = 1;
-            // 
-            // PropertyGrid_Material
-            // 
-            PropertyGrid_Material.Dock = System.Windows.Forms.DockStyle.Fill;
-            PropertyGrid_Material.Location = new System.Drawing.Point(0, 0);
-            PropertyGrid_Material.Name = "PropertyGrid_Material";
-            PropertyGrid_Material.Size = new System.Drawing.Size(467, 236);
-            PropertyGrid_Material.TabIndex = 0;
-            // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 1;
@@ -446,6 +219,76 @@
             AnimFileDialog.Filter = "Animation2|*an2";
             AnimFileDialog.Multiselect = true;
             // 
+            // TabPage_Model
+            // 
+            TabPage_Model.Controls.Add(Split_ModelPage);
+            TabPage_Model.ImageIndex = 3;
+            TabPage_Model.Location = new System.Drawing.Point(4, 24);
+            TabPage_Model.Name = "TabPage_Model";
+            TabPage_Model.Padding = new System.Windows.Forms.Padding(3);
+            TabPage_Model.Size = new System.Drawing.Size(714, 303);
+            TabPage_Model.TabIndex = 0;
+            TabPage_Model.Text = "$TAB_MODEL";
+            TabPage_Model.UseVisualStyleBackColor = true;
+            // 
+            // Split_ModelPage
+            // 
+            Split_ModelPage.Cursor = System.Windows.Forms.Cursors.VSplit;
+            Split_ModelPage.Dock = System.Windows.Forms.DockStyle.Fill;
+            Split_ModelPage.Location = new System.Drawing.Point(3, 3);
+            Split_ModelPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Split_ModelPage.Name = "Split_ModelPage";
+            // 
+            // Split_ModelPage.Panel1
+            // 
+            Split_ModelPage.Panel1.Controls.Add(TreeView_Objects);
+            // 
+            // Split_ModelPage.Panel2
+            // 
+            Split_ModelPage.Panel2.Controls.Add(PropertyGrid_Model);
+            Split_ModelPage.Size = new System.Drawing.Size(708, 297);
+            Split_ModelPage.SplitterDistance = 236;
+            Split_ModelPage.SplitterWidth = 5;
+            Split_ModelPage.TabIndex = 16;
+            // 
+            // PropertyGrid_Model
+            // 
+            PropertyGrid_Model.Dock = System.Windows.Forms.DockStyle.Fill;
+            PropertyGrid_Model.Location = new System.Drawing.Point(0, 0);
+            PropertyGrid_Model.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            PropertyGrid_Model.Name = "PropertyGrid_Model";
+            PropertyGrid_Model.Size = new System.Drawing.Size(467, 297);
+            PropertyGrid_Model.TabIndex = 16;
+            PropertyGrid_Model.PropertyValueChanged += PropertyGrid_Model_OnPropertyValueChanged;
+            // 
+            // TreeView_Objects
+            // 
+            TreeView_Objects.ContextMenuStrip = HelperContextMenu;
+            TreeView_Objects.Dock = System.Windows.Forms.DockStyle.Fill;
+            TreeView_Objects.ImageIndex = 0;
+            TreeView_Objects.ImageList = imageList1;
+            TreeView_Objects.Location = new System.Drawing.Point(0, 0);
+            TreeView_Objects.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            TreeView_Objects.Name = "TreeView_Objects";
+            TreeView_Objects.SelectedImageIndex = 0;
+            TreeView_Objects.Size = new System.Drawing.Size(236, 297);
+            TreeView_Objects.TabIndex = 0;
+            TreeView_Objects.BeforeSelect += TreeView_OnBeforeSelect;
+            TreeView_Objects.AfterSelect += TreeView_OnAfterSelect;
+            // 
+            // TabControl_Editors
+            // 
+            TabControl_Editors.Controls.Add(TabPage_Model);
+            TabControl_Editors.Dock = System.Windows.Forms.DockStyle.Fill;
+            TabControl_Editors.ImageList = imageList1;
+            TabControl_Editors.Location = new System.Drawing.Point(3, 28);
+            TabControl_Editors.Name = "TabControl_Editors";
+            TabControl_Editors.SelectedIndex = 0;
+            TabControl_Editors.Size = new System.Drawing.Size(722, 331);
+            TabControl_Editors.TabIndex = 1;
+            TabControl_Editors.SelectedIndexChanged += TabControl_Editors_TabIndexChanged;
+            TabControl_Editors.TabIndexChanged += TabControl_Editors_TabIndexChanged;
+            // 
             // FrameResourceModelExporter
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -459,38 +302,24 @@
             MinimizeBox = false;
             Name = "FrameResourceModelExporter";
             Text = "$MODEL_OPTIONS_TITLE";
-            Split_ModelPage.Panel1.ResumeLayout(false);
-            Split_ModelPage.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)Split_ModelPage).EndInit();
-            Split_ModelPage.ResumeLayout(false);
-            Panel_Material.ResumeLayout(false);
-            Panel_Material.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             Tab_Root.ResumeLayout(false);
             TabPage_Validation.ResumeLayout(false);
             TabPage_ConvertLogs.ResumeLayout(false);
-            TabControl_Editors.ResumeLayout(false);
-            TabPage_Model.ResumeLayout(false);
-            TabPage_Material.ResumeLayout(false);
-            Split_MaterialPage.Panel1.ResumeLayout(false);
-            Split_MaterialPage.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)Split_MaterialPage).EndInit();
-            Split_MaterialPage.ResumeLayout(false);
-            Split_MaterialEditor.Panel1.ResumeLayout(false);
-            Split_MaterialEditor.Panel1.PerformLayout();
-            Split_MaterialEditor.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)Split_MaterialEditor).EndInit();
-            Split_MaterialEditor.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
+            TabPage_Model.ResumeLayout(false);
+            Split_ModelPage.Panel1.ResumeLayout(false);
+            Split_ModelPage.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)Split_ModelPage).EndInit();
+            Split_ModelPage.ResumeLayout(false);
+            TabControl_Editors.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
         private System.Windows.Forms.CheckBox ImportAOBox;
-        private System.Windows.Forms.SplitContainer Split_ModelPage;
-        private Mafia2Tool.Controls.MTreeView TreeView_Objects;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.TabControl Tab_Root;
@@ -502,21 +331,13 @@
         private System.Windows.Forms.ToolStripButton Button_Continue;
         private System.Windows.Forms.ToolStripButton Button_StopImport;
         private System.Windows.Forms.ToolStripLabel Label_DebugMessage;
-        private System.Windows.Forms.TabControl TabControl_Editors;
-        private System.Windows.Forms.TabPage TabPage_Model;
-        private System.Windows.Forms.TabPage TabPage_Material;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.SplitContainer Split_MaterialPage;
-        private System.Windows.Forms.PropertyGrid PropertyGrid_Model;
-        private Mafia2Tool.Controls.MListView ListView_Materials;
-        private System.Windows.Forms.TableLayoutPanel Panel_Material;
-        private System.Windows.Forms.Label Label_ChooseLibrary;
-        private System.Windows.Forms.ComboBox ComboBox_ChooseLibrary;
-        private System.Windows.Forms.Label Label_ChoosePreset;
-        private System.Windows.Forms.ComboBox ComboBox_ChoosePreset;
-        private System.Windows.Forms.SplitContainer Split_MaterialEditor;
-        private System.Windows.Forms.PropertyGrid PropertyGrid_Material;
         private System.Windows.Forms.OpenFileDialog AnimFileDialog;
         private System.Windows.Forms.ContextMenuStrip HelperContextMenu;
+        private System.Windows.Forms.TabControl TabControl_Editors;
+        private System.Windows.Forms.TabPage TabPage_Model;
+        private System.Windows.Forms.SplitContainer Split_ModelPage;
+        private Mafia2Tool.Controls.MTreeView TreeView_Objects;
+        private System.Windows.Forms.PropertyGrid PropertyGrid_Model;
     }
 }
