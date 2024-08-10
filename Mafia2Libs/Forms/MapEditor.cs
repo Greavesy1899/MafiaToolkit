@@ -13,6 +13,7 @@ using ResourceTypes.Materials;
 using ResourceTypes.ModelHelpers.ModelExporter;
 using ResourceTypes.Navigation;
 using ResourceTypes.Navigation.Traffic;
+using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -2039,9 +2040,8 @@ namespace Mafia2Tool
                 return;
             }
 
-            // TODO: Fix this, we need to support GLTF
-            ToolkitAssert.Ensure(true, "We need to replace this with GLTF support!");
-            MT_ObjectBundle BundleObject = null;
+            MT_ObjectBundle BundleObject = new MT_ObjectBundle();
+            BundleObject.BuildFromGLTF(ModelRoot.Load(MeshBrowser.FileName));
 
             // Let users change their import values
             FrameResourceModelImporter modelForm = new FrameResourceModelImporter(BundleObject);

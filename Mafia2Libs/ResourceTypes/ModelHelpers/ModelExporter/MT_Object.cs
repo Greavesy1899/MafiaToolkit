@@ -329,25 +329,19 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
-        public SceneBuilder BuildGLTF()
+        public NodeBuilder BuildGLTF(SceneBuilder RootScene, NodeBuilder ParentNode)
         {
-            SceneBuilder Scene = new SceneBuilder();
+            NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(Quaternion.Identity);
 
-            NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(RotationQuat);
+            if (ParentNode != null)
+            {
+                ParentNode.AddNode(ThisNode);
+            }
 
             // TODO: Any more required?
             ThisNode.Extras = new JsonObject();
             ThisNode.Extras[PROP_OBJECT_TYPE_ID] = (int)ObjectType;
-
-            if (Children != null)
-            {
-                foreach (MT_Object ChildObject in Children)
-                {
-                    SceneBuilder ChildScene = ChildObject.BuildGLTF();
-                    Scene.AddScene(ChildScene, Matrix4x4.Identity);
-                }
-            }
-
+           
             if (Lods != null)
             {
                 for(int Index = 0; Index < Lods.Length; Index++)
@@ -356,22 +350,86 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     if (Skeleton != null)
                     {
                         var mesh = Lods[Index].BuildSkinnedGLTF();
-                        Scene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(Index));
+                        InstanceBuilder Test = RootScene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(ThisNode, Index));
                     }
                     else
                     {
                         var mesh = Lods[Index].BuildGLTF();
-                        Scene.AddRigidMesh(mesh, LodNode);
+                        RootScene.AddRigidMesh(mesh, LodNode);
                     }
                 }
             }
 
-            // TODO:
-            // convert meshes
-            // convert skelly
-            // convert collision
+            if (Children != null)
+            {
+                foreach (MT_Object ChildObject in Children)
+                {
+                    ChildObject.BuildGLTF(RootScene, ThisNode);
+                }
+            }
 
-            return Scene;
+            // TODO: Collisions
+            return ThisNode;
+        }
+
+        public static MT_Object TryBuildFromNode(Node CurrentNode)
+        {
+            if (CurrentNode.Extras == null)
+            {
+                // we ignore any node without our MT data
+                return null;
+            }
+
+            JsonNode ObjectTypeNode = CurrentNode.Extras[PROP_OBJECT_TYPE_ID];
+            if(ObjectTypeNode == null)
+            {
+                // we have extra but not the object type, thus invalid node
+                return null;
+            }
+
+            MT_ObjectType DesiredType = (MT_ObjectType)ObjectTypeNode.GetValue<int>();
+            if(DesiredType == MT_ObjectType.Null)
+            {
+                // not valid type found
+                return null;
+            }
+
+            MT_Object NewObject = new MT_Object();
+            NewObject.ObjectName = CurrentNode.Name;
+            NewObject.ObjectType = DesiredType;
+            NewObject.Position = CurrentNode.LocalTransform.Translation;
+            NewObject.RotationQuat = CurrentNode.LocalTransform.Rotation;
+            NewObject.Rotation = NewObject.RotationQuat.ToEuler();
+            NewObject.Scale = CurrentNode.LocalTransform.Scale;
+
+            List<MT_Object> ImportedObjects = new List<MT_Object>();
+            foreach(Node ChildNode in CurrentNode.VisualChildren)
+            {
+                MT_Object PotentialChildObject = MT_Object.TryBuildFromNode(ChildNode);
+                if(PotentialChildObject != null)
+                {
+                    ImportedObjects.Add(PotentialChildObject);
+                }
+                else
+                {
+                    // we could be holding something else, like a LOD
+                    if(ChildNode.Name.Contains("LOD_0"))
+                    {
+                        Mesh AssociatedMesh = ChildNode.Mesh;
+                        if(AssociatedMesh != null)
+                        {
+                            // build lod
+                            MT_Lod NewLod = new MT_Lod();
+                            NewLod.BuildLodFromGLTFMesh(AssociatedMesh);
+                        }
+                    }
+                }
+            }
+
+            NewObject.Children = ImportedObjects.ToArray();
+            NewObject.ObjectFlags |= MT_ObjectFlags.HasChildren;
+
+            return NewObject;
         }
 
         public void Accept(IVisitor InVisitor)
@@ -486,7 +544,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 ChildObject.Position = Position;
                 ChildObject.Scale = Vector3.One;
                 ChildObject.Rotation = Rotation.ToEuler();
-                ChildObject.RotationQuat = Rotation;
+                ChildObject.RotationQuat = Quaternion.Identity;
 
                 // Slot into array
                 Children[i] = ChildObject;

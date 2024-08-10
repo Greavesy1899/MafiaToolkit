@@ -406,7 +406,7 @@ namespace Mafia2Tool
             // 
             // MeshBrowser
             // 
-            MeshBrowser.Filter = "Bundle|*.mtb|FBX|*.fbx";
+            MeshBrowser.Filter = "GLTF File (Binary) (*.glb)|*.glb|GLTF File (ASCII) (*.gltf)|*.gltf*";
             // 
             // TxtBrowser
             // 

@@ -286,8 +286,6 @@
             TabControl_Editors.SelectedIndex = 0;
             TabControl_Editors.Size = new System.Drawing.Size(722, 331);
             TabControl_Editors.TabIndex = 1;
-            TabControl_Editors.SelectedIndexChanged += TabControl_Editors_TabIndexChanged;
-            TabControl_Editors.TabIndexChanged += TabControl_Editors_TabIndexChanged;
             // 
             // FrameResourceModelExporter
             // 

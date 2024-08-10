@@ -2,9 +2,11 @@
 using SharpGLTF.Geometry.VertexTypes;
 using SharpGLTF.Materials;
 using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using Utils.Models;
 using Utils.Settings;
@@ -107,6 +109,26 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             VertexWeights[3] = (GameVertex.BoneIDs[3], GameVertex.BoneWeights[3]);
 
             return new VERTEXSKINNEDBUILDER(VB1, TB1, VertexWeights);
+        }
+
+        public void BuildLodFromGLTFMesh(Mesh InMesh)
+        {
+            int NumVertices = InMesh.EvaluatePoints().ToArray().Length;
+            foreach(MeshPrimitive Primitive in InMesh.Primitives)
+            {
+                if(Primitive.DrawPrimitiveType != PrimitiveType.TRIANGLES)
+                {
+                    // must be triangles
+                    return;
+                }
+
+                MT_FaceGroup NewFaceGroup = new MT_FaceGroup();
+
+                // convert material (TODO: Could we use this to determine vertex semantics)
+                Material SelectedMaterial = Primitive.Material;
+                NewFaceGroup.Material = new MT_MaterialInstance();
+                NewFaceGroup.Material.Name = SelectedMaterial.Name;
+            }
         }
 
 

@@ -29,12 +29,24 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Animations = new MT_Animation[0];
         }
 
-        public NodeBuilder[] BuildGLTF(int LodIndex)
+        public NodeBuilder[] BuildGLTF(NodeBuilder RootNode, int LodIndex)
         {
             NodeBuilder[] JointNodes = new NodeBuilder[Joints.Length];
             for(uint Index = 0; Index < Joints.Length; Index++)
             {
+                // Root node does not need to be recreated,
+                // otherwise internally, GLTF we apply the skinned transformer to this node
+                // (which we consider 'JUST' to be a joint and nothing else)
                 MT_Joint CurrentJoint = Joints[Index];
+                if(CurrentJoint.Name == RootNode.Name)
+                {
+                    RootNode.WithLocalRotation(CurrentJoint.Rotation);
+                    RootNode.WithLocalScale(CurrentJoint.Scale);
+                    RootNode.WithLocalTranslation(CurrentJoint.Position);
+
+                    JointNodes[0] = RootNode;
+                    continue;
+                }
 
                 // create node with transform
                 NodeBuilder JointNode = new NodeBuilder(CurrentJoint.Name)
