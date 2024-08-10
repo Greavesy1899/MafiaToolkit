@@ -11,7 +11,7 @@ using Utils.Settings;
 
 namespace Forms.EditorControls
 {
-    public partial class FrameResourceModelOptions : Form
+    public partial class FrameResourceModelImporter : Form
     {
         // Generic Variables (fields)
         private MT_ObjectBundle CurrentBundle;
@@ -27,7 +27,7 @@ namespace Forms.EditorControls
         // Material Tab (Properties)
         public List<MaterialAddRequestParams> NewMaterials { get; private set; }
 
-        public FrameResourceModelOptions(ModelWrapper Wrapper)
+        public FrameResourceModelImporter(ModelWrapper Wrapper)
         {
             InitializeComponent();
             InitializeControls();
@@ -43,7 +43,7 @@ namespace Forms.EditorControls
             InitiateValidation();
         }
 
-        public FrameResourceModelOptions(MT_ObjectBundle ObjectBundle)
+        public FrameResourceModelImporter(MT_ObjectBundle ObjectBundle)
         {
             InitializeComponent();
             InitializeControls();

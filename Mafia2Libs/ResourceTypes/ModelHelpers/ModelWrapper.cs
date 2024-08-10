@@ -13,6 +13,8 @@ using System.Numerics;
 using Vortice.Mathematics;
 using Utils.VorticeUtils;
 using System.Diagnostics;
+using SharpGLTF.Schema2;
+using ResourceTypes.Cutscene.AnimEntities;
 
 namespace Utils.Models
 {
@@ -258,7 +260,8 @@ namespace Utils.Models
             BundleObject.Objects[0] = ModelObject;
             BundleObject.Animations = AnimationObject.ToArray();
 
-            BundleObject.BuildGLTF();
+            ModelRoot CompiledModel = BundleObject.BuildGLTF();
+            CompiledModel.SaveGLB(FileToWrite);
         }
 
         public void UpdateObjectsFromModel()

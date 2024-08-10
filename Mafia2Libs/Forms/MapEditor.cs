@@ -235,25 +235,6 @@ namespace Mafia2Tool
             }
         }
 
-        private void InternalSaveModelWrapper(ModelWrapper Model)
-        {
-            if (SaveFileDialog != null)
-            {
-                SaveFileDialog.Reset();
-            }
-            SaveFileDialog.FileName = Model.ModelObject.ObjectName;
-            SaveFileDialog.RestoreDirectory = true;
-            SaveFileDialog.Filter = "FBX File (Binary) (*.fbx)|*.fbx|FBX File (ASCII) (*.fbx)|*.fbx|MTB File(*.mtb)|*.mtb*";
-            SaveFileDialog.FilterIndex = ToolkitSettings.Format + 1;
-
-            if (SaveFileDialog.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            Model.ExportObject(SaveFileDialog.FileName, SaveFileDialog.FilterIndex);
-        }
-
         private void ExportFrame_Click(object sender, EventArgs e)
         {
             var node = dSceneTree.SelectedNode;
@@ -1124,7 +1105,7 @@ namespace Mafia2Tool
             }
 
             // Let users change their import values
-            FrameResourceModelOptions modelForm = new FrameResourceModelOptions(model);
+            FrameResourceModelImporter modelForm = new FrameResourceModelImporter(model);
             if (modelForm.ShowDialog() != DialogResult.OK)
             {
                 return null;
@@ -1613,25 +1594,54 @@ namespace Mafia2Tool
 
         private void Export3DButton_Click(object sender, EventArgs e)
         {
+            ModelWrapper WrapperObject = null;
             if (dSceneTree.SelectedNode.Tag.GetType() == typeof(Collision.CollisionModel))
             {
-                ExportCollision(dSceneTree.SelectedNode.Tag as Collision.CollisionModel);
+                WrapperObject = ExportCollision(dSceneTree.SelectedNode.Tag as Collision.CollisionModel);
             }
             else if (dSceneTree.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
             {
-                ExportScene(dSceneTree.SelectedNode.Tag as FrameHeaderScene);
+                WrapperObject = ExportScene(dSceneTree.SelectedNode.Tag as FrameHeaderScene);
             }
             else if (dSceneTree.SelectedNode.Text == "Collision Data")
             {
-                ExportCollisions(dSceneTree.SelectedNode);
+                WrapperObject = ExportCollisions(dSceneTree.SelectedNode);
             }
             else
             {
-                Export3DFrame();
+                WrapperObject = Export3DFrame();
             }
+
+            // Create a bundle to make it easier to validate
+            MT_ObjectBundle CurrentBundle = new MT_ObjectBundle();
+            CurrentBundle.Objects = new MT_Object[1];
+            CurrentBundle.Objects[0] = WrapperObject.ModelObject;
+
+            FrameResourceModelExporter ModelExporter = new FrameResourceModelExporter(CurrentBundle);
+            if (ModelExporter.ShowDialog() != DialogResult.OK)
+            {
+                ModelExporter.Dispose();
+                return;
+            }
+
+            // Now we should choose on a name
+            if (SaveFileDialog != null)
+            {
+                SaveFileDialog.Reset();
+            }
+            SaveFileDialog.FileName = CurrentBundle.Objects[0].ObjectName;
+            SaveFileDialog.RestoreDirectory = true;
+            SaveFileDialog.Filter = "GLTF File (Binary) (*.glb)|*.glb|GLTF File (ASCII) (*.gltf)|*.gltf*";
+
+            if (SaveFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            WrapperObject.ExportObject(SaveFileDialog.FileName, 0);
         }
 
-        private void ExportCollision(Collision.CollisionModel data)
+        private ModelWrapper ExportCollision(Collision.CollisionModel data)
         {
             MT_Object CollisionObject = new MT_Object();
             CollisionObject.BuildFromCollision(data);
@@ -1639,10 +1649,10 @@ namespace Mafia2Tool
             ModelWrapper WrapperObject = new ModelWrapper();
             WrapperObject.ModelObject = CollisionObject;
 
-            InternalSaveModelWrapper(WrapperObject);
+            return WrapperObject;
         }
 
-        private void ExportCollisions(TreeNode CollisionRoot)
+        private ModelWrapper ExportCollisions(TreeNode CollisionRoot)
         {
             foreach(TreeNode CollisionNode in CollisionRoot.Nodes)
             {
@@ -1654,9 +1664,11 @@ namespace Mafia2Tool
 
 
             }
+
+            return null;
         }
 
-        private void Export3DFrame()
+        private ModelWrapper Export3DFrame()
         {
             FrameObjectBase FrameObject = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
             ModelWrapper ModelWrapperObject = null;
@@ -1684,7 +1696,12 @@ namespace Mafia2Tool
                         foreach(string Filename in AnimFileDialog.FileNames)
                         {
                             Animation2 TempAn2 = new Animation2(Filename);
-                            ModelWrapperObject.AddAnimation(TempAn2.ConvertToAnimation());
+                            MT_Animation ConvertedAnim = TempAn2.ConvertToAnimation();
+                            if(ConvertedAnim != null)
+                            {
+                                ConvertedAnim.AnimName = Path.GetFileNameWithoutExtension(Filename);
+                                ModelWrapperObject.AddAnimation(ConvertedAnim);
+                            }
                         }
                     }
                 }
@@ -1698,17 +1715,13 @@ namespace Mafia2Tool
                 ModelWrapperObject = new ModelWrapper(FrameObject);
             }
 
-            // Make sure it's actually valid
-            if (ModelWrapperObject != null)
-            {
-                InternalSaveModelWrapper(ModelWrapperObject);
-            }
+            return ModelWrapperObject;
         }
 
-        private void ExportScene(FrameHeaderScene Scene)
+        private ModelWrapper ExportScene(FrameHeaderScene Scene)
         {
             ModelWrapper ModelWrapperObject = new ModelWrapper(Scene);
-            InternalSaveModelWrapper(ModelWrapperObject);
+            return ModelWrapperObject;
         }
 
         private void AddButtonOnClick(object sender, EventArgs e)
@@ -2047,7 +2060,7 @@ namespace Mafia2Tool
             MT_ObjectBundle BundleObject = null;
 
             // Let users change their import values
-            FrameResourceModelOptions modelForm = new FrameResourceModelOptions(BundleObject);
+            FrameResourceModelImporter modelForm = new FrameResourceModelImporter(BundleObject);
             DialogResult Result = modelForm.ShowDialog();
             modelForm.Dispose();
             if (Result != DialogResult.OK)

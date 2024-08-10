@@ -1,6 +1,6 @@
 ﻿namespace Forms.EditorControls
 {
-    partial class FrameResourceModelOptions
+    partial class FrameResourceModelImporter
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameResourceModelOptions));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameResourceModelImporter));
             this.ImportAOBox = new System.Windows.Forms.CheckBox();
             this.Split_ModelPage = new System.Windows.Forms.SplitContainer();
             this.TreeView_Objects = new Mafia2Tool.Controls.MTreeView();

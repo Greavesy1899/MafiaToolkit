@@ -48,7 +48,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Tracks = new MT_AnimTrack[0];
         }
 
-        public void BuildAnimation(SkinnedTransformer SkinnedMesh, string AllocatedAnimName)
+        public void BuildAnimation(SkinnedTransformer SkinnedMesh)
         {
             (NodeBuilder, Matrix4x4)[] JointAndMatrices = SkinnedMesh.GetJointBindings();
             Dictionary<string, NodeBuilder> JointLookup = new Dictionary<string, NodeBuilder>();
@@ -74,8 +74,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 if(JointLookup.ContainsKey(Track.BoneName))
                 {
                     NodeBuilder Joint = JointLookup[Track.BoneName];
-                    Joint.SetRotationTrack(AllocatedAnimName, CurveSampler.CreateSampler(RotationKeyFrames.ToArray()));
-                    Joint.SetTranslationTrack(AllocatedAnimName, CurveSampler.CreateSampler(PositionKeyFrames.ToArray()));
+                    Joint.SetRotationTrack(AnimName, CurveSampler.CreateSampler(RotationKeyFrames.ToArray()));
+                    Joint.SetTranslationTrack(AnimName, CurveSampler.CreateSampler(PositionKeyFrames.ToArray()));
                 }
             }
         }

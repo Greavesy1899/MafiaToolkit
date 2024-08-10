@@ -14,7 +14,13 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public MT_Object[] Objects { get; set; }
         public MT_Animation[] Animations { get; set; }
 
-        public void BuildGLTF()
+        public MT_ObjectBundle()
+        {
+            Objects = new MT_Object[0];
+            Animations = new MT_Animation[0];
+        }
+
+        public ModelRoot BuildGLTF()
         {
             // TODO: Find a name
             SceneBuilder Scene = new SceneBuilder("temp name");
@@ -28,11 +34,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
-            // TODO: This could either be the return value or we pass in file path
-            // Or we pass the ModelRoot and Path to GLTFExporter, which deals with the rest
-            ModelRoot TheModel = Scene.ToGltf2();
-            TheModel.SaveGLTF("output.gltf");
-            TheModel.SaveGLB("output.glb");
+            return Scene.ToGltf2();
         }
 
         public void Accept(IVisitor InVisitor)
@@ -53,7 +55,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 bIsValid &= bIsObjectValid;
             }
 
-            foreach(MT_Animation Animation in Animations)
+            foreach (MT_Animation Animation in Animations)
             {
                 bIsValid &= Animation.ValidateObject(TrackerObject);
             }

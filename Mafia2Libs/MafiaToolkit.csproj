@@ -115,6 +115,9 @@
     <Compile Update="Controls\ControlGameEntry.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Controls\FrameResourceModelExporter.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Controls\MListView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -328,6 +331,11 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Controls\FrameResourceModelExporter.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"

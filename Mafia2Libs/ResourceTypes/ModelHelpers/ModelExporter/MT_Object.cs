@@ -55,7 +55,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public MT_ObjectFlags ObjectFlags { get; set; }
         public MT_ObjectType ObjectType { get; set; }
         public Vector3 Position { get; set; }
+        [Obsolete("This needs to be removed, we must rely on Quats")]
         public Vector3 Rotation { get; set; }
+        public Quaternion RotationQuat { get; set; }
         public Vector3 Scale { get; set; }
         public MT_Lod[] Lods { get; set; }
         public MT_Object[] Children { get; set; }
@@ -331,8 +333,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             SceneBuilder Scene = new SceneBuilder();
 
-            // TODO: Standardise rotations using quats
-            NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(Quaternion.Identity);
+            NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(RotationQuat);
 
             // TODO: Any more required?
             ThisNode.Extras = new JsonObject();
@@ -357,15 +358,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                         var mesh = Lods[Index].BuildSkinnedGLTF();
                         InstanceBuilder SkinnedMesh = Scene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(Index));
 
-                        SkinnedTransformer Test = (SkinnedTransformer)SkinnedMesh.Content;
-                        NodeBuilder SkinnedNode = Test.GetArmatureRoot();
+                        SkinnedTransformer SkinnedTransformer = (SkinnedTransformer)SkinnedMesh.Content;
 
-                        int AnimIndex = 0;
                         foreach(MT_Animation Animation in Animations)
                         {
-                            string AnimName = string.Format("ANIM_TEST_{0}", AnimIndex);
-                            Animation.BuildAnimation(Test, AnimName);
-                            AnimIndex++;
+                            Animation.BuildAnimation(SkinnedTransformer);
                         }
                     }
                     else
@@ -488,13 +485,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     ChildObject.BuildStandardObject(InChildren[i]);
                 }
 
-                Vector3 Position;
-                Vector3 Scale;
-                Quaternion Rotation;
+                Vector3 Position = Vector3.Zero;
+                Vector3 Scale = Vector3.One;
+                Quaternion Rotation = Quaternion.Identity;
                 Matrix4x4.Decompose(ChildFrameObject.LocalTransform, out Scale, out Rotation, out Position);
                 ChildObject.Position = Position;
                 ChildObject.Scale = Vector3.One;
                 ChildObject.Rotation = Rotation.ToEuler();
+                ChildObject.RotationQuat = Rotation;
 
                 // Slot into array
                 Children[i] = ChildObject;
