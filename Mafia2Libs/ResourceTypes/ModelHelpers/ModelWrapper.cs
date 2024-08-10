@@ -243,38 +243,12 @@ namespace Utils.Models
             }
         }
 
-        public void ReadObjectFromFbx(string file)
-        {
-            // Change extension, pass to M2FBX
-            string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
-            int result = FBXHelper.ConvertFBX(file, m2tFile);
-
-            // Read the MT object.
-            ModelObject = MT_ObjectHandler.ReadObjectFromFile(file);
-
-            // Delete the recently-created MT file.
-            if (File.Exists(m2tFile))
-            {
-                File.Delete(m2tFile);
-            }
-        }
-
-        public void ReadObjectFromM2T(string file)
-        {
-            ModelObject = MT_ObjectHandler.ReadObjectFromFile(file);
-        }
-
         public void ExportObject(string SavePath, int FilterIndex)
         {          
             if(ModelObject != null)
             {
                 ExportBundle(SavePath);
             }
-        }
-
-        private void ExportObjectToFbx(string File, bool bIsBinary)
-        {
-            FBXHelper.ConvertMTB(File + ".mtb", File);
         }
 
         private void ExportBundle(string FileToWrite)

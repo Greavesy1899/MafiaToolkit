@@ -539,7 +539,7 @@ namespace Utils.Models
             name = reader.ReadString();
 
             isSkinned = reader.ReadBoolean();
-            if(isSkinned)
+            if (isSkinned)
             {
                 byte size = reader.ReadByte();
                 skeleton = new Skeleton();
@@ -655,21 +655,6 @@ namespace Utils.Models
                 Lods[i].CalculatePartBounds();
 
             }
-        }
-
-        public bool ReadFromFbx(string file)
-        {
-            string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
-            int result = FBXHelper.ConvertFBX(file, m2tFile);
-            using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
-            {
-                ReadFromM2T(reader);
-            }
-            if (File.Exists(m2tFile))
-            {
-                File.Delete(m2tFile);
-            }
-            return true;
         }
 
         public void ExportCollisionToM2T(string directory, string name)

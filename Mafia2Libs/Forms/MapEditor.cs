@@ -1113,14 +1113,7 @@ namespace Mafia2Tool
             string FileNameExtension = Path.GetExtension(MeshBrowser.FileName);
             FileNameExtension = FileNameExtension.ToLower();
 
-            if (FileNameExtension.Equals(".fbx"))
-            {
-                model.ReadObjectFromFbx(MeshBrowser.FileName);
-            }
-            else if (FileNameExtension.Equals(".mto"))
-            {
-                model.ReadObjectFromM2T(MeshBrowser.FileName);
-            }
+            // TODO: Load from GLTF
 
             // Ensure we do not crash
             if(model.ModelObject == null)
@@ -2049,11 +2042,9 @@ namespace Mafia2Tool
                 return;
             }
 
-            MT_ObjectBundle BundleObject = MT_ObjectHandler.ReadBundleFromFile(MeshBrowser.FileName);
-            if (BundleObject == null)
-            {
-                return;
-            }
+            // TODO: Fix this, we need to support GLTF
+            ToolkitAssert.Ensure(true, "We need to replace this with GLTF support!");
+            MT_ObjectBundle BundleObject = null;
 
             // Let users change their import values
             FrameResourceModelOptions modelForm = new FrameResourceModelOptions(BundleObject);
