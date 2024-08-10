@@ -60,7 +60,7 @@ namespace ResourceTypes.Animation2
             Scale = br.ReadSingle();
             Duration = br.ReadSingle();
 
-            switch (Flags & 0x1F)
+            switch (Flags & 0x03)
             {
                 case 1:
                     //Sample position

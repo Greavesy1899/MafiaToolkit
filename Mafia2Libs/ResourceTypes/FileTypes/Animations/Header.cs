@@ -10,8 +10,8 @@ namespace ResourceTypes.Animation2
         public int SkeletonID { get; set; }
         public byte Version { get; set; }
         public static readonly uint Magic = 0xFA5612BC;
-        public short NumEvents { get; set; }
-        public ushort Unk00 { get; set; }
+        public short NumPrimaryEvents { get; set; }
+        public short NumSecondaryEvents { get; set; }
         public Vector4 Unk01 { get; set; } = new(0,0,0,1);
         public uint Unk02 { get; set; }
         public uint Unk03 { get; set; }
@@ -59,8 +59,8 @@ namespace ResourceTypes.Animation2
                 throw new Exception("Not an Animation2 file.");
             }
 
-            NumEvents = br.ReadInt16();
-            Unk00 = br.ReadUInt16();
+            NumPrimaryEvents = br.ReadInt16();
+            NumSecondaryEvents = br.ReadInt16();
             Unk01 = Vector4Extenders.ReadFromFile(br);
             Unk02 = br.ReadUInt32();
             Unk03 = br.ReadUInt32();
@@ -81,8 +81,8 @@ namespace ResourceTypes.Animation2
             bw.Write(SkeletonID);
             bw.Write(Version);
             bw.Write(Magic);
-            bw.Write(NumEvents);
-            bw.Write(Unk00);
+            bw.Write(NumPrimaryEvents);
+            bw.Write(NumSecondaryEvents);
             Unk01.WriteToFile(bw);
             bw.Write(Unk02);
             bw.Write(Unk03);

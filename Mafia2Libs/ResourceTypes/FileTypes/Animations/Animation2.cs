@@ -9,7 +9,8 @@ namespace ResourceTypes.Animation2
     {
         public Header Header { get; set; } = new();
         public bool IsDataPresent { get; set; } //Not confirmed?
-        public Event[] Events { get; set; } = new Event[0];
+        public Event[] PrimaryEvents { get; set; } = new Event[0];
+        public Event[] SecondaryEvents { get; set; } = new Event[0];
         public ushort Unk00 { get; set; }
         public ushort Unk01 { get; set; }
         public AnimTrack[] Tracks { get; set; } = new AnimTrack[0];
@@ -58,11 +59,18 @@ namespace ResourceTypes.Animation2
 
             IsDataPresent = br.ReadBoolean();
 
-            Events = new Event[Header.NumEvents];
+            PrimaryEvents = new Event[Header.NumPrimaryEvents];
 
-            for (int i = 0; i < Events.Length; i++)
+            for (int i = 0; i < PrimaryEvents.Length; i++)
             {
-                Events[i] = new(br);
+                PrimaryEvents[i] = new(br);
+            }
+
+            SecondaryEvents = new Event[Header.NumSecondaryEvents];
+
+            for (int i = 0; i < SecondaryEvents.Length; i++)
+            {
+                SecondaryEvents[i] = new(br);
             }
 
             Unk00 = br.ReadUInt16();
@@ -115,12 +123,18 @@ namespace ResourceTypes.Animation2
         {
             int Count = Header.RootBoneID != 0 ? (Tracks.Length - 1) : Tracks.Length;
             Header.Count = (short)Count;
-            Header.NumEvents = (short)Events.Length;
+            Header.NumPrimaryEvents = (short)PrimaryEvents.Length;
+            Header.NumSecondaryEvents = (short)SecondaryEvents.Length;
 
             Header.Write(bw);
             bw.Write(IsDataPresent);
 
-            foreach (var val in Events)
+            foreach (var val in PrimaryEvents)
+            {
+                val.Write(bw);
+            }
+
+            foreach (var val in SecondaryEvents)
             {
                 val.Write(bw);
             }
