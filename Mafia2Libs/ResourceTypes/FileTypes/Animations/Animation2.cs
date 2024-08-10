@@ -1,4 +1,5 @@
 ﻿using ResourceTypes.ModelHelpers.ModelExporter;
+using System;
 using System.IO;
 using Utils.Logging;
 
@@ -8,7 +9,8 @@ namespace ResourceTypes.Animation2
     {
         public Header Header { get; set; } = new();
         public bool IsDataPresent { get; set; } //Not confirmed?
-        public Event[] Events { get; set; } = new Event[0];
+        public Event[] PrimaryEvents { get; set; } = new Event[0];
+        public Event[] SecondaryEvents { get; set; } = new Event[0];
         public ushort Unk00 { get; set; }
         public ushort Unk01 { get; set; }
         public AnimTrack[] Tracks { get; set; } = new AnimTrack[0];
@@ -57,11 +59,18 @@ namespace ResourceTypes.Animation2
 
             IsDataPresent = br.ReadBoolean();
 
-            Events = new Event[Header.NumEvents];
+            PrimaryEvents = new Event[Header.NumPrimaryEvents];
 
-            for (int i = 0; i < Events.Length; i++)
+            for (int i = 0; i < PrimaryEvents.Length; i++)
             {
-                Events[i] = new(br);
+                PrimaryEvents[i] = new(br);
+            }
+
+            SecondaryEvents = new Event[Header.NumSecondaryEvents];
+
+            for (int i = 0; i < SecondaryEvents.Length; i++)
+            {
+                SecondaryEvents[i] = new(br);
             }
 
             Unk00 = br.ReadUInt16();
@@ -93,6 +102,85 @@ namespace ResourceTypes.Animation2
             }
 
             ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, "Animation2: Failed to reach EOF.");
+        }
+
+        public void WriteToFile(string fileName)
+        {
+            using (MemoryStream ms = new())
+            {
+                using (BinaryWriter bw = new(ms))
+                {
+                    Write(bw);
+                }
+
+                File.WriteAllBytes(fileName, ms.ToArray());
+            }
+        }
+
+        public void Write(BinaryWriter bw)
+        {
+            int Count = Header.RootBoneID != 0 ? (Tracks.Length - 1) : Tracks.Length;
+            Header.Count = (short)Count;
+            Header.NumPrimaryEvents = (short)PrimaryEvents.Length;
+            Header.NumSecondaryEvents = (short)SecondaryEvents.Length;
+
+            Header.Write(bw);
+            bw.Write(IsDataPresent);
+
+            foreach (var val in PrimaryEvents)
+            {
+                val.Write(bw);
+            }
+
+            foreach (var val in SecondaryEvents)
+            {
+                val.Write(bw);
+            }
+
+            bw.Write(Unk00);
+            bw.Write(Unk01);
+            bw.Write((short)Count);
+
+            foreach (var track in Tracks)
+            {
+                track.Write(bw);
+            }
+
+            if (UnkShorts00.Length < Unk01)
+            {
+                short[] newUnk00Shorts = new short[Unk01];
+                Array.Copy(UnkShorts00, 0, newUnk00Shorts, 0, UnkShorts00.Length);
+                UnkShorts00 = newUnk00Shorts;
+            }
+
+            if (UnkShorts01.Length < Count)
+            {
+                short[] newUnk01Shorts = new short[Count];
+                Array.Copy(UnkShorts01, 0, newUnk01Shorts, 0, UnkShorts01.Length);
+                UnkShorts01 = newUnk01Shorts;
+            }
+
+            foreach (var val in UnkShorts00)
+            {
+                bw.Write(val);
+            }
+
+            foreach (var val in UnkShorts01)
+            {
+                bw.Write(val);
+            }
+        }
+
+        private void ConvertToMTB()
+        {
+            MT_ObjectBundle NewBundle = new MT_ObjectBundle();
+            NewBundle.Animation = ConvertToAnimation();
+
+            using(BinaryWriter FileWriter = new BinaryWriter(File.Open("Test.mtb", FileMode.Create)))
+            {
+                NewBundle.WriteToFile(FileWriter);
+                FileWriter.Close();
+            }
         }
 
         public MT_Animation ConvertToAnimation()
