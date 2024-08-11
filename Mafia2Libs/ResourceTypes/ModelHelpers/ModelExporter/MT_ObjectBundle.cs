@@ -6,9 +6,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 {
     public class MT_ObjectBundle : IValidator
     {
-        private const string FileHeader = "MTB";
-        private const int FileVersion = 0;
-
         public MT_Object[] Objects { get; set; }
 
         public MT_ObjectBundle()

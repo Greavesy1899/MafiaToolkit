@@ -1,12 +1,8 @@
-﻿using System.IO;
-using Utils.StringHelpers;
-using Utils.VorticeUtils;
-using System.Numerics;
+﻿using SharpGLTF.Animations;
 using SharpGLTF.Scenes;
-using System.Collections.Generic;
-using SharpGLTF.Animations;
 using System;
-using ZLibNet;
+using System.Collections.Generic;
+using System.Numerics;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {

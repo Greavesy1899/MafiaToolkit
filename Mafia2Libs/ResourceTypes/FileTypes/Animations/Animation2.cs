@@ -1,6 +1,8 @@
 ﻿using ResourceTypes.ModelHelpers.ModelExporter;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using Utils.Logging;
 
 namespace ResourceTypes.Animation2
@@ -201,6 +203,30 @@ namespace ResourceTypes.Animation2
             }
 
             return NewAnimation;
+        }
+
+        public void ConvertFromAnimation(MT_Animation InAnimation)
+        {
+            List<AnimTrack> NewTracks = new List<AnimTrack>();
+            foreach(MT_AnimTrack Track in InAnimation.Tracks)
+            {
+                AnimTrack NewTrack = new AnimTrack();
+
+                List<(float, Quaternion)> RotKeys = new List<(float, Quaternion)>();
+                Array.ForEach(Track.RotKeyFrames, delegate (MT_RotKey key) { RotKeys.Add(key.AsPair()); });
+
+                List<(float, Vector3)> PosKeys = new List<(float, Vector3)>();
+                Array.ForEach(Track.PosKeyFrames, delegate (MT_PosKey key) { PosKeys.Add(key.AsPair()); });
+
+                NewTrack.KeyFrames = RotKeys.ToArray();
+                NewTrack.Positions.KeyFrames = PosKeys.ToArray();
+                NewTrack.BoneID = Track.BoneID;
+                NewTrack.Duration = Track.Duration;
+
+                NewTracks.Add(NewTrack);
+            }
+
+            Tracks = NewTracks.ToArray();
         }
     }
 }
