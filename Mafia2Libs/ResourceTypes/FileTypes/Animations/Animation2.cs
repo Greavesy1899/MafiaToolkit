@@ -3,6 +3,7 @@ using ResourceTypes.ModelHelpers.ModelExporter;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using Utils.Logging;
 
@@ -11,7 +12,7 @@ namespace ResourceTypes.Animation2
     public class Animation2
     {
         public Header Header { get; set; } = new();
-        public bool IsDataPresent { get; set; } //Not confirmed?
+        public bool IsDataPresent { get; set; } = false; //Not confirmed? //If true, UnkShorts00 can't be empty
         public Event[] PrimaryEvents { get; set; } = new Event[0];
         public Event[] SecondaryEvents { get; set; } = new Event[0];
         public ushort Unk00 { get; set; }
@@ -163,14 +164,14 @@ namespace ResourceTypes.Animation2
                 UnkShorts01 = newUnk01Shorts;
             }
 
-            foreach (var val in UnkShorts00)
+            for (int i = 0; i < Unk01; i++)
             {
-                bw.Write(val);
+                bw.Write(UnkShorts00[i]);
             }
 
-            foreach (var val in UnkShorts01)
+            for (int i = 0; i < Count; i++)
             {
-                bw.Write(val);
+                bw.Write(UnkShorts01[i]);
             }
         }
 
@@ -210,6 +211,8 @@ namespace ResourceTypes.Animation2
         {
             Header.Hash = FNV64.Hash(InAnimation.AnimName);
             Header.Duration = InAnimation.Duration;
+            List<short >UnkShorts01List = new();
+            short UnkShort01 = 0;
 
             List<AnimTrack> NewTracks = new List<AnimTrack>();
             foreach (MT_AnimTrack Track in InAnimation.Tracks)
@@ -242,10 +245,15 @@ namespace ResourceTypes.Animation2
                 if (Flags != 0)
                 {
                     NewTracks.Add(NewTrack);
+
+                    UnkShorts01List.Add(UnkShort01);
+                    UnkShort01++;
                 }
             }
 
-            Tracks = NewTracks.ToArray();
+            Tracks = NewTracks.OrderBy(x => (long)x.BoneID).ToArray();
+
+            UnkShorts01 = UnkShorts01List.ToArray();
         }
     }
 }

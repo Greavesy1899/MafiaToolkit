@@ -272,6 +272,11 @@ namespace ResourceTypes.Animation2
                 }
             }
 
+            if (values[omittedComponent] < 0.0f)
+            {
+                q *= -1.0f;
+            }
+
             double fRatio = 1.0 / (Math.Sqrt(2.0) / 1023.0);
 
             int iX = (int)Math.Round((q.X * fRatio) + 511.5);
@@ -403,18 +408,23 @@ namespace ResourceTypes.Animation2
                 }
             }
 
+            if (values[omittedComponent] < 0.0f)
+            {
+                q *= -1.0f;
+            }
+
             long iValue0 = 0;
             long iValue1 = 0;
             long iValue2 = 0;
-            long iSign0 = Math.Sign(values[0]) < 0 ? 1 << (componentSize - 1) : 0;
-            long iSign1 = Math.Sign(values[1]) < 0 ? 1 << (componentSize - 1) : 0;
-            long iSign2 = Math.Sign(values[2]) < 0 ? 1 << (componentSize - 1) : 0;
-            long iSign3 = Math.Sign(values[3]) < 0 ? 1 << (componentSize - 1) : 0;
+            long iSign0 = Math.Sign(q.X) < 0 ? 1 << (componentSize - 1) : 0;
+            long iSign1 = Math.Sign(q.Y) < 0 ? 1 << (componentSize - 1) : 0;
+            long iSign2 = Math.Sign(q.Z) < 0 ? 1 << (componentSize - 1) : 0;
+            long iSign3 = Math.Sign(q.W) < 0 ? 1 << (componentSize - 1) : 0;
 
-            var i0 = (((long)((Math.Abs(values[0]) / scale) * (componentBitMask - 1))) & mask) | iSign0;
-            var i1 = (((long)((Math.Abs(values[1]) / scale) * (componentBitMask - 1))) & mask) | iSign1;
-            var i2 = (((long)((Math.Abs(values[2]) / scale) * (componentBitMask - 1))) & mask) | iSign2;
-            var i3 = (((long)((Math.Abs(values[3]) / scale) * (componentBitMask - 1))) & mask) | iSign3;
+            var i0 = (((long)((Math.Abs(q.X) / scale) * (componentBitMask - 1))) & mask) | iSign0;
+            var i1 = (((long)((Math.Abs(q.Y) / scale) * (componentBitMask - 1))) & mask) | iSign1;
+            var i2 = (((long)((Math.Abs(q.Z) / scale) * (componentBitMask - 1))) & mask) | iSign2;
+            var i3 = (((long)((Math.Abs(q.W) / scale) * (componentBitMask - 1))) & mask) | iSign3;
 
             switch (omittedComponent)
             {
@@ -725,7 +735,17 @@ namespace ResourceTypes.Animation2
                 data |= iValue2 << (offset + 72);
             }
 
-            Data = data.ToByteArray();
+            var tempData = data.ToByteArray();
+            Data = new byte[KeyFrames.Length * 12];
+
+            if (tempData.Length > Data.Length)
+            {
+                Array.Copy(tempData, 0, Data, 0, Data.Length);
+            }
+            else
+            {
+                Array.Copy(tempData, 0, Data, 0, tempData.Length);
+            }
         }
 
         public float GetOptimalScale()
@@ -741,7 +761,7 @@ namespace ResourceTypes.Animation2
                 scale = temp > scale ? temp : scale;
             }
 
-            return scale;
+            return (float)(Math.Ceiling(scale * 10000.0f) / 10000.0f);
         }
     }
 }
