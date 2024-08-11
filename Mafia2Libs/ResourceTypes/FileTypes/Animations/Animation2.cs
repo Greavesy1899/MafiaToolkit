@@ -190,19 +190,13 @@ namespace ResourceTypes.Animation2
                 NewTrack.RotKeyFrames = new MT_RotKey[Track.KeyFrames.Length];
                 for (int i = 0; i < Track.KeyFrames.Length; i++)
                 {
-                    MT_RotKey KeyFrame = new MT_RotKey();
-                    KeyFrame.Time = Track.KeyFrames[i].time;
-                    KeyFrame.Value = Track.KeyFrames[i].value;
-                    NewTrack.RotKeyFrames[i] = KeyFrame;
+                    NewTrack.RotKeyFrames[i] = new MT_RotKey(Track.KeyFrames[i]);
                 }
 
                 NewTrack.PosKeyFrames = new MT_PosKey[Track.Positions.KeyFrames.Length];
                 for (int i = 0; i < Track.Positions.KeyFrames.Length; i++)
                 {
-                    MT_PosKey KeyFrame = new MT_PosKey();
-                    KeyFrame.Time = Track.Positions.KeyFrames[i].time;
-                    KeyFrame.Value = Track.Positions.KeyFrames[i].value;
-                    NewTrack.PosKeyFrames[i] = KeyFrame;
+                    NewTrack.PosKeyFrames[i] = new MT_PosKey(Track.Positions.KeyFrames[i]);
                 }
             }
 

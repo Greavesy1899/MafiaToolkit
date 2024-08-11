@@ -5,6 +5,8 @@ using System.Numerics;
 using SharpGLTF.Scenes;
 using System.Collections.Generic;
 using SharpGLTF.Animations;
+using System;
+using ZLibNet;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -85,18 +87,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 foreach (MT_AnimTrack Track in Animation.Tracks)
                 {
-                    // TODO: We can likely improve this with some voodoo C# magic
                     List<(float, Quaternion)> RotationKeyFrames = new List<(float, Quaternion)>();
-                    foreach (MT_RotKey RotKeyFrame in Track.RotKeyFrames)
-                    {
-                        RotationKeyFrames.Add((RotKeyFrame.Time, RotKeyFrame.Value));
-                    }
+                    Array.ForEach<MT_RotKey>(Track.RotKeyFrames, (delegate (MT_RotKey Item) { RotationKeyFrames.Add(Item.AsPair()); }));
 
                     List<(float, Vector3)> PositionKeyFrames = new List<(float, Vector3)>();
-                    foreach (MT_PosKey PosKeyFrame in Track.PosKeyFrames)
-                    {
-                        PositionKeyFrames.Add((PosKeyFrame.Time, PosKeyFrame.Value));
-                    }
+                    Array.ForEach<MT_PosKey>(Track.PosKeyFrames, (delegate (MT_PosKey Item) { PositionKeyFrames.Add(Item.AsPair()); }));
 
                     if (JointLookup.ContainsKey(Track.BoneName))
                     {

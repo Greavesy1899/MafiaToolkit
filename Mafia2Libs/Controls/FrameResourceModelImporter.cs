@@ -123,6 +123,17 @@ namespace Forms.EditorControls
                 }
             }
 
+            if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
+            {
+                if (Object.Skeleton != null)
+                {
+                    TreeNode SkeletonNode = new TreeNode("Skeleton");
+                    SkeletonNode.Tag = Object.Skeleton;
+                    ValidateObject(SkeletonNode);
+                    Root.Nodes.Add(SkeletonNode);
+                }
+            }
+
             if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
                 TreeNode SCollisionNode = new TreeNode("Static Collision");
@@ -173,6 +184,10 @@ namespace Forms.EditorControls
             else if (e.Node.Tag is MT_Collision)
             {
                 NewHelper = new MT_CollisionHelper((MT_Collision)e.Node.Tag);
+            }
+            else if (e.Node.Tag is MT_Skeleton)
+            {
+                NewHelper = new MT_SkeletonHelper((MT_Skeleton)e.Node.Tag);
             }
 
             // Then set it up from the object we pass into the helper,

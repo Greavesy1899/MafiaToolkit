@@ -1,4 +1,8 @@
-﻿using System.Numerics;
+﻿using SharpGLTF.Schema2;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using Utils.Models;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
@@ -19,6 +23,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Time = InValue.Item1;
             Value = InValue.Item2;
         }
+
+        public (float, Quaternion) AsPair()
+        {
+            return (Time, Value);
+        }
     }
 
     public class MT_PosKey
@@ -36,6 +45,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             Time = InValue.Item1;
             Value = InValue.Item2;
+        }
+
+        public (float, Vector3) AsPair()
+        {
+            return (Time, Value);
         }
     }
 
@@ -65,6 +79,53 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public MT_Animation()
         {
             Tracks = new MT_AnimTrack[0];
+        }
+
+        public void BuildAnimation(Animation InAnimation)
+        {
+            // start porting data
+            AnimName = InAnimation.Name;
+
+            Tracks = new MT_AnimTrack[InAnimation.Channels.Count];
+            for (int z = 0; z < InAnimation.Channels.Count; z++)
+            {
+                // New channel (or track for Mafia II) and cache in local obj
+                AnimationChannel CurrentChannel = InAnimation.Channels[z];
+                Tracks[z] = new MT_AnimTrack();
+                MT_AnimTrack NewAnimTrack = Tracks[z];
+
+                NewAnimTrack.Duration = InAnimation.Duration;
+                NewAnimTrack.BoneName = CurrentChannel.TargetNode.Name;
+
+                // TODO: Need to resolve issue with missing bones!
+                SkeletonBoneIDs BoneID = SkeletonBoneIDs.BaseRef;
+                Enum.TryParse<SkeletonBoneIDs>(NewAnimTrack.BoneName, out BoneID);
+                NewAnimTrack.BoneID = BoneID;
+
+                // Convert Position
+                IAnimationSampler<Vector3> PosSampler = CurrentChannel.GetTranslationSampler();
+                if (PosSampler != null)
+                {
+                    List<MT_PosKey> PositionKeyList = new List<MT_PosKey>();
+
+                    IEnumerable<(float, Vector3)> PosKeys = PosSampler.GetLinearKeys();
+                    Array.ForEach<(float, Vector3)>(PosKeys.ToArray(), (delegate ((float, Vector3) Item) { PositionKeyList.Add(new MT_PosKey(Item)); }));
+
+                    NewAnimTrack.PosKeyFrames = PositionKeyList.ToArray();
+                }
+
+                // Convert Rotation
+                IAnimationSampler<Quaternion> RotSampler = CurrentChannel.GetRotationSampler();
+                if (RotSampler != null)
+                {
+                    List<MT_RotKey> RotationKeyList = new List<MT_RotKey>();
+
+                    IEnumerable<(float, Quaternion)> RotKeys = RotSampler.GetLinearKeys();
+                    Array.ForEach<(float, Quaternion)>(RotKeys.ToArray(), (delegate ((float, Quaternion) Item) { RotationKeyList.Add(new MT_RotKey(Item)); }));
+
+                    NewAnimTrack.RotKeyFrames = RotationKeyList.ToArray();
+                }
+            }
         }
 
         protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
