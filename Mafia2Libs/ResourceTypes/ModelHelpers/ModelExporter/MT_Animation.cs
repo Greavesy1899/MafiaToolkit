@@ -89,6 +89,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     public class MT_Animation : IValidator
     {
         public string AnimName { get; set; }
+        public float Duration { get; set; }
         public MT_AnimTrack[] Tracks { get; set; }
 
         public MT_Animation()
@@ -100,6 +101,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             // start porting data
             AnimName = InAnimation.Name;
+            Duration = InAnimation.Duration;
 
             Tracks = new MT_AnimTrack[InAnimation.Channels.Count];
             for (int z = 0; z < InAnimation.Channels.Count; z++)

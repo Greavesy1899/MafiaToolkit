@@ -1,4 +1,5 @@
-﻿using ResourceTypes.ModelHelpers.ModelExporter;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.ModelHelpers.ModelExporter;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -207,8 +208,11 @@ namespace ResourceTypes.Animation2
 
         public void ConvertFromAnimation(MT_Animation InAnimation)
         {
+            Header.Hash = FNV64.Hash(InAnimation.AnimName);
+            Header.Duration = InAnimation.Duration;
+
             List<AnimTrack> NewTracks = new List<AnimTrack>();
-            foreach(MT_AnimTrack Track in InAnimation.Tracks)
+            foreach (MT_AnimTrack Track in InAnimation.Tracks)
             {
                 AnimTrack NewTrack = new AnimTrack();
 
@@ -220,10 +224,22 @@ namespace ResourceTypes.Animation2
 
                 NewTrack.KeyFrames = RotKeys.ToArray();
                 NewTrack.Positions.KeyFrames = PosKeys.ToArray();
+                NewTrack.TrackDataChanged = true;
+                NewTrack.Positions.TrackDataChanged = true;
+
+                int PositionFlags = NewTrack.Positions.KeyFrames.Length > 0 ? 1 : 0;
+                int RotationFlags = NewTrack.KeyFrames.Length > 0 ? 2 : 0;
+                int Flags = PositionFlags | RotationFlags;
+
+                NewTrack.Flags = (byte)(0x20 | Flags);
+                NewTrack.DataFlags = (byte)(0x8 | (~Flags & 3));
                 NewTrack.BoneID = Track.BoneID;
                 NewTrack.Duration = Track.Duration;
 
-                NewTracks.Add(NewTrack);
+                if (Flags != 0)
+                {
+                    NewTracks.Add(NewTrack);
+                }
             }
 
             Tracks = NewTracks.ToArray();

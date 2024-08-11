@@ -12,15 +12,15 @@ namespace ResourceTypes.Animation2
         public static byte TargetComponentSize = 24; //Max 63
         public bool TrackDataChanged = true;
         public Utils.Models.SkeletonBoneIDs BoneID { get; set; }
-        public byte Flags { get; set; } = 0x23;
+        public byte Flags { get; set; } = 0x20;
         public bool IsDataPresent { get; set; } = true;
-        public byte DataFlags { get; set; } = 0x0B;
+        public byte DataFlags { get; set; } = 0x08;
         public short NumKeyFrames { get; set; }
         public byte ComponentSize { get; set; } = TargetComponentSize;
         public byte TimeSize { get; set; } = TargetTimeSize;
         public uint PackedReferenceQuat { get; set; }
         public float Scale { get; set; } = 1.0f;
-        public float Duration { get; set; }
+        public float Duration { get; set; } = 0.0f;
         public byte[] KeyFrameData { get; set; } = new byte[0];
         public (float time, Quaternion value)[] KeyFrames { get; set; } = new (float time, Quaternion value)[0];
         public PositionData Positions { get; set; } = new();
@@ -110,6 +110,8 @@ namespace ResourceTypes.Animation2
             {
                 Positions.Write(bw);
             }
+
+            TrackDataChanged = false;
         }
 
         public int GetKeyframeSize(int ComponentSize, int TimeSize)
@@ -604,7 +606,7 @@ namespace ResourceTypes.Animation2
     public class PositionData
     {
         public bool TrackDataChanged = true;
-        public float Scale { get; set; }
+        public float Scale { get; set; } = 1.0f;
         public byte[] Data { get; set; } = new byte[0];
         public (float time, Vector3 value)[] KeyFrames { get; set; } = new (float time, Vector3 value)[0];
         public PositionData()
@@ -643,9 +645,16 @@ namespace ResourceTypes.Animation2
 
         public void Write(BinaryWriter bw)
         {
+            if (TrackDataChanged)
+            {
+                Quantize();
+            }
+
             bw.Write((short)(Data.Length / 12));
             bw.Write(Scale);
             bw.Write(Data);
+
+            TrackDataChanged = false;
         }
 
         public void Dequantize()
