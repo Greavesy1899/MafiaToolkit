@@ -28,6 +28,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             return (Time, Value);
         }
+
+        public override string ToString()
+        {
+            return string.Format("[{0}] - [{1}]", Time, Value.ToString());
+        }
     }
 
     public class MT_PosKey
@@ -51,6 +56,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             return (Time, Value);
         }
+
+        public override string ToString()
+        {
+            return string.Format("[{0}] - [{1}]", Time, Value.ToString());
+        }
     }
 
     public class MT_AnimTrack
@@ -68,6 +78,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             RotKeyFrames = new MT_RotKey[0];
             PosKeyFrames = new MT_PosKey[0];
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[Name: {0}] [Duration: {1}]", BoneID, Duration);
         }
     }
 
