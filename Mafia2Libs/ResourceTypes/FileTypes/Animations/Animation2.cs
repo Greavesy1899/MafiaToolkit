@@ -229,10 +229,13 @@ namespace ResourceTypes.Animation2
 
                 int PositionFlags = NewTrack.Positions.KeyFrames.Length > 0 ? 1 : 0;
                 int RotationFlags = NewTrack.KeyFrames.Length > 0 ? 2 : 0;
+                int PositionDataFlags = NewTrack.Positions.KeyFrames.Length > 0 ? 2 : 0;
+                int RotationDataFlags = NewTrack.KeyFrames.Length > 0 ? 1 : 0;
                 int Flags = PositionFlags | RotationFlags;
+                int DataFlags = PositionDataFlags | RotationDataFlags;
 
                 NewTrack.Flags = (byte)(0x20 | Flags);
-                NewTrack.DataFlags = (byte)(0x8 | (~Flags & 3));
+                NewTrack.DataFlags = (byte)(0x8 | DataFlags);
                 NewTrack.BoneID = Track.BoneID;
                 NewTrack.Duration = Track.Duration;
 

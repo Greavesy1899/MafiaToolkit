@@ -143,10 +143,12 @@ namespace ResourceTypes.Animation2
             {
                 var dataCurrent = data >> (i * chunkSize);
 
-                var time = (((int)((dataCurrent) & ((1 << TimeSize) - 1))) / (float)((1 << TimeSize) - 1)) * Duration;
+                var time = (double)((((int)((dataCurrent) & ((1 << TimeSize) - 1))) / (float)((1 << TimeSize) - 1)) * Duration);
                 var rawData = dataCurrent >> TimeSize;
 
-                quats.Add((time, Quaternion.Inverse(refQuat * UnpackQuaternion(ComponentSize, Scale, rawData))));
+                time = Math.Round(time * 25.0) / 25.0;
+
+                quats.Add(((float)time, Quaternion.Inverse(refQuat * UnpackQuaternion(ComponentSize, Scale, rawData))));
             }
 
             KeyFrames = quats.ToArray();
@@ -176,7 +178,7 @@ namespace ResourceTypes.Animation2
                 int timeMask = ((1 << TimeSize) - 1);
 
                 int offset = chunkSize * i;
-                int time = ((int)Math.Round((frame.time / Duration) * timeMask)) & timeMask;
+                int time = ((int)Math.Round(((Math.Round(frame.time * 25.0) / 25.0) / Duration) * timeMask)) & timeMask;
                 var packedQuaternion = PackQuaternion(ComponentSize, Scale, Quaternion.Inverse(frame.value), invRefQuat);
                 var bigTime = new BigInteger(time);
                 var bigVal0 = new BigInteger(packedQuaternion.iVal0);
@@ -687,7 +689,7 @@ namespace ResourceTypes.Animation2
                 var Y = BitConverter.ToSingle(BitConverter.GetBytes(iSign1 | BitConverter.ToInt32(BitConverter.GetBytes(fValue1), 0)), 0);
                 var Z = BitConverter.ToSingle(BitConverter.GetBytes(iSign2 | BitConverter.ToInt32(BitConverter.GetBytes(fValue2), 0)), 0);
 
-                frames.Add(((float)(time / (582.0 + 4.0 / 7.0)), new(X, Y, Z)));
+                frames.Add(((float)(Math.Round((time / (582.0 + 4.0 / 7.0)) * 25.0) / 25.0), new(X, Y, Z)));
             }
 
             KeyFrames = frames.ToArray();
@@ -712,7 +714,7 @@ namespace ResourceTypes.Animation2
                 long iSign1 = Math.Sign(KeyFrame.value.Y) < 0 ? 1 << 23 : 0;
                 long iSign2 = Math.Sign(KeyFrame.value.Z) < 0 ? 1 << 23 : 0;
 
-                var iTime = new BigInteger((uint)Math.Round(KeyFrame.time * (582.0 + 4.0 / 7.0)));
+                var iTime = new BigInteger((uint)Math.Round((Math.Round(KeyFrame.time * 25.0) / 25.0) * (582.0 + 4.0 / 7.0)));
                 var iValue0 = new BigInteger((((uint)Math.Round(Math.Abs(KeyFrame.value.X) * QuantizationFactor)) & 0x7FFFFF) | iSign0);
                 var iValue1 = new BigInteger((((uint)Math.Round(Math.Abs(KeyFrame.value.Y) * QuantizationFactor)) & 0x7FFFFF) | iSign1);
                 var iValue2 = new BigInteger((((uint)Math.Round(Math.Abs(KeyFrame.value.Z) * QuantizationFactor)) & 0x7FFFFF) | iSign2);

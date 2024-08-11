@@ -103,20 +103,28 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             AnimName = InAnimation.Name;
             Duration = InAnimation.Duration;
 
-            Tracks = new MT_AnimTrack[InAnimation.Channels.Count];
+            //Tracks = new MT_AnimTrack[InAnimation.Channels.Count];
+
+            Dictionary<SkeletonBoneIDs, MT_AnimTrack> tracks = new();
+
             for (int z = 0; z < InAnimation.Channels.Count; z++)
             {
                 // New channel (or track for Mafia II) and cache in local obj
                 AnimationChannel CurrentChannel = InAnimation.Channels[z];
-                Tracks[z] = new MT_AnimTrack();
-                MT_AnimTrack NewAnimTrack = Tracks[z];
+                
+                // TODO: Need to resolve issue with missing bones!
+                SkeletonBoneIDs BoneID = SkeletonBoneIDs.BaseRef;
+                Enum.TryParse<SkeletonBoneIDs>(CurrentChannel.TargetNode.Name, out BoneID);
+
+                if (!tracks.ContainsKey(BoneID))
+                {
+                    tracks.Add(BoneID, new MT_AnimTrack());
+                }
+
+                MT_AnimTrack NewAnimTrack = tracks[BoneID];
 
                 NewAnimTrack.Duration = InAnimation.Duration;
                 NewAnimTrack.BoneName = CurrentChannel.TargetNode.Name;
-
-                // TODO: Need to resolve issue with missing bones!
-                SkeletonBoneIDs BoneID = SkeletonBoneIDs.BaseRef;
-                Enum.TryParse<SkeletonBoneIDs>(NewAnimTrack.BoneName, out BoneID);
                 NewAnimTrack.BoneID = BoneID;
 
                 // Convert Position
@@ -143,6 +151,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     NewAnimTrack.RotKeyFrames = RotationKeyList.ToArray();
                 }
             }
+
+            Tracks = tracks.Values.ToArray();
         }
 
         protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
