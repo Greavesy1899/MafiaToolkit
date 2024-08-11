@@ -1,10 +1,5 @@
-﻿using System.IO;
-using Utils.StringHelpers;
+﻿using System.Numerics;
 using Utils.Models;
-using System.Numerics;
-using SharpGLTF.Animations;
-using SharpGLTF.Scenes;
-using System.Collections.Generic;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -12,12 +7,36 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     {
         public float Time { get; set; }
         public Quaternion Value { get; set; }
+
+        public MT_RotKey()
+        {
+            Time = 0.0f;
+            Value = Quaternion.Identity;
+        }
+
+        public MT_RotKey((float, Quaternion) InValue)
+        {
+            Time = InValue.Item1;
+            Value = InValue.Item2;
+        }
     }
 
     public class MT_PosKey
     {
         public float Time { get; set; }
         public Vector3 Value { get; set; }
+
+        public MT_PosKey()
+        {
+            Time = 0.0f;
+            Value = Vector3.Zero;
+        }
+
+        public MT_PosKey((float, Vector3) InValue)
+        {
+            Time = InValue.Item1;
+            Value = InValue.Item2;
+        }
     }
 
     public class MT_AnimTrack

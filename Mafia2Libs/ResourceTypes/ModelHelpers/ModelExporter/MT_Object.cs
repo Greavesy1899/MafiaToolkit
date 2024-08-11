@@ -46,9 +46,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
     public class MT_Object : IValidator
     {
-        private const string FileHeader = "MTO";
-        private const byte FileVersion = 3;
-
         private const string PROP_OBJECT_TYPE_ID = "MT_OBJECT_TYPE";
 
         public string ObjectName { get; set; }
@@ -63,25 +60,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public MT_Object[] Children { get; set; }
         public MT_Collision Collision { get; set; }
         public MT_Skeleton Skeleton { get; set; }
-
-
-        /** Validation Functions */
-        public bool IsHeaderValid(string InHeader, byte InVersion)
-        {
-            // Try and validate header
-            if(!InHeader.Equals(FileHeader))
-            {
-                return false;
-            }
-
-            // Try and validate version
-            if(InVersion != FileVersion)
-            {
-                return false;
-            }
-
-            return true;
-        }
 
         /** Construction Functions */
         public void BuildFromCooked(FrameObjectSingleMesh SingleMesh, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
