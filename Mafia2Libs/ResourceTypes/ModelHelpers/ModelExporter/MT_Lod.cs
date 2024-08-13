@@ -16,11 +16,11 @@ using Vortice.Mathematics;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
-    using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
+    using VERTEXRIDGED = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
+    using VERTEXSKINNED = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
     using VERTEXS4 = VertexJoints4;
     using VERTEXRIDGEDBUILDER = VertexBuilder<VertexPositionNormalTangent, VertexTexture1, VertexEmpty>;
     using VERTEXSKINNEDBUILDER = VertexBuilder<VertexPositionNormalTangent, VertexTexture1, VertexJoints4>;
-    using static Octokit.Caching.CachedResponse;
 
     public class MT_Lod : IValidator
     {
@@ -29,9 +29,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public uint[] Indices { get; set; }
         public MT_FaceGroup[] FaceGroups { get; set; }
 
-        public MeshBuilder<VERTEX> BuildGLTF()
+        public MeshBuilder<VERTEXRIDGED> BuildGLTF()
         {
-            MeshBuilder<VERTEX> LodMesh = new MeshBuilder<VERTEX>();
+            MeshBuilder<VERTEXRIDGED> LodMesh = new MeshBuilder<VERTEXRIDGED>();
 
             foreach (MT_FaceGroup FaceGroup in FaceGroups)
             {
@@ -58,9 +58,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return LodMesh;
         }
 
-        public MeshBuilder<VERTEX, VertexTexture1, VertexJoints4> BuildSkinnedGLTF()
+        public MeshBuilder<VERTEXSKINNED, VertexTexture1, VertexJoints4> BuildSkinnedGLTF()
         {
-            MeshBuilder<VERTEX, VertexTexture1, VertexJoints4> LodMesh = new MeshBuilder<VERTEX, VertexTexture1, VertexJoints4>();
+            MeshBuilder<VERTEXSKINNED, VertexTexture1, VertexJoints4> LodMesh = new MeshBuilder<VERTEXSKINNED, VertexTexture1, VertexJoints4>();
 
             foreach (MT_FaceGroup FaceGroup in FaceGroups)
             {
@@ -89,7 +89,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         private VERTEXRIDGEDBUILDER BuildRidgedVertex(Vertex GameVertex)
         {
-            VERTEX VB1 = new VERTEX(GameVertex.Position, GameVertex.Normal, new Vector4(GameVertex.Tangent, 1.0f));
+            VERTEXRIDGED VB1 = new VERTEXRIDGED(GameVertex.Position, GameVertex.Normal, new Vector4(GameVertex.Tangent, 1.0f));
 
             VertexTexture1 TB1 = new VertexTexture1(GameVertex.UVs[0]);
 
@@ -98,7 +98,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         private VERTEXSKINNEDBUILDER BuildSkinnedVertex(Vertex GameVertex)
         {
-            VERTEX VB1 = new VERTEX(GameVertex.Position, GameVertex.Normal, new Vector4(GameVertex.Tangent, 1.0f));
+            VERTEXSKINNED VB1 = new VERTEXSKINNED(GameVertex.Position, GameVertex.Normal, new Vector4(GameVertex.Tangent, 1.0f));
 
             VertexTexture1 TB1 = new VertexTexture1(GameVertex.UVs[0]);
 

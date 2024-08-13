@@ -47,6 +47,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     public class MT_Object : IValidator
     {
         private const string PROP_OBJECT_TYPE_ID = "MT_OBJECT_TYPE";
+        private const string PROP_OBJECT_NAME = "MT_OBJECT_NAME";
 
         public string ObjectName { get; set; }
         public MT_ObjectFlags ObjectFlags { get; set; }
@@ -73,10 +74,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             // TODO: Any more required?
             ThisNode.Extras = new JsonObject();
             ThisNode.Extras[PROP_OBJECT_TYPE_ID] = (int)ObjectType;
-           
+            ThisNode.Extras[PROP_OBJECT_NAME] = (string)ObjectName;
+
             if (Lods != null)
             {
-                // TODO: Fix LODs
                 for(int Index = 0; Index < Lods.Length; Index++)
                 {
                     NodeBuilder LodNode = ThisNode.CreateNode(string.Format("LOD_{0}", Index));
@@ -86,7 +87,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                         var SkeletonJoints = Skeleton.BuildGLTF(Index);
                         InstanceBuilder Test = RootScene.AddSkinnedMesh(BuiltMesh, Matrix4x4.Identity, SkeletonJoints);
 
-                        LodNode.AddNode(SkeletonJoints[0]);
+                       // LodNode.AddNode(SkeletonJoints[0]);
                         
                     }
                     else
@@ -222,15 +223,32 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
                 else
                 {
-                    // we could be holding something else, like a LOD
-                    if(ChildNode.Name.Contains("LOD_0"))
+                    if (ChildNode.Name.Contains("LOD_0"))
                     {
-                        Mesh AssociatedMesh = ChildNode.Mesh;
-                        if(AssociatedMesh != null)
+                        if (DesiredType == MT_ObjectType.RiggedMesh)
                         {
-                            // build lod
-                            MT_Lod NewLod = new MT_Lod();
-                            NewLod.BuildLodFromGLTFMesh(AssociatedMesh);
+                            // rigged models have mesh as child in LOD node
+                            // This is a limitation in GLTF where the skinned mesh is attached to first node in joint array
+                            if(ChildNode.VisualChildren.Count() > 0)
+                            {
+                                foreach (Node SubmeshNode in ChildNode.VisualChildren)
+                                {
+                                    Mesh AssociatedMesh = ChildNode.VisualChildren.ElementAt(0).Mesh;
+                                }
+                            }
+
+                        }
+                        else if(DesiredType == MT_ObjectType.StaticMesh)
+                        {
+                            // Default meshes are still attached to LOD
+                            // TODO: Should we change this...?
+                            Mesh AssociatedMesh = ChildNode.Mesh;
+                            if (AssociatedMesh != null)
+                            {
+                                // build lod
+                                MT_Lod NewLod = new MT_Lod();
+                                NewLod.BuildLodFromGLTFMesh(AssociatedMesh);
+                            }
                         }
                     }
                 }
