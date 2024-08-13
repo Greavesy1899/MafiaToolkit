@@ -3,6 +3,8 @@ using SharpGLTF.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text.Json.Nodes;
+using UnluacNET;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -16,27 +18,38 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public int ParentJointIndex { get; set; }
 
     }
+
+    public class MT_Attachment
+    {
+        public string Name { get; set; }
+        public int JointIndex { get; set; }
+    }
+
     public class MT_Skeleton : IValidator
     {
         public MT_Joint[] Joints { get; set; }
         public MT_Animation[] Animations { get; set; }
+        public MT_Attachment[] Attachments { get; set; }
+
+        private const string PROP_OBJECT_IS_ATTACHMENT = "IS_ATTACHMENT";
 
         public MT_Skeleton()
         {
             Joints = new MT_Joint[0];
             Animations = new MT_Animation[0];
+            Attachments = new MT_Attachment[0];
         }
 
         public NodeBuilder[] BuildGLTF(NodeBuilder RootNode, int LodIndex)
         {
             NodeBuilder[] JointNodes = new NodeBuilder[Joints.Length];
-            for(uint Index = 0; Index < Joints.Length; Index++)
+            for (uint Index = 0; Index < Joints.Length; Index++)
             {
                 // Root node does not need to be recreated,
                 // otherwise internally, GLTF we apply the skinned transformer to this node
                 // (which we consider 'JUST' to be a joint and nothing else)
                 MT_Joint CurrentJoint = Joints[Index];
-                if(CurrentJoint.Name == RootNode.Name)
+                if (CurrentJoint.Name == RootNode.Name)
                 {
                     RootNode.WithLocalRotation(CurrentJoint.Rotation);
                     RootNode.WithLocalScale(CurrentJoint.Scale);
@@ -61,6 +74,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
                 // then to lookup
                 JointNodes[Index] = JointNode;
+            }
+
+            // add attachments
+            foreach(MT_Attachment Attachment in Attachments)
+            {
+                NodeBuilder AttachmentNode = new NodeBuilder(Attachment.Name);
+                AttachmentNode.Extras = new JsonObject();
+                AttachmentNode.Extras[PROP_OBJECT_IS_ATTACHMENT] = true;
+
+                JointNodes[Attachment.JointIndex].AddNode(AttachmentNode);
             }
 
             // let the skeleton add any animations

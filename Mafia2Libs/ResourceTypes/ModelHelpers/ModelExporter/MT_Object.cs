@@ -172,6 +172,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 ModelSkeleton.Joints[i] = JointObject;
             }
 
+            // we do not apply attachments to skeleton but apply in GLTF pipeline
+            ModelSkeleton.Attachments = new MT_Attachment[RiggedModel.AttachmentReferences.Length];
+            for (int i = 0; i < ModelSkeleton.Attachments.Length; i++)
+            {
+                MT_Attachment NewAttachment = new MT_Attachment();
+                NewAttachment.Name = RiggedModel.AttachmentReferences[i].Attachment.Name.ToString();
+                NewAttachment.JointIndex = RiggedModel.AttachmentReferences[i].JointIndex;
+                ModelSkeleton.Attachments[i] = NewAttachment;
+            }
+
             for (int i = 0; i < BlendInfo.BoneIndexInfos.Length; i++)
             {
                 var indexInfos = BlendInfo.BoneIndexInfos[i];
@@ -322,7 +332,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
            
             if (Lods != null)
             {
-                for(int Index = 0; Index < Lods.Length; Index++)
+                // TODO: Fix LODs
+                for(int Index = 0; Index < 1; Index++)
                 {
                     NodeBuilder LodNode = ThisNode.CreateNode(string.Format("LOD_{0}", Index));
                     if (Skeleton != null)
