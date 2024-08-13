@@ -16,12 +16,24 @@ namespace ResourceTypes.FrameResource
         int numLods;
         int[] unkLodData;
         byte idType;
+
+        // Name of bones
         HashName[] boneNames;
-        Matrix4x4[] jointTransforms; //maybe joint space
+
+        // maybe joint space
+        Matrix4x4[] jointTransforms; 
         int numUnkCount2;
+
+        // This stores if the LOD vertices use the bone - does not mean exclude bone from skeleton.
+        // We'd only add whether or not the bone is used if the models vertices has any weight to the bone
         byte[] boneLODUsage;
-        Matrix4x4[] worldTransforms; //world space = extract position matrix, extract rotation matrix, multiply -position * rotation
+
+        //world space = extract position matrix, extract rotation matrix, multiply -position * rotation
+        Matrix4x4[] worldTransforms; 
+
         MappingForBlendingInfo[] mappingForBlendingInfos;
+
+        // TODO: boneNames, boneLODUsage and jointTransforms all could be stored as same class
 
         public int[] NumBones {
             get { return numBones; }

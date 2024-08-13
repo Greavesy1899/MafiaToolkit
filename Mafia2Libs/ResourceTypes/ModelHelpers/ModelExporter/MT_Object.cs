@@ -37,7 +37,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         Null = 0,
         StaticMesh,
         RiggedMesh,
-        Joint,
+        Point,
         Actor,
         ItemDesc,
         Dummy,
@@ -61,262 +61,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public MT_Collision Collision { get; set; }
         public MT_Skeleton Skeleton { get; set; }
 
-        /** Construction Functions */
-        public void BuildFromCooked(FrameObjectSingleMesh SingleMesh, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
-        {
-            BuildStandardObject(SingleMesh);
-
-            FrameGeometry GeometryInfo = SingleMesh.Geometry;
-            FrameMaterial MaterialInfo = SingleMesh.Material;
-            ObjectFlags |= MT_ObjectFlags.HasLODs;
-
-            Lods = new MT_Lod[GeometryInfo.LOD.Length];
-            for(int i = 0; i < Lods.Length; i++)
-            {
-                // Setup and Collect Lod Info and buffers
-                FrameLOD LodInfo = GeometryInfo.LOD[i];
-                MT_Lod LodObject = new MT_Lod();
-
-                LodObject.VertexDeclaration = LodInfo.VertexDeclaration;
-                IndexBuffer CurrentIBuffer = IBuffer[i];
-                VertexBuffer CurrentVBuffer = VBuffer[i];
-
-                // Get Vertex sizes and declaration
-                int VertexSize = 0;
-                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = LodInfo.GetVertexOffsets(out VertexSize);
-                LodObject.Vertices = new Vertex[LodInfo.NumVerts];
-
-                if (VertexSize * LodInfo.NumVerts != CurrentVBuffer.Data.Length)
-                {
-                    Console.WriteLine("BIG ERROR");
-                }
-
-                for (int v = 0; v < LodObject.Vertices.Length; v++)
-                {
-                    //declare data required and send to decompresser
-                    byte[] data = new byte[VertexSize];
-                    Array.Copy(CurrentVBuffer.Data, (v * VertexSize), data, 0, VertexSize);
-                    LodObject.Vertices[v] = VertexTranslator.DecompressVertex(data, LodInfo.VertexDeclaration, GeometryInfo.DecompressionOffset, GeometryInfo.DecompressionFactor, vertexOffsets);
-                }
-
-                // Build Indices and FaceGroups Array
-                LodObject.Indices = CurrentIBuffer.GetData();
-                MaterialStruct[] FaceGroups = MaterialInfo.Materials[i];
-
-                // NB: We will skip the FaceGroups which don't have faces
-                List<MT_FaceGroup> Groups = new List<MT_FaceGroup>();
-                for(int v = 0; v < FaceGroups.Length; v++)
-                {
-                    if(FaceGroups[v].NumFaces == 0)
-                    {
-                        continue;
-                    }
-
-                    MT_FaceGroup FaceGroupObject = new MT_FaceGroup();
-                    MT_MaterialInstance MaterialInstanceObject = new MT_MaterialInstance();
-
-                    // TODO: Might be better to just keep this permanently.
-                    //if(string.IsNullOrEmpty(FaceGroups[v].MaterialName))
-                    //{
-                        var Material = MaterialsManager.LookupMaterialByHash(FaceGroups[v].MaterialHash);
-                        FaceGroups[v].MaterialName = Material.GetMaterialName();
-                        FaceGroups[v].MaterialHash = Material.GetMaterialHash();
-
-                        // Add texture (if applicable)
-                        HashName DiffuseHashName = Material.GetTextureByID("S000");
-                        if(DiffuseHashName != null)
-                        {
-                            MaterialInstanceObject.DiffuseTexture = DiffuseHashName.String;
-                            MaterialInstanceObject.MaterialFlags |= MT_MaterialInstanceFlags.HasDiffuse;
-                        }
-                    //}
-
-                    MaterialInstanceObject.Name = FaceGroups[v].MaterialName;
-                    FaceGroupObject.StartIndex = (uint)FaceGroups[v].StartIndex;
-                    FaceGroupObject.NumFaces = (uint)FaceGroups[v].NumFaces;
-                    FaceGroupObject.Material = MaterialInstanceObject;
-                    Groups.Add(FaceGroupObject);
-                }
-
-                LodObject.FaceGroups = Groups.ToArray();
-                Lods[i] = LodObject;
-            }
-        }
-
-        public void BuildFromCooked(FrameObjectModel RiggedModel, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
-        {
-            BuildFromCooked((FrameObjectSingleMesh)RiggedModel, VBuffer, IBuffer);
-
-            MT_Skeleton ModelSkeleton = new MT_Skeleton();
-
-            FrameBlendInfo BlendInfo = RiggedModel.GetBlendInfoObject();
-            FrameSkeleton Skeleton = RiggedModel.GetSkeletonObject();
-            FrameSkeletonHierachy SkeletonHierarchy = RiggedModel.GetSkeletonHierarchyObject();
-
-            ModelSkeleton.Joints = new MT_Joint[Skeleton.BoneNames.Length];
-            for(int i = 0; i < ModelSkeleton.Joints.Length; i++)
-            {
-                MT_Joint JointObject = new MT_Joint();
-                JointObject.Name = Skeleton.BoneNames[i].ToString();
-                JointObject.ParentJointIndex = SkeletonHierarchy.ParentIndices[i];
-                JointObject.UsageFlags = Skeleton.BoneLODUsage[i];
-
-                Vector3 Scale, Position;
-                Quaternion Rotation;
-
-                Matrix4x4 JointTransform = Skeleton.JointTransforms[i];
-                Matrix4x4.Decompose(JointTransform, out Scale, out Rotation, out Position);
-                JointObject.Position = Position;
-                JointObject.Scale = Scale;
-                JointObject.Rotation = Rotation;
-                ModelSkeleton.Joints[i] = JointObject;
-            }
-
-            // we do not apply attachments to skeleton but apply in GLTF pipeline
-            ModelSkeleton.Attachments = new MT_Attachment[RiggedModel.AttachmentReferences.Length];
-            for (int i = 0; i < ModelSkeleton.Attachments.Length; i++)
-            {
-                MT_Attachment NewAttachment = new MT_Attachment();
-                NewAttachment.Name = RiggedModel.AttachmentReferences[i].Attachment.Name.ToString();
-                NewAttachment.JointIndex = RiggedModel.AttachmentReferences[i].JointIndex;
-                ModelSkeleton.Attachments[i] = NewAttachment;
-            }
-
-            for (int i = 0; i < BlendInfo.BoneIndexInfos.Length; i++)
-            {
-                var indexInfos = BlendInfo.BoneIndexInfos[i];
-                var lod = Lods[i];
-                bool[] remapped = new bool[lod.Vertices.Length];
-                for (int x = 0; x < indexInfos.NumMaterials; x++)
-                {
-                    var part = lod.FaceGroups[x];
-                    byte offset = 0;
-                    for (int s = 0; s < indexInfos.BonesSlot[x]; s++)
-                    {
-                        offset += indexInfos.BonesPerPool[s];
-                    }
-
-                    for (uint z = part.StartIndex; z < part.StartIndex + (part.NumFaces * 3); z++)
-                    {
-                        uint index = lod.Indices[z];
-                        if (!remapped[index])
-                        {
-                            for (uint f = 0; f < indexInfos.NumWeightsPerVertex[x]; f++)
-                            {
-                                var previousBoneID = lod.Vertices[index].BoneIDs[f];
-                                lod.Vertices[index].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
-                            }
-                            remapped[index] = true;
-                        }
-                    }
-                }
-            }
-
-            ObjectFlags |= MT_ObjectFlags.HasSkinning;
-            this.Skeleton = ModelSkeleton;
-        }
-
-        public void BuildFromCollision(Collision.CollisionModel CollisionObject)
-        {
-            Position = Vector3.Zero;
-            Rotation = Vector3.Zero;
-            Scale = Vector3.One;
-
-            if(CollisionObject == null)
-            {
-                // Failed
-                return;
-            }
-
-            ObjectFlags |= MT_ObjectFlags.HasCollisions;
-            ObjectName = CollisionObject.Hash.ToString();
-
-            Collision = new MT_Collision();
-
-            TriangleMesh TriMesh = CollisionObject.Mesh;
-
-            // Copy vertices to our array
-            Collision.Vertices = new Vector3[TriMesh.Vertices.Count];
-            TriMesh.Vertices.CopyTo(Collision.Vertices, 0);
-
-            // sort materials in order:
-            // MTO doesn't support unorganised triangles, only triangles in order by material.
-            // basically like mafia itself, so we have to reorder them and then save.
-            // this doesn't mess anything up, just takes a little longer :)
-            Dictionary<string, List<uint>> SortedMats = new Dictionary<string, List<uint>>();
-            for (int i = 0; i < TriMesh.MaterialIndices.Count; i++)
-            {
-                string mat = ((CollisionMaterials)TriMesh.MaterialIndices[i]).ToString();
-                if (!SortedMats.ContainsKey(mat))
-                {
-                    List<uint> list = new List<uint>();
-                    list.Add(TriMesh.Triangles[i].v0);
-                    list.Add(TriMesh.Triangles[i].v1);
-                    list.Add(TriMesh.Triangles[i].v2);
-                    SortedMats.Add(mat, list);
-                }
-                else
-                {
-                    SortedMats[mat].Add(TriMesh.Triangles[i].v0);
-                    SortedMats[mat].Add(TriMesh.Triangles[i].v1);
-                    SortedMats[mat].Add(TriMesh.Triangles[i].v2);
-                }
-            }
-
-            Collision.FaceGroups = new MT_FaceGroup[SortedMats.Count];
-            List<uint> inds = new List<uint>();
-            for (int x = 0; x < Collision.FaceGroups.Length; x++)
-            {
-                MT_FaceGroup FaceGroupObject = new MT_FaceGroup();
-                FaceGroupObject.StartIndex = (uint)inds.Count;
-                inds.AddRange(SortedMats.ElementAt(x).Value);
-                FaceGroupObject.NumFaces = (uint)(SortedMats.ElementAt(x).Value.Count / 3);
-
-                MT_MaterialInstance MaterialInstance = new MT_MaterialInstance();
-                MaterialInstance.MaterialFlags = MT_MaterialInstanceFlags.IsCollision;
-                MaterialInstance.Name = SortedMats.ElementAt(x).Key;
-
-                FaceGroupObject.Material = MaterialInstance;
-                Collision.FaceGroups[x] = FaceGroupObject;
-            }
-
-            // Copy sorted triangles in our collision object
-            Collision.Indices = inds.ToArray();
-        }
-
-        public void BuildStandardObject(FrameObjectBase FrameObject)
-        {
-            // TODO - Possibly add an option where we can ask to export with local transform?
-            Position = Vector3.Zero;
-            Rotation = Vector3.Zero;
-            Scale = Vector3.One;
-
-            // Convert type to enumerator
-            ObjectType = MT_ObjectUtils.GetTypeFromFrame(FrameObject);
-
-            // Avoid calling if we have no children
-            if (FrameObject.Children.Count > 0)
-            {
-                AddFrameChildrenToObject(FrameObject.Children);
-            }
-        }
-
-        public void BuildFromScene(FrameHeaderScene Scene)
-        {
-            Position = Vector3.Zero;
-            Rotation = Vector3.Zero;
-            Scale = Vector3.One;
-
-            // Force a dummy
-            ObjectType = MT_ObjectType.Dummy;
-
-            // Avoid calling if we have no children
-            if(Scene.Children.Count > 0)
-            {
-                AddFrameChildrenToObject(Scene.Children);
-            }
-        }
-
         public NodeBuilder BuildGLTF(SceneBuilder RootScene, NodeBuilder ParentNode)
         {
             NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(Quaternion.Identity);
@@ -333,13 +77,17 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             if (Lods != null)
             {
                 // TODO: Fix LODs
-                for(int Index = 0; Index < 1; Index++)
+                for(int Index = 0; Index < Lods.Length; Index++)
                 {
                     NodeBuilder LodNode = ThisNode.CreateNode(string.Format("LOD_{0}", Index));
                     if (Skeleton != null)
                     {
-                        var mesh = Lods[Index].BuildSkinnedGLTF();
-                        InstanceBuilder Test = RootScene.AddSkinnedMesh(mesh, Matrix4x4.Identity, Skeleton.BuildGLTF(ThisNode, Index));
+                        var BuiltMesh = Lods[Index].BuildSkinnedGLTF();
+                        var SkeletonJoints = Skeleton.BuildGLTF(Index);
+                        InstanceBuilder Test = RootScene.AddSkinnedMesh(BuiltMesh, Matrix4x4.Identity, SkeletonJoints);
+
+                        LodNode.AddNode(SkeletonJoints[0]);
+                        
                     }
                     else
                     {
@@ -359,6 +107,79 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             // TODO: Collisions
             return ThisNode;
+        }
+
+        public static MT_Object TryBuildObject(FrameHeaderScene InScene)
+        {
+            MT_Object NewObject = new MT_Object();
+            NewObject.BuildFromScene(InScene);
+
+            return NewObject;
+        }
+
+        public static MT_Object TryBuildObject(Collision.CollisionModel InModel)
+        {
+            MT_Object NewObject = new MT_Object();
+            NewObject.BuildFromCollision(InModel);
+
+            return NewObject;
+        }
+
+        public static MT_Object TryBuildObject(FrameObjectBase InFrame)
+        {
+            if(MT_ObjectUtils.GetTypeFromFrame(InFrame) == MT_ObjectType.Point)
+            {
+                // C_Point is invalid in M_Object.
+                // Typically stores an attachment
+                // However for MT, attachments are stored in Skeleton
+                // When reimporting, the attachment will generate a C_Point
+                return null;
+            }
+
+            // Construct new MT_Object
+            MT_Object NewObject = new MT_Object();
+            NewObject.ObjectName = InFrame.Name.ToString();
+
+            // Check if this is a single mesh. If not, build as standard.
+            FrameObjectSingleMesh CastedMesh = (InFrame as FrameObjectSingleMesh);
+            if (CastedMesh != null)
+            {
+                // TODO: Remove access of SceneData, Accessing buffer pools will end up becoming deprecated.
+                IndexBuffer[] ChildIBuffers = new IndexBuffer[CastedMesh.Geometry.LOD.Length];
+                VertexBuffer[] ChildVBuffers = new VertexBuffer[CastedMesh.Geometry.LOD.Length];
+
+                //we need to retrieve buffers first.
+                for (int c = 0; c < CastedMesh.Geometry.LOD.Length; c++)
+                {
+                    ChildIBuffers[c] = SceneData.IndexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].IndexBufferRef.Hash);
+                    ChildVBuffers[c] = SceneData.VertexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].VertexBufferRef.Hash);
+                }
+
+                FrameObjectModel CastedModel = (InFrame as FrameObjectModel);
+                if(CastedModel != null)
+                {
+                    NewObject.BuildFromCooked(CastedModel, ChildVBuffers, ChildIBuffers);
+                }
+                else
+                {
+                    NewObject.BuildFromCooked(CastedMesh, ChildVBuffers, ChildIBuffers);
+                }               
+            }
+            else
+            {
+                NewObject.BuildStandardObject(InFrame);
+            }
+
+            Vector3 Position = Vector3.Zero;
+            Vector3 Scale = Vector3.One;
+            Quaternion Rotation = Quaternion.Identity;
+            Matrix4x4.Decompose(InFrame.LocalTransform, out Scale, out Rotation, out Position);
+            NewObject.Position = Position;
+            NewObject.Scale = Vector3.One;
+            NewObject.Rotation = Rotation.ToEuler();
+            NewObject.RotationQuat = Quaternion.Identity;
+
+            return NewObject;
         }
 
         public static MT_Object TryBuildFromNode(Node CurrentNode)
@@ -490,54 +311,279 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         }
 
         /** Internal functions */
+        /** Construction Functions */
+        private void BuildFromCooked(FrameObjectSingleMesh SingleMesh, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
+        {
+            BuildStandardObject(SingleMesh);
+
+            FrameGeometry GeometryInfo = SingleMesh.Geometry;
+            FrameMaterial MaterialInfo = SingleMesh.Material;
+            ObjectFlags |= MT_ObjectFlags.HasLODs;
+
+            Lods = new MT_Lod[GeometryInfo.LOD.Length];
+            for (int i = 0; i < Lods.Length; i++)
+            {
+                // Setup and Collect Lod Info and buffers
+                FrameLOD LodInfo = GeometryInfo.LOD[i];
+                MT_Lod LodObject = new MT_Lod();
+
+                LodObject.VertexDeclaration = LodInfo.VertexDeclaration;
+                IndexBuffer CurrentIBuffer = IBuffer[i];
+                VertexBuffer CurrentVBuffer = VBuffer[i];
+
+                // Get Vertex sizes and declaration
+                int VertexSize = 0;
+                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = LodInfo.GetVertexOffsets(out VertexSize);
+                LodObject.Vertices = new Vertex[LodInfo.NumVerts];
+
+                if (VertexSize * LodInfo.NumVerts != CurrentVBuffer.Data.Length)
+                {
+                    Console.WriteLine("BIG ERROR");
+                }
+
+                for (int v = 0; v < LodObject.Vertices.Length; v++)
+                {
+                    //declare data required and send to decompresser
+                    byte[] data = new byte[VertexSize];
+                    Array.Copy(CurrentVBuffer.Data, (v * VertexSize), data, 0, VertexSize);
+                    LodObject.Vertices[v] = VertexTranslator.DecompressVertex(data, LodInfo.VertexDeclaration, GeometryInfo.DecompressionOffset, GeometryInfo.DecompressionFactor, vertexOffsets);
+                }
+
+                // Build Indices and FaceGroups Array
+                LodObject.Indices = CurrentIBuffer.GetData();
+                MaterialStruct[] FaceGroups = MaterialInfo.Materials[i];
+
+                // NB: We will skip the FaceGroups which don't have faces
+                List<MT_FaceGroup> Groups = new List<MT_FaceGroup>();
+                for (int v = 0; v < FaceGroups.Length; v++)
+                {
+                    if (FaceGroups[v].NumFaces == 0)
+                    {
+                        continue;
+                    }
+
+                    MT_FaceGroup FaceGroupObject = new MT_FaceGroup();
+                    MT_MaterialInstance MaterialInstanceObject = new MT_MaterialInstance();
+
+                    // TODO: Might be better to just keep this permanently.
+                    //if(string.IsNullOrEmpty(FaceGroups[v].MaterialName))
+                    //{
+                    var Material = MaterialsManager.LookupMaterialByHash(FaceGroups[v].MaterialHash);
+                    FaceGroups[v].MaterialName = Material.GetMaterialName();
+                    FaceGroups[v].MaterialHash = Material.GetMaterialHash();
+
+                    // Add texture (if applicable)
+                    HashName DiffuseHashName = Material.GetTextureByID("S000");
+                    if (DiffuseHashName != null)
+                    {
+                        MaterialInstanceObject.DiffuseTexture = DiffuseHashName.String;
+                        MaterialInstanceObject.MaterialFlags |= MT_MaterialInstanceFlags.HasDiffuse;
+                    }
+                    //}
+
+                    MaterialInstanceObject.Name = FaceGroups[v].MaterialName;
+                    FaceGroupObject.StartIndex = (uint)FaceGroups[v].StartIndex;
+                    FaceGroupObject.NumFaces = (uint)FaceGroups[v].NumFaces;
+                    FaceGroupObject.Material = MaterialInstanceObject;
+                    Groups.Add(FaceGroupObject);
+                }
+
+                LodObject.FaceGroups = Groups.ToArray();
+                Lods[i] = LodObject;
+            }
+        }
+
+        private void BuildFromCooked(FrameObjectModel RiggedModel, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
+        {
+            BuildFromCooked((FrameObjectSingleMesh)RiggedModel, VBuffer, IBuffer);
+
+            MT_Skeleton ModelSkeleton = new MT_Skeleton();
+
+            FrameBlendInfo BlendInfo = RiggedModel.GetBlendInfoObject();
+            FrameSkeleton Skeleton = RiggedModel.GetSkeletonObject();
+            FrameSkeletonHierachy SkeletonHierarchy = RiggedModel.GetSkeletonHierarchyObject();
+
+            ModelSkeleton.Joints = new MT_Joint[Skeleton.BoneNames.Length];
+            for (int i = 0; i < ModelSkeleton.Joints.Length; i++)
+            {
+                MT_Joint JointObject = new MT_Joint();
+                JointObject.Name = Skeleton.BoneNames[i].ToString();
+                JointObject.ParentJointIndex = SkeletonHierarchy.ParentIndices[i];
+                JointObject.UsageFlags = Skeleton.BoneLODUsage[i];
+
+                Vector3 Scale, Position;
+                Quaternion Rotation;
+
+                Matrix4x4 JointTransform = Skeleton.JointTransforms[i];
+                Matrix4x4.Decompose(JointTransform, out Scale, out Rotation, out Position);
+                JointObject.Position = Position;
+                JointObject.Scale = Scale;
+                JointObject.Rotation = Rotation;
+                ModelSkeleton.Joints[i] = JointObject;
+            }
+
+            // we do not apply attachments to skeleton but apply in GLTF pipeline
+            ModelSkeleton.Attachments = new MT_Attachment[RiggedModel.AttachmentReferences.Length];
+            for (int i = 0; i < ModelSkeleton.Attachments.Length; i++)
+            {
+                MT_Attachment NewAttachment = new MT_Attachment();
+                NewAttachment.Name = RiggedModel.AttachmentReferences[i].Attachment.Name.ToString();
+                NewAttachment.JointIndex = RiggedModel.AttachmentReferences[i].JointIndex;
+                ModelSkeleton.Attachments[i] = NewAttachment;
+            }
+
+            for (int i = 0; i < BlendInfo.BoneIndexInfos.Length; i++)
+            {
+                var indexInfos = BlendInfo.BoneIndexInfos[i];
+                var lod = Lods[i];
+                bool[] remapped = new bool[lod.Vertices.Length];
+                for (int x = 0; x < indexInfos.NumMaterials; x++)
+                {
+                    var part = lod.FaceGroups[x];
+                    byte offset = 0;
+                    for (int s = 0; s < indexInfos.BonesSlot[x]; s++)
+                    {
+                        offset += indexInfos.BonesPerPool[s];
+                    }
+
+                    for (uint z = part.StartIndex; z < part.StartIndex + (part.NumFaces * 3); z++)
+                    {
+                        uint index = lod.Indices[z];
+                        if (!remapped[index])
+                        {
+                            for (uint f = 0; f < indexInfos.NumWeightsPerVertex[x]; f++)
+                            {
+                                var previousBoneID = lod.Vertices[index].BoneIDs[f];
+                                lod.Vertices[index].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
+                            }
+                            remapped[index] = true;
+                        }
+                    }
+                }
+            }
+
+            ObjectFlags |= MT_ObjectFlags.HasSkinning;
+            this.Skeleton = ModelSkeleton;
+        }
+
+        private void BuildFromCollision(Collision.CollisionModel CollisionObject)
+        {
+            Position = Vector3.Zero;
+            Rotation = Vector3.Zero;
+            Scale = Vector3.One;
+
+            if (CollisionObject == null)
+            {
+                // Failed
+                return;
+            }
+
+            ObjectFlags |= MT_ObjectFlags.HasCollisions;
+            ObjectName = CollisionObject.Hash.ToString();
+
+            Collision = new MT_Collision();
+
+            TriangleMesh TriMesh = CollisionObject.Mesh;
+
+            // Copy vertices to our array
+            Collision.Vertices = new Vector3[TriMesh.Vertices.Count];
+            TriMesh.Vertices.CopyTo(Collision.Vertices, 0);
+
+            // sort materials in order:
+            // MTO doesn't support unorganised triangles, only triangles in order by material.
+            // basically like mafia itself, so we have to reorder them and then save.
+            // this doesn't mess anything up, just takes a little longer :)
+            Dictionary<string, List<uint>> SortedMats = new Dictionary<string, List<uint>>();
+            for (int i = 0; i < TriMesh.MaterialIndices.Count; i++)
+            {
+                string mat = ((CollisionMaterials)TriMesh.MaterialIndices[i]).ToString();
+                if (!SortedMats.ContainsKey(mat))
+                {
+                    List<uint> list = new List<uint>();
+                    list.Add(TriMesh.Triangles[i].v0);
+                    list.Add(TriMesh.Triangles[i].v1);
+                    list.Add(TriMesh.Triangles[i].v2);
+                    SortedMats.Add(mat, list);
+                }
+                else
+                {
+                    SortedMats[mat].Add(TriMesh.Triangles[i].v0);
+                    SortedMats[mat].Add(TriMesh.Triangles[i].v1);
+                    SortedMats[mat].Add(TriMesh.Triangles[i].v2);
+                }
+            }
+
+            Collision.FaceGroups = new MT_FaceGroup[SortedMats.Count];
+            List<uint> inds = new List<uint>();
+            for (int x = 0; x < Collision.FaceGroups.Length; x++)
+            {
+                MT_FaceGroup FaceGroupObject = new MT_FaceGroup();
+                FaceGroupObject.StartIndex = (uint)inds.Count;
+                inds.AddRange(SortedMats.ElementAt(x).Value);
+                FaceGroupObject.NumFaces = (uint)(SortedMats.ElementAt(x).Value.Count / 3);
+
+                MT_MaterialInstance MaterialInstance = new MT_MaterialInstance();
+                MaterialInstance.MaterialFlags = MT_MaterialInstanceFlags.IsCollision;
+                MaterialInstance.Name = SortedMats.ElementAt(x).Key;
+
+                FaceGroupObject.Material = MaterialInstance;
+                Collision.FaceGroups[x] = FaceGroupObject;
+            }
+
+            // Copy sorted triangles in our collision object
+            Collision.Indices = inds.ToArray();
+        }
+
+        private void BuildStandardObject(FrameObjectBase FrameObject)
+        {
+            // TODO - Possibly add an option where we can ask to export with local transform?
+            Position = Vector3.Zero;
+            Rotation = Vector3.Zero;
+            Scale = Vector3.One;
+
+            // Convert type to enumerator
+            ObjectType = MT_ObjectUtils.GetTypeFromFrame(FrameObject);
+
+            // Avoid calling if we have no children
+            if (FrameObject.Children.Count > 0)
+            {
+                AddFrameChildrenToObject(FrameObject.Children);
+            }
+        }
+
+        private void BuildFromScene(FrameHeaderScene Scene)
+        {
+            Position = Vector3.Zero;
+            Rotation = Vector3.Zero;
+            Scale = Vector3.One;
+
+            // Force a dummy
+            ObjectType = MT_ObjectType.Dummy;
+
+            // Avoid calling if we have no children
+            if (Scene.Children.Count > 0)
+            {
+                AddFrameChildrenToObject(Scene.Children);
+            }
+        }
+
         private void AddFrameChildrenToObject(List<FrameObjectBase> InChildren)
         {
             // Export Children
             ObjectFlags |= MT_ObjectFlags.HasChildren;
-            Children = new MT_Object[InChildren.Count];
-            for (int i = 0; i < Children.Length; i++)
+            List<MT_Object> TempChildren = new List<MT_Object>();
+            for (int i = 0; i < InChildren.Count; i++)
             {
                 // Cache child object
-                FrameObjectBase ChildFrameObject = InChildren[i];
-
-                // Construct new MT_Object
-                MT_Object ChildObject = new MT_Object();
-                ChildObject.ObjectName = ChildFrameObject.Name.ToString();
-
-                // Check if this is a single mesh. If not, build as standard.
-                FrameObjectSingleMesh CastedMesh = (InChildren[i] as FrameObjectSingleMesh);
-                if (CastedMesh != null)
+                MT_Object NewObject = MT_Object.TryBuildObject(InChildren[i]);
+                if(NewObject != null)
                 {
-                    // TODO: Remove access of SceneData, Accessing buffer pools will end up becoming deprecated.
-                    IndexBuffer[] ChildIBuffers = new IndexBuffer[CastedMesh.Geometry.LOD.Length];
-                    VertexBuffer[] ChildVBuffers = new VertexBuffer[CastedMesh.Geometry.LOD.Length];
-
-                    //we need to retrieve buffers first.
-                    for (int c = 0; c < CastedMesh.Geometry.LOD.Length; c++)
-                    {
-                        ChildIBuffers[c] = SceneData.IndexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].IndexBufferRef.Hash);
-                        ChildVBuffers[c] = SceneData.VertexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].VertexBufferRef.Hash);
-                    }
-
-                    ChildObject.BuildFromCooked(CastedMesh, ChildVBuffers, ChildIBuffers);
+                    // Slot into array
+                    TempChildren.Add(NewObject);
                 }
-                else
-                {
-                    ChildObject.BuildStandardObject(InChildren[i]);
-                }
-
-                Vector3 Position = Vector3.Zero;
-                Vector3 Scale = Vector3.One;
-                Quaternion Rotation = Quaternion.Identity;
-                Matrix4x4.Decompose(ChildFrameObject.LocalTransform, out Scale, out Rotation, out Position);
-                ChildObject.Position = Position;
-                ChildObject.Scale = Vector3.One;
-                ChildObject.Rotation = Rotation.ToEuler();
-                ChildObject.RotationQuat = Quaternion.Identity;
-
-                // Slot into array
-                Children[i] = ChildObject;
             }
+
+            Children = TempChildren.ToArray();
         }
 
         public override string ToString()

@@ -31,7 +31,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public MT_Animation[] Animations { get; set; }
         public MT_Attachment[] Attachments { get; set; }
 
-        private const string PROP_OBJECT_IS_ATTACHMENT = "IS_ATTACHMENT";
+        private const string PROP_OBJECT_ATTACHMENT_NAME = "MT_ATTACHMENT_NAME";
+        private const string PROP_OBJECT_JOINT_NAME = "MT_JOINT_NAME";
 
         public MT_Skeleton()
         {
@@ -40,30 +41,23 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Attachments = new MT_Attachment[0];
         }
 
-        public NodeBuilder[] BuildGLTF(NodeBuilder RootNode, int LodIndex)
+        public NodeBuilder[] BuildGLTF(int LodIndex)
         {
             NodeBuilder[] JointNodes = new NodeBuilder[Joints.Length];
             for (uint Index = 0; Index < Joints.Length; Index++)
             {
-                // Root node does not need to be recreated,
-                // otherwise internally, GLTF we apply the skinned transformer to this node
-                // (which we consider 'JUST' to be a joint and nothing else)
                 MT_Joint CurrentJoint = Joints[Index];
-                if (CurrentJoint.Name == RootNode.Name)
-                {
-                    RootNode.WithLocalRotation(CurrentJoint.Rotation);
-                    RootNode.WithLocalScale(CurrentJoint.Scale);
-                    RootNode.WithLocalTranslation(CurrentJoint.Position);
-
-                    JointNodes[0] = RootNode;
-                    continue;
-                }
 
                 // create node with transform
                 NodeBuilder JointNode = new NodeBuilder(CurrentJoint.Name)
                     .WithLocalTranslation(CurrentJoint.Position)
                     .WithLocalRotation(CurrentJoint.Rotation)
                     .WithLocalScale(CurrentJoint.Scale);
+
+                // We must include Joint name because modeling suites like blender could
+                // badly adjust the name by doing something stupid like adding ".001"
+                JointNode.Extras = new JsonObject();
+                JointNode.Extras[PROP_OBJECT_JOINT_NAME] = CurrentJoint.Name;
 
                 // Add to the parent joint node
                 if (CurrentJoint.ParentJointIndex != 255)
@@ -81,7 +75,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 NodeBuilder AttachmentNode = new NodeBuilder(Attachment.Name);
                 AttachmentNode.Extras = new JsonObject();
-                AttachmentNode.Extras[PROP_OBJECT_IS_ATTACHMENT] = true;
+                AttachmentNode.Extras[PROP_OBJECT_ATTACHMENT_NAME] = Attachment.Name;
 
                 JointNodes[Attachment.JointIndex].AddNode(AttachmentNode);
             }

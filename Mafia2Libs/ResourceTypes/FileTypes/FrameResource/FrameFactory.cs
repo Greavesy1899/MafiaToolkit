@@ -17,8 +17,8 @@ namespace ResourceTypes.FrameResource
         {
             switch (FrameType)
             {
-                case FrameResourceObjectType.Joint:
-                    return OwningResource.ConstructFrameAssetOfType<FrameObjectJoint>();
+                case FrameResourceObjectType.Point:
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectPoint>();
                 case FrameResourceObjectType.SingleMesh:
                     return OwningResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
                 case FrameResourceObjectType.Frame:
@@ -53,8 +53,8 @@ namespace ResourceTypes.FrameResource
         {
             switch (ObjectType)
             {
-                case MT_ObjectType.Joint:
-                    return OwningResource.ConstructFrameAssetOfType<FrameObjectJoint>();
+                case MT_ObjectType.Point:
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectPoint>();
                 case MT_ObjectType.StaticMesh:
                     return OwningResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
                 case MT_ObjectType.Actor:

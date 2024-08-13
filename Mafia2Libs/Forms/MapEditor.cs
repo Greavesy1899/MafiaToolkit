@@ -1642,8 +1642,7 @@ namespace Mafia2Tool
 
         private ModelWrapper ExportCollision(Collision.CollisionModel data)
         {
-            MT_Object CollisionObject = new MT_Object();
-            CollisionObject.BuildFromCollision(data);
+            MT_Object CollisionObject = MT_Object.TryBuildObject(data);
 
             ModelWrapper WrapperObject = new ModelWrapper();
             WrapperObject.ModelObject = CollisionObject;

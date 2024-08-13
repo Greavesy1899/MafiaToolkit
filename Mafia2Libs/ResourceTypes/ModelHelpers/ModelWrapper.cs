@@ -55,10 +55,8 @@ namespace Utils.Models
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            modelObject = new MT_Object();
-            modelObject.ObjectName = frameMesh.Name.ToString();
-            //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
-            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers);
+
+            modelObject = MT_Object.TryBuildObject(frameMesh);
         }
 
         public ModelWrapper(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
@@ -66,24 +64,18 @@ namespace Utils.Models
             this.frameModel = frameModel;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            modelObject = new MT_Object();
-            modelObject.ObjectName = frameModel.Name.ToString();
-            //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
-            modelObject.BuildFromCooked(frameModel, vertexBuffers, indexBuffers);
+
+            modelObject = MT_Object.TryBuildObject(frameModel);
         }
 
         public ModelWrapper(FrameObjectBase FrameObject)
         {
-            modelObject = new MT_Object();
-            modelObject.ObjectName = FrameObject.Name.ToString();
-            modelObject.BuildStandardObject(FrameObject);
+            modelObject = MT_Object.TryBuildObject(FrameObject);
         }
 
         public ModelWrapper(FrameHeaderScene FrameScene)
         {
-            modelObject = new MT_Object();
-            modelObject.ObjectName = FrameScene.Name.ToString();
-            ModelObject.BuildFromScene(FrameScene);
+            modelObject = MT_Object.TryBuildObject(FrameScene);
         }
 
         /// <summary>
