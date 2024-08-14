@@ -54,9 +54,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public MT_ObjectType ObjectType { get; set; }
         public Vector3 Position { get; set; }
         [Obsolete("This needs to be removed, we must rely on Quats")]
-        public Vector3 Rotation { get; set; }
-        public Quaternion RotationQuat { get; set; }
-        public Vector3 Scale { get; set; }
+        public Vector3 Rotation { get; set; } = Vector3.Zero;
+        public Quaternion RotationQuat { get; set; } = Quaternion.Identity;
+        public Vector3 Scale { get; set; } = Vector3.One;
         public MT_Lod[] Lods { get; set; }
         public MT_Object[] Children { get; set; }
         public MT_Collision Collision { get; set; }
@@ -64,7 +64,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public NodeBuilder BuildGLTF(SceneBuilder RootScene, NodeBuilder ParentNode)
         {
-            NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(Quaternion.Identity);
+            NodeBuilder ThisNode = new NodeBuilder(ObjectName).WithLocalTranslation(Position).WithLocalScale(Scale).WithLocalRotation(RotationQuat);
 
             if (ParentNode != null)
             {
@@ -85,7 +85,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     {
                         var BuiltMesh = Lods[Index].BuildSkinnedGLTF();
                         var SkeletonJoints = Skeleton.BuildGLTF(Index);
-                        InstanceBuilder Test = RootScene.AddSkinnedMesh(BuiltMesh, Matrix4x4.Identity, SkeletonJoints);
+                        InstanceBuilder Test = RootScene.AddSkinnedMesh(BuiltMesh, ThisNode.WorldMatrix, SkeletonJoints);
                         
                         LodNode.AddNode(SkeletonJoints[0]);
                     }
