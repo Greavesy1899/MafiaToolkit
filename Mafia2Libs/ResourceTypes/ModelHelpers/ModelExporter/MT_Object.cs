@@ -84,8 +84,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     if (Skeleton != null)
                     {
                         var BuiltMesh = Lods[Index].BuildSkinnedGLTF();
-                        var SkeletonJoints = Skeleton.BuildGLTF(Index);
-                        InstanceBuilder Test = RootScene.AddSkinnedMesh(BuiltMesh, ThisNode.WorldMatrix, SkeletonJoints);
+                        NodeBuilder[] SkeletonJoints = Skeleton.BuildGLTF(Index);
+                        RootScene.AddSkinnedMesh(BuiltMesh, ThisNode.WorldMatrix, SkeletonJoints);
                         
                         LodNode.AddNode(SkeletonJoints[0]);
                     }
@@ -213,6 +213,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             NewObject.Scale = CurrentNode.LocalTransform.Scale;
 
             List<MT_Object> ImportedObjects = new List<MT_Object>();
+            List<MT_Lod> ObjectLods = new List<MT_Lod>();
             foreach(Node ChildNode in CurrentNode.VisualChildren)
             {
                 MT_Object PotentialChildObject = MT_Object.TryBuildFromNode(ChildNode);
@@ -247,14 +248,28 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                                 // build lod
                                 MT_Lod NewLod = new MT_Lod();
                                 NewLod.BuildLodFromGLTFMesh(AssociatedMesh);
+                                ObjectLods.Add(NewLod);
                             }
                         }
                     }
                 }
             }
 
-            NewObject.Children = ImportedObjects.ToArray();
-            NewObject.ObjectFlags |= MT_ObjectFlags.HasChildren;
+            // we have lods so ensure they are added to object
+            // (and that the flag is set)
+            if(ObjectLods.Count > 0)
+            {
+                NewObject.Lods = ObjectLods.ToArray();
+                NewObject.ObjectFlags |= MT_ObjectFlags.HasLODs;
+            }
+
+            // we have child objects to ensure that they are added to the object
+            // (and that the file is set)
+            if(ImportedObjects.Count > 0)
+            {
+                NewObject.Children = ImportedObjects.ToArray();
+                NewObject.ObjectFlags |= MT_ObjectFlags.HasChildren;
+            }
 
             return NewObject;
         }

@@ -113,9 +113,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public void BuildLodFromGLTFMesh(Mesh InMesh)
         {
-            int NumVertices = InMesh.EvaluatePoints().ToArray().Length;
-            foreach(MeshPrimitive Primitive in InMesh.Primitives)
+            // TODO: Improve vertex declaration detection
+            VertexDeclaration |= VertexFlags.Position;
+
+            List<Vertex> FinalVertexBuffer = new List<Vertex>();
+            List<uint> FinalIndicesBuffer = new List<uint>();
+
+            FaceGroups = new MT_FaceGroup[InMesh.Primitives.Count];
+            for(int Idx = 0; Idx < FaceGroups.Count(); Idx++)
             {
+                MeshPrimitive Primitive = InMesh.Primitives[Idx];
                 if(Primitive.DrawPrimitiveType != PrimitiveType.TRIANGLES)
                 {
                     // must be triangles
@@ -123,12 +130,52 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
 
                 MT_FaceGroup NewFaceGroup = new MT_FaceGroup();
+                FaceGroups[Idx] = NewFaceGroup;
 
                 // convert material (TODO: Could we use this to determine vertex semantics)
                 Material SelectedMaterial = Primitive.Material;
                 NewFaceGroup.Material = new MT_MaterialInstance();
                 NewFaceGroup.Material.Name = SelectedMaterial.Name;
+
+                // TODO: Include other vertex components in buffer
+                Accessor PositionBuffer = Primitive.GetVertexAccessor("POSITION");
+                IList<Vector3> PosList = PositionBuffer.AsVector3Array();
+
+                uint CurrentOffset = (uint)FinalVertexBuffer.Count;
+                Vertex[] TempList = new Vertex[PosList.Count];
+                List<uint> IndicesList = new List<uint>();
+
+                // TODO: Add other Vertex components in buffer
+                // TODO: Ensure we're not doing multiple work
+                // (eg. redoing a vertex we've already done
+                var TriangleList = Primitive.GetTriangleIndices();
+                foreach(var Triangle in TriangleList)
+                {
+                    TempList[Triangle.A] = new Vertex();
+                    TempList[Triangle.A].Position = PosList[Triangle.A];
+
+                    TempList[Triangle.B] = new Vertex();
+                    TempList[Triangle.B].Position = PosList[Triangle.B];
+
+                    TempList[Triangle.C] = new Vertex();
+                    TempList[Triangle.C].Position = PosList[Triangle.C];
+
+                    IndicesList.Add((uint)(CurrentOffset + Triangle.A));
+                    IndicesList.Add((uint)(CurrentOffset + Triangle.B));
+                    IndicesList.Add((uint)(CurrentOffset + Triangle.C));
+                }
+
+                // complete facegroup
+                NewFaceGroup.StartIndex = (uint)FinalIndicesBuffer.Count;
+                NewFaceGroup.NumFaces = (uint)TriangleList.Count();
+
+                // push facegroup data into mesh buffers
+                FinalVertexBuffer.AddRange(TempList);
+                FinalIndicesBuffer.AddRange(IndicesList);
             }
+
+            Vertices = FinalVertexBuffer.ToArray();
+            Indices = FinalIndicesBuffer.ToArray();
         }
 
 
