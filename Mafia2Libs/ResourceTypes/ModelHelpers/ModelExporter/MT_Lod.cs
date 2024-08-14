@@ -19,8 +19,12 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     using VERTEXRIDGED = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
     using VERTEXSKINNED = SharpGLTF.Geometry.VertexTypes.VertexPositionNormalTangent;
     using VERTEXS4 = VertexJoints4;
+
     using VERTEXRIDGEDBUILDER = VertexBuilder<VertexPositionNormalTangent, VertexTexture1, VertexEmpty>;
     using VERTEXSKINNEDBUILDER = VertexBuilder<VertexPositionNormalTangent, VertexTexture1, VertexJoints4>;
+
+    using RidgedMeshBuilder = MeshBuilder<VertexPositionNormalTangent, VertexTexture1>;
+    using SkeletalMeshBuilder = MeshBuilder<VertexPositionNormalTangent, VertexTexture1, VertexJoints4>;
 
     public class MT_Lod : IValidator
     {
@@ -29,9 +33,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public uint[] Indices { get; set; }
         public MT_FaceGroup[] FaceGroups { get; set; }
 
-        public MeshBuilder<VERTEXRIDGED> BuildGLTF()
+        public RidgedMeshBuilder BuildGLTF()
         {
-            MeshBuilder<VERTEXRIDGED> LodMesh = new MeshBuilder<VERTEXRIDGED>();
+            RidgedMeshBuilder LodMesh = new RidgedMeshBuilder();
 
             foreach (MT_FaceGroup FaceGroup in FaceGroups)
             {
@@ -58,9 +62,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return LodMesh;
         }
 
-        public MeshBuilder<VERTEXSKINNED, VertexTexture1, VertexJoints4> BuildSkinnedGLTF()
+        public SkeletalMeshBuilder BuildSkinnedGLTF()
         {
-            MeshBuilder<VERTEXSKINNED, VertexTexture1, VertexJoints4> LodMesh = new MeshBuilder<VERTEXSKINNED, VertexTexture1, VertexJoints4>();
+            SkeletalMeshBuilder LodMesh = new SkeletalMeshBuilder();
 
             foreach (MT_FaceGroup FaceGroup in FaceGroups)
             {
@@ -113,9 +117,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public void BuildLodFromGLTFMesh(Mesh InMesh)
         {
-            // TODO: Improve vertex declaration detection
-            VertexDeclaration |= VertexFlags.Position;
-
             List<Vertex> FinalVertexBuffer = new List<Vertex>();
             List<uint> FinalIndicesBuffer = new List<uint>();
 
@@ -137,28 +138,75 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 NewFaceGroup.Material = new MT_MaterialInstance();
                 NewFaceGroup.Material.Name = SelectedMaterial.Name;
 
-                // TODO: Include other vertex components in buffer
+                // TODO: Can we clean this, this shit is dreadful
+                IList<Vector3> PosList = null;
                 Accessor PositionBuffer = Primitive.GetVertexAccessor("POSITION");
-                IList<Vector3> PosList = PositionBuffer.AsVector3Array();
+                if(PositionBuffer != null)
+                {
+                    PosList = PositionBuffer.AsVector3Array();
+                    VertexDeclaration |= VertexFlags.Position;
+                }
+
+                IList<Vector3> NormList = null;
+                Accessor NormalAccessor = Primitive.GetVertexAccessor("NORMAL");
+                if (NormalAccessor != null)
+                {
+                    NormList = NormalAccessor.AsVector3Array();
+                    VertexDeclaration |= VertexFlags.Normals;
+                }
+
+                IList<Vector4> TanList = null;
+                Accessor TangentAccessor = Primitive.GetVertexAccessor("TANGENT");
+                if (TangentAccessor != null)
+                {
+                    TanList = TangentAccessor.AsVector4Array();
+                    VertexDeclaration |= VertexFlags.Tangent;
+                }
+
+                IList<Vector2> Tex0List = null;
+                Accessor TexCoord0Accessor = Primitive.GetVertexAccessor("TEXCOORD_0");
+                if (TangentAccessor != null)
+                {
+                    Tex0List = TexCoord0Accessor.AsVector2Array();
+                    VertexDeclaration |= VertexFlags.TexCoords0;
+                }
 
                 uint CurrentOffset = (uint)FinalVertexBuffer.Count;
                 Vertex[] TempList = new Vertex[PosList.Count];
                 List<uint> IndicesList = new List<uint>();
 
-                // TODO: Add other Vertex components in buffer
-                // TODO: Ensure we're not doing multiple work
-                // (eg. redoing a vertex we've already done
+                // now generate vertex buffer using triangle list
                 var TriangleList = Primitive.GetTriangleIndices();
                 foreach(var Triangle in TriangleList)
                 {
-                    TempList[Triangle.A] = new Vertex();
-                    TempList[Triangle.A].Position = PosList[Triangle.A];
+                    void ConvertVertex(int VertexIdx)
+                    {
+                        TempList[VertexIdx] = new Vertex();
 
-                    TempList[Triangle.B] = new Vertex();
-                    TempList[Triangle.B].Position = PosList[Triangle.B];
+                        if (VertexDeclaration.HasFlag(VertexFlags.Position))
+                        {
+                            TempList[VertexIdx].Position = PosList[VertexIdx];
+                        }
 
-                    TempList[Triangle.C] = new Vertex();
-                    TempList[Triangle.C].Position = PosList[Triangle.C];
+                        if (VertexDeclaration.HasFlag(VertexFlags.Normals))
+                        {
+                            TempList[VertexIdx].Normal = NormList[VertexIdx];
+                        }
+
+                        if (VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                        {
+                            TempList[VertexIdx].Tangent = new Vector3(TanList[VertexIdx].X, TanList[VertexIdx].Y, TanList[VertexIdx].Z);
+                        }
+
+                        if(VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                        {
+                            TempList[VertexIdx].UVs[0] = Tex0List[VertexIdx];
+                        }
+                    }
+
+                    ConvertVertex(Triangle.A);
+                    ConvertVertex(Triangle.B);
+                    ConvertVertex(Triangle.C);
 
                     IndicesList.Add((uint)(CurrentOffset + Triangle.A));
                     IndicesList.Add((uint)(CurrentOffset + Triangle.B));
