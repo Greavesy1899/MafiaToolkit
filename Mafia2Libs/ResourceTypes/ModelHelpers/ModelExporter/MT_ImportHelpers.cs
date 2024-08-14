@@ -88,6 +88,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
         public Vector3 Scale { get; set; }
+        public Quaternion RotationQuat { get; set; }
         public MT_ObjectType ObjectType { get; set; }
 
         public MT_ObjectHelper(MT_Object ModelObject)
@@ -102,6 +103,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 ObjectName = OwningObject.ObjectName;
                 Position = OwningObject.Position;
                 Rotation = OwningObject.Rotation;
+                RotationQuat = OwningObject.RotationQuat;
                 Scale = OwningObject.Scale;
                 ObjectType = OwningObject.ObjectType;
             }
@@ -114,6 +116,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 OwningObject.ObjectName = ObjectName;
                 OwningObject.Position = Position;
                 OwningObject.Rotation = Rotation;
+                OwningObject.RotationQuat = RotationQuat;
                 OwningObject.Scale = Scale;
                 OwningObject.ObjectType = ObjectType;
             }

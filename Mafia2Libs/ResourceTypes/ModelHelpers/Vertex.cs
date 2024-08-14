@@ -85,7 +85,7 @@ namespace Utils.Models
         {
             position = new Vector3(0);
             normal = new Vector3(0);
-            tangent = new Vector3(0);
+            tangent = new Vector3(1.0f, 0.0f, 0.0f);
             color0 = new byte[4];
             color1 = new byte[4];
             boneWeights = new float[4];

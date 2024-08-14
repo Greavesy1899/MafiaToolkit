@@ -86,9 +86,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                         var BuiltMesh = Lods[Index].BuildSkinnedGLTF();
                         var SkeletonJoints = Skeleton.BuildGLTF(Index);
                         InstanceBuilder Test = RootScene.AddSkinnedMesh(BuiltMesh, Matrix4x4.Identity, SkeletonJoints);
-
-                       // LodNode.AddNode(SkeletonJoints[0]);
                         
+                        LodNode.AddNode(SkeletonJoints[0]);
                     }
                     else
                     {
@@ -178,7 +177,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             NewObject.Position = Position;
             NewObject.Scale = Vector3.One;
             NewObject.Rotation = Rotation.ToEuler();
-            NewObject.RotationQuat = Quaternion.Identity;
+            NewObject.RotationQuat = Rotation;
 
             return NewObject;
         }
