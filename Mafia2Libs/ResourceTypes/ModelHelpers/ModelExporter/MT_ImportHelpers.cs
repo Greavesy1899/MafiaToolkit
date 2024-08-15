@@ -90,6 +90,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public Vector3 Scale { get; set; }
         public Quaternion RotationQuat { get; set; }
         public MT_ObjectType ObjectType { get; set; }
+        public int FrameNameTableFlags { get; set; }
+        public bool bAddToFrameNameTable { get; set; }
 
         public MT_ObjectHelper(MT_Object ModelObject)
         {
@@ -106,6 +108,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 RotationQuat = OwningObject.RotationQuat;
                 Scale = OwningObject.Scale;
                 ObjectType = OwningObject.ObjectType;
+                FrameNameTableFlags = OwningObject.FrameNameTableFlags;
+                bAddToFrameNameTable = (FrameNameTableFlags != 0);
             }
         }
 
@@ -119,6 +123,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 OwningObject.RotationQuat = RotationQuat;
                 OwningObject.Scale = Scale;
                 OwningObject.ObjectType = ObjectType;
+                OwningObject.FrameNameTableFlags = FrameNameTableFlags;
+
+                if(bAddToFrameNameTable)
+                {
+                    OwningObject.ObjectFlags &= ~MT_ObjectFlags.AddToFrameNameTable;
+                }
+                else
+                {
+                    OwningObject.ObjectFlags |= MT_ObjectFlags.AddToFrameNameTable;
+                }
             }
         }
 

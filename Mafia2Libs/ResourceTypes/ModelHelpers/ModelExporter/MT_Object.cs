@@ -29,7 +29,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         HasLODs = 1,
         HasSkinning = 2,
         HasCollisions = 4,
-        HasChildren = 8
+        HasChildren = 8,
+        AddToFrameNameTable = 16,
     }
 
     public enum MT_ObjectType
@@ -48,6 +49,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     {
         private const string PROP_OBJECT_TYPE_ID = "MT_OBJECT_TYPE";
         private const string PROP_OBJECT_NAME = "MT_OBJECT_NAME";
+        private const string PROP_OBJECT_NAMETABLE_FLAGS = "MT_OBJECT_FRAMENAMETABLE_FLAGS";
 
         public string ObjectName { get; set; }
         public MT_ObjectFlags ObjectFlags { get; set; }
@@ -57,6 +59,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public Vector3 Rotation { get; set; } = Vector3.Zero;
         public Quaternion RotationQuat { get; set; } = Quaternion.Identity;
         public Vector3 Scale { get; set; } = Vector3.One;
+        public int FrameNameTableFlags { get; set; } = 0;
         public MT_Lod[] Lods { get; set; }
         public MT_Object[] Children { get; set; }
         public MT_Collision Collision { get; set; }
@@ -75,6 +78,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             ThisNode.Extras = new JsonObject();
             ThisNode.Extras[PROP_OBJECT_TYPE_ID] = (int)ObjectType;
             ThisNode.Extras[PROP_OBJECT_NAME] = (string)ObjectName;
+
+            if(ObjectFlags.HasFlag(MT_ObjectFlags.AddToFrameNameTable))
+            {
+                ThisNode.Extras[PROP_OBJECT_NAMETABLE_FLAGS] = (int)FrameNameTableFlags;
+            }
 
             if (Lods != null)
             {
@@ -139,6 +147,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             // Construct new MT_Object
             MT_Object NewObject = new MT_Object();
             NewObject.ObjectName = InFrame.Name.ToString();
+            
+            // if Frame was on FrameNameTable, we can also add this to our MT_Object.
+            // In the GLTF, we'll add as extra properties
+            if(InFrame.IsOnFrameTable)
+            {
+                NewObject.FrameNameTableFlags = (int)InFrame.FrameNameTableFlags;
+                NewObject.ObjectFlags |= MT_ObjectFlags.AddToFrameNameTable;
+            }
 
             // Check if this is a single mesh. If not, build as standard.
             FrameObjectSingleMesh CastedMesh = (InFrame as FrameObjectSingleMesh);
@@ -211,6 +227,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             NewObject.RotationQuat = CurrentNode.LocalTransform.Rotation;
             NewObject.Rotation = NewObject.RotationQuat.ToEuler();
             NewObject.Scale = CurrentNode.LocalTransform.Scale;
+
+            // see if we need to store frame name table data
+            JsonNode FrameNameTableNode = CurrentNode.Extras[PROP_OBJECT_NAMETABLE_FLAGS];
+            if(FrameNameTableNode != null)
+            {
+                NewObject.FrameNameTableFlags = FrameNameTableNode.GetValue<int>();
+                NewObject.ObjectFlags |= MT_ObjectFlags.AddToFrameNameTable;
+            }
 
             List<MT_Object> ImportedObjects = new List<MT_Object>();
             List<MT_Lod> ObjectLods = new List<MT_Lod>();
