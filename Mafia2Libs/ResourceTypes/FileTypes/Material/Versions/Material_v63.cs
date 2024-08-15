@@ -181,6 +181,7 @@ namespace ResourceTypes.Materials
 
     public class MaterialSampler_v63 : IMaterialSampler
     {
+        private string _name { get => MaterialParameterNames.GetName(ID); }
         public int Unk0 { get; set; }
         public short Unk1 { get; set; }
 
@@ -221,6 +222,11 @@ namespace ResourceTypes.Materials
         public override VersionsEnumerator GetVersion()
         {
             return VersionsEnumerator.V_63;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("ID: {0} Name: {1} File: {2}", ID, _name, GetFileName());
         }
     }
 }
