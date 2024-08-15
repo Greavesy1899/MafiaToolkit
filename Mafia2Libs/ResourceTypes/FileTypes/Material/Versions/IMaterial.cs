@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using Utils.Types;
 using System.ComponentModel;
+using System.IO;
 using Utils.Extensions;
+using Utils.Types;
 
 namespace ResourceTypes.Materials
 {

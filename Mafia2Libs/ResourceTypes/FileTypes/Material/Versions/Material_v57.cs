@@ -221,6 +221,7 @@ namespace ResourceTypes.Materials
 
     public class MaterialSampler_v57 : IMaterialSampler
     {
+        private string _name { get => MaterialParameterNames.GetName(ID); }
         public int[] UnkSet0 { get; set; }
         public HashName TextureName { get; set; }
         public byte TexType { get; set; }
@@ -322,7 +323,7 @@ namespace ResourceTypes.Materials
 
         public override string ToString()
         {
-            return string.Format("ID: {0} Name: {1}", ID, GetFileName());
+            return string.Format("ID: {0} Name: {1} File: {2}", ID, _name, GetFileName());
         }
     }
 }
