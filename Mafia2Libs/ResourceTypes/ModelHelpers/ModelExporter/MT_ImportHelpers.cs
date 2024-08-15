@@ -12,6 +12,7 @@ using System.Linq;
 using System.Printing;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -109,7 +110,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 Scale = OwningObject.Scale;
                 ObjectType = OwningObject.ObjectType;
                 FrameNameTableFlags = OwningObject.FrameNameTableFlags;
-                bAddToFrameNameTable = (FrameNameTableFlags != 0);
+                bAddToFrameNameTable = OwningObject.ObjectFlags.HasFlag(MT_ObjectFlags.AddToFrameNameTable);
             }
         }
 
@@ -125,13 +126,13 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 OwningObject.ObjectType = ObjectType;
                 OwningObject.FrameNameTableFlags = FrameNameTableFlags;
 
-                if(bAddToFrameNameTable)
+                if (bAddToFrameNameTable)
                 {
-                    OwningObject.ObjectFlags &= ~MT_ObjectFlags.AddToFrameNameTable;
+                    OwningObject.ObjectFlags |= MT_ObjectFlags.AddToFrameNameTable;
                 }
                 else
                 {
-                    OwningObject.ObjectFlags |= MT_ObjectFlags.AddToFrameNameTable;
+                    OwningObject.ObjectFlags &= ~MT_ObjectFlags.AddToFrameNameTable;
                 }
             }
         }

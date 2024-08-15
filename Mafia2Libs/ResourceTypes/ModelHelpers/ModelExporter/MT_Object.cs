@@ -49,7 +49,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     {
         private const string PROP_OBJECT_TYPE_ID = "MT_OBJECT_TYPE";
         private const string PROP_OBJECT_NAME = "MT_OBJECT_NAME";
-        private const string PROP_OBJECT_NAMETABLE_FLAGS = "MT_OBJECT_FRAMENAMETABLE_FLAGS";
+        private const string PROP_OBJECT_ON_FRT = "MT_ON_NAME_TABLE";
+        private const string PROP_OBJECT_FRT_FLAGS = "MT_NAME_TABLE_FLAGS";
 
         public string ObjectName { get; set; }
         public MT_ObjectFlags ObjectFlags { get; set; }
@@ -81,7 +82,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             if(ObjectFlags.HasFlag(MT_ObjectFlags.AddToFrameNameTable))
             {
-                ThisNode.Extras[PROP_OBJECT_NAMETABLE_FLAGS] = (int)FrameNameTableFlags;
+                ThisNode.Extras[PROP_OBJECT_FRT_FLAGS] = (int)FrameNameTableFlags;
+                ThisNode.Extras[PROP_OBJECT_ON_FRT] = (bool)true;
             }
 
             if (Lods != null)
@@ -229,11 +231,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             NewObject.Scale = CurrentNode.LocalTransform.Scale;
 
             // see if we need to store frame name table data
-            JsonNode FrameNameTableNode = CurrentNode.Extras[PROP_OBJECT_NAMETABLE_FLAGS];
+            JsonNode FrameNameTableNode = CurrentNode.Extras[PROP_OBJECT_ON_FRT];
             if(FrameNameTableNode != null)
             {
-                NewObject.FrameNameTableFlags = FrameNameTableNode.GetValue<int>();
                 NewObject.ObjectFlags |= MT_ObjectFlags.AddToFrameNameTable;
+
+                JsonNode FrameNameTableFlagNode = CurrentNode.Extras[PROP_OBJECT_FRT_FLAGS];
+                if(FrameNameTableFlagNode != null)
+                {
+                    NewObject.FrameNameTableFlags = FrameNameTableFlagNode.GetValue<int>();
+                }
             }
 
             List<MT_Object> ImportedObjects = new List<MT_Object>();
