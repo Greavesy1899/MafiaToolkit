@@ -39,8 +39,6 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 
 	// Change the position vector to be 4 units for proper matrix calculations.
 	input.Position.w = 1.0f;
-	input.TexCoord0.y = -input.TexCoord0.y;
-    input.TexCoord7.y = -input.TexCoord7.y;
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
 	output.Position = mul(input.Position, worldMatrix);
