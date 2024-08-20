@@ -31,6 +31,7 @@ using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
+using static ResourceTypes.Collisions.Collision;
 using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
@@ -1760,8 +1761,7 @@ namespace Mafia2Tool
         }
 
         // TODO: Need to cleanup this function, it's atrocious.
-        // TODO: This function is no longer used, I need to find a new home for this SceneData.Collisions construction.
-        private void AddCollisionButton_Click(object sender, EventArgs e)
+        private void ValidateCollisionFile()
         {
             // Check if we need to create a collisions folder
             if (SceneData.Collisions == null)
@@ -1785,8 +1785,7 @@ namespace Mafia2Tool
             }
         }
 
-        // TODO: Cleanup this function, it's atrocious.
-        private Collision.Placement AddCollision(Collision.CollisionModel collisionModel, Vector3 InstancePos, Vector3 InstanceRot)
+        private Collision.CollisionModel CreateCollision(Collision.CollisionModel collisionModel)
         {
             ulong CollisionHash = collisionModel.Hash;
             Collision.CollisionModel CollisionModel = null;
@@ -1814,21 +1813,26 @@ namespace Mafia2Tool
                 CollisionModel = SceneData.Collisions.Models[CollisionHash];
             }
 
+            return CollisionModel;
+        }
+
+        private Collision.Placement CreatePlacement(Collision.CollisionModel ColModel, Vector3 Position, Quaternion Rotation)
+        {
             // Create a new placement for this mesh
             Collision.Placement placement = new Collision.Placement();
-            placement.Hash = CollisionHash;
-            placement.Position = InstancePos;
-            placement.RotationDegrees = InstanceRot;
+            placement.Hash = ColModel.Hash;
+            placement.Position = Position;
+            placement.RotationDegrees = Vector3.Zero;
 
             // Try and find the collision node
-            TreeNode ExistingCollisionNode = dSceneTree.GetTreeNode(CollisionHash.ToString(), collisionRoot, true);
+            TreeNode ExistingCollisionNode = dSceneTree.GetTreeNode(ColModel.Hash.ToString(), collisionRoot, true);
             if (ExistingCollisionNode == null)
             {
                 // Create a new TreeNode for the CollisionModel
-                TreeNode CollisionNode = new TreeNode(CollisionHash.ToString());
-                CollisionNode.Text = CollisionHash.ToString();
-                CollisionNode.Name = CollisionHash.ToString();
-                CollisionNode.Tag = CollisionModel;
+                TreeNode CollisionNode = new TreeNode(ColModel.Hash.ToString());
+                CollisionNode.Text = ColModel.Hash.ToString();
+                CollisionNode.Name = ColModel.Hash.ToString();
+                CollisionNode.Tag = ColModel;
                 ExistingCollisionNode = CollisionNode;
                 dSceneTree.AddToTree(CollisionNode, collisionRoot);
             }
@@ -2151,8 +2155,16 @@ namespace Mafia2Tool
 
             if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
+                ValidateCollisionFile();
+
                 Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromMTCollision(ObjectInfo.ObjectName, ObjectInfo.Collision);
-                AddCollision(collisionModel, ObjectInfo.Position, ObjectInfo.Rotation);
+                CreateCollision(collisionModel);
+
+                // now add instances
+                foreach(MT_CollisionInstance ColInstance in ObjectInfo.Collision.Instances)
+                {
+                    CreatePlacement(collisionModel, ColInstance.Position, ColInstance.Rotation);
+                }
             }
 
             if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))
