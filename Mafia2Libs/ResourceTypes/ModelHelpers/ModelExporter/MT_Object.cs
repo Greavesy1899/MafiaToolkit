@@ -110,9 +110,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             if(Collision != null)
             {
                 NodeBuilder CollisionNode = ThisNode.CreateNode("COLLISION");
-
-                var Mesh = Collision.BuildGLTF();
-                RootScene.AddRigidMesh(Mesh, CollisionNode);
+                Collision.BuildGLTF(RootScene, CollisionNode);
             }
 
             if (Children != null)
@@ -135,10 +133,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return NewObject;
         }
 
-        public static MT_Object TryBuildObject(Collision.CollisionModel InModel)
+        public static MT_Object TryBuildObject(Collision.CollisionModel InModel, Collision.Placement[] InPlacements)
         {
             MT_Object NewObject = new MT_Object();
-            NewObject.BuildFromCollision(InModel);
+            NewObject.BuildFromCollision(InModel, InPlacements);
 
             return NewObject;
         }
@@ -295,13 +293,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     {
                         if(DesiredType == MT_ObjectType.StaticCollision)
                         {
-                            Mesh AssociatedMesh = ChildNode.Mesh;
-                            if(AssociatedMesh != null)
-                            {
-                                MT_Collision NewCollision = new MT_Collision();
-                                NewCollision.BuildLodFromGLTFMesh(AssociatedMesh);
-                                NewObject.Collision = NewCollision;
-                            }
+                            MT_Collision NewCollision = new MT_Collision();
+                            NewCollision.BuildCollisionFromNode(ChildNode);
+                            NewObject.Collision = NewCollision;
                         }
                     }
                 }
@@ -555,10 +549,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             this.Skeleton = ModelSkeleton;
         }
 
-        private void BuildFromCollision(Collision.CollisionModel CollisionObject)
+        private void BuildFromCollision(Collision.CollisionModel CollisionObject, Collision.Placement[] InPlacements)
         {
             Position = Vector3.Zero;
             Rotation = Vector3.Zero;
+            RotationQuat = Quaternion.Identity;
             Scale = Vector3.One;
 
             if (CollisionObject == null)
@@ -622,6 +617,18 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             // Copy sorted triangles in our collision object
             Collision.Indices = inds.ToArray();
+
+            // convert placements to instances
+            Collision.Instances = new MT_CollisionInstance[InPlacements.Length];
+            for(int Idx = 0; Idx < InPlacements.Length;  Idx++)
+            {
+                MT_CollisionInstance ColInstance = new MT_CollisionInstance();
+                ColInstance.Position = InPlacements[Idx].Position;
+                ColInstance.Scale = Vector3.One;
+                ColInstance.Rotation = Quaternion.Identity;
+
+                Collision.Instances[Idx] = ColInstance;
+            }
         }
 
         private void BuildStandardObject(FrameObjectBase FrameObject)

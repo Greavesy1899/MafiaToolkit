@@ -1,6 +1,7 @@
 ﻿using SharpGLTF.Geometry;
 using SharpGLTF.Geometry.VertexTypes;
 using SharpGLTF.Materials;
+using SharpGLTF.Scenes;
 using SharpGLTF.Schema2;
 using System.Collections.Generic;
 using System.IO;
@@ -17,13 +18,29 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
     using CollisionMeshBuilder = MeshBuilder<VertexPosition, VertexEmpty, VertexEmpty>;
 
+    public class MT_CollisionInstance
+    {
+        public Vector3 Position { get; set; } = Vector3.Zero;
+        public Quaternion Rotation { get; set; } = Quaternion.Identity;
+        public Vector3 Scale { get; set; } = Vector3.One;
+    }
+
     public class MT_Collision : IValidator
     {
         public Vector3[] Vertices { get; set; }
         public uint[] Indices { get; set; }
         public MT_FaceGroup[] FaceGroups { get; set; }
+        public MT_CollisionInstance[] Instances { get; set; }
 
-        public CollisionMeshBuilder BuildGLTF()
+        public MT_Collision()
+        {
+            Vertices = new Vector3[0];
+            Indices = new uint[0];
+            FaceGroups = new MT_FaceGroup[0];
+            Instances = new MT_CollisionInstance[0];
+        }
+
+        public void BuildGLTF(SceneBuilder InScene, NodeBuilder RootNode)
         {
             CollisionMeshBuilder LodMesh = new CollisionMeshBuilder();
 
@@ -49,18 +66,56 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
-            return LodMesh;
+            int InstanceIdx = 0;
+            foreach(MT_CollisionInstance Instance in Instances)
+            {
+                NodeBuilder InstanceNode = new NodeBuilder().WithLocalTranslation(Instance.Position).WithLocalScale(Instance.Scale).WithLocalRotation(Instance.Rotation);
+                InstanceNode.Name = string.Format("INSTANCE_{0}", InstanceIdx);
+                RootNode.AddNode(InstanceNode);
+
+                InScene.AddRigidMesh(LodMesh, InstanceNode);
+
+                InstanceIdx++;
+            }
         }
 
-        public void BuildLodFromGLTFMesh(Mesh InMesh)
+        public void BuildCollisionFromNode(Node RootNode)
         {
+            Mesh CollisionMesh = null;
+
+            // Load instances
+            List<MT_CollisionInstance> NewInstances = new List<MT_CollisionInstance>();
+            foreach (Node ChildNode in RootNode.VisualChildren)
+            {
+                if (ChildNode.Name.Contains("INSTANCE"))
+                {
+                    MT_CollisionInstance ColInstance = new MT_CollisionInstance();
+                    ColInstance.Position = ChildNode.LocalTransform.Translation;
+                    ColInstance.Scale = ChildNode.LocalTransform.Scale;
+                    ColInstance.Rotation = ChildNode.LocalTransform.Rotation;
+
+                    NewInstances.Add(ColInstance);
+
+                    CollisionMesh = ChildNode.Mesh;
+                }
+            }
+
+            Instances = NewInstances.ToArray();
+
+            if (CollisionMesh == null)
+            {
+                // failure!
+                return;
+            }
+
+            // load mesh from instances
             List<Vector3> FinalVertexBuffer = new List<Vector3>();
             List<uint> FinalIndicesBuffer = new List<uint>();
 
-            FaceGroups = new MT_FaceGroup[InMesh.Primitives.Count];
+            FaceGroups = new MT_FaceGroup[CollisionMesh.Primitives.Count];
             for (int Idx = 0; Idx < FaceGroups.Count(); Idx++)
             {
-                MeshPrimitive Primitive = InMesh.Primitives[Idx];
+                MeshPrimitive Primitive = CollisionMesh.Primitives[Idx];
                 if (Primitive.DrawPrimitiveType != PrimitiveType.TRIANGLES)
                 {
                     // must be triangles

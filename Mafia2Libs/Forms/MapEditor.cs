@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Extensions;
@@ -1642,7 +1643,10 @@ namespace Mafia2Tool
 
         private ModelWrapper ExportCollision(Collision.CollisionModel data)
         {
-            MT_Object CollisionObject = MT_Object.TryBuildObject(data);
+            Collision.Placement[] TempPlacements = new Collision.Placement[1];
+            TempPlacements[0] = new Collision.Placement();
+
+            MT_Object CollisionObject = MT_Object.TryBuildObject(data, TempPlacements);
 
             ModelWrapper WrapperObject = new ModelWrapper();
             WrapperObject.ModelObject = CollisionObject;
@@ -1654,33 +1658,31 @@ namespace Mafia2Tool
         {
             MT_Object RootObject = new MT_Object();
             RootObject.ObjectName = "COLLISION_ROOT";
-            RootObject.ObjectType = MT_ObjectType.Null;
+            RootObject.ObjectType = MT_ObjectType.Dummy;
 
             List<MT_Object> ChildObjects = new List<MT_Object>();
 
             foreach (TreeNode CollisionNode in CollisionRoot.Nodes)
             {
                 // Skip non collision models
-                if (CollisionNode.Tag.GetType() != typeof(Collision.CollisionModel))
+                Collision.CollisionModel CurrentModel = (CollisionNode.Tag as Collision.CollisionModel);
+                if(CurrentModel == null)
                 {
                     continue;
                 }
 
-                // search for placement models
-                foreach (TreeNode PlacementNode in CollisionNode.Nodes)
+                List<Collision.Placement> Placements = new List<Collision.Placement>();
+                foreach(TreeNode PlacementNode in CollisionNode.Nodes)
                 {
                     if (PlacementNode.Tag.GetType() == typeof(Collision.Placement))
                     {
-                        Collision.Placement CurrentPlacement = (PlacementNode.Tag as Collision.Placement);
-
-                        MT_Object NewCollisionObject = MT_Object.TryBuildObject((CollisionNode.Tag as Collision.CollisionModel));
-                        NewCollisionObject.Position = CurrentPlacement.Position;
-                        NewCollisionObject.Rotation = CurrentPlacement.RotationDegrees;
-                        NewCollisionObject.RotationQuat = Quaternion.Identity;
-
-                        ChildObjects.Add(NewCollisionObject);
+                        Placements.Add(PlacementNode.Tag as Collision.Placement);
                     }
                 }
+
+                // construct collision using model and placements
+                MT_Object NewCollisionObject = MT_Object.TryBuildObject(CurrentModel, Placements.ToArray());
+                ChildObjects.Add(NewCollisionObject);
             }
 
             RootObject.Children = ChildObjects.ToArray();
