@@ -291,6 +291,19 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                             }
                         }
                     }
+                    else if(ChildNode.Name.Contains("COLLISION"))
+                    {
+                        if(DesiredType == MT_ObjectType.StaticCollision)
+                        {
+                            Mesh AssociatedMesh = ChildNode.Mesh;
+                            if(AssociatedMesh != null)
+                            {
+                                MT_Collision NewCollision = new MT_Collision();
+                                NewCollision.BuildLodFromGLTFMesh(AssociatedMesh);
+                                NewObject.Collision = NewCollision;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -308,6 +321,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 NewObject.Children = ImportedObjects.ToArray();
                 NewObject.ObjectFlags |= MT_ObjectFlags.HasChildren;
+            }
+
+            if(NewObject.Collision != null)
+            {
+                NewObject.ObjectFlags |= MT_ObjectFlags.HasCollisions;
             }
 
             return NewObject;
@@ -551,6 +569,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             ObjectFlags |= MT_ObjectFlags.HasCollisions;
             ObjectName = CollisionObject.Hash.ToString();
+            ObjectType = MT_ObjectType.StaticCollision;
 
             Collision = new MT_Collision();
 

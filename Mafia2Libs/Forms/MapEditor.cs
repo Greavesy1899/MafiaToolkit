@@ -1652,7 +1652,13 @@ namespace Mafia2Tool
 
         private ModelWrapper ExportCollisions(TreeNode CollisionRoot)
         {
-            foreach(TreeNode CollisionNode in CollisionRoot.Nodes)
+            MT_Object RootObject = new MT_Object();
+            RootObject.ObjectName = "COLLISION_ROOT";
+            RootObject.ObjectType = MT_ObjectType.Null;
+
+            List<MT_Object> ChildObjects = new List<MT_Object>();
+
+            foreach (TreeNode CollisionNode in CollisionRoot.Nodes)
             {
                 // Skip non collision models
                 if (CollisionNode.Tag.GetType() != typeof(Collision.CollisionModel))
@@ -1660,10 +1666,30 @@ namespace Mafia2Tool
                     continue;
                 }
 
+                // search for placement models
+                foreach (TreeNode PlacementNode in CollisionNode.Nodes)
+                {
+                    if (PlacementNode.Tag.GetType() == typeof(Collision.Placement))
+                    {
+                        Collision.Placement CurrentPlacement = (PlacementNode.Tag as Collision.Placement);
 
+                        MT_Object NewCollisionObject = MT_Object.TryBuildObject((CollisionNode.Tag as Collision.CollisionModel));
+                        NewCollisionObject.Position = CurrentPlacement.Position;
+                        NewCollisionObject.Rotation = CurrentPlacement.RotationDegrees;
+                        NewCollisionObject.RotationQuat = Quaternion.Identity;
+
+                        ChildObjects.Add(NewCollisionObject);
+                    }
+                }
             }
 
-            return null;
+            RootObject.Children = ChildObjects.ToArray();
+            RootObject.ObjectFlags |= MT_ObjectFlags.HasChildren;
+
+            ModelWrapper WrapperObject = new ModelWrapper();
+            WrapperObject.ModelObject = RootObject;
+
+            return WrapperObject;
         }
 
         private ModelWrapper Export3DFrame()
