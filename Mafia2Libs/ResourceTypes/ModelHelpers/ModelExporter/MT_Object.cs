@@ -107,6 +107,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
+            if(Collision != null)
+            {
+                NodeBuilder CollisionNode = ThisNode.CreateNode("COLLISION");
+
+                var Mesh = Collision.BuildGLTF();
+                RootScene.AddRigidMesh(Mesh, CollisionNode);
+            }
+
             if (Children != null)
             {
                 foreach (MT_Object ChildObject in Children)
