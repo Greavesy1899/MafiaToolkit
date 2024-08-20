@@ -197,6 +197,13 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 bValidity = false;
             }
 
+            if(Instances.Length == 0)
+            {
+                AddMessage(
+                    MT_MessageType.Warning, 
+                    "This collision object has no instances! The Mesh will be added into the file. Create an instance for it to be interactable in the game world.");
+            }
+
             foreach(var FaceGroup in FaceGroups)
             {
                 bool bIsValid = FaceGroup.ValidateObject(TrackerObject);

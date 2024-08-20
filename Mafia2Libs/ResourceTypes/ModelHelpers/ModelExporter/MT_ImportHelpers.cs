@@ -37,6 +37,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         private MT_Collision OwningObject; 
 
         public CollisionGroup[] Materials { get; set; }
+        public MT_CollisionInstance[] Instances { get; set; }
 
         public MT_CollisionHelper(MT_Collision CollisionObject)
         {
@@ -54,6 +55,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     Materials[i].FaceGroupName = MaterialName;
                     Materials[i].CollisionMaterial = CollisionEnumUtils.MaterialNameToEnumValue(MaterialName);
                 }
+
+                Instances = OwningObject.Instances;
             }
         }
 
@@ -67,6 +70,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     OwningObject.FaceGroups[i].Material.Name = NewCollisionName;
                     Materials[i].FaceGroupName = NewCollisionName;
                 }
+
+                OwningObject.Instances = Instances;
             }
         }
 
