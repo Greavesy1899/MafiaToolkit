@@ -100,7 +100,7 @@ namespace Utils.Models
 
         private ushort ConvertFloatToUInt16(float Factorised)
         {
-            float Rounded = MathF.Floor(Factorised);
+            float Rounded = MathF.Round(Factorised);
             ushort Value = Convert.ToUInt16(Rounded);
             return Value;
         }
@@ -111,6 +111,7 @@ namespace Utils.Models
             float tempBinormal = 0.0f;
             Vector3 MinusOffset = PosToWrite - offset;
             Vector3 Factorised = MinusOffset / factor;
+
             byte[] tempPosData;
 
             //Do X

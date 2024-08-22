@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.FrameResource;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.BufferPools;
-using Utils.Types;
-using ResourceTypes.ModelHelpers.ModelExporter;
-using System.IO;
-using Utils.Settings;
-using System.Windows.Forms;
+using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
-using System.Numerics;
-using Vortice.Mathematics;
-using Utils.VorticeUtils;
-using System.Diagnostics;
+using ResourceTypes.ModelHelpers.ModelExporter;
 using SharpGLTF.Schema2;
-using ResourceTypes.Cutscene.AnimEntities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using Utils.Types;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace Utils.Models
 {
@@ -98,16 +94,38 @@ namespace Utils.Models
             return -MathF.Max(AbsVal1, AbsVal2);
         }
 
+        public (float DecompressionFactor, Vector3 DecompressionOffset) GetDecompFactor(BoundingBox boundingBox)
+        {
+            Vector3 bbox = boundingBox.Min;
+            List<float> Size = new() { boundingBox.Size.X, boundingBox.Size.Y, boundingBox.Size.Z };
+            Vector3 decompressionOffset = Vector3.Zero;
+            decompressionOffset.X = (MathF.Ceiling(Math.Abs(bbox.X) * 65535.0f) + 1.0f) / 65535.0f;
+            decompressionOffset.Y = (MathF.Ceiling(Math.Abs(bbox.Y) * 65535.0f) + 1.0f) / 65535.0f;
+            decompressionOffset.Z = (MathF.Ceiling(Math.Abs(bbox.Z) * 65535.0f) + 1.0f) / 65535.0f;
+            float decompressionFactor = 65535.0f / (MathF.Floor(65535.0f / Size.Max()) - 1.0f);
+            return (decompressionFactor, decompressionOffset * -1.0f);
+        }
+
         /// <summary>
         /// Update decompression offset and position.
         /// </summary>
         public void CalculateDecompression()
         {
             FrameGeometry frameGeometry = frameMesh.Geometry;
+            frameGeometry.DecompressionFactor = 1.525879E-05f;
+            frameGeometry.DecompressionOffset = Vector3.Zero;
 
             BoundingBox bounds = new BoundingBox();
             bounds.SetMinimum(frameMesh.Boundings.Min);
             bounds.SetMaximum(frameMesh.Boundings.Max);
+
+            // new shit
+            (float, Vector3) Values = GetDecompFactor(bounds);
+            frameGeometry.DecompressionFactor = Values.Item1;
+            frameGeometry.DecompressionOffset = Values.Item2;
+
+            // old shit
+            /**
             frameGeometry.DecompressionOffset = new Vector3(bounds.Min.X, bounds.Min.Y, bounds.Min.Z);
 
             double MaxX = bounds.Max.X - bounds.Min.X;
@@ -123,9 +141,7 @@ namespace Utils.Models
             double pow = Math.Ceiling(result);
             double factor = Math.Pow(2.0f, pow);
             float OldOutput = (float)(factor / 0x10000);
-            float NewOutput = frameGeometry.DecompressionFactor;
-
-            Debug.WriteLine(string.Format("{0} => {1}", OldOutput, NewOutput));
+            float NewOutput = frameGeometry.DecompressionFactor;*/
         }
 
         public void BuildIndexBuffer()
@@ -228,6 +244,10 @@ namespace Utils.Models
                         vert.WriteUvData(vBuffer, startIndex, 3);
                     }
 
+                    // TODO: delete once validation is complete
+                    byte[] data = new byte[vertexSize];
+                    Array.Copy(vBuffer, (v * vertexSize), data, 0, vertexSize);
+                    Vertex TestVertex = VertexTranslator.DecompressVertex(data, frameLod.VertexDeclaration, frameGeometry.DecompressionOffset, frameGeometry.DecompressionFactor, vertexOffsets);
                 }
 
                 VertexBuffers[i] = new VertexBuffer(FNV64.Hash("M2TK." + ModelObject.ObjectName + ".VB" + i));

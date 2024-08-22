@@ -72,8 +72,8 @@ namespace Utils.VorticeUtils
 
         public static BoundingBox CalculateBounds(List<Vertex[]> data)
         {
-            Vector3 Min = new Vector3(1.0f / float.MinValue);
-            Vector3 Max = new Vector3(1.0f / float.MaxValue);
+            Vector3 Min = new Vector3(float.MaxValue);
+            Vector3 Max = new Vector3(float.MinValue);
 
             for (int p = 0; p < data.Count; p++)
             {

@@ -70,7 +70,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             foreach(MT_CollisionInstance Instance in Instances)
             {
                 NodeBuilder InstanceNode = new NodeBuilder().WithLocalTranslation(Instance.Position).WithLocalScale(Instance.Scale).WithLocalRotation(Instance.Rotation);
-                InstanceNode.Name = string.Format("INSTANCE_{0}", InstanceIdx);
+                InstanceNode.Name = string.Format("COLINSTANCE_{0}", InstanceIdx);
                 RootNode.AddNode(InstanceNode);
 
                 InScene.AddRigidMesh(LodMesh, InstanceNode);
@@ -79,30 +79,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
-        public void BuildCollisionFromNode(Node RootNode)
+        public void BuildCollisionFromNode(Node InstanceNode)
         {
-            Mesh CollisionMesh = null;
-
-            // Load instances
-            List<MT_CollisionInstance> NewInstances = new List<MT_CollisionInstance>();
-            foreach (Node ChildNode in RootNode.VisualChildren)
-            {
-                if (ChildNode.Name.Contains("INSTANCE"))
-                {
-                    MT_CollisionInstance ColInstance = new MT_CollisionInstance();
-                    ColInstance.Position = ChildNode.LocalTransform.Translation;
-                    ColInstance.Scale = ChildNode.LocalTransform.Scale;
-                    ColInstance.Rotation = ChildNode.LocalTransform.Rotation;
-
-                    NewInstances.Add(ColInstance);
-
-                    CollisionMesh = ChildNode.Mesh;
-                }
-            }
-
-            Instances = NewInstances.ToArray();
-
-            if (CollisionMesh == null)
+            Mesh CollisionMesh = InstanceNode.Mesh;
+            if(CollisionMesh == null)
             {
                 // failure!
                 return;
@@ -165,6 +145,15 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             Vertices = FinalVertexBuffer.ToArray();
             Indices = FinalIndicesBuffer.ToArray();
+
+            // add as instance
+            MT_CollisionInstance ColInstance = new MT_CollisionInstance();
+            ColInstance.Position = InstanceNode.LocalTransform.Translation;
+            ColInstance.Scale = InstanceNode.LocalTransform.Scale;
+            ColInstance.Rotation = InstanceNode.LocalTransform.Rotation;
+
+            Instances = new MT_CollisionInstance[1];
+            Instances[0] = ColInstance;
         }
 
         private VERTEXCOLLISIONBUILDER BuildRidgedVertex(Vector3 InPosition)

@@ -109,8 +109,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             if(Collision != null)
             {
-                NodeBuilder CollisionNode = ThisNode.CreateNode("COLLISION");
-                Collision.BuildGLTF(RootScene, CollisionNode);
+                Collision.BuildGLTF(RootScene, ThisNode);
             }
 
             if (Children != null)
@@ -228,8 +227,15 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 return null;
             }
 
+            string DesiredName = CurrentNode.Name;
+            JsonNode ObjectNameNode = CurrentNode.Extras[PROP_OBJECT_NAME];
+            if (ObjectNameNode != null)
+            {
+                DesiredName = ObjectNameNode.GetValue<string>();
+            }
+
             MT_Object NewObject = new MT_Object();
-            NewObject.ObjectName = CurrentNode.Name;
+            NewObject.ObjectName = DesiredName;
             NewObject.ObjectType = DesiredType;
             NewObject.Position = CurrentNode.LocalTransform.Translation;
             NewObject.RotationQuat = CurrentNode.LocalTransform.Rotation;
@@ -247,6 +253,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 {
                     NewObject.FrameNameTableFlags = FrameNameTableFlagNode.GetValue<int>();
                 }
+            }
+
+            if(NewObject.ObjectType == MT_ObjectType.StaticCollision)
+            {
+                NewObject.Collision = new MT_Collision();
             }
 
             List<MT_Object> ImportedObjects = new List<MT_Object>();
@@ -289,13 +300,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                             }
                         }
                     }
-                    else if(ChildNode.Name.Contains("COLLISION"))
+                    else if(ChildNode.Name.Contains("COLINSTANCE"))
                     {
-                        if(DesiredType == MT_ObjectType.StaticCollision)
+                        if (DesiredType == MT_ObjectType.StaticCollision)
                         {
-                            MT_Collision NewCollision = new MT_Collision();
-                            NewCollision.BuildCollisionFromNode(ChildNode);
-                            NewObject.Collision = NewCollision;
+                            NewObject.Collision.BuildCollisionFromNode(ChildNode);
                         }
                     }
                 }
