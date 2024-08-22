@@ -97,13 +97,18 @@ namespace Utils.Models
         public (float DecompressionFactor, Vector3 DecompressionOffset) GetDecompFactor(BoundingBox boundingBox)
         {
             Vector3 bbox = boundingBox.Min;
-            List<float> Size = new() { boundingBox.Size.X, boundingBox.Size.Y, boundingBox.Size.Z };
             Vector3 decompressionOffset = Vector3.Zero;
-            decompressionOffset.X = (MathF.Ceiling(Math.Abs(bbox.X) * 65535.0f) + 1.0f) / 65535.0f;
-            decompressionOffset.Y = (MathF.Ceiling(Math.Abs(bbox.Y) * 65535.0f) + 1.0f) / 65535.0f;
-            decompressionOffset.Z = (MathF.Ceiling(Math.Abs(bbox.Z) * 65535.0f) + 1.0f) / 65535.0f;
-            float decompressionFactor = 65535.0f / (MathF.Floor(65535.0f / Size.Max()) - 1.0f);
-            return (decompressionFactor, decompressionOffset * -1.0f);
+            decompressionOffset.X = bbox.X;
+            decompressionOffset.Y = bbox.Y;
+            decompressionOffset.Z = MathF.Round(bbox.Z);
+
+            List<float> SizeValues = new() { boundingBox.Max.X - decompressionOffset.X, boundingBox.Max.Y - decompressionOffset.Y, boundingBox.Max.Z - decompressionOffset.Z };
+
+            float Size = SizeValues.Max();
+
+            float decompressionFactor = 1.0f / (65535.0f / Size);
+
+            return (decompressionFactor, decompressionOffset);
         }
 
         /// <summary>
