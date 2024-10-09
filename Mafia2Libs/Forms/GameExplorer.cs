@@ -17,6 +17,7 @@ namespace Mafia2Tool
 {
     public partial class GameExplorer : Form
     {
+        private SceneData SceneData = new SceneData();
         private DirectoryInfo currentDirectory;
         private DirectoryInfo rootDirectory;
         private DirectoryInfo pcDirectory;
@@ -272,11 +273,13 @@ namespace Mafia2Tool
                     }
                 }
 
-                var file = FileFactory.ConstructFromFileInfo(info);
+                var file = FileFactory.ConstructFromFileInfo(info,SceneData);
 
                 if(file is FileFrameResource)
                 {
+                    SceneData.ScenePath = currentDirectory.FullName;
                     CachedFrameResourceFile = file as FileFrameResource;
+                    CachedFrameResourceFile.SceneData = new SceneData();
                     Button_OpenMapEditor.Enabled = true;
                 }
 
@@ -759,7 +762,7 @@ namespace Mafia2Tool
 
         private void CheckValidSDS(FileInfo info)
         {
-            var file = FileFactory.ConstructFromFileInfo(info);
+            var file = FileFactory.ConstructFromFileInfo(info,SceneData);
 
             if(file is FileSDS)
             {
@@ -831,7 +834,7 @@ namespace Mafia2Tool
                 if (s.Length > 0)
                 {
                     FileInfo info = new FileInfo(s[0]);
-                    FileBase file = FileFactory.ConstructFromFileInfo(info);
+                    FileBase file = FileFactory.ConstructFromFileInfo(info,SceneData);
                     bool result = OpenFile(file);
                 }
 

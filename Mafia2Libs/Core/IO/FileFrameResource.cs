@@ -6,6 +6,7 @@ namespace Core.IO
 {
     public class FileFrameResource : FileBase
     {
+        public SceneData SceneData = new SceneData();
         private bool bForceBigEndian;
 
         public FileFrameResource(FileInfo info) : base(info)
@@ -23,7 +24,7 @@ namespace Core.IO
             SceneData.BuildData(bForceBigEndian);
 
             //d3d viewer expects data inside scenedata.
-            MapEditor d3dForm = new MapEditor(file);
+            MapEditor d3dForm = new MapEditor(file,SceneData);
             d3dForm.Dispose();
             return true;
         }

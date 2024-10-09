@@ -3,6 +3,7 @@ using Rendering.Graphics;
 using ResourceTypes.Actors;
 using System.IO;
 using System.Numerics;
+using Mafia2Tool;
 using Utils.Types;
 using Vortice.Mathematics;
 
@@ -58,7 +59,7 @@ namespace ResourceTypes.FrameResource
             return string.Format("{0}", Name);
         }
 
-        public override void ConstructRenderable()
+        public override void ConstructRenderable(SceneData sceneData)
         {
             BoundingBox TempBox = new BoundingBox(new Vector3(0.5f), new Vector3(0.5f));
             RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(TempBox, WorldTransform);

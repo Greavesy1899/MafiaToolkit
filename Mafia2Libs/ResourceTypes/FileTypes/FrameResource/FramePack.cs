@@ -14,6 +14,7 @@ namespace ResourceTypes.FrameResource
     public class FramePack
     {
         // Used for both
+        private SceneData SceneData = new SceneData();
         private Dictionary<ulong, List<int>> ModelAttachments;
         private FrameResource OwningResource;
 
@@ -238,8 +239,9 @@ namespace ResourceTypes.FrameResource
             return parent;
         }
 
-        public void WriteToFile(string ExportName, FrameObjectBase Frame)
+        public void WriteToFile(string ExportName, FrameObjectBase Frame,SceneData sceneData)
         {
+            SceneData = sceneData;
             ModelAttachments = new Dictionary<ulong, List<int>>();
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ExportName, FileMode.Create)))
@@ -259,8 +261,9 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public void ReadFramesFromFile(string FileName)
+        public void ReadFramesFromFile(string FileName,SceneData sceneData)
         {
+            SceneData = sceneData;
             FrameObjects = new Dictionary<int, object>();
             FrameMaterials = new Dictionary<int, FrameMaterial>();
             FrameGeometries = new Dictionary<int, FrameGeometry>();

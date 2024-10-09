@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Mafia2Tool;
 using Utils.Extensions;
 using ResourceTypes.Misc;
 using Utils.Logging;
@@ -12,6 +13,7 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameResource
     {
+        private SceneData SceneData = new SceneData();
         FrameHeader header;
         Dictionary<int, FrameHeaderScene> frameScenes = new Dictionary<int, FrameHeaderScene>();
         Dictionary<int, FrameGeometry> frameGeometries = new Dictionary<int, FrameGeometry>();
@@ -377,7 +379,7 @@ namespace ResourceTypes.FrameResource
         public TreeNode ReadFramesFromFile(string filename)
         {
             FramePack Packet = new FramePack(this);
-            Packet.ReadFramesFromFile(filename);
+            Packet.ReadFramesFromFile(filename,SceneData);
             Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }
@@ -385,7 +387,7 @@ namespace ResourceTypes.FrameResource
         public void SaveFramesToFile(string FileName, FrameObjectBase frame)
         {
             FramePack Packet = new FramePack(this);
-            Packet.WriteToFile(FileName, frame);
+            Packet.WriteToFile(FileName, frame,SceneData);
         }
 
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)

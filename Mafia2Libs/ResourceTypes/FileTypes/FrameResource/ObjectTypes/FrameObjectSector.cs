@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using Mafia2Tool;
 using Utils.Extensions;
 using Utils.Types;
 using Utils.VorticeUtils;
@@ -151,7 +152,7 @@ namespace ResourceTypes.FrameResource
             return Name.String;
         }
 
-        public override void ConstructRenderable()
+        public override void ConstructRenderable(SceneData sceneData)
         {
             RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(Bounds, WorldTransform);
             RenderAdapter = new Rendering.Core.RenderableAdapter();

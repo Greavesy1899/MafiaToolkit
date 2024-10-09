@@ -10,6 +10,7 @@ namespace Rendering.Factories
 {
     public static class RenderableFactory
     {
+        private static SceneData SceneData = new SceneData();
         public static RenderBoundingBox BuildBoundingBox(BoundingBox BBox, Matrix4x4 WorldTransform)
         {
             RenderBoundingBox RenderBox = new RenderBoundingBox();
@@ -26,8 +27,9 @@ namespace Rendering.Factories
             return Plane3D;
         }
 
-        public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh)
+        public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh,SceneData sceneData)
         {
+            SceneData = sceneData;
             if (Mesh.MaterialIndex == -1 && Mesh.MeshIndex == -1)
             {
                 return null;

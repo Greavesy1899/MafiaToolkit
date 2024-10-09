@@ -424,7 +424,7 @@ namespace Mafia2Tool
             // 
             // FrameBrowser
             // 
-            FrameBrowser.Filter = "Toolkit Frame Data|*framedata";
+            FrameBrowser.Filter = "Toolkit Frame Data|*.framedata|FrameResource|*.fr";
             // 
             // AnimFileDialog
             // 

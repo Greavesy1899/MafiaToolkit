@@ -39,6 +39,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
     public class MT_Object : IValidator
     {
+        private SceneData SceneData = new SceneData();
         private const string FileHeader = "MTO";
         private const byte FileVersion = 3;
 

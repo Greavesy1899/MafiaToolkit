@@ -1,11 +1,12 @@
 ﻿using System.Globalization;
 using System.IO;
+using Mafia2Tool;
 
 namespace Core.IO
 {
     public class FileFactory
     {
-        public static FileBase ConstructFromFileInfo(FileInfo info)
+        public static FileBase ConstructFromFileInfo(FileInfo info,SceneData sceneData)
         {
             // Set culture to invariant, potential fix with Turkish windows and XBin
             CultureInfo SavedCulture = CultureInfo.CurrentCulture;

@@ -26,31 +26,31 @@ using Utils.Logging;
 
 namespace Mafia2Tool
 {
-    public static class SceneData
+    public class SceneData
     {
-        public static FrameNameTable FrameNameTable;
-        public static FrameResource FrameResource;
-        public static VertexBufferManager VertexBufferPool;
-        public static IndexBufferManager IndexBufferPool;
-        public static SoundSectorResource SoundSector;
-        public static Actor[] Actors;
-        public static ItemDescLoader[] ItemDescs;
-        public static Collision Collisions;
-        public static CityAreas CityAreas;
-        public static CityShops CityShops;
-        public static IRoadmap roadMap;
-        public static AnimalTrafficLoader ATLoader;
-        public static NAVData[] AIWorlds;
-        public static NAVData[] OBJData;
-        public static HPDData HPDData;
-        public static TranslokatorLoader Translokator;
-        public static PrefabLoader Prefabs;
-        public static string ScenePath = "";
+        public FrameNameTable FrameNameTable;
+        public FrameResource FrameResource;
+        public VertexBufferManager VertexBufferPool;
+        public IndexBufferManager IndexBufferPool;
+        public SoundSectorResource SoundSector;
+        public Actor[] Actors;
+        public ItemDescLoader[] ItemDescs;
+        public Collision Collisions;
+        public CityAreas CityAreas;
+        public CityShops CityShops;
+        public IRoadmap roadMap;
+        public AnimalTrafficLoader ATLoader;
+        public NAVData[] AIWorlds;
+        public NAVData[] OBJData;
+        public HPDData HPDData;
+        public TranslokatorLoader Translokator;
+        public PrefabLoader Prefabs;
+        public string ScenePath = "";
 
-        private static SDSContentFile sdsContent;
-        private static bool isBigEndian;
+        private SDSContentFile sdsContent;
+        private bool isBigEndian;
 
-        private static FileInfo BuildFileInfo(string name)
+        private FileInfo BuildFileInfo(string name)
         {
             var file = name;
             var info = new FileInfo(file);
@@ -58,7 +58,7 @@ namespace Mafia2Tool
             return info;
         }
 
-        public static void BuildData(bool forceBigEndian)
+        public void BuildData(bool forceBigEndian)
         {
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
@@ -240,13 +240,13 @@ namespace Mafia2Tool
             Actors = act.ToArray();
         }
 
-        public static void UpdateResourceType()
+        public void UpdateResourceType()
         {
             sdsContent.CreateFileFromFolder();
             sdsContent.WriteToFile();
         }
 
-        public static Actor CreateNewActor()
+        public Actor CreateNewActor()
         {
             string DirectoryAndName = string.Format("{0}/Actors_{1}.act", ScenePath, Actors.Length);
             Actor NewActorFile = new Actor(DirectoryAndName);
@@ -259,7 +259,7 @@ namespace Mafia2Tool
             return NewActorFile;
         }
 
-        public static void CleanData()
+        public void CleanData()
         {
             FrameNameTable = null;
             FrameResource = null;

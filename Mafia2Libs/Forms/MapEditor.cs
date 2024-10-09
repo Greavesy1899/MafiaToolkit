@@ -37,6 +37,7 @@ namespace Mafia2Tool
 {
     public partial class MapEditor : Form
     {
+        private SceneData SceneData = new SceneData();
         private InputClass Input { get; set; }
         private GraphicsClass Graphics { get; set; }
 
@@ -65,8 +66,9 @@ namespace Mafia2Tool
 
         private Dictionary<string, int> NamesAndDuplicationStore;
 
-        public MapEditor(FileInfo info)
+        public MapEditor(FileInfo info,SceneData sceneData)
         {
+            SceneData = sceneData;
             InitializeComponent();
             Localise();
 
@@ -387,7 +389,7 @@ namespace Mafia2Tool
             string name = (sender as ToolStripMenuItem).Name;
             ParentInfo.ParentType ParentType = (name == "UpdateParent1Button" ? ParentInfo.ParentType.ParentIndex1 : ParentInfo.ParentType.ParentIndex2);
             ListWindow window = new ListWindow();
-            window.PopulateForm(ParentType);
+            window.PopulateForm(ParentType,SceneData);
             
             if (window.ShowDialog() == DialogResult.OK)
             {
@@ -647,7 +649,7 @@ namespace Mafia2Tool
 
         private IRenderer BuildRenderObjectFromFrame(FrameObjectBase fObject)
         {
-            fObject.ConstructRenderable();
+            fObject.ConstructRenderable(SceneData);
             IRenderer Renderable = fObject.GetRenderItem();
             if(Renderable != null)
             {
@@ -1519,7 +1521,7 @@ namespace Mafia2Tool
                     newEntry = new FrameObjectModel((FrameObjectModel)node.Tag);
                     FrameObjectModel mesh = (newEntry as FrameObjectModel);
                     SceneData.FrameResource.DuplicateBlocks(mesh);
-                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh);
+                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh,SceneData);
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectSector))
@@ -1534,7 +1536,7 @@ namespace Mafia2Tool
                     newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
                     FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
                     SceneData.FrameResource.DuplicateBlocks(mesh);
-                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh);
+                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh,SceneData);
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectTarget))
@@ -1973,9 +1975,20 @@ namespace Mafia2Tool
             if (FrameBrowser.ShowDialog() == DialogResult.OK)
             {
                 string Filename = FrameBrowser.FileName;
-                TreeNode parent = SceneData.FrameResource.ReadFramesFromFile(Filename);
-                dSceneTree.AddToTree(parent, frameResourceRoot);
-                ConvertNodeToFrame(parent);
+                
+                if (FrameBrowser.FilterIndex.Equals(2))
+                {
+                    
+                }
+                else
+                {
+                    
+                    TreeNode parent = SceneData.FrameResource.ReadFramesFromFile(Filename);
+                    dSceneTree.AddToTree(parent, frameResourceRoot);
+                    ConvertNodeToFrame(parent);
+                    
+                }
+                
             }
         }
 

@@ -14,6 +14,7 @@ namespace Rendering.Graphics
 {
     public static class TextureLoader
     {
+        private static SceneData SceneData = new SceneData();
         private static bool ThumbnailCallback()
         {
             return false;

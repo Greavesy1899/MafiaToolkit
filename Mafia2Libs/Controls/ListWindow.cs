@@ -8,6 +8,7 @@ namespace Mafia2Tool
 {
     public partial class ListWindow : Form
     {
+        private SceneData SceneData = new SceneData();
         private bool frameMode = false;
         private bool searchMode = false;
         public object chosenObject = null;
@@ -19,8 +20,9 @@ namespace Mafia2Tool
             InitializeComponent();
         }
 
-        public void PopulateForm(ParentInfo.ParentType ParentType)
+        public void PopulateForm(ParentInfo.ParentType ParentType,SceneData sceneData)
         {
+            SceneData = sceneData;
             labelInfo.Text = Language.GetString("$SELECT_PARENT") + '\n' + Language.GetString("$HOW_TO_SEARCH");
             type = ParentType;
             frameMode = true;

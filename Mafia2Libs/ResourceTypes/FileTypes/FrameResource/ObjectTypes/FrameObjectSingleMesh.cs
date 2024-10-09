@@ -3,6 +3,7 @@ using Rendering.Graphics;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using Mafia2Tool;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;
@@ -201,9 +202,9 @@ namespace ResourceTypes.FrameResource
             NewModel.CreateObjectsFromModel();
         }
 
-        public override void ConstructRenderable()
+        public override void ConstructRenderable(SceneData sceneData)
         {
-            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this);
+            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this,sceneData);//todo
             RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }
