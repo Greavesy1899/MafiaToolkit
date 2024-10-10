@@ -283,7 +283,6 @@ namespace ResourceTypes.FrameResource
                         {
                             writer.Write(ListEntry);
                         }
-                        //mainMemoryStream.Position = 0;
                     }
                 } 
             
@@ -424,8 +423,7 @@ namespace ResourceTypes.FrameResource
                 {
                     SaveFrameStream(frame.Children[i], memoryStream,ImportedScene);
                 }
-
-                //memoryStream.Position = 0;
+                
             }
 
             return memoryStream;
