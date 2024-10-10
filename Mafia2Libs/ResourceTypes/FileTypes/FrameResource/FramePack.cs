@@ -1,8 +1,11 @@
-﻿using Mafia2Tool;
+﻿using System;
+using Mafia2Tool;
 using ResourceTypes.BufferPools;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using Utils.Extensions;
 using Utils.Settings;
 
@@ -35,7 +38,7 @@ namespace ResourceTypes.FrameResource
             this.OwningResource = OwningResource;
         }
 
-        private void SaveFrame(FrameObjectBase frame, BinaryWriter writer)
+        private void SaveFrame(FrameObjectBase frame, BinaryWriter writer,SceneData sceneData)
         {
             //is this even needed? hmm.
             writer.Write(frame.RefID); // Save old RefID
@@ -161,11 +164,11 @@ namespace ResourceTypes.FrameResource
             writer.Write(frame.Children.Count);
             for (int i = 0; i < frame.Children.Count; i++)
             {
-                SaveFrame(frame.Children[i], writer);
+                SaveFrame(frame.Children[i], writer,sceneData);
             }
         }
 
-        private FrameObjectBase ReadFrame(MemoryStream stream)
+        private FrameObjectBase ReadFrame(MemoryStream stream,SceneData sceneData)
         {
             int OldRefID = stream.ReadInt32(false); // read old RefID so we can make lookup dictionary
 
@@ -206,8 +209,8 @@ namespace ResourceTypes.FrameResource
                     IndexBuffer indexBuffer = new IndexBuffer(stream, false);
                     VertexBuffer vertexBuffer = new VertexBuffer(stream, false);
 
-                    SceneData.IndexBufferPool.TryAddBuffer(indexBuffer);
-                    SceneData.VertexBufferPool.TryAddBuffer(vertexBuffer);
+                    sceneData.IndexBufferPool.TryAddBuffer(indexBuffer);
+                    sceneData.VertexBufferPool.TryAddBuffer(vertexBuffer);
                 }
             }
 
@@ -233,7 +236,7 @@ namespace ResourceTypes.FrameResource
             int count = stream.ReadInt32(false);
             for (int i = 0; i < count; i++)
             {
-                FrameObjectBase child = ReadFrame(stream);
+                FrameObjectBase child = ReadFrame(stream,sceneData);
             }
 
             return parent;
@@ -246,7 +249,7 @@ namespace ResourceTypes.FrameResource
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(ExportName, FileMode.Create)))
             {
-                SaveFrame(Frame, writer);
+                SaveFrame(Frame, writer,sceneData);
 
                 writer.Write(ModelAttachments.Count);
                 foreach(var Entry in ModelAttachments)
@@ -260,8 +263,175 @@ namespace ResourceTypes.FrameResource
                 }
             }
         }
+        
+        public MemoryStream WriteToStream(FrameObjectBase Frame,SceneData ImportedScene)
+        {
+            ModelAttachments = new Dictionary<ulong, List<int>>();
+            MemoryStream mainMemoryStream = new MemoryStream();
+            
+                using (BinaryWriter writer = new BinaryWriter(mainMemoryStream, Encoding.UTF8,leaveOpen:true))
+                {
+                    MemoryStream frameStream = SaveFrameStream(Frame, null,ImportedScene);
+                    writer.Write(frameStream.ToArray());
 
-        public void ReadFramesFromFile(string FileName,SceneData sceneData)
+                    writer.Write(ModelAttachments.Count);
+                    foreach(var Entry in ModelAttachments)
+                    {
+                        writer.Write(Entry.Key);
+                        writer.Write(Entry.Value.Count);
+                        foreach(var ListEntry in Entry.Value)
+                        {
+                            writer.Write(ListEntry);
+                        }
+                        mainMemoryStream.Position = 0;
+                    }
+                } 
+            
+            return mainMemoryStream; 
+        }
+        
+        private MemoryStream SaveFrameStream(FrameObjectBase frame,MemoryStream memoryStream,SceneData ImportedScene)
+        {
+            if (memoryStream == null)
+            {
+             memoryStream = new MemoryStream();   
+            }
+            
+            using (BinaryWriter writer = new BinaryWriter(memoryStream, Encoding.UTF8,leaveOpen:true))
+            {
+                writer.Write(frame.RefID); // Save old RefID
+                Debug.WriteLine(frame.ToString());
+                if (frame.GetType() == typeof(FrameObjectArea))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Area);
+                    (frame as FrameObjectArea).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectCamera))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Camera);
+                    (frame as FrameObjectCamera).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectCollision))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Collision);
+                    (frame as FrameObjectCollision).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectComponent_U005))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Component_U00000005);
+                    (frame as FrameObjectComponent_U005).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectDummy))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Dummy);
+                    (frame as FrameObjectDummy).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectDeflector))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.ParticleDeflector);
+                    (frame as FrameObjectDeflector).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectFrame))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Frame);
+                    (frame as FrameObjectFrame).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectJoint))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Joint);
+                    (frame as FrameObjectJoint).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectLight))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Light);
+                    (frame as FrameObjectLight).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectModel))
+                {
+                    var mesh = (frame as FrameObjectModel);
+                    writer.Write((ushort)FrameResourceObjectType.Model);
+                    mesh.WriteToFilePart1(writer);
+                    mesh.Geometry.WriteToFile(writer);
+                    mesh.Material.WriteToFile(writer);
+                    mesh.BlendInfo.WriteToFile(writer);
+                    mesh.Skeleton.WriteToFile(writer);
+                    mesh.SkeletonHierarchy.WriteToFile(writer);
+                    mesh.WriteToFilePart2(writer);
+
+                    // Write Attachment hashes to the dictionary
+                    List<int> AttachmentHashes = new List<int>();
+                    foreach (FrameObjectModel.AttachmentReference Attachment in mesh.AttachmentReferences)
+                    {
+                        AttachmentHashes.Add(Attachment.Attachment.RefID);
+                    }
+
+                    ModelAttachments.Add(mesh.Name.Hash, AttachmentHashes);
+
+                    foreach (var lod in mesh.Geometry.LOD)
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            ImportedScene.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
+                            ImportedScene.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
+                            writer.Write(stream.ToArray());
+                        }
+                    }
+                }
+                else if (frame.GetType() == typeof(FrameObjectSector))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Sector);
+                    (frame as FrameObjectSector).WriteToFile(writer);
+                }
+                else if (frame.GetType() == typeof(FrameObjectSingleMesh))
+                {
+                    var mesh = (frame as FrameObjectSingleMesh);
+                    writer.Write((ushort)FrameResourceObjectType.SingleMesh);
+                    mesh.WriteToFile(writer);
+                    mesh.Geometry.WriteToFile(writer);
+                    mesh.Material.WriteToFile(writer);
+
+                    foreach (var lod in mesh.Geometry.LOD)
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            ImportedScene.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
+                            ImportedScene.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
+                            writer.Write(stream.ToArray());
+                        }
+                    }
+                }
+                else if (frame.GetType() == typeof(FrameObjectTarget))
+                {
+                    writer.Write((ushort)FrameResourceObjectType.Target);
+                    (frame as FrameObjectTarget).WriteToFile(writer);
+                }
+                else
+                {
+                    writer.Write(frame.Type);
+                    frame.WriteToFile(writer);
+                }
+
+                // write FrameNameTable info
+                writer.Write(frame.IsOnFrameTable);
+                writer.Write((uint)frame.FrameNameTableFlags);
+
+                // Write ParentIndex1 and ParentIndex2 info
+                writer.Write(frame.ParentIndex1.RefID);
+                writer.Write(frame.ParentIndex2.RefID);
+
+                writer.Write(frame.Children.Count);
+                for (int i = 0; i < frame.Children.Count; i++)
+                {
+                    SaveFrameStream(frame.Children[i], memoryStream,ImportedScene);
+                }
+
+                memoryStream.Position = 0;
+            }
+
+            return memoryStream;
+        }
+
+        public void ReadFramesFromFile(string Data,SceneData sceneData,MemoryStream FRImportData)
         {
             SceneData = sceneData;
             FrameObjects = new Dictionary<int, object>();
@@ -273,9 +443,20 @@ namespace ResourceTypes.FrameResource
             ModelAttachments = new Dictionary<ulong, List<int>>();
             OldRefIDLookupTable = new Dictionary<int, FrameObjectBase>();
 
-            using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(FileName)))
+            Byte[] PackData;
+            if(FRImportData == null)
             {
-                RootFrame = ReadFrame(stream);
+                PackData = File.ReadAllBytes(Data).ToArray();
+            }
+            else
+            {
+                PackData = FRImportData.GetBuffer();
+            }
+            
+            
+            using (MemoryStream stream = new MemoryStream(PackData))
+            {
+                RootFrame = ReadFrame(stream,sceneData);
 
                 uint NumModelAttachments = stream.ReadUInt32(false);
                 for(int i = 0; i < NumModelAttachments; i++)

@@ -35,6 +35,7 @@ namespace Forms.Docking
             this.JumpToButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFRFrameButton = new System.Windows.Forms.ToolStripMenuItem();
             this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
             this.FrameActions = new System.Windows.Forms.ToolStripMenuItem();
             this.UpdateParent1Button = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,6 +72,7 @@ namespace Forms.Docking
             this.JumpToButton,
             this.DeleteButton,
             this.DuplicateButton,
+            this.ImportFRFrameButton,
             this.Export3DButton,
             this.FrameActions});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
@@ -94,6 +96,12 @@ namespace Forms.Docking
             this.DuplicateButton.Name = "DuplicateButton";
             this.DuplicateButton.Size = new System.Drawing.Size(164, 22);
             this.DuplicateButton.Text = "Duplicate";
+            // 
+            // ImportFRFrameButton
+            // 
+            this.ImportFRFrameButton.Name = "ImportFRFrameButton";
+            this.ImportFRFrameButton.Size = new System.Drawing.Size(164, 22);
+            this.ImportFRFrameButton.Text = "Import Frame";
             // 
             // Export3DButton
             // 
@@ -318,6 +326,7 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem JumpToButton;
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
+        public System.Windows.Forms.ToolStripMenuItem ImportFRFrameButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
         private Mafia2Tool.Controls.MTreeView TreeView_Explorer;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;

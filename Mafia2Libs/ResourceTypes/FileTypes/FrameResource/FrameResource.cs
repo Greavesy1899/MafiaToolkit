@@ -376,18 +376,33 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public TreeNode ReadFramesFromFile(string filename)
+        public TreeNode ReadFramesFromFile(string filename,SceneData sceneData)
         {
             FramePack Packet = new FramePack(this);
-            Packet.ReadFramesFromFile(filename,SceneData);
+            Packet.ReadFramesFromFile(filename,sceneData,null);
+            Packet.PushPacketIntoFrameResource();
+            return BuildFromFrames(null, Packet.RootFrame);
+        }
+        
+        public TreeNode ReadFramesFromImport(MemoryStream fromFR,String name,SceneData OriginalScene)
+        {
+            FramePack Packet = new FramePack(OriginalScene.FrameResource);
+            Packet.ReadFramesFromFile(name,OriginalScene,fromFR);//I know
             Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }
 
-        public void SaveFramesToFile(string FileName, FrameObjectBase frame)
+        public void SaveFramesToFile(string FileName, FrameObjectBase frame,SceneData sceneData)
         {
             FramePack Packet = new FramePack(this);
-            Packet.WriteToFile(FileName, frame,SceneData);
+            Packet.WriteToFile(FileName, frame,sceneData);
+        }
+        
+        public MemoryStream SaveFramesStream(FrameObjectBase frame,SceneData ImportedScene)
+        {
+            FramePack Packet = new FramePack(ImportedScene.FrameResource);
+            MemoryStream PacketStream = Packet.WriteToStream(frame, ImportedScene);
+            return PacketStream;
         }
 
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)
