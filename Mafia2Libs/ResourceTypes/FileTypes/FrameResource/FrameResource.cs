@@ -384,7 +384,7 @@ namespace ResourceTypes.FrameResource
             return BuildFromFrames(null, Packet.RootFrame);
         }
         
-        public TreeNode ReadFramesFromImport(MemoryStream fromFR,String name,SceneData OriginalScene)
+        public TreeNode ReadFramesFromImport(MemoryStream fromFR,string name,SceneData OriginalScene)
         {
             FramePack Packet = new FramePack(OriginalScene.FrameResource);
             Packet.ReadFramesFromFile(name,OriginalScene,fromFR);//I know
