@@ -378,6 +378,7 @@ namespace ResourceTypes.FrameResource
 
         public TreeNode ReadFramesFromFile(string filename,SceneData sceneData)
         {
+            SceneData = sceneData;
             FramePack Packet = new FramePack(this);
             Packet.ReadFramesFromFile(filename,sceneData,null);
             Packet.PushPacketIntoFrameResource();
@@ -422,11 +423,12 @@ namespace ResourceTypes.FrameResource
                 AddChildren(parsedNodes, child.Children, node);
             }
         }
-        public TreeNode BuildTree(FrameNameTable.FrameNameTable table)
+        public TreeNode BuildTree(FrameNameTable.FrameNameTable table,SceneData sceneData)
         {
-            TreeNode root = new TreeNode("FrameResource Contents");
+            SceneData = sceneData;
+            TreeNode root = new TreeNode("FrameResource Contents: "+SceneData.ScenePath.Substring(SceneData.ScenePath.LastIndexOf('\\') + 1));
             root.Tag = header;
-
+            
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
             Dictionary<int, TreeNode> parsedNodes = new Dictionary<int, TreeNode>();
             Dictionary<int, TreeNode> notAddedNodes = new Dictionary<int, TreeNode>();

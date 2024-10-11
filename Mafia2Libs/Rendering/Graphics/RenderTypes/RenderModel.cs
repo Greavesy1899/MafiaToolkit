@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using Mafia2Tool;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;
@@ -19,6 +20,7 @@ namespace Rendering.Graphics
 {
     public class RenderModel : IRenderer
     {
+        public SceneData SceneData;
         public struct ModelPart
         {
             public IMaterial Material;

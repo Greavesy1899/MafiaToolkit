@@ -28,7 +28,7 @@ namespace Rendering.Graphics
 
     public class GraphicsClass
     {
-        private SceneData SceneData = new SceneData();
+        public SceneData SceneData = new SceneData();
         public InputClass Input { get; private set; }
         public WorldSettings WorldSettings { get; set; }
         public Camera Camera { get; set; }
