@@ -429,7 +429,7 @@ namespace ResourceTypes.FrameResource
             return memoryStream;
         }
 
-        public void ReadFramesFromFile(string Data,SceneData sceneData,MemoryStream FRImportData)
+        public void ReadFramesFromFile(string Name,SceneData sceneData,MemoryStream FRImportData)
         {
             SceneData = sceneData;
             FrameObjects = new Dictionary<int, object>();
@@ -442,13 +442,13 @@ namespace ResourceTypes.FrameResource
             OldRefIDLookupTable = new Dictionary<int, FrameObjectBase>();
 
             Byte[] PackData;
-            if(FRImportData == null)
+            if(FRImportData == null)//if data aren't from FR import, Name is filename
             {
-                PackData = File.ReadAllBytes(Data).ToArray();
+                PackData = File.ReadAllBytes(Name).ToArray();//data from file
             }
             else
             {
-                PackData = FRImportData.GetBuffer();
+                PackData = FRImportData.GetBuffer();//data from stream
             }
             
             

@@ -6,7 +6,7 @@ namespace Core.IO
 {
     public class FileFactory
     {
-        public static FileBase ConstructFromFileInfo(FileInfo info,SceneData sceneData)
+        public static FileBase ConstructFromFileInfo(FileInfo info)
         {
             // Set culture to invariant, potential fix with Turkish windows and XBin
             CultureInfo SavedCulture = CultureInfo.CurrentCulture;

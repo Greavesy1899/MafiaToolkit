@@ -273,13 +273,12 @@ namespace Mafia2Tool
                     }
                 }
 
-                var file = FileFactory.ConstructFromFileInfo(info,SceneData);
+                var file = FileFactory.ConstructFromFileInfo(info);
 
                 if(file is FileFrameResource)
                 {
                     SceneData.ScenePath = currentDirectory.FullName;
                     CachedFrameResourceFile = file as FileFrameResource;
-                    CachedFrameResourceFile.SceneData = new SceneData();
                     Button_OpenMapEditor.Enabled = true;
                 }
 
@@ -762,7 +761,7 @@ namespace Mafia2Tool
 
         private void CheckValidSDS(FileInfo info)
         {
-            var file = FileFactory.ConstructFromFileInfo(info,SceneData);
+            var file = FileFactory.ConstructFromFileInfo(info);
 
             if(file is FileSDS)
             {
@@ -834,7 +833,7 @@ namespace Mafia2Tool
                 if (s.Length > 0)
                 {
                     FileInfo info = new FileInfo(s[0]);
-                    FileBase file = FileFactory.ConstructFromFileInfo(info,SceneData);
+                    FileBase file = FileFactory.ConstructFromFileInfo(info);
                     bool result = OpenFile(file);
                 }
 

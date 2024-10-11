@@ -25,6 +25,10 @@ namespace Forms.Docking
             Localize(sceneName);
         }
 
+        public DockImportSceneTree()
+        {
+            
+        }
         public void Localize(string sceneName)
         {
             Text = sceneName.Substring(sceneName.LastIndexOf('\\') + 1);
@@ -314,6 +318,10 @@ namespace Forms.Docking
                 InternalGotoExplorerNode();
             }
         }
-        
+
+        private void CancelButton_OnClick(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

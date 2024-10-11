@@ -13,6 +13,7 @@ using System.Numerics;
 using Vortice.Mathematics;
 using Utils.VorticeUtils;
 using System.Diagnostics;
+using Mafia2Tool;
 
 namespace Utils.Models
 {
@@ -50,7 +51,7 @@ namespace Utils.Models
 
         public MT_Animation AnimationObject { get; set; }
 
-        public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
+        public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers,SceneData sceneData)
         {
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
@@ -58,7 +59,7 @@ namespace Utils.Models
             modelObject = new MT_Object();
             modelObject.ObjectName = frameMesh.Name.ToString();
             //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
-            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers);
+            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers,sceneData);
         }
 
         public ModelWrapper(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
@@ -72,17 +73,19 @@ namespace Utils.Models
             modelObject.BuildFromCooked(frameModel, vertexBuffers, indexBuffers);
         }
 
-        public ModelWrapper(FrameObjectBase FrameObject)
+        public ModelWrapper(FrameObjectBase FrameObject,SceneData sceneData)
         {
             modelObject = new MT_Object();
             modelObject.ObjectName = FrameObject.Name.ToString();
+            modelObject.SceneData = sceneData;
             modelObject.BuildStandardObject(FrameObject);
         }
 
-        public ModelWrapper(FrameHeaderScene FrameScene)
+        public ModelWrapper(FrameHeaderScene FrameScene,SceneData sceneData)
         {
             modelObject = new MT_Object();
             modelObject.ObjectName = FrameScene.Name.ToString();
+            modelObject.SceneData = sceneData;
             ModelObject.BuildFromScene(FrameScene);
         }
 

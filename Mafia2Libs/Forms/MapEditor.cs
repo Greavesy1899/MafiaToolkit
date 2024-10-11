@@ -49,7 +49,7 @@ namespace Mafia2Tool
         //docking panels
         private DockPropertyGrid dPropertyGrid;
         private DockSceneTree dSceneTree;
-        private DockImportSceneTree dImportSceneTree;
+        private DockImportSceneTree dImportSceneTree = new DockImportSceneTree();
         private DockViewProperties dViewProperties;
 
         //parent nodes for data
@@ -358,8 +358,7 @@ namespace Mafia2Tool
             importFRRoot = Importedtree;
             dImportSceneTree = new DockImportSceneTree(this.ImportedScene.ScenePath);
             dImportSceneTree.importButton.Click += new EventHandler(ImportButton_Click);
-            dImportSceneTree.cancelButton.Click += new EventHandler(CancelButton_Click);
-            dImportSceneTree.FormClosed += new FormClosedEventHandler(CancelButton_Click);//could be handled better
+            dImportSceneTree.FormClosed += new FormClosedEventHandler(CancelButton_Click);
             dImportSceneTree.AddToTree(importFRRoot);
             dImportSceneTree.TopMost = true;
             dImportSceneTree.Show();
@@ -403,7 +402,7 @@ namespace Mafia2Tool
             RenderPanel.MouseEnter += RenderPanel_MouseEnter;
             RenderLoop.Run(this, () => { if (!Frame()) Shutdown(); });
         }
-
+        
         private void RenderPanel_MouseEnter(object sender, EventArgs e) => RenderPanel.Focus();
         private void RenderForm_MouseMove(object sender, MouseEventArgs e) => mousePos = new Point(e.Location.X, e.Location.Y);
         private void CullModeButton_Click(object sender, EventArgs e) => Graphics.ToggleD3DCullMode();
@@ -439,10 +438,7 @@ namespace Mafia2Tool
             SceneData.CleanData();
             RenderStorageSingleton.Instance.TextureCache.Clear();
             dSceneTree.Dispose();
-            if (dImportSceneTree !=null)
-            {
-                dImportSceneTree.Dispose();
-            }
+            dImportSceneTree.Dispose();
             dPropertyGrid.Dispose();
             dViewProperties.Dispose();
             Shutdown();
@@ -1283,11 +1279,6 @@ namespace Mafia2Tool
 
         private void CancelButton_Click(object sender, EventArgs e)
         {
-            if (dImportSceneTree !=null)//check whether user closes window with X button
-            {
-             dImportSceneTree.Dispose();   
-            }
-            
             Button_ImportFrame.Enabled = true;
         }
             
@@ -1759,12 +1750,12 @@ namespace Mafia2Tool
                 }
                 else
                 {
-                    ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
+                    ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectSingleMesh, indexBuffers, vertexBuffers,SceneData);
                 }
             }
             else
             {
-                ModelWrapperObject = new ModelWrapper(FrameObject);
+                ModelWrapperObject = new ModelWrapper(FrameObject,SceneData);
             }
 
             // Make sure it's actually valid
@@ -1776,7 +1767,7 @@ namespace Mafia2Tool
 
         private void ExportScene(FrameHeaderScene Scene)
         {
-            ModelWrapper ModelWrapperObject = new ModelWrapper(Scene);
+            ModelWrapper ModelWrapperObject = new ModelWrapper(Scene,SceneData);
             InternalSaveModelWrapper(ModelWrapperObject);
         }
 

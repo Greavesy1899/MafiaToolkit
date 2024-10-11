@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Forms.Docking
 {
     partial class DockImportSceneTree
@@ -221,6 +223,7 @@ namespace Forms.Docking
             cancelButton.TabIndex = 2;
             cancelButton.Text = "Cancel";
             cancelButton.UseVisualStyleBackColor = true;
+            cancelButton.Click += CancelButton_OnClick;
             // 
             // DockImportSceneTree
             // 

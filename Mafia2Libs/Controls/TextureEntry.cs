@@ -8,7 +8,6 @@ namespace Mafia2Tool
 {
     public partial class TextureEntry : UserControl
     {
-        public SceneData SceneData;
         private bool isSelected;
         private Color defaultColour;
         private IMaterial material;

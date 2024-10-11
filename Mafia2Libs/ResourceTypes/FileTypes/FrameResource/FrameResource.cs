@@ -378,7 +378,6 @@ namespace ResourceTypes.FrameResource
 
         public TreeNode ReadFramesFromFile(string filename,SceneData sceneData)
         {
-            SceneData = sceneData;
             FramePack Packet = new FramePack(this);
             Packet.ReadFramesFromFile(filename,sceneData,null);
             Packet.PushPacketIntoFrameResource();
@@ -388,7 +387,7 @@ namespace ResourceTypes.FrameResource
         public TreeNode ReadFramesFromImport(MemoryStream fromFR,string name,SceneData OriginalScene)
         {
             FramePack Packet = new FramePack(OriginalScene.FrameResource);
-            Packet.ReadFramesFromFile(name,OriginalScene,fromFR);//I know
+            Packet.ReadFramesFromFile(name,OriginalScene,fromFR);
             Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }

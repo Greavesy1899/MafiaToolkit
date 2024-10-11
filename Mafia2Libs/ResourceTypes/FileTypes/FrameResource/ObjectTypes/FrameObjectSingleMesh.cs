@@ -204,7 +204,7 @@ namespace ResourceTypes.FrameResource
 
         public override void ConstructRenderable(SceneData sceneData)
         {
-            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this,sceneData);//todo
+            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this,sceneData);//this is the reason why sceneData was added, could be polished
             RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }

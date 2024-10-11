@@ -72,7 +72,6 @@ namespace Mafia2Tool
             MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             TxtBrowser = new System.Windows.Forms.OpenFileDialog();
             dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            dockImportPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             FrameBrowser = new System.Windows.Forms.OpenFileDialog();
             SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
             AnimFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -423,15 +422,6 @@ namespace Mafia2Tool
             dockPanel1.Size = new System.Drawing.Size(1420, 667);
             dockPanel1.TabIndex = 0;
             // 
-            // dockImportPanel
-            // 
-            dockImportPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            dockImportPanel.Location = new System.Drawing.Point(0, 25);
-            dockImportPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            dockImportPanel.Name = "dockImportPanel";
-            dockImportPanel.Size = new System.Drawing.Size(1420, 667);
-            dockImportPanel.TabIndex = 0;
-            // 
             // FrameBrowser
             // 
             FrameBrowser.Filter = "FrameResource|*.fr|Toolkit Frame Data|*.framedata";
@@ -494,7 +484,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ViewSide2Button;
         private System.Windows.Forms.ToolStripSplitButton CurrentModeButton;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
-        private WeifenLuo.WinFormsUI.Docking.DockPanel dockImportPanel;
         private System.Windows.Forms.ToolStripMenuItem EditLighting;
         private System.Windows.Forms.ToolStripMenuItem Button_TestConvert16;
         private System.Windows.Forms.ToolStripMenuItem Button_TestConvert32;

@@ -39,7 +39,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
     public class MT_Object : IValidator
     {
-        private SceneData SceneData = new SceneData();
+        public SceneData SceneData = new SceneData();
         private const string FileHeader = "MTO";
         private const byte FileVersion = 3;
 
@@ -74,8 +74,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         }
 
         /** Construction Functions */
-        public void BuildFromCooked(FrameObjectSingleMesh SingleMesh, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
+        public void BuildFromCooked(FrameObjectSingleMesh SingleMesh, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer,SceneData sceneData)
         {
+            SceneData = sceneData;
             BuildStandardObject(SingleMesh);
 
             FrameGeometry GeometryInfo = SingleMesh.Geometry;
@@ -157,7 +158,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public void BuildFromCooked(FrameObjectModel RiggedModel, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
         {
-            BuildFromCooked((FrameObjectSingleMesh)RiggedModel, VBuffer, IBuffer);
+            BuildFromCooked((FrameObjectSingleMesh)RiggedModel, VBuffer, IBuffer,SceneData);
 
             MT_Skeleton ModelSkeleton = new MT_Skeleton();
 
@@ -556,7 +557,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                         ChildVBuffers[c] = SceneData.VertexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].VertexBufferRef.Hash);
                     }
 
-                    ChildObject.BuildFromCooked(CastedMesh, ChildVBuffers, ChildIBuffers);
+                    ChildObject.BuildFromCooked(CastedMesh, ChildVBuffers, ChildIBuffers,SceneData);
                 }
                 else
                 {
