@@ -118,7 +118,7 @@ namespace Mafia2Tool
             if (sdsContent.HasResource("FrameResource"))
             {
                 var name = sdsContent.GetResourceFiles("FrameResource", true)[0];
-                FrameResource = new FrameResource(name, isBigEndian);
+                FrameResource = new FrameResource(name, this, isBigEndian);
             }
 
             //Item Desc

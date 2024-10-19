@@ -295,7 +295,7 @@ namespace Mafia2Tool
                         return;
                     }
 
-                    SceneData.FrameResource.SaveFramesToFile(ExportName, frame,SceneData);
+                    SceneData.FrameResource.SaveFramesToFile(ExportName, frame);
                 }
             }        
         }
@@ -337,7 +337,7 @@ namespace Mafia2Tool
 
         public void PopulateList()
         {
-            TreeNode tree = SceneData.FrameResource.BuildTree(SceneData.FrameNameTable,SceneData);
+            TreeNode tree = SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
             tree.Tag = SceneData.FrameResource.Header;
             frameResourceRoot = tree;
             dSceneTree.AddToTree(tree);
@@ -345,18 +345,18 @@ namespace Mafia2Tool
         
         public void PopulateImportedData(string ImportedFilename)
         {
-            this.ImportedScene = new SceneData();
-            this.ImportedScene.ScenePath = Path.GetDirectoryName(ImportedFilename);
-            this.ImportedScene.BuildData(false);
+            ImportedScene = new SceneData();
+            ImportedScene.ScenePath = Path.GetDirectoryName(ImportedFilename);
+            ImportedScene.BuildData(false);
             InitImportTree();
         }
 
         public void InitImportTree()
         {
-            TreeNode Importedtree = this.ImportedScene.FrameResource.BuildTree(this.ImportedScene.FrameNameTable,ImportedScene);
-            Importedtree.Tag = this.ImportedScene.FrameResource.Header;
+            TreeNode Importedtree = ImportedScene.FrameResource.BuildTree(ImportedScene.FrameNameTable);
+            Importedtree.Tag = ImportedScene.FrameResource.Header;
             importFRRoot = Importedtree;
-            dImportSceneTree = new DockImportSceneTree(this.ImportedScene.ScenePath);
+            dImportSceneTree = new DockImportSceneTree(ImportedScene.ScenePath);
             dImportSceneTree.importButton.Click += new EventHandler(ImportButton_Click);
             dImportSceneTree.FormClosed += new FormClosedEventHandler(CancelButton_Click);
             dImportSceneTree.AddToTree(importFRRoot);
@@ -1271,8 +1271,8 @@ namespace Mafia2Tool
                 return;
             }
             FrameObjectBase frame = frnode.Tag as FrameObjectBase;
-            MemoryStream importedData = ImportedScene.FrameResource.SaveFramesStream(frame,ImportedScene);
-            TreeNode parent = ImportedScene.FrameResource.ReadFramesFromImport(importedData, frame.Name.String, SceneData);
+            MemoryStream importedData = ImportedScene.FrameResource.SaveFramesStream(frame);
+            TreeNode parent = SceneData.FrameResource.ReadFramesFromImport(importedData, frame.Name.String);
             dSceneTree.AddToTree(parent, frameResourceRoot);
             ConvertNodeToFrame(parent);
         }
@@ -2036,7 +2036,7 @@ namespace Mafia2Tool
                 else
                 {
                     
-                    TreeNode parent = SceneData.FrameResource.ReadFramesFromFile(Filename,SceneData);
+                    TreeNode parent = SceneData.FrameResource.ReadFramesFromFile(Filename);
                     dSceneTree.AddToTree(parent, frameResourceRoot);
                     ConvertNodeToFrame(parent);
                     

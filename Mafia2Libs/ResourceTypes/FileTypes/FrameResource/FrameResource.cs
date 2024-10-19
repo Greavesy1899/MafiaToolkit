@@ -89,8 +89,9 @@ namespace ResourceTypes.FrameResource
             frameObjects = new Dictionary<int, object>();
         }
 
-        public FrameResource(string file, bool isBigEndian = false) : this()
+        public FrameResource(string file,SceneData sceneData, bool isBigEndian = false) : this()
         {
+            SceneData = sceneData;
             if (File.Exists("FrameProps.bin"))
             {
                 FramePropContents = new FrameProps(new FileInfo("FrameProps.bin"));
@@ -376,32 +377,32 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public TreeNode ReadFramesFromFile(string filename,SceneData sceneData)
+        public TreeNode ReadFramesFromFile(string filename)
         {
             FramePack Packet = new FramePack(this);
-            Packet.ReadFramesFromFile(filename,sceneData,null);
+            Packet.ReadFramesFromFile(filename,SceneData,null);
             Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }
         
-        public TreeNode ReadFramesFromImport(MemoryStream fromFR,string name,SceneData OriginalScene)
+        public TreeNode ReadFramesFromImport(MemoryStream fromFR,string name)
         {
-            FramePack Packet = new FramePack(OriginalScene.FrameResource);
-            Packet.ReadFramesFromFile(name,OriginalScene,fromFR);
+            FramePack Packet = new FramePack(SceneData.FrameResource);
+            Packet.ReadFramesFromFile(name,SceneData,fromFR);
             Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }
 
-        public void SaveFramesToFile(string FileName, FrameObjectBase frame,SceneData sceneData)
+        public void SaveFramesToFile(string FileName, FrameObjectBase frame)
         {
             FramePack Packet = new FramePack(this);
-            Packet.WriteToFile(FileName, frame,sceneData);
+            Packet.WriteToFile(FileName, frame,SceneData);
         }
         
-        public MemoryStream SaveFramesStream(FrameObjectBase frame,SceneData ImportedScene)
+        public MemoryStream SaveFramesStream(FrameObjectBase frame)
         {
-            FramePack Packet = new FramePack(ImportedScene.FrameResource);
-            MemoryStream PacketStream = Packet.WriteToStream(frame, ImportedScene);
+            FramePack Packet = new FramePack(this);
+            MemoryStream PacketStream = Packet.WriteToStream(frame, SceneData);
             return PacketStream;
         }
 
@@ -422,9 +423,8 @@ namespace ResourceTypes.FrameResource
                 AddChildren(parsedNodes, child.Children, node);
             }
         }
-        public TreeNode BuildTree(FrameNameTable.FrameNameTable table,SceneData sceneData)
+        public TreeNode BuildTree(FrameNameTable.FrameNameTable table)
         {
-            SceneData = sceneData;
             TreeNode root = new TreeNode("FrameResource Contents: "+SceneData.ScenePath.Substring(SceneData.ScenePath.LastIndexOf('\\') + 1));
             root.Tag = header;
             
