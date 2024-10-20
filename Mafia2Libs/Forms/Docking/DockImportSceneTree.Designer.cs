@@ -45,6 +45,7 @@ namespace Forms.Docking
             TreeView_Searcher = new Mafia2Tool.Controls.MTreeView();
             importButton = new System.Windows.Forms.Button();
             cancelButton = new System.Windows.Forms.Button();
+            importTextures = new System.Windows.Forms.CheckBox();
             Tab_Explorer.SuspendLayout();
             TabPage_Explorer.SuspendLayout();
             TabPage_Searcher.SuspendLayout();
@@ -105,6 +106,7 @@ namespace Forms.Docking
             // 
             TabPage_Explorer.Controls.Add(cancelButton);
             TabPage_Explorer.Controls.Add(importButton);
+            TabPage_Explorer.Controls.Add(importTextures);
             TabPage_Explorer.Controls.Add(TreeView_Explorer);
             TabPage_Explorer.Location = new System.Drawing.Point(4, 24);
             TabPage_Explorer.Name = "TabPage_Explorer";
@@ -190,6 +192,16 @@ namespace Forms.Docking
             Button_Search.UseVisualStyleBackColor = true;
             Button_Search.Click += Button_Search_OnClick;
             // 
+            // importTextures
+            // 
+            importTextures.AutoSize = true;
+            importTextures.Location = new System.Drawing.Point(100, 472);
+            importTextures.Name = "importTextures";
+            importTextures.Size = new System.Drawing.Size(108, 19);
+            importTextures.TabIndex = 3;
+            importTextures.Text = "Import Textures";
+            importTextures.UseVisualStyleBackColor = true;
+            // 
             // TreeView_Searcher
             // 
             //TreeView_Searcher.CheckBoxes = true; until batch import is done
@@ -265,5 +277,6 @@ namespace Forms.Docking
         private System.Windows.Forms.SplitContainer Split_Searcher_TextButton;
         public System.Windows.Forms.Button cancelButton;
         public System.Windows.Forms.Button importButton;
+        public System.Windows.Forms.CheckBox importTextures;
     }
 }

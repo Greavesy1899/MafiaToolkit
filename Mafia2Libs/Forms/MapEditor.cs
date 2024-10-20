@@ -1270,11 +1270,121 @@ namespace Mafia2Tool
                 //todo manage exporting scenes, skip frameheader
                 return;
             }
+            
             FrameObjectBase frame = frnode.Tag as FrameObjectBase;
             MemoryStream importedData = ImportedScene.FrameResource.SaveFramesStream(frame);
             TreeNode parent = SceneData.FrameResource.ReadFramesFromImport(importedData, frame.Name.String);
+            if (dImportSceneTree.importTextures.Checked && parent != null && CheckForMeshObjects(frnode))
+            {
+                Dictionary<uint, string> allTexturesDict = CollectAllTextureNames(frnode);
+                List<string> allTextures = allTexturesDict.Values.ToList();
+                ImportTextures(allTextures);
+                
+
+            }
             dSceneTree.AddToTree(parent, frameResourceRoot);
             ConvertNodeToFrame(parent);
+        }
+
+        private bool CheckForMeshObjects(TreeNode node)//checking for at least one SingleMesh
+        {
+            if (node.Tag is FrameObjectSingleMesh)
+            {
+                return true;
+            }
+
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                if (CheckForMeshObjects(childNode))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private Dictionary<uint, string> CollectAllTextureNames(TreeNode node, Dictionary<uint, string> textureDict = null)
+        {
+            if (textureDict == null)
+            {
+                textureDict = new Dictionary<uint, string>();
+            }
+            
+            if (node.Tag is FrameObjectSingleMesh mesh)
+            {
+                List<string> partTextures = mesh.GetMaterial().CollectAllTextureNames();
+                if (partTextures != null)
+                {
+                    foreach (var texture in partTextures)
+                    {
+                        uint hash = (uint)texture.GetHashCode();
+                        
+                        if (!textureDict.ContainsKey(hash))
+                        {
+                            textureDict[hash] = texture;
+                        }
+                    }
+                }
+            }
+            
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                CollectAllTextureNames(childNode, textureDict);
+            }
+
+            return textureDict;
+        }
+
+        //do this somehow when user saves?
+        private void ImportTextures(List<string> textures)
+        {
+            foreach (var texture in textures)
+            {
+                if (TextureCheck(texture))
+                {
+                    CopyTexture(texture);
+                }
+
+                string mipTexture = "MIP_" + texture;
+                if (TextureCheck(mipTexture))
+                {
+                    CopyTexture(mipTexture);
+                }
+            }
+
+        }
+
+        private bool TextureCheck(string importTextureName)//done like this in case sdscontent wasn't updated, accurate option
+        {
+            //checking if importing texture exists
+            string texPath = Path.Combine(ImportedScene.ScenePath, importTextureName);
+            if (!File.Exists(texPath))
+            {
+                return false;
+            }
+            //checking if the texture is already present
+            texPath = Path.Combine(SceneData.ScenePath, importTextureName);
+            if (File.Exists(texPath))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void CopyTexture(string texture)
+        {
+            string importPath = Path.Combine(ImportedScene.ScenePath, texture);
+            string destinationPath = Path.Combine(SceneData.ScenePath, texture);
+
+            try
+            {
+                File.Copy(importPath, destinationPath);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error copying texture: {ex.Message}");
+            }
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
