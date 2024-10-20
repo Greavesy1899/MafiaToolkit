@@ -63,6 +63,8 @@ namespace Mafia2Tool
         private TreeNode AIWorldRoot;
         private TreeNode OBJDataRoot;
 
+        private MouseButtons dragButton;
+        
         private bool bSelectMode = false;
         private float selectTimer = 0.0f;
         private bool bHideChildren = false;
@@ -142,6 +144,7 @@ namespace Mafia2Tool
             dPropertyGrid.KeyUp += new KeyEventHandler(OnKeyUpDockedPanel);
             dSceneTree.UpdateParent1Button.Click += new EventHandler(UpdateParent_Click);
             dSceneTree.UpdateParent2Button.Click += new EventHandler(UpdateParent_Click);
+            dSceneTree.TreeViewNodeDropped += OnTreeViewNodeDropped;
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
             dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
         }
@@ -160,6 +163,30 @@ namespace Mafia2Tool
             if (Graphics != null)
             {
                 Graphics.OnResize(RenderPanel.Width, RenderPanel.Height);
+            }
+        }
+        
+        private void OnTreeViewNodeDropped(object sender, TreeViewDragEventArgs e)
+        {
+            if (e.DraggedNode.Tag is FrameHeaderScene || e.DraggedNode.Tag is FrameHeader)
+            {
+                return;
+            }
+            if (e.DragButton == MouseButtons.Left)
+            {
+                FrameEntry NewParent = (e.TargetNode.Tag != null ? e.TargetNode.Tag as FrameEntry : null);
+                int ParentRefID = (NewParent != null ? NewParent.RefID : -1);
+
+                // Request parent1 update
+                UpdateObjectParents(ParentInfo.ParentType.ParentIndex1, ParentRefID, NewParent);
+            }
+            else if (e.DragButton == MouseButtons.Right)
+            {
+                FrameEntry NewParent = (e.TargetNode.Tag != null ? e.TargetNode.Tag as FrameEntry : null);
+                int ParentRefID = (NewParent != null ? NewParent.RefID : -1);
+
+                // Request parent2 update
+                UpdateObjectParents(ParentInfo.ParentType.ParentIndex2, ParentRefID, NewParent);
             }
         }
         
@@ -1408,6 +1435,7 @@ namespace Mafia2Tool
         private void UpdateObjectParents(ParentInfo.ParentType ParentType, int refID, FrameEntry entry = null)
         {
             FrameObjectBase obj = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
+                
             //make sure refID is not root.
             if (refID != 0)
             {
@@ -1428,7 +1456,7 @@ namespace Mafia2Tool
             {
                 SceneData.FrameResource.SetParentOfObject(ParentType, obj, null);
             }
-
+            
             dSceneTree.RemoveNode(dSceneTree.SelectedNode);
             TreeNode newNode = new TreeNode();
             newNode.Tag = obj;

@@ -168,6 +168,13 @@ namespace Forms.Docking
             this.TreeView_Explorer.Size = new System.Drawing.Size(316, 485);
             this.TreeView_Explorer.TabIndex = 0;
             this.TreeView_Explorer.DoubleClick += new System.EventHandler(this.OnDoubleClick);
+            this.TreeView_Explorer.AllowDrop = true;
+            this.TreeView_Explorer.ItemDrag += TreeView_Explorer_ItemDrag;
+            this.TreeView_Explorer.DragEnter += TreeView_Explorer_DragEnter;
+            this.TreeView_Explorer.DragDrop += TreeView_Explorer_DragDrop;
+            this.TreeView_Explorer.MouseDown += TreeView_Explorer_MouseDown;
+            this.TreeView_Explorer.DragOver += TreeView_Explorer_DragOver;
+            this.TreeView_Explorer.DragLeave += TreeView_Explorer_DragLeave;
             // 
             // Tab_Explorer
             // 

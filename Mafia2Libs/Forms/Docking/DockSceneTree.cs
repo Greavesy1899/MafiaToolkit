@@ -16,8 +16,14 @@ namespace Forms.Docking
             set { TreeView_Explorer.SelectedNode = value; }
         }
 
+        public TreeNode DraggedNode;
+
         // Cache the last searched string so we can check if it has changed before we search again.
         private string LastSearchedString = String.Empty;
+        
+        private MouseButtons dragButton;
+        
+        public event EventHandler<TreeViewDragEventArgs> TreeViewNodeDropped;
 
         public DockSceneTree()
         {
@@ -75,6 +81,90 @@ namespace Forms.Docking
             else
             {
                 throw new NotImplementedException();
+            }
+        }
+        
+        private void TreeView_Explorer_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+            {
+                dragButton = e.Button;
+            }
+        }
+        
+        private void TreeView_Explorer_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+        
+        private void TreeView_Explorer_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(TreeNode)))
+            {
+                e.Effect = DragDropEffects.Move;
+            }
+        }
+        
+        private void TreeView_Explorer_DragDrop(object sender, DragEventArgs e)
+        {
+            Point pt = TreeView_Explorer.PointToClient(new Point(e.X, e.Y));
+            TreeNode targetNode = TreeView_Explorer.GetNodeAt(TreeView_Explorer.PointToClient(new System.Drawing.Point(e.X, e.Y)));
+            DraggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
+            TreeView_Explorer.SelectedNode = DraggedNode;
+
+            if (targetNode != null && DraggedNode != null && DraggedNode != targetNode)
+            {
+                TreeViewNodeDropped?.Invoke(this, new TreeViewDragEventArgs(DraggedNode, targetNode, dragButton));
+            }
+            if (previousNode != null)
+            {
+                previousNode.BackColor = TreeView_Explorer.BackColor;
+                previousNode.ForeColor = TreeView_Explorer.ForeColor;
+                previousNode = null;
+            }
+        }
+        
+        private TreeNode previousNode;
+
+        private void TreeView_Explorer_DragOver(object sender, DragEventArgs e)
+        {
+            Point pt = TreeView_Explorer.PointToClient(new Point(e.X, e.Y));
+            
+            TreeNode currentNode = TreeView_Explorer.GetNodeAt(pt);
+            
+            if (currentNode != null && currentNode != previousNode)
+            {
+                if (previousNode != null)
+                {
+                    previousNode.BackColor = TreeView_Explorer.BackColor;
+                    previousNode.ForeColor = TreeView_Explorer.ForeColor;
+                }
+
+                if ((dragButton & MouseButtons.Left) != 0)
+                {
+                    currentNode.BackColor = Color.LightBlue; 
+                    currentNode.ForeColor = Color.Black;
+                }
+
+                if ((dragButton & MouseButtons.Right) != 0)
+                {
+                    currentNode.BackColor = Color.Orange; 
+                    currentNode.ForeColor = Color.Black;
+                }
+                
+                previousNode = currentNode;
+            }
+            
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void TreeView_Explorer_DragLeave(object sender, EventArgs e)
+        {
+            if (previousNode != null)
+            {
+                previousNode.BackColor = TreeView_Explorer.BackColor;
+                previousNode.ForeColor = TreeView_Explorer.ForeColor;
+                previousNode = null;
             }
         }
 
@@ -363,5 +453,18 @@ namespace Forms.Docking
                 InternalGotoExplorerNode();
             }
         }
+    }
+}
+public class TreeViewDragEventArgs : EventArgs
+{
+    public TreeNode DraggedNode { get; } 
+    public TreeNode TargetNode { get; } 
+    public MouseButtons DragButton { get; }
+
+    public TreeViewDragEventArgs(TreeNode draggedNode, TreeNode targetNode, MouseButtons dragButton)
+    {
+        DraggedNode = draggedNode;
+        TargetNode = targetNode;
+        DragButton = dragButton;
     }
 }
