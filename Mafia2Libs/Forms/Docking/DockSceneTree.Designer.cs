@@ -51,6 +51,8 @@ namespace Forms.Docking
             this.TextBox_Search = new System.Windows.Forms.TextBox();
             this.Button_Search = new System.Windows.Forms.Button();
             this.TreeView_Searcher = new Mafia2Tool.Controls.MTreeView();
+            this.tooltipPanel = new System.Windows.Forms.Panel();
+            this.tooltipText = new System.Windows.Forms.Label();
             this.EntryMenuStrip.SuspendLayout();
             this.Tab_Explorer.SuspendLayout();
             this.TabPage_Explorer.SuspendLayout();
@@ -63,6 +65,7 @@ namespace Forms.Docking
             this.Split_Searcher_TextButton.Panel1.SuspendLayout();
             this.Split_Searcher_TextButton.Panel2.SuspendLayout();
             this.Split_Searcher_TextButton.SuspendLayout();
+            this.tooltipPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // EntryMenuStrip
@@ -153,6 +156,26 @@ namespace Forms.Docking
             this.imageList1.Images.SetKeyName(9, "SkinnedFrame.png");
             this.imageList1.Images.SetKeyName(10, "DummyFrame.png");
             // 
+            // tooltipPanel
+            // 
+            this.tooltipPanel.BackColor = System.Drawing.Color.Silver;
+            this.tooltipPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tooltipPanel.Dock = System.Windows.Forms.DockStyle.Bottom;            
+            this.tooltipPanel.Controls.Add(tooltipText);
+            this.tooltipPanel.Location = new System.Drawing.Point(3, 438);
+            this.tooltipPanel.Name = "tooltipPanel";
+            this.tooltipPanel.Size = new System.Drawing.Size(316, 50);
+            this.tooltipPanel.TabIndex = 1;
+            // 
+            // tooltipText
+            // 
+            this.tooltipText.AutoSize = true;
+            this.tooltipText.Location = new System.Drawing.Point(-2, 0);
+            this.tooltipText.Name = "tooltipText";
+            this.tooltipText.Size = new System.Drawing.Size(266, 45);
+            this.tooltipText.TabIndex = 0;
+            this.tooltipText.Text = "Drag with Left Mouse Button to set Parent1\r\nDrag with Right Mouse Button to set Parent2\r\nDrag with Middle Mouse Button to switch frames";
+            // 
             // TreeView_Explorer
             // 
             this.TreeView_Explorer.CheckBoxes = true;
@@ -190,6 +213,7 @@ namespace Forms.Docking
             // TabPage_Explorer
             // 
             this.TabPage_Explorer.Controls.Add(this.TreeView_Explorer);
+            this.TabPage_Explorer.Controls.Add(this.tooltipPanel);
             this.TabPage_Explorer.Location = new System.Drawing.Point(4, 24);
             this.TabPage_Explorer.Name = "TabPage_Explorer";
             this.TabPage_Explorer.Padding = new System.Windows.Forms.Padding(3);
@@ -340,5 +364,7 @@ namespace Forms.Docking
         private System.Windows.Forms.Button Button_Search;
         private Mafia2Tool.Controls.MTreeView TreeView_Searcher;
         private System.Windows.Forms.SplitContainer Split_Searcher_TextButton;
+        private System.Windows.Forms.Panel tooltipPanel;
+        private System.Windows.Forms.Label tooltipText;
     }
 }

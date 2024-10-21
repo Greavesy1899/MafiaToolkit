@@ -38,6 +38,12 @@ namespace Forms.Docking
             Text = Language.GetString("$SCENE_OUTLINER_FORMNAME");
             TabPage_Explorer.Text = Language.GetString("$SCENE_OUTLINER_EXPLORER");
             TabPage_Searcher.Text = Language.GetString("$SCENE_OUTLINER_SEARCHER");
+            string xmlText = Language.GetString("$TOOLTIP");
+            string tooltipText = xmlText.Replace("|", Environment.NewLine);
+            if (!tooltipText.Equals("$TOOLTIP"))
+            {
+                this.tooltipText.Text = tooltipText;
+            }
         }
 
         /* Abstract Functions for the outliner */
