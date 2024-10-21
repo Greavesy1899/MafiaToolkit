@@ -188,6 +188,14 @@ namespace Mafia2Tool
                 // Request parent2 update
                 UpdateObjectParents(ParentInfo.ParentType.ParentIndex2, ParentRefID, NewParent);
             }
+            else if (e.DragButton == MouseButtons.Middle)
+            {
+                TreeNode node1 = (e.TargetNode != null ? e.TargetNode : null);
+                TreeNode node2 = (e.DraggedNode != null ? e.DraggedNode: null);
+
+                // frame switch
+                SwitchFrames(node1, node2);
+            }
         }
         
         // TODO: The fetching of the actor file should be inside SceneData,
@@ -457,6 +465,66 @@ namespace Mafia2Tool
 
                 // Request parent update
                 UpdateObjectParents(ParentType, ParentRefID, NewParent);
+            }
+        }
+
+        private void SwitchFrames(TreeNode node1, TreeNode node2)
+        {
+            if (node1 != null && node2 != null &&
+                node1.Tag is FrameObjectBase frame1 &&
+                node2.Tag is FrameObjectBase frame2)
+            {
+                if (frame1.Parent != null && frame2.Parent != null && frame1.Parent.RefID == frame2.Parent.RefID)
+                {
+                    return;//switching objects under same parent is redundant
+                }
+
+                var tempRefs = frame1.Refs;
+                var tempParent1 = frame1.ParentIndex1;
+                var tempParent2 = frame1.ParentIndex2;
+                var tempParent = frame1.Parent;
+                
+                frame1.ParentIndex1 = frame2.ParentIndex1;
+                frame1.ParentIndex2 = frame2.ParentIndex2;
+                frame1.Parent = frame2.Parent;
+                frame1.Refs = frame2.Refs;
+                
+                frame2.ParentIndex1 = tempParent1;
+                frame2.ParentIndex2 = tempParent2;
+                frame2.Parent = tempParent;
+                frame2.Refs = tempRefs;
+
+                int tempIcon = node1.ImageIndex;
+                int tepmIconSelect = node1.SelectedImageIndex;
+                node1.Tag = frame2;
+                node1.Name = frame2.RefID.ToString();
+                node1.Text = frame2.ToString();
+                node1.ImageIndex = node2.ImageIndex;
+                node1.SelectedImageIndex = node2.SelectedImageIndex;
+
+                node2.Tag = frame1;
+                node2.Name = frame1.RefID.ToString();
+                node2.Text = frame1.ToString();
+                node2.ImageIndex = tempIcon;
+                node2.SelectedImageIndex = tepmIconSelect;
+                
+                TreeNode parent1 = node1.Parent;
+                TreeNode parent2 = node2.Parent;
+                
+                if (parent1 != null && parent2 != null)
+                {
+                    int index1 = node1.Index;
+                    int index2 = node2.Index;
+                    
+                    parent1.Nodes.RemoveAt(index1);
+                    parent2.Nodes.RemoveAt(index2);
+                    
+                    parent1.Nodes.Insert(index2, node1);
+                    parent2.Nodes.Insert(index1, node2);
+                }
+
+                ApplyChangesToRenderable(frame1);
+                ApplyChangesToRenderable(frame2);
             }
         }
 

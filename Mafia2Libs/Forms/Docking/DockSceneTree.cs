@@ -17,6 +17,7 @@ namespace Forms.Docking
         }
 
         public TreeNode DraggedNode;
+        public TreeNode targetNode;
 
         // Cache the last searched string so we can check if it has changed before we search again.
         private string LastSearchedString = String.Empty;
@@ -86,9 +87,16 @@ namespace Forms.Docking
         
         private void TreeView_Explorer_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle)
             {
                 dragButton = e.Button;
+            }
+            
+            TreeNode clickedNode = TreeView_Explorer.GetNodeAt(e.X, e.Y);
+            if (dragButton == MouseButtons.Middle && clickedNode != null)
+            {
+                TreeView_Explorer.SelectedNode = clickedNode;
+                DoDragDrop(clickedNode, DragDropEffects.Move);
             }
         }
         
@@ -108,7 +116,7 @@ namespace Forms.Docking
         private void TreeView_Explorer_DragDrop(object sender, DragEventArgs e)
         {
             Point pt = TreeView_Explorer.PointToClient(new Point(e.X, e.Y));
-            TreeNode targetNode = TreeView_Explorer.GetNodeAt(TreeView_Explorer.PointToClient(new System.Drawing.Point(e.X, e.Y)));
+            targetNode = TreeView_Explorer.GetNodeAt(TreeView_Explorer.PointToClient(new System.Drawing.Point(e.X, e.Y)));
             DraggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
             TreeView_Explorer.SelectedNode = DraggedNode;
 
@@ -149,6 +157,12 @@ namespace Forms.Docking
                 if ((dragButton & MouseButtons.Right) != 0)
                 {
                     currentNode.BackColor = Color.Orange; 
+                    currentNode.ForeColor = Color.Black;
+                }
+                
+                if ((dragButton & MouseButtons.Middle) != 0)
+                {
+                    currentNode.BackColor = Color.LimeGreen; 
                     currentNode.ForeColor = Color.Black;
                 }
                 
