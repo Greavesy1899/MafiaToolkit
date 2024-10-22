@@ -1,5 +1,6 @@
 ﻿
 using System;
+using ResourceTypes.Materials;
 
 namespace Forms.Docking
 {
@@ -201,6 +202,10 @@ namespace Forms.Docking
             importTextures.TabIndex = 3;
             importTextures.Text = "Import Textures";
             importTextures.UseVisualStyleBackColor = true;
+            if (MaterialsManager.MaterialLibraries.Count == 0)
+            {
+                importTextures.Enabled = false;
+            }
             // 
             // TreeView_Searcher
             // 
