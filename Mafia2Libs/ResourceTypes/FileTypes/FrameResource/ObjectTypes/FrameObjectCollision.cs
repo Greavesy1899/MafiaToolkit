@@ -9,7 +9,6 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameObjectCollision : FrameObjectBase
     {
-        private SceneData SceneData = new SceneData();
         private ulong _Hash;
         private ItemDescLoader ItemDesc;
 
@@ -51,9 +50,8 @@ namespace ResourceTypes.FrameResource
             writer.Write(_Hash);
         }
 
-        public override void ConstructRenderable(SceneData sceneData)
+        public override void ConstructRenderable()
         {
-            SceneData = sceneData;
             GetUsedItemDesc();
 
             // We don't want to use this code yet, it's from old-old stuff which needs to be looked at.
@@ -68,7 +66,7 @@ namespace ResourceTypes.FrameResource
         // It would be better if this didn't access SceneData.
         public void GetUsedItemDesc()
         {
-            foreach(ItemDescLoader ItemDesc in SceneData.ItemDescs)
+            foreach(ItemDescLoader ItemDesc in OwningResource.SceneData.ItemDescs)
             {
                 if(ItemDesc.frameRef == _Hash)
                 {

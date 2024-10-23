@@ -110,7 +110,7 @@ namespace ResourceTypes.FrameResource
             return Name.String;
         }
 
-        public override void ConstructRenderable(SceneData sceneData)
+        public override void ConstructRenderable()
         {
             RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(Bounds, WorldTransform);
             RenderAdapter = new Rendering.Core.RenderableAdapter();

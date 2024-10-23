@@ -17,7 +17,6 @@ namespace ResourceTypes.FrameResource
     public class FramePack
     {
         // Used for both
-        private SceneData SceneData = new SceneData();
         private Dictionary<ulong, List<int>> ModelAttachments;
         private FrameResource OwningResource;
 
@@ -38,7 +37,7 @@ namespace ResourceTypes.FrameResource
             this.OwningResource = OwningResource;
         }
 
-        private void SaveFrame(FrameObjectBase frame, BinaryWriter writer,SceneData sceneData)
+        private void SaveFrame(FrameObjectBase frame, BinaryWriter writer)
         {
             //is this even needed? hmm.
             writer.Write(frame.RefID); // Save old RefID
@@ -113,8 +112,8 @@ namespace ResourceTypes.FrameResource
                 {
                     using (var stream = new MemoryStream())
                     {
-                        SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
-                        SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
+                        OwningResource.SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
+                        OwningResource.SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
                         writer.Write(stream.ToArray());
                     }
                 }
@@ -136,8 +135,8 @@ namespace ResourceTypes.FrameResource
                 {
                     using (var stream = new MemoryStream())
                     {
-                        SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
-                        SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
+                        OwningResource.SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
+                        OwningResource.SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
                         writer.Write(stream.ToArray());
                     }
                 }
@@ -164,11 +163,11 @@ namespace ResourceTypes.FrameResource
             writer.Write(frame.Children.Count);
             for (int i = 0; i < frame.Children.Count; i++)
             {
-                SaveFrame(frame.Children[i], writer,sceneData);
+                SaveFrame(frame.Children[i], writer);
             }
         }
 
-        private FrameObjectBase ReadFrame(MemoryStream stream,SceneData sceneData)
+        private FrameObjectBase ReadFrame(MemoryStream stream)
         {
             int OldRefID = stream.ReadInt32(false); // read old RefID so we can make lookup dictionary
 
@@ -209,8 +208,8 @@ namespace ResourceTypes.FrameResource
                     IndexBuffer indexBuffer = new IndexBuffer(stream, false);
                     VertexBuffer vertexBuffer = new VertexBuffer(stream, false);
 
-                    sceneData.IndexBufferPool.TryAddBuffer(indexBuffer);
-                    sceneData.VertexBufferPool.TryAddBuffer(vertexBuffer);
+                    OwningResource.SceneData.IndexBufferPool.TryAddBuffer(indexBuffer);
+                    OwningResource.SceneData.VertexBufferPool.TryAddBuffer(vertexBuffer);
                 }
             }
 
@@ -236,42 +235,26 @@ namespace ResourceTypes.FrameResource
             int count = stream.ReadInt32(false);
             for (int i = 0; i < count; i++)
             {
-                FrameObjectBase child = ReadFrame(stream,sceneData);
+                FrameObjectBase child = ReadFrame(stream);
             }
 
             return parent;
         }
 
-        public void WriteToFile(string ExportName, FrameObjectBase Frame,SceneData sceneData)
+        public void WriteToFile(string ExportName, FrameObjectBase Frame)
         {
-            SceneData = sceneData;
-            ModelAttachments = new Dictionary<ulong, List<int>>();
-
-            using (BinaryWriter writer = new BinaryWriter(File.Open(ExportName, FileMode.Create)))
-            {
-                SaveFrame(Frame, writer,sceneData);
-
-                writer.Write(ModelAttachments.Count);
-                foreach(var Entry in ModelAttachments)
-                {
-                    writer.Write(Entry.Key);
-                    writer.Write(Entry.Value.Count);
-                    foreach(var ListEntry in Entry.Value)
-                    {
-                        writer.Write(ListEntry);
-                    }
-                }
-            }
+            Stream Data = WriteToStream(Frame);
+            File.WriteAllBytes(ExportName, Data.ReadBytes((int)Data.Length));
         }
         
-        public MemoryStream WriteToStream(FrameObjectBase Frame,SceneData ImportedScene)
+        public Stream WriteToStream(FrameObjectBase Frame)
         {
             ModelAttachments = new Dictionary<ulong, List<int>>();
             MemoryStream mainMemoryStream = new MemoryStream();
             
                 using (BinaryWriter writer = new BinaryWriter(mainMemoryStream, Encoding.UTF8,leaveOpen:true))
                 {
-                    MemoryStream frameStream = SaveFrameStream(Frame, null,ImportedScene);
+                    MemoryStream frameStream = SaveFrameStream(Frame, null);
                     writer.Write(frameStream.ToArray());
 
                     writer.Write(ModelAttachments.Count);
@@ -284,12 +267,13 @@ namespace ResourceTypes.FrameResource
                             writer.Write(ListEntry);
                         }
                     }
-                } 
-            
+                }
+
+            mainMemoryStream.Position = 0;
             return mainMemoryStream; 
         }
         
-        private MemoryStream SaveFrameStream(FrameObjectBase frame,MemoryStream memoryStream,SceneData ImportedScene)
+        private MemoryStream SaveFrameStream(FrameObjectBase frame,MemoryStream memoryStream)
         {
             if (memoryStream == null)
             {
@@ -370,8 +354,8 @@ namespace ResourceTypes.FrameResource
                     {
                         using (var stream = new MemoryStream())
                         {
-                            ImportedScene.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
-                            ImportedScene.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
+                            OwningResource.SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
+                            OwningResource.SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
                             writer.Write(stream.ToArray());
                         }
                     }
@@ -393,8 +377,8 @@ namespace ResourceTypes.FrameResource
                     {
                         using (var stream = new MemoryStream())
                         {
-                            ImportedScene.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
-                            ImportedScene.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
+                            OwningResource.SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
+                            OwningResource.SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
                             writer.Write(stream.ToArray());
                         }
                     }
@@ -421,7 +405,7 @@ namespace ResourceTypes.FrameResource
                 writer.Write(frame.Children.Count);
                 for (int i = 0; i < frame.Children.Count; i++)
                 {
-                    SaveFrameStream(frame.Children[i], memoryStream,ImportedScene);
+                    SaveFrameStream(frame.Children[i], memoryStream);
                 }
                 
             }
@@ -429,9 +413,8 @@ namespace ResourceTypes.FrameResource
             return memoryStream;
         }
 
-        public void ReadFramesFromFile(string Name,SceneData sceneData,MemoryStream FRImportData)
+        public void ReadFramesFromFile(string Name,Stream FRImportData)
         {
-            SceneData = sceneData;
             FrameObjects = new Dictionary<int, object>();
             FrameMaterials = new Dictionary<int, FrameMaterial>();
             FrameGeometries = new Dictionary<int, FrameGeometry>();
@@ -442,19 +425,19 @@ namespace ResourceTypes.FrameResource
             OldRefIDLookupTable = new Dictionary<int, FrameObjectBase>();
 
             Byte[] PackData;
-            if(FRImportData == null)//if data aren't from FR import, Name is filename
+            if(FRImportData == null)//if Stream is empty, Name is filename where data will be loaded from
             {
                 PackData = File.ReadAllBytes(Name).ToArray();//data from file
             }
             else
             {
-                PackData = FRImportData.GetBuffer();//data from stream
+                PackData = FRImportData.ReadBytes((int)FRImportData.Length);//data from stream
             }
             
             
             using (MemoryStream stream = new MemoryStream(PackData))
             {
-                RootFrame = ReadFrame(stream,sceneData);
+                RootFrame = ReadFrame(stream);
 
                 uint NumModelAttachments = stream.ReadUInt32(false);
                 for(int i = 0; i < NumModelAttachments; i++)

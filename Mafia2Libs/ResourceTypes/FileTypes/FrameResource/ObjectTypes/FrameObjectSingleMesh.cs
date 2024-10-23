@@ -202,9 +202,9 @@ namespace ResourceTypes.FrameResource
             NewModel.CreateObjectsFromModel();
         }
 
-        public override void ConstructRenderable(SceneData sceneData)
+        public override void ConstructRenderable()
         {
-            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this,sceneData);//this is the reason why sceneData was added, could be polished
+            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this,OwningResource.SceneData);
             RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }

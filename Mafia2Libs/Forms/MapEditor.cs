@@ -777,7 +777,7 @@ namespace Mafia2Tool
 
         private IRenderer BuildRenderObjectFromFrame(FrameObjectBase fObject)
         {
-            fObject.ConstructRenderable(SceneData);
+            fObject.ConstructRenderable();
             IRenderer Renderable = fObject.GetRenderItem();
             if(Renderable != null)
             {
@@ -1368,7 +1368,7 @@ namespace Mafia2Tool
             
             FrameObjectBase frame = frnode.Tag as FrameObjectBase;
             MemoryStream importedData = ImportedScene.FrameResource.SaveFramesStream(frame);
-            TreeNode parent = SceneData.FrameResource.ReadFramesFromImport(importedData, frame.Name.String);
+            TreeNode parent = SceneData.FrameResource.ReadFramesFromImport(frame.Name.String,importedData);
             if (dImportSceneTree.importTextures.Checked && parent != null && CheckForMeshObjects(frnode))
             {
                 Dictionary<uint, string> allTexturesDict = CollectAllTextureNames(frnode);
@@ -2242,7 +2242,7 @@ namespace Mafia2Tool
                 else
                 {
                     
-                    TreeNode parent = SceneData.FrameResource.ReadFramesFromFile(Filename);
+                    TreeNode parent = SceneData.FrameResource.ReadFramesFromImport(Filename);
                     dSceneTree.AddToTree(parent, frameResourceRoot);
                     ConvertNodeToFrame(parent);
                     

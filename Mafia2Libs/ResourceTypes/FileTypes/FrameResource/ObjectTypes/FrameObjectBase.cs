@@ -284,7 +284,7 @@ namespace ResourceTypes.FrameResource
             return null;
         }
 
-        public virtual void ConstructRenderable(SceneData sceneData)
+        public virtual void ConstructRenderable()
         {
             // Empty, FrameObjectBase doesn't have anything to create.
             // TODO: Consider making empty adapter?5

@@ -40,7 +40,7 @@ namespace Forms.Docking
             TabPage_Searcher.Text = Language.GetString("$SCENE_OUTLINER_SEARCHER");
             string xmlText = Language.GetString("$TOOLTIP");
             string tooltipText = xmlText.Replace("|", Environment.NewLine);
-            if (!tooltipText.Equals("$TOOLTIP"))
+            if (!tooltipText.Equals("$TOOLTIP", StringComparison.InvariantCulture))
             {
                 this.tooltipText.Text = tooltipText;
             }

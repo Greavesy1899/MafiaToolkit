@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Gibbed.IO;
 using Mafia2Tool;
 using Utils.Extensions;
 using ResourceTypes.Misc;
@@ -13,7 +14,7 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameResource
     {
-        private SceneData SceneData = new SceneData();
+        public SceneData SceneData = new SceneData();
         FrameHeader header;
         Dictionary<int, FrameHeaderScene> frameScenes = new Dictionary<int, FrameHeaderScene>();
         Dictionary<int, FrameGeometry> frameGeometries = new Dictionary<int, FrameGeometry>();
@@ -376,19 +377,12 @@ namespace ResourceTypes.FrameResource
                 (pair.Value as FrameObjectBase).SetWorldTransform();
             }
         }
-
-        public TreeNode ReadFramesFromFile(string filename)
+        
+        //name is either name of the imported frame or name of .framedata that will be red
+        public TreeNode ReadFramesFromImport(string name,MemoryStream fromFR = null)
         {
             FramePack Packet = new FramePack(this);
-            Packet.ReadFramesFromFile(filename,SceneData,null);
-            Packet.PushPacketIntoFrameResource();
-            return BuildFromFrames(null, Packet.RootFrame);
-        }
-        
-        public TreeNode ReadFramesFromImport(MemoryStream fromFR,string name)
-        {
-            FramePack Packet = new FramePack(SceneData.FrameResource);
-            Packet.ReadFramesFromFile(name,SceneData,fromFR);
+            Packet.ReadFramesFromFile(name,fromFR);
             Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }
@@ -396,13 +390,16 @@ namespace ResourceTypes.FrameResource
         public void SaveFramesToFile(string FileName, FrameObjectBase frame)
         {
             FramePack Packet = new FramePack(this);
-            Packet.WriteToFile(FileName, frame,SceneData);
+            Packet.WriteToFile(FileName, frame);
         }
         
         public MemoryStream SaveFramesStream(FrameObjectBase frame)
         {
             FramePack Packet = new FramePack(this);
-            MemoryStream PacketStream = Packet.WriteToStream(frame, SceneData);
+            Stream Stream = Packet.WriteToStream(frame);
+            MemoryStream PacketStream = new MemoryStream();
+            Stream.CopyTo(PacketStream);
+            PacketStream.Position = 0;
             return PacketStream;
         }
 
