@@ -51,7 +51,7 @@ namespace Utils.Models
 
         public MT_Animation AnimationObject { get; set; }
 
-        public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers,SceneData sceneData)
+        public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
@@ -59,7 +59,7 @@ namespace Utils.Models
             modelObject = new MT_Object();
             modelObject.ObjectName = frameMesh.Name.ToString();
             //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
-            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers,sceneData);
+            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers);
         }
 
         public ModelWrapper(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
@@ -73,19 +73,17 @@ namespace Utils.Models
             modelObject.BuildFromCooked(frameModel, vertexBuffers, indexBuffers);
         }
 
-        public ModelWrapper(FrameObjectBase FrameObject,SceneData sceneData)
+        public ModelWrapper(FrameObjectBase FrameObject)
         {
             modelObject = new MT_Object();
             modelObject.ObjectName = FrameObject.Name.ToString();
-            modelObject.SceneData = sceneData;
             modelObject.BuildStandardObject(FrameObject);
         }
 
-        public ModelWrapper(FrameHeaderScene FrameScene,SceneData sceneData)
+        public ModelWrapper(FrameHeaderScene FrameScene)
         {
             modelObject = new MT_Object();
             modelObject.ObjectName = FrameScene.Name.ToString();
-            modelObject.SceneData = sceneData;
             ModelObject.BuildFromScene(FrameScene);
         }
 

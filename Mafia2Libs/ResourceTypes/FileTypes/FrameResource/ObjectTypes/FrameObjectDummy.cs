@@ -3,7 +3,6 @@ using Rendering.Graphics;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
-using Mafia2Tool;
 using Utils.Extensions;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;

@@ -1956,12 +1956,12 @@ namespace Mafia2Tool
                 }
                 else
                 {
-                    ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectSingleMesh, indexBuffers, vertexBuffers,SceneData);
+                    ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
                 }
             }
             else
             {
-                ModelWrapperObject = new ModelWrapper(FrameObject,SceneData);
+                ModelWrapperObject = new ModelWrapper(FrameObject);
             }
 
             // Make sure it's actually valid
@@ -1973,7 +1973,7 @@ namespace Mafia2Tool
 
         private void ExportScene(FrameHeaderScene Scene)
         {
-            ModelWrapper ModelWrapperObject = new ModelWrapper(Scene,SceneData);
+            ModelWrapper ModelWrapperObject = new ModelWrapper(Scene);
             InternalSaveModelWrapper(ModelWrapperObject);
         }
 

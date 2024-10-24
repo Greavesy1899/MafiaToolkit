@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
-using Mafia2Tool;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.Types;

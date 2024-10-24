@@ -1,5 +1,4 @@
-﻿using Mafia2Tool;
-using Rendering.Factories;
+﻿using Rendering.Factories;
 using Rendering.Graphics;
 using ResourceTypes.ItemDesc;
 using System.IO;
