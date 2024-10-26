@@ -11,6 +11,7 @@ namespace Core.IO
 
         public FileFrameResource(FileInfo info) : base(info)
         {
+            SceneData.ScenePath = info.DirectoryName;
             bForceBigEndian = false;
         }
 
@@ -20,7 +21,6 @@ namespace Core.IO
             MaterialData.Load();
 
             //we now build scene data from GameExplorer rather than d3d viewer.
-            SceneData.ScenePath = file.DirectoryName;
             SceneData.BuildData(bForceBigEndian);
 
             //d3d viewer expects data inside scenedata.

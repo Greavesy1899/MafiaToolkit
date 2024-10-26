@@ -382,7 +382,14 @@ namespace ResourceTypes.FrameResource
         public TreeNode ReadFramesFromImport(string name,MemoryStream fromFR = null)
         {
             FramePack Packet = new FramePack(this);
-            Packet.ReadFramesFromFile(name,fromFR);
+            if (fromFR == null)
+            {
+                Packet.ReadFramesFromFile(name);//file
+            }
+            else
+            {
+                Packet.ReadFramesFromFile(fromFR);//stream
+            }
             Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }
@@ -793,6 +800,38 @@ namespace ResourceTypes.FrameResource
                 return true;
 
             return false;
+        }
+        
+        public Dictionary<uint, string> CollectAllTextureNames(TreeNode node, Dictionary<uint, string> textureDict = null)
+        {
+            if (textureDict == null)
+            {
+                textureDict = new Dictionary<uint, string>();
+            }
+            
+            if (node.Tag is FrameObjectSingleMesh mesh)
+            {
+                List<string> partTextures = mesh.GetMaterial().CollectAllTextureNames();
+                if (partTextures != null)
+                {
+                    foreach (var texture in partTextures)
+                    {
+                        uint hash = (uint)texture.GetHashCode();
+                        
+                        if (!textureDict.ContainsKey(hash))
+                        {
+                            textureDict[hash] = texture;
+                        }
+                    }
+                }
+            }
+            
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                CollectAllTextureNames(childNode, textureDict);
+            }
+
+            return textureDict;
         }
     }
 }

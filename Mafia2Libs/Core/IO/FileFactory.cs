@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.IO;
-using Mafia2Tool;
 
 namespace Core.IO
 {

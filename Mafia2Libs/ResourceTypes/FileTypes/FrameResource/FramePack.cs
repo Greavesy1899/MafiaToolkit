@@ -413,7 +413,20 @@ namespace ResourceTypes.FrameResource
             return memoryStream;
         }
 
-        public void ReadFramesFromFile(string Name,Stream FRImportData)
+        public void ReadFramesFromFile(string name)
+        {
+            byte[] packData = File.ReadAllBytes(name); // Loading from file
+            ReadFramesFromFile(packData);
+        }
+
+        public void ReadFramesFromFile(Stream frImportData)
+        {
+            byte[] packData = new byte[frImportData.Length]; // Loading from stream
+            frImportData.Read(packData, 0, packData.Length);
+            ReadFramesFromFile(packData);
+        }
+
+        private void ReadFramesFromFile(byte[] PackData)
         {
             FrameObjects = new Dictionary<int, object>();
             FrameMaterials = new Dictionary<int, FrameMaterial>();
@@ -423,17 +436,6 @@ namespace ResourceTypes.FrameResource
             FrameSkeletons = new Dictionary<int, FrameSkeleton>();
             ModelAttachments = new Dictionary<ulong, List<int>>();
             OldRefIDLookupTable = new Dictionary<int, FrameObjectBase>();
-
-            Byte[] PackData;
-            if(FRImportData == null)//if Stream is empty, Name is filename where data will be loaded from
-            {
-                PackData = File.ReadAllBytes(Name).ToArray();//data from file
-            }
-            else
-            {
-                PackData = FRImportData.ReadBytes((int)FRImportData.Length);//data from stream
-            }
-            
             
             using (MemoryStream stream = new MemoryStream(PackData))
             {

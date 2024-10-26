@@ -276,6 +276,58 @@ namespace Mafia2Tool
             AIWorlds = null;
             OBJData = null;
         }
+        
+        //for foolfroofing, maybe the imported textures could be cached until save, then reset it, and if user doesn't save and exit, all cached textures would be deleted
+        public void ImportTextures(List<string> textures, string ImportScenePath)
+        {
+            foreach (var texture in textures)
+            {
+                if (TextureCheck(texture, ImportScenePath))
+                {
+                    CopyTexture(texture, ImportScenePath);
+                }
+
+                string mipTexture = "MIP_" + texture;
+                if (TextureCheck(mipTexture, ImportScenePath))
+                {
+                    CopyTexture(mipTexture, ImportScenePath);
+                }
+            }
+
+        }
+        
+        private bool TextureCheck(string importTextureName, string ImportScenePath)//done like this in case sdscontent wasn't updated, accurate option
+        {
+            //checking if importing texture exists
+            string texPath = Path.Combine(ImportScenePath, importTextureName);
+            if (!File.Exists(texPath))
+            {
+                return false;
+            }
+            //checking if the texture is already present
+            texPath = Path.Combine(ScenePath, importTextureName);
+            if (File.Exists(texPath))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void CopyTexture(string texture, string ImportScenePath)
+        {
+            string importPath = Path.Combine(ImportScenePath, texture);
+            string destinationPath = Path.Combine(ScenePath, texture);
+
+            try
+            {
+                File.Copy(importPath, destinationPath);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error copying texture: {ex.Message}");
+            }
+        }
     }
 
     public static class MaterialData

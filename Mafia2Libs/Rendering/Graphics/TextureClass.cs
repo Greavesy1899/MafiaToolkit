@@ -14,7 +14,7 @@ namespace Rendering.Graphics
 {
     public static class TextureLoader
     {
-        public static SceneData SceneData = new SceneData();
+        public static string ScenePath;
         private static bool ThumbnailCallback()
         {
             return false;
@@ -27,10 +27,10 @@ namespace Rendering.Graphics
 
             if (!fileName.Contains(".ifl"))
             {
-                path = Path.Combine(SceneData.ScenePath, fileName);
+                path = Path.Combine(ScenePath, fileName);
                 if (File.Exists(path))
                 {
-                    string mip = Path.Combine(SceneData.ScenePath, "MIP_" + fileName);
+                    string mip = Path.Combine(ScenePath, "MIP_" + fileName);
                     return (File.Exists(mip) && bUseMIPs ? mip : path);
                 }
 

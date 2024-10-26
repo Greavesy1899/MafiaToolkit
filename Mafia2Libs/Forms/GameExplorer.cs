@@ -17,7 +17,6 @@ namespace Mafia2Tool
 {
     public partial class GameExplorer : Form
     {
-        private SceneData SceneData = new SceneData();
         private DirectoryInfo currentDirectory;
         private DirectoryInfo rootDirectory;
         private DirectoryInfo pcDirectory;
@@ -277,7 +276,6 @@ namespace Mafia2Tool
 
                 if(file is FileFrameResource)
                 {
-                    SceneData.ScenePath = currentDirectory.FullName;
                     CachedFrameResourceFile = file as FileFrameResource;
                     Button_OpenMapEditor.Enabled = true;
                 }

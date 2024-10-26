@@ -225,5 +225,7 @@ namespace ResourceTypes.FrameResource
             return OwningResource.SceneData.VertexBufferPool.GetBuffer(Geometry.LOD[lod]
                 .VertexBufferRef.Hash);
         }
+        
+        
     }
 }

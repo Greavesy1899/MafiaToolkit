@@ -20,7 +20,6 @@ namespace Rendering.Graphics
 {
     public class RenderModel : IRenderer
     {
-        public SceneData SceneData;
         public struct ModelPart
         {
             public IMaterial Material;

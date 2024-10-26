@@ -13,7 +13,6 @@ using System.Numerics;
 using Vortice.Mathematics;
 using Utils.VorticeUtils;
 using System.Diagnostics;
-using Mafia2Tool;
 
 namespace Utils.Models
 {
