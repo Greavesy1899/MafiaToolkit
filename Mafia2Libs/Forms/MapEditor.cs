@@ -1408,7 +1408,18 @@ namespace Mafia2Tool
         private void UpdateObjectParents(ParentInfo.ParentType ParentType, int refID, FrameEntry entry = null)
         {
             FrameObjectBase obj = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
-                
+            
+            
+            TreeNode[] newChildChildren = dSceneTree.Find(obj.RefID.ToString(), true);
+            //checking if we are not trying to make children our new parent
+            foreach (var child in newChildChildren)
+            {
+                FrameObjectBase childFrame = child.Tag as FrameObjectBase;
+                if (childFrame.IsFrameOwnChildren(refID)) {
+                    return;
+                }
+            }
+            
             //make sure refID is not root.
             if (refID != 0)
             {
@@ -1422,7 +1433,7 @@ namespace Mafia2Tool
                         entry = (objs[0].Tag as FrameEntry);
                     }
                 }
-
+                
                 SceneData.FrameResource.SetParentOfObject(ParentType, obj, entry);
             }
             else
