@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Windows.Forms;
 using ResourceTypes.Materials;
 
 namespace Forms.Docking
@@ -266,6 +267,7 @@ namespace Forms.Docking
             Split_Searcher_TextButton.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)Split_Searcher_TextButton).EndInit();
             Split_Searcher_TextButton.ResumeLayout(false);
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
             ResumeLayout(false);
         }
 

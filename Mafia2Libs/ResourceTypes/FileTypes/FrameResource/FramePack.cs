@@ -243,16 +243,18 @@ namespace ResourceTypes.FrameResource
 
         public void WriteToFile(string ExportName, FrameObjectBase Frame)
         {
-            Stream Data = WriteToStream(Frame);
-            File.WriteAllBytes(ExportName, Data.ReadBytes((int)Data.Length));
+            using (MemoryStream mainMemoryStream = new MemoryStream())
+            {
+                WriteToStream(Frame, mainMemoryStream);
+                File.WriteAllBytes(ExportName, mainMemoryStream.ToArray());
+            }
         }
         
-        public Stream WriteToStream(FrameObjectBase Frame)
+        public void WriteToStream(FrameObjectBase Frame,Stream MainStream)
         {
             ModelAttachments = new Dictionary<ulong, List<int>>();
-            MemoryStream mainMemoryStream = new MemoryStream();
             
-                using (BinaryWriter writer = new BinaryWriter(mainMemoryStream, Encoding.UTF8,leaveOpen:true))
+                using (BinaryWriter writer = new BinaryWriter(MainStream, Encoding.UTF8,leaveOpen:true))
                 {
                     MemoryStream frameStream = SaveFrameStream(Frame, null);
                     writer.Write(frameStream.ToArray());
@@ -269,8 +271,7 @@ namespace ResourceTypes.FrameResource
                     }
                 }
 
-            mainMemoryStream.Position = 0;
-            return mainMemoryStream; 
+                MainStream.Position = 0;
         }
         
         private MemoryStream SaveFrameStream(FrameObjectBase frame,MemoryStream memoryStream)

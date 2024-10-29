@@ -321,7 +321,7 @@ namespace Forms.Docking
 
         private void CancelButton_OnClick(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
     }
 }

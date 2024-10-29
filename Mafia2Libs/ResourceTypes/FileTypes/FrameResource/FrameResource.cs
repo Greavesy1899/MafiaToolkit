@@ -400,14 +400,10 @@ namespace ResourceTypes.FrameResource
             Packet.WriteToFile(FileName, frame);
         }
         
-        public MemoryStream SaveFramesStream(FrameObjectBase frame)
+        public void SaveFramesStream(FrameObjectBase frame,Stream MainStream)
         {
             FramePack Packet = new FramePack(this);
-            Stream Stream = Packet.WriteToStream(frame);
-            MemoryStream PacketStream = new MemoryStream();
-            Stream.CopyTo(PacketStream);
-            PacketStream.Position = 0;
-            return PacketStream;
+            Packet.WriteToStream(frame,MainStream);
         }
 
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)
@@ -832,6 +828,23 @@ namespace ResourceTypes.FrameResource
             }
 
             return textureDict;
+        }
+        
+        public bool CheckForMeshObjects(TreeNode node)//checking for at least one SingleMesh for texturegrab
+        {
+            if (node.Tag is FrameObjectSingleMesh)
+            {
+                return true;
+            }
+
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                if (CheckForMeshObjects(childNode))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

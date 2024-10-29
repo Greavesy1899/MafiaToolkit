@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using Mafia2Tool;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;

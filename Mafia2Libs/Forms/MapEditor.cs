@@ -49,7 +49,7 @@ namespace Mafia2Tool
         //docking panels
         private DockPropertyGrid dPropertyGrid;
         private DockSceneTree dSceneTree;
-        private DockImportSceneTree dImportSceneTree = new DockImportSceneTree();
+        private DockImportSceneTree dImportSceneTree;
         private DockViewProperties dViewProperties;
 
         //parent nodes for data
@@ -128,6 +128,7 @@ namespace Mafia2Tool
             dPropertyGrid = new DockPropertyGrid();
             dSceneTree = new DockSceneTree();
             dViewProperties = new DockViewProperties();
+            dImportSceneTree = new DockImportSceneTree();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
             dSceneTree.Select();
@@ -395,7 +396,7 @@ namespace Mafia2Tool
             dImportSceneTree.importButton.Click += new EventHandler(ImportButton_Click);
             dImportSceneTree.FormClosed += new FormClosedEventHandler(CancelButton_Click);
             dImportSceneTree.AddToTree(importFRRoot);
-            dImportSceneTree.TopMost = true;
+            dImportSceneTree.Owner = this;
             dImportSceneTree.Show();
             Button_ImportFrame.Enabled = false;//limiting users to one instance at a time
         }
@@ -413,7 +414,6 @@ namespace Mafia2Tool
             if (Graphics == null)
             {
                 Graphics = new GraphicsClass();
-                Graphics.SceneData = SceneData;
                 Graphics.PreInit(handle);
                 BuildRenderObjects();
                 result = Graphics.InitScene(RenderPanel.Width, RenderPanel.Height);
@@ -1367,9 +1367,14 @@ namespace Mafia2Tool
             }
             
             FrameObjectBase frame = frnode.Tag as FrameObjectBase;
-            MemoryStream importedData = ImportedScene.FrameResource.SaveFramesStream(frame);
-            TreeNode parent = SceneData.FrameResource.ReadFramesFromImport(frame.Name.String,importedData);
-            if (dImportSceneTree.importTextures.Checked && parent != null && CheckForMeshObjects(frnode))
+            TreeNode parent;
+            using (MemoryStream importedData = new MemoryStream())
+            {
+                ImportedScene.FrameResource.SaveFramesStream(frame,importedData);
+                parent = SceneData.FrameResource.ReadFramesFromImport(frame.Name.String,importedData);
+            }
+
+            if (dImportSceneTree.importTextures.Checked && parent != null && ImportedScene.FrameResource.CheckForMeshObjects(frnode))
             {
                 Dictionary<uint, string> allTexturesDict = ImportedScene.FrameResource.CollectAllTextureNames(frnode);
                 List<string> allTextures = allTexturesDict.Values.ToList();
@@ -1379,23 +1384,6 @@ namespace Mafia2Tool
             }
             dSceneTree.AddToTree(parent, frameResourceRoot);
             ConvertNodeToFrame(parent);
-        }
-
-        private bool CheckForMeshObjects(TreeNode node)//checking for at least one SingleMesh
-        {
-            if (node.Tag is FrameObjectSingleMesh)
-            {
-                return true;
-            }
-
-            foreach (TreeNode childNode in node.Nodes)
-            {
-                if (CheckForMeshObjects(childNode))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
