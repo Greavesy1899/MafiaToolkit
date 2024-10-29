@@ -111,7 +111,7 @@ namespace ResourceTypes.FrameResource
                 foreach (var lod in mesh.Geometry.LOD)
                 {
                     using (var stream = new MemoryStream())
-                    {
+                    {//todo: next two lines and their duplicates need to be rewritten to not use scenedata
                         OwningResource.SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
                         OwningResource.SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
                         writer.Write(stream.ToArray());

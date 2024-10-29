@@ -456,7 +456,7 @@ namespace Mafia2Tool
             string name = (sender as ToolStripMenuItem).Name;
             ParentInfo.ParentType ParentType = (name == "UpdateParent1Button" ? ParentInfo.ParentType.ParentIndex1 : ParentInfo.ParentType.ParentIndex2);
             ListWindow window = new ListWindow();
-            window.PopulateForm(ParentType,SceneData);
+            window.PopulateForm(ParentType,SceneData.FrameResource);
             
             if (window.ShowDialog() == DialogResult.OK)
             {
@@ -1376,7 +1376,8 @@ namespace Mafia2Tool
 
             if (dImportSceneTree.importTextures.Checked && parent != null && ImportedScene.FrameResource.CheckForMeshObjects(frnode))
             {
-                Dictionary<uint, string> allTexturesDict = ImportedScene.FrameResource.CollectAllTextureNames(frnode);
+                Dictionary<uint, string> allTexturesDict = new Dictionary<uint, string>();
+                ImportedScene.FrameResource.CollectAllTextureNames(frnode,allTexturesDict);
                 List<string> allTextures = allTexturesDict.Values.ToList();
                 SceneData.ImportTextures(allTextures, ImportedScene.ScenePath);
                 

@@ -8,7 +8,7 @@ namespace Mafia2Tool
 {
     public partial class ListWindow : Form
     {
-        private SceneData SceneData = new SceneData();
+        private FrameResource frameResource = null;
         private bool frameMode = false;
         private bool searchMode = false;
         public object chosenObject = null;
@@ -20,9 +20,9 @@ namespace Mafia2Tool
             InitializeComponent();
         }
 
-        public void PopulateForm(ParentInfo.ParentType ParentType,SceneData sceneData)
+        public void PopulateForm(ParentInfo.ParentType ParentType,FrameResource fr)
         {
-            SceneData = sceneData;
+            frameResource = fr;
             labelInfo.Text = Language.GetString("$SELECT_PARENT") + '\n' + Language.GetString("$HOW_TO_SEARCH");
             type = ParentType;
             frameMode = true;
@@ -30,13 +30,13 @@ namespace Mafia2Tool
 
             if (ParentType == ParentInfo.ParentType.ParentIndex2)
             {
-                foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
+                foreach (KeyValuePair<int, FrameHeaderScene> entry in frameResource.FrameScenes)
                 {
                     listBox1.Items.Add(entry.Value);
                 }
             }
 
-            foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
+            foreach (KeyValuePair<int, object> entry in frameResource.FrameObjects)
             {
                 listBox1.Items.Add(entry.Value);
             }
@@ -56,7 +56,7 @@ namespace Mafia2Tool
             if (frameMode)
             {
                 listBox1.Items.Clear();
-                foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
+                foreach (KeyValuePair<int, object> entry in frameResource.FrameObjects)
                 {
                     FrameObjectBase obj = entry.Value as FrameObjectBase;
 

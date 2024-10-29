@@ -14,7 +14,7 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameResource
     {
-        public SceneData SceneData = new SceneData();
+        public SceneData SceneData = null;
         FrameHeader header;
         Dictionary<int, FrameHeaderScene> frameScenes = new Dictionary<int, FrameHeaderScene>();
         Dictionary<int, FrameGeometry> frameGeometries = new Dictionary<int, FrameGeometry>();
@@ -798,13 +798,8 @@ namespace ResourceTypes.FrameResource
             return false;
         }
         
-        public Dictionary<uint, string> CollectAllTextureNames(TreeNode node, Dictionary<uint, string> textureDict = null)
+        public void CollectAllTextureNames(TreeNode node, Dictionary<uint, string> textureDict)
         {
-            if (textureDict == null)
-            {
-                textureDict = new Dictionary<uint, string>();
-            }
-            
             if (node.Tag is FrameObjectSingleMesh mesh)
             {
                 List<string> partTextures = mesh.GetMaterial().CollectAllTextureNames();
@@ -826,8 +821,6 @@ namespace ResourceTypes.FrameResource
             {
                 CollectAllTextureNames(childNode, textureDict);
             }
-
-            return textureDict;
         }
         
         public bool CheckForMeshObjects(TreeNode node)//checking for at least one SingleMesh for texturegrab
