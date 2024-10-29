@@ -1,5 +1,4 @@
-﻿using Mafia2Tool;
-using Rendering.Graphics;
+﻿using Rendering.Graphics;
 using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Navigation;
@@ -10,7 +9,6 @@ namespace Rendering.Factories
 {
     public static class RenderableFactory
     {
-        private static SceneData SceneData = new SceneData();
         public static RenderBoundingBox BuildBoundingBox(BoundingBox BBox, Matrix4x4 WorldTransform)
         {
             RenderBoundingBox RenderBox = new RenderBoundingBox();
@@ -27,24 +25,23 @@ namespace Rendering.Factories
             return Plane3D;
         }
 
-        public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh,SceneData sceneData)
+        public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh)
         {
-            SceneData = sceneData;
             if (Mesh.MaterialIndex == -1 && Mesh.MeshIndex == -1)
             {
                 return null;
             }
 
-            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[Mesh.Refs[FrameEntryRefTypes.Geometry]];
-            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[Mesh.Refs[FrameEntryRefTypes.Material]];
+            FrameGeometry geom = Mesh.GetGeometry();
+            FrameMaterial mat = Mesh.GetMaterial();
             IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
             VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
             // We need to retrieve buffers first.
             for (int c = 0; c != geom.LOD.Length; c++)
             {
-                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.Hash);
-                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.Hash);
+                indexBuffers[c] = Mesh.GetIndexBuffer(c);
+                vertexBuffers[c] = Mesh.GetVertexBuffer(c);
             }
 
             if (indexBuffers[0] == null || vertexBuffers[0] == null)
@@ -64,7 +61,7 @@ namespace Rendering.Factories
         }
 
         // TODO: Rubbish, redo. Old code.
-        public static RenderStaticCollision BuildRenderItemDesc(ulong refID)
+/*        public static RenderStaticCollision BuildRenderItemDesc(ulong refID)
         {
             foreach (var itemDesc in SceneData.ItemDescs)
             {
@@ -80,6 +77,6 @@ namespace Rendering.Factories
                 }
             }
             return null;
-        }
+        }*/
     }
 }

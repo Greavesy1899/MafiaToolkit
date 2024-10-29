@@ -1684,7 +1684,7 @@ namespace Mafia2Tool
                     newEntry = new FrameObjectModel((FrameObjectModel)node.Tag);
                     FrameObjectModel mesh = (newEntry as FrameObjectModel);
                     SceneData.FrameResource.DuplicateBlocks(mesh);
-                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh,SceneData);
+                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh);
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectSector))
@@ -1699,7 +1699,7 @@ namespace Mafia2Tool
                     newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
                     FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
                     SceneData.FrameResource.DuplicateBlocks(mesh);
-                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh,SceneData);
+                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh);
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectTarget))

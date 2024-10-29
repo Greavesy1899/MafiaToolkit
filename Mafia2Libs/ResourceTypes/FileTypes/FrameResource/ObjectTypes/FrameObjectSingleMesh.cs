@@ -204,7 +204,7 @@ namespace ResourceTypes.FrameResource
 
         public override void ConstructRenderable()
         {
-            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this,OwningResource.SceneData);
+            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this);
             RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }
