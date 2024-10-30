@@ -114,6 +114,7 @@
 	<String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>
 	<String ID="$CANNOT_CREATE_COL">Cannot add a collision. No Collision file is present!</String>
 	<String ID="$ADD_COLLISION">Add Collision</String>
+	<String ID="$TOOLTIP">Drag with Left Mouse Button to set Parent1|Drag with Right Mouse Button to set Parent2|Drag with Middle Mouse Button to switch frames</String>
 
 	<!-- Render Options -->
 	<String ID="$RENDER">Render</String>

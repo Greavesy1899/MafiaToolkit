@@ -4,7 +4,6 @@ using ResourceTypes.FrameNameTable;
 using ResourceTypes.Misc;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
@@ -287,6 +286,23 @@ namespace ResourceTypes.FrameResource
         {
             // Empty, FrameObjectBase doesn't have anything to create.
             // TODO: Consider making empty adapter?5
+        }
+        
+        public bool IsFrameOwnChildren(int newParentRefID)
+        {
+            if (RefID==newParentRefID)
+            {
+                return true;
+            }
+            
+            foreach (var child in children)
+            {
+                if (child.IsFrameOwnChildren(newParentRefID))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

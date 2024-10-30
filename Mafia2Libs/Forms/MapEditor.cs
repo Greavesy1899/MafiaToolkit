@@ -37,6 +37,8 @@ namespace Mafia2Tool
 {
     public partial class MapEditor : Form
     {
+        private SceneData SceneData = new SceneData();
+        private SceneData ImportedScene;
         private InputClass Input { get; set; }
         private GraphicsClass Graphics { get; set; }
 
@@ -47,10 +49,12 @@ namespace Mafia2Tool
         //docking panels
         private DockPropertyGrid dPropertyGrid;
         private DockSceneTree dSceneTree;
+        private DockImportSceneTree dImportSceneTree;
         private DockViewProperties dViewProperties;
 
         //parent nodes for data
         private TreeNode frameResourceRoot;
+        private TreeNode importFRRoot;
         private TreeNode collisionRoot;
         private TreeNode roadRoot;
         private TreeNode junctionRoot;
@@ -59,14 +63,18 @@ namespace Mafia2Tool
         private TreeNode AIWorldRoot;
         private TreeNode OBJDataRoot;
 
+        private MouseButtons dragButton;
+        
         private bool bSelectMode = false;
         private float selectTimer = 0.0f;
         private bool bHideChildren = false;
 
         private Dictionary<string, int> NamesAndDuplicationStore;
 
-        public MapEditor(FileInfo info)
+        public MapEditor(FileInfo info,SceneData sceneData)
         {
+            SceneData = sceneData;
+            TextureLoader.ScenePath = SceneData.ScenePath;
             InitializeComponent();
             Localise();
 
@@ -120,6 +128,7 @@ namespace Mafia2Tool
             dPropertyGrid = new DockPropertyGrid();
             dSceneTree = new DockSceneTree();
             dViewProperties = new DockViewProperties();
+            dImportSceneTree = new DockImportSceneTree();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
             dSceneTree.Select();
@@ -136,6 +145,7 @@ namespace Mafia2Tool
             dPropertyGrid.KeyUp += new KeyEventHandler(OnKeyUpDockedPanel);
             dSceneTree.UpdateParent1Button.Click += new EventHandler(UpdateParent_Click);
             dSceneTree.UpdateParent2Button.Click += new EventHandler(UpdateParent_Click);
+            dSceneTree.TreeViewNodeDropped += OnTreeViewNodeDropped;
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
             dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
         }
@@ -154,6 +164,38 @@ namespace Mafia2Tool
             if (Graphics != null)
             {
                 Graphics.OnResize(RenderPanel.Width, RenderPanel.Height);
+            }
+        }
+        
+        private void OnTreeViewNodeDropped(object sender, TreeViewDragEventArgs e)
+        {
+            if (e.DraggedNode.Tag is FrameHeaderScene || e.DraggedNode.Tag is FrameHeader)
+            {
+                return;
+            }
+            if (e.DragButton == MouseButtons.Left)
+            {
+                FrameEntry NewParent = (e.TargetNode.Tag != null ? e.TargetNode.Tag as FrameEntry : null);
+                int ParentRefID = (NewParent != null ? NewParent.RefID : -1);
+
+                // Request parent1 update
+                UpdateObjectParents(ParentInfo.ParentType.ParentIndex1, ParentRefID, NewParent);
+            }
+            else if (e.DragButton == MouseButtons.Right)
+            {
+                FrameEntry NewParent = (e.TargetNode.Tag != null ? e.TargetNode.Tag as FrameEntry : null);
+                int ParentRefID = (NewParent != null ? NewParent.RefID : -1);
+
+                // Request parent2 update
+                UpdateObjectParents(ParentInfo.ParentType.ParentIndex2, ParentRefID, NewParent);
+            }
+            else if (e.DragButton == MouseButtons.Middle)
+            {
+                TreeNode node1 = (e.TargetNode != null ? e.TargetNode : null);
+                TreeNode node2 = (e.DraggedNode != null ? e.DraggedNode: null);
+
+                // frame switch
+                SwitchFrames(node1, node2);
             }
         }
         
@@ -257,6 +299,11 @@ namespace Mafia2Tool
         private void ExportFrame_Click(object sender, EventArgs e)
         {
             var node = dSceneTree.SelectedNode;
+            if (node.Tag.GetType() == typeof(FrameHeaderScene) || node.Tag.GetType() == typeof(FrameHeader))//this should catch scenes and frameresource content
+            {
+                //todo manage exporting scenes, skip frameheader
+                return;
+            }
 
             FrameObjectBase frame = (node.Tag as FrameObjectBase);
 
@@ -331,6 +378,28 @@ namespace Mafia2Tool
             frameResourceRoot = tree;
             dSceneTree.AddToTree(tree);
         }
+        
+        public void PopulateImportedData(string ImportedFilename)
+        {
+            ImportedScene = new SceneData();
+            ImportedScene.ScenePath = Path.GetDirectoryName(ImportedFilename);
+            ImportedScene.BuildData(false);
+            InitImportTree();
+        }
+
+        public void InitImportTree()
+        {
+            TreeNode Importedtree = ImportedScene.FrameResource.BuildTree(ImportedScene.FrameNameTable);
+            Importedtree.Tag = ImportedScene.FrameResource.Header;
+            importFRRoot = Importedtree;
+            dImportSceneTree = new DockImportSceneTree(ImportedScene.ScenePath);
+            dImportSceneTree.importButton.Click += new EventHandler(ImportButton_Click);
+            dImportSceneTree.FormClosed += new FormClosedEventHandler(CancelButton_Click);
+            dImportSceneTree.AddToTree(importFRRoot);
+            dImportSceneTree.Owner = this;
+            dImportSceneTree.Show();
+            Button_ImportFrame.Enabled = false;//limiting users to one instance at a time
+        }
 
         public void StartD3DPanel()
         {
@@ -368,7 +437,7 @@ namespace Mafia2Tool
             RenderPanel.MouseEnter += RenderPanel_MouseEnter;
             RenderLoop.Run(this, () => { if (!Frame()) Shutdown(); });
         }
-
+        
         private void RenderPanel_MouseEnter(object sender, EventArgs e) => RenderPanel.Focus();
         private void RenderForm_MouseMove(object sender, MouseEventArgs e) => mousePos = new Point(e.Location.X, e.Location.Y);
         private void CullModeButton_Click(object sender, EventArgs e) => Graphics.ToggleD3DCullMode();
@@ -387,7 +456,7 @@ namespace Mafia2Tool
             string name = (sender as ToolStripMenuItem).Name;
             ParentInfo.ParentType ParentType = (name == "UpdateParent1Button" ? ParentInfo.ParentType.ParentIndex1 : ParentInfo.ParentType.ParentIndex2);
             ListWindow window = new ListWindow();
-            window.PopulateForm(ParentType);
+            window.PopulateForm(ParentType,SceneData.FrameResource);
             
             if (window.ShowDialog() == DialogResult.OK)
             {
@@ -399,11 +468,72 @@ namespace Mafia2Tool
             }
         }
 
+        private void SwitchFrames(TreeNode node1, TreeNode node2)
+        {
+            if (node1 != null && node2 != null &&
+                node1.Tag is FrameObjectBase frame1 &&
+                node2.Tag is FrameObjectBase frame2)
+            {
+                if (frame1.Parent != null && frame2.Parent != null && frame1.Parent.RefID == frame2.Parent.RefID)
+                {
+                    return;//switching objects under same parent is redundant
+                }
+
+                var tempRefs = frame1.Refs;
+                var tempParent1 = frame1.ParentIndex1;
+                var tempParent2 = frame1.ParentIndex2;
+                var tempParent = frame1.Parent;
+                
+                frame1.ParentIndex1 = frame2.ParentIndex1;
+                frame1.ParentIndex2 = frame2.ParentIndex2;
+                frame1.Parent = frame2.Parent;
+                frame1.Refs = frame2.Refs;
+                
+                frame2.ParentIndex1 = tempParent1;
+                frame2.ParentIndex2 = tempParent2;
+                frame2.Parent = tempParent;
+                frame2.Refs = tempRefs;
+
+                int tempIcon = node1.ImageIndex;
+                int tepmIconSelect = node1.SelectedImageIndex;
+                node1.Tag = frame2;
+                node1.Name = frame2.RefID.ToString();
+                node1.Text = frame2.ToString();
+                node1.ImageIndex = node2.ImageIndex;
+                node1.SelectedImageIndex = node2.SelectedImageIndex;
+
+                node2.Tag = frame1;
+                node2.Name = frame1.RefID.ToString();
+                node2.Text = frame1.ToString();
+                node2.ImageIndex = tempIcon;
+                node2.SelectedImageIndex = tepmIconSelect;
+                
+                TreeNode parent1 = node1.Parent;
+                TreeNode parent2 = node2.Parent;
+                
+                if (parent1 != null && parent2 != null)
+                {
+                    int index1 = node1.Index;
+                    int index2 = node2.Index;
+                    
+                    parent1.Nodes.RemoveAt(index1);
+                    parent2.Nodes.RemoveAt(index2);
+                    
+                    parent1.Nodes.Insert(index2, node1);
+                    parent2.Nodes.Insert(index1, node2);
+                }
+
+                ApplyChangesToRenderable(frame1);
+                ApplyChangesToRenderable(frame2);
+            }
+        }
+
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
             SceneData.CleanData();
             RenderStorageSingleton.Instance.TextureCache.Clear();
             dSceneTree.Dispose();
+            dImportSceneTree.Dispose();
             dPropertyGrid.Dispose();
             dViewProperties.Dispose();
             Shutdown();
@@ -1226,7 +1356,42 @@ namespace Mafia2Tool
             Graphics.Camera.Position = dSceneTree.JumpToHelper();
             UpdatePositionElement(Graphics.Camera.Position);
         }
+        
+        private void ImportButton_Click(object sender, EventArgs e)
+        {
+            var frnode = dImportSceneTree.SelectedNode;
+            if (frnode.Tag.GetType() == typeof(FrameHeaderScene) || frnode.Tag.GetType() == typeof(FrameHeader))//this should catch scenes and frameresource content
+            {
+                //todo manage exporting scenes, skip frameheader
+                return;
+            }
+            
+            FrameObjectBase frame = frnode.Tag as FrameObjectBase;
+            TreeNode parent;
+            using (MemoryStream importedData = new MemoryStream())
+            {
+                ImportedScene.FrameResource.SaveFramesStream(frame,importedData);
+                parent = SceneData.FrameResource.ReadFramesFromImport(frame.Name.String,importedData);
+            }
 
+            if (dImportSceneTree.importTextures.Checked && parent != null && ImportedScene.FrameResource.CheckForMeshObjects(frnode))
+            {
+                Dictionary<uint, string> allTexturesDict = new Dictionary<uint, string>();
+                ImportedScene.FrameResource.CollectAllTextureNames(frnode,allTexturesDict);
+                List<string> allTextures = allTexturesDict.Values.ToList();
+                SceneData.ImportTextures(allTextures, ImportedScene.ScenePath);
+                
+
+            }
+            dSceneTree.AddToTree(parent, frameResourceRoot);
+            ConvertNodeToFrame(parent);
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            Button_ImportFrame.Enabled = true;
+        }
+            
         private void UpdateObjectParentsRecurse(TreeNode parent, FrameObjectBase entry)
         {
             foreach (var child in entry.Children)
@@ -1243,6 +1408,18 @@ namespace Mafia2Tool
         private void UpdateObjectParents(ParentInfo.ParentType ParentType, int refID, FrameEntry entry = null)
         {
             FrameObjectBase obj = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
+            
+            
+            TreeNode[] newChildChildren = dSceneTree.Find(obj.RefID.ToString(), true);
+            //checking if we are not trying to make children our new parent
+            foreach (var child in newChildChildren)
+            {
+                FrameObjectBase childFrame = child.Tag as FrameObjectBase;
+                if (childFrame.IsFrameOwnChildren(refID)) {
+                    return;
+                }
+            }
+            
             //make sure refID is not root.
             if (refID != 0)
             {
@@ -1256,14 +1433,14 @@ namespace Mafia2Tool
                         entry = (objs[0].Tag as FrameEntry);
                     }
                 }
-
+                
                 SceneData.FrameResource.SetParentOfObject(ParentType, obj, entry);
             }
             else
             {
                 SceneData.FrameResource.SetParentOfObject(ParentType, obj, null);
             }
-
+            
             dSceneTree.RemoveNode(dSceneTree.SelectedNode);
             TreeNode newNode = new TreeNode();
             newNode.Tag = obj;
@@ -1973,12 +2150,23 @@ namespace Mafia2Tool
             if (FrameBrowser.ShowDialog() == DialogResult.OK)
             {
                 string Filename = FrameBrowser.FileName;
-                TreeNode parent = SceneData.FrameResource.ReadFramesFromFile(Filename);
-                dSceneTree.AddToTree(parent, frameResourceRoot);
-                ConvertNodeToFrame(parent);
+                
+                if (FrameBrowser.FilterIndex.Equals(1))
+                {
+                    PopulateImportedData(Filename);
+                }
+                else
+                {
+                    
+                    TreeNode parent = SceneData.FrameResource.ReadFramesFromImport(Filename);
+                    dSceneTree.AddToTree(parent, frameResourceRoot);
+                    ConvertNodeToFrame(parent);
+                    
+                }
+                
             }
         }
-
+        
         private void Button_DumpTexture_Click(object sender, EventArgs e)
         {
             List<string> AllTextures = new List<string>();

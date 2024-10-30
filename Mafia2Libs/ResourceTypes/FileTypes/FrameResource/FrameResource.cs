@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Gibbed.IO;
+using Mafia2Tool;
 using Utils.Extensions;
 using ResourceTypes.Misc;
 using Utils.Logging;
@@ -12,6 +14,7 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameResource
     {
+        public SceneData SceneData = null;
         FrameHeader header;
         Dictionary<int, FrameHeaderScene> frameScenes = new Dictionary<int, FrameHeaderScene>();
         Dictionary<int, FrameGeometry> frameGeometries = new Dictionary<int, FrameGeometry>();
@@ -87,8 +90,9 @@ namespace ResourceTypes.FrameResource
             frameObjects = new Dictionary<int, object>();
         }
 
-        public FrameResource(string file, bool isBigEndian = false) : this()
+        public FrameResource(string file,SceneData sceneData, bool isBigEndian = false) : this()
         {
+            SceneData = sceneData;
             if (File.Exists("FrameProps.bin"))
             {
                 FramePropContents = new FrameProps(new FileInfo("FrameProps.bin"));
@@ -373,11 +377,19 @@ namespace ResourceTypes.FrameResource
                 (pair.Value as FrameObjectBase).SetWorldTransform();
             }
         }
-
-        public TreeNode ReadFramesFromFile(string filename)
+        
+        //name is either name of the imported frame or name of .framedata that will be red
+        public TreeNode ReadFramesFromImport(string name,MemoryStream fromFR = null)
         {
             FramePack Packet = new FramePack(this);
-            Packet.ReadFramesFromFile(filename);
+            if (fromFR == null)
+            {
+                Packet.ReadFramesFromFile(name);//file
+            }
+            else
+            {
+                Packet.ReadFramesFromFile(fromFR);//stream
+            }
             Packet.PushPacketIntoFrameResource();
             return BuildFromFrames(null, Packet.RootFrame);
         }
@@ -386,6 +398,12 @@ namespace ResourceTypes.FrameResource
         {
             FramePack Packet = new FramePack(this);
             Packet.WriteToFile(FileName, frame);
+        }
+        
+        public void SaveFramesStream(FrameObjectBase frame,Stream MainStream)
+        {
+            FramePack Packet = new FramePack(this);
+            Packet.WriteToStream(frame,MainStream);
         }
 
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)
@@ -407,9 +425,9 @@ namespace ResourceTypes.FrameResource
         }
         public TreeNode BuildTree(FrameNameTable.FrameNameTable table)
         {
-            TreeNode root = new TreeNode("FrameResource Contents");
+            TreeNode root = new TreeNode("FrameResource Contents: "+SceneData.ScenePath.Substring(SceneData.ScenePath.LastIndexOf('\\') + 1));
             root.Tag = header;
-
+            
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
             Dictionary<int, TreeNode> parsedNodes = new Dictionary<int, TreeNode>();
             Dictionary<int, TreeNode> notAddedNodes = new Dictionary<int, TreeNode>();
@@ -777,6 +795,48 @@ namespace ResourceTypes.FrameResource
                 entry.GetType() == typeof(FrameObjectCollision))
                 return true;
 
+            return false;
+        }
+        
+        public void CollectAllTextureNames(TreeNode node, Dictionary<uint, string> textureDict)
+        {
+            if (node.Tag is FrameObjectSingleMesh mesh)
+            {
+                List<string> partTextures = mesh.GetMaterial().CollectAllTextureNames();
+                if (partTextures != null)
+                {
+                    foreach (var texture in partTextures)
+                    {
+                        uint hash = (uint)texture.GetHashCode();
+                        
+                        if (!textureDict.ContainsKey(hash))
+                        {
+                            textureDict[hash] = texture;
+                        }
+                    }
+                }
+            }
+            
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                CollectAllTextureNames(childNode, textureDict);
+            }
+        }
+        
+        public bool CheckForMeshObjects(TreeNode node)//checking for at least one SingleMesh for texturegrab
+        {
+            if (node.Tag is FrameObjectSingleMesh)
+            {
+                return true;
+            }
+
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                if (CheckForMeshObjects(childNode))
+                {
+                    return true;
+                }
+            }
             return false;
         }
     }

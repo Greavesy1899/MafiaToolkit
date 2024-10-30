@@ -26,31 +26,31 @@ using Utils.Logging;
 
 namespace Mafia2Tool
 {
-    public static class SceneData
+    public class SceneData
     {
-        public static FrameNameTable FrameNameTable;
-        public static FrameResource FrameResource;
-        public static VertexBufferManager VertexBufferPool;
-        public static IndexBufferManager IndexBufferPool;
-        public static SoundSectorResource SoundSector;
-        public static Actor[] Actors;
-        public static ItemDescLoader[] ItemDescs;
-        public static Collision Collisions;
-        public static CityAreas CityAreas;
-        public static CityShops CityShops;
-        public static IRoadmap roadMap;
-        public static AnimalTrafficLoader ATLoader;
-        public static NAVData[] AIWorlds;
-        public static NAVData[] OBJData;
-        public static HPDData HPDData;
-        public static TranslokatorLoader Translokator;
-        public static PrefabLoader Prefabs;
-        public static string ScenePath = "";
+        public FrameNameTable FrameNameTable;
+        public FrameResource FrameResource;
+        public VertexBufferManager VertexBufferPool;
+        public IndexBufferManager IndexBufferPool;
+        public SoundSectorResource SoundSector;
+        public Actor[] Actors;
+        public ItemDescLoader[] ItemDescs;
+        public Collision Collisions;
+        public CityAreas CityAreas;
+        public CityShops CityShops;
+        public IRoadmap roadMap;
+        public AnimalTrafficLoader ATLoader;
+        public NAVData[] AIWorlds;
+        public NAVData[] OBJData;
+        public HPDData HPDData;
+        public TranslokatorLoader Translokator;
+        public PrefabLoader Prefabs;
+        public string ScenePath = "";
 
-        private static SDSContentFile sdsContent;
-        private static bool isBigEndian;
+        private SDSContentFile sdsContent;
+        private bool isBigEndian;
 
-        private static FileInfo BuildFileInfo(string name)
+        private FileInfo BuildFileInfo(string name)
         {
             var file = name;
             var info = new FileInfo(file);
@@ -58,7 +58,7 @@ namespace Mafia2Tool
             return info;
         }
 
-        public static void BuildData(bool forceBigEndian)
+        public void BuildData(bool forceBigEndian)
         {
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
@@ -118,7 +118,7 @@ namespace Mafia2Tool
             if (sdsContent.HasResource("FrameResource"))
             {
                 var name = sdsContent.GetResourceFiles("FrameResource", true)[0];
-                FrameResource = new FrameResource(name, isBigEndian);
+                FrameResource = new FrameResource(name, this, isBigEndian);
             }
 
             //Item Desc
@@ -240,13 +240,13 @@ namespace Mafia2Tool
             Actors = act.ToArray();
         }
 
-        public static void UpdateResourceType()
+        public void UpdateResourceType()
         {
             sdsContent.CreateFileFromFolder();
             sdsContent.WriteToFile();
         }
 
-        public static Actor CreateNewActor()
+        public Actor CreateNewActor()
         {
             string DirectoryAndName = string.Format("{0}/Actors_{1}.act", ScenePath, Actors.Length);
             Actor NewActorFile = new Actor(DirectoryAndName);
@@ -259,7 +259,7 @@ namespace Mafia2Tool
             return NewActorFile;
         }
 
-        public static void CleanData()
+        public void CleanData()
         {
             FrameNameTable = null;
             FrameResource = null;
@@ -275,6 +275,58 @@ namespace Mafia2Tool
             ATLoader = null;
             AIWorlds = null;
             OBJData = null;
+        }
+        
+        //for foolfroofing, maybe the imported textures could be cached until save, then reset it, and if user doesn't save and exit, all cached textures would be deleted
+        public void ImportTextures(List<string> textures, string ImportScenePath)
+        {
+            foreach (var texture in textures)
+            {
+                if (TextureCheck(texture, ImportScenePath))
+                {
+                    CopyTexture(texture, ImportScenePath);
+                }
+
+                string mipTexture = "MIP_" + texture;
+                if (TextureCheck(mipTexture, ImportScenePath))
+                {
+                    CopyTexture(mipTexture, ImportScenePath);
+                }
+            }
+
+        }
+        
+        private bool TextureCheck(string importTextureName, string ImportScenePath)//done like this in case sdscontent wasn't updated, accurate option
+        {
+            //checking if importing texture exists
+            string texPath = Path.Combine(ImportScenePath, importTextureName);
+            if (!File.Exists(texPath))
+            {
+                return false;
+            }
+            //checking if the texture is already present
+            texPath = Path.Combine(ScenePath, importTextureName);
+            if (File.Exists(texPath))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void CopyTexture(string texture, string ImportScenePath)
+        {
+            string importPath = Path.Combine(ImportScenePath, texture);
+            string destinationPath = Path.Combine(ScenePath, texture);
+
+            try
+            {
+                File.Copy(importPath, destinationPath);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error copying texture: {ex.Message}");
+            }
         }
     }
 

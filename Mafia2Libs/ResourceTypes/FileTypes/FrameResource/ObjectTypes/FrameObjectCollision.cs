@@ -1,5 +1,4 @@
-﻿using Mafia2Tool;
-using Rendering.Factories;
+﻿using Rendering.Factories;
 using Rendering.Graphics;
 using ResourceTypes.ItemDesc;
 using System.IO;
@@ -66,7 +65,7 @@ namespace ResourceTypes.FrameResource
         // It would be better if this didn't access SceneData.
         public void GetUsedItemDesc()
         {
-            foreach(ItemDescLoader ItemDesc in SceneData.ItemDescs)
+            foreach(ItemDescLoader ItemDesc in OwningResource.SceneData.ItemDescs)
             {
                 if(ItemDesc.frameRef == _Hash)
                 {

@@ -33,6 +33,7 @@ namespace ResourceTypes.FrameResource
         }
         [ReadOnly(true)]
         public Dictionary<FrameEntryRefTypes, int> Refs {
+            set { refs = value; }
             get { return refs; }
         }
 
