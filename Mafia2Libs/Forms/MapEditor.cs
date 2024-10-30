@@ -1370,7 +1370,7 @@ namespace Mafia2Tool
             TreeNode parent;
             using (MemoryStream importedData = new MemoryStream())
             {
-                ImportedScene.FrameResource.SaveFramesStream(frame,importedData);
+                importedData.Write(ImportedScene.FrameResource.SaveFramesStream(frame));
                 parent = SceneData.FrameResource.ReadFramesFromImport(frame.Name.String,importedData);
             }
 
