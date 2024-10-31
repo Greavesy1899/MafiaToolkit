@@ -802,10 +802,10 @@ namespace Mafia2Tool
                     }
                 }
             }
-            //if (SceneData.Translokator != null && ToolkitSettings.Experimental)
-            //{
-            //    Graphics.SetTranslokatorGrid(SceneData.Translokator);
-            //}
+            if (SceneData.Translokator != null && ToolkitSettings.Experimental)
+            {
+                Graphics.SetTranslokatorGrid(SceneData.Translokator);
+            }
 
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
