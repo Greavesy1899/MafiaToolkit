@@ -96,13 +96,50 @@ namespace Utils.Models
 
         public (float DecompressionFactor, Vector3 DecompressionOffset) GetDecompFactor(BoundingBox boundingBox)
         {
-            Vector3 bbox = boundingBox.Min;
-            Vector3 decompressionOffset = Vector3.Zero;
-            decompressionOffset.X = bbox.X;
-            decompressionOffset.Y = bbox.Y;
-            decompressionOffset.Z = MathF.Round(bbox.Z);
+            float Xdiff = 0.0f;
+            float Ydiff = 0.0f;
+            float Zdiff = 0.0f;
 
-            List<float> SizeValues = new() { boundingBox.Max.X - decompressionOffset.X, boundingBox.Max.Y - decompressionOffset.Y, boundingBox.Max.Z - decompressionOffset.Z };
+            for (int i = 0; i != ModelObject.Lods.Length; i++)
+            {
+                int Count = ModelObject.Lods[i].Vertices.Length;
+
+                for (int v = 0; v != Count; v++)
+                {
+                    Vertex vert = ModelObject.Lods[i].Vertices[v];
+
+                    float AbsX = Math.Abs(vert.Position.X);
+                    float AbsY = Math.Abs(vert.Position.Y);
+                    float AbsZ = Math.Abs(vert.Position.Z);
+
+                    Xdiff += AbsX - MathF.Floor(AbsX);
+                    Ydiff += AbsY - MathF.Floor(AbsY);
+                    Zdiff += AbsZ - MathF.Floor(AbsZ);
+                }
+
+                Xdiff /= Count;
+                Ydiff /= Count;
+                Zdiff /= Count;
+
+                break;
+            }
+
+            Xdiff = 1.0f - Xdiff;
+            Ydiff = 1.0f - Ydiff;
+            Zdiff = 1.0f - Zdiff;
+
+            Vector3 bbox = boundingBox.Min;
+
+            Xdiff *= Math.Sign(bbox.X);
+            Ydiff *= Math.Sign(bbox.Y);
+            Zdiff *= Math.Sign(bbox.Z);
+
+            Vector3 decompressionOffset = Vector3.Zero;
+            decompressionOffset.X = bbox.X + Xdiff;
+            decompressionOffset.Y = bbox.Y + Ydiff;
+            decompressionOffset.Z = bbox.Z + Zdiff;
+
+            List<float> SizeValues = new() { Math.Abs(boundingBox.Max.X) + Math.Abs(decompressionOffset.X), Math.Abs(boundingBox.Max.Y) + Math.Abs(decompressionOffset.Y), Math.Abs(boundingBox.Max.Z) + Math.Abs(decompressionOffset.Z) };
 
             float Size = SizeValues.Max();
 
