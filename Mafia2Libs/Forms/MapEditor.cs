@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
+using ResourceTypes.Translokator;
 using Toolkit.Core;
 using Utils.Extensions;
 using Utils.Language;
@@ -32,6 +33,7 @@ using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
 using static ResourceTypes.Collisions.Collision;
 using Collision = ResourceTypes.Collisions.Collision;
+using Object = ResourceTypes.Translokator.Object;
 
 namespace Mafia2Tool
 {
@@ -62,6 +64,7 @@ namespace Mafia2Tool
         private TreeNode actorRoot;
         private TreeNode AIWorldRoot;
         private TreeNode OBJDataRoot;
+        private TreeNode translokatorRoot;
 
         private MouseButtons dragButton;
         
@@ -802,11 +805,6 @@ namespace Mafia2Tool
                     }
                 }
             }
-            if (SceneData.Translokator != null && ToolkitSettings.Experimental)
-            {
-                Graphics.SetTranslokatorGrid(SceneData.Translokator);
-            }
-
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Road Data");
@@ -997,6 +995,11 @@ namespace Mafia2Tool
             {
                 LoadActorFiles();
             }
+            if (SceneData.Translokator != null && ToolkitSettings.Experimental)
+            {
+                LoadTranslokatorFiles();
+                Graphics.SetTranslokatorGrid(SceneData.Translokator);
+            }
 
             for(int i = 0; i < SceneData.FrameNameTable.FrameData.Length; i++)
             {
@@ -1061,6 +1064,51 @@ namespace Mafia2Tool
             }
 
             dSceneTree.AddToTree(actorRoot);
+        }
+        
+        private void LoadTranslokatorFiles()
+        {
+            translokatorRoot = new TreeNode("Translokator Items");
+            translokatorRoot.Tag = "Folder";
+            TreeNode ogNode = new TreeNode("Objects Groups");
+            ogNode.Tag = "Folder";
+            for (int z = 0; z < SceneData.Translokator.ObjectGroups.Length; z++)
+            {
+                ObjectGroup objectGroup = SceneData.Translokator.ObjectGroups[z];
+                TreeNode objectGroupNode = new TreeNode(String.Format("Object Group: [{0}]", objectGroup.ActorType));
+                objectGroupNode.Tag = objectGroup;
+                for (int y = 0; y < objectGroup.Objects.Length; y++)
+                {
+                    Object obj = objectGroup.Objects[y];
+                    TreeNode objNode = new TreeNode(obj.Name.ToString());
+                    objNode.Tag = obj;
+                    objectGroupNode.Nodes.Add(objNode);
+
+                    for (int x = 0; x < obj.Instances.Length; x++)
+                    {
+                        Instance instance = obj.Instances[x];
+                        TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
+                        instanceNode.Tag = instance;
+                        objNode.Nodes.Add(instanceNode);
+                    }
+                }
+                ogNode.Nodes.Add(objectGroupNode);
+            }
+            translokatorRoot.Nodes.Add(ogNode);
+            
+            TreeNode gridNode = new TreeNode("Grids");
+            gridNode.Tag = "Folder";
+            for (int i = 0; i < SceneData.Translokator.Grids.Length; i++)
+            {
+                Grid grid = SceneData.Translokator.Grids[i];
+                TreeNode child = new TreeNode("Grid " + i);
+                child.Tag = grid;
+                gridNode.Nodes.Add(child);
+            }
+
+            translokatorRoot.Nodes.Add(gridNode);
+
+            dSceneTree.AddToTree(translokatorRoot);
         }
 
         private void TreeViewUpdateSelected()

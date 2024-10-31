@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
+using ResourceTypes.Translokator;
 using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -287,9 +288,11 @@ namespace Forms.Docking
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
             else if (node.Tag.GetType() == typeof(FrameHeader))
-                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
+                node.SelectedImageIndex = node.ImageIndex = 8;
             else if ((node.Tag is string) && ((node.Tag as string) == "Folder"))
-                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
+                node.SelectedImageIndex = node.ImageIndex = 8;
+            else if (node.Tag.GetType() == typeof(ObjectGroup))
+                node.SelectedImageIndex = node.ImageIndex = 8;
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
