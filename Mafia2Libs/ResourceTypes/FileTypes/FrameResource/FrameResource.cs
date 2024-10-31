@@ -392,7 +392,7 @@ namespace ResourceTypes.FrameResource
         }
         
         //name is either name of the imported frame or name of .framedata that will be red
-        public TreeNode ReadFramesFromImport(string name,MemoryStream fromFR = null)
+        public TreeNode ReadFramesFromImport(string name, byte[] fromFR = null)
         {
             FramePack Packet = new FramePack(this);
             if (fromFR == null)

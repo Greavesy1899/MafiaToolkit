@@ -286,14 +286,7 @@ namespace ResourceTypes.FrameResource
             ReadFramesFromFile(packData);
         }
 
-        public void ReadFramesFromFile(Stream frImportData)
-        {
-            byte[] packData = new byte[frImportData.Length]; // Loading from stream
-            frImportData.Read(packData, 0, packData.Length);
-            ReadFramesFromFile(packData);
-        }
-
-        private void ReadFramesFromFile(byte[] PackData)
+        public void ReadFramesFromFile(byte[] PackData)
         {
             FrameObjects = new Dictionary<int, object>();
             FrameMaterials = new Dictionary<int, FrameMaterial>();
