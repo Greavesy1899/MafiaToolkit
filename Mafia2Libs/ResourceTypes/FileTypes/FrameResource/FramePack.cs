@@ -322,7 +322,7 @@ namespace ResourceTypes.FrameResource
                 }
                 else if (frame.GetType() == typeof(FrameObjectJoint))
                 {
-                    writer.Write((ushort)FrameResourceObjectType.Joint);
+                    writer.Write((ushort)FrameResourceObjectType.Point);
                     (frame as FrameObjectJoint).WriteToFile(writer);
                 }
                 else if (frame.GetType() == typeof(FrameObjectLight))
