@@ -423,7 +423,7 @@ namespace Mafia2Tool
             // 
             // FrameBrowser
             // 
-            FrameBrowser.Filter = "Toolkit Frame Data|*framedata";
+            FrameBrowser.Filter = "FrameResource|*.fr|Toolkit Frame Data|*.framedata";
             // 
             // MapEditor
             // 

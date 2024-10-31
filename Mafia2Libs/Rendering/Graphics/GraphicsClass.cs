@@ -199,17 +199,6 @@ namespace Rendering.Graphics
 
                         if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
 
-                        if (t < 0.0f || float.IsNaN(t))
-                        {
-                            // TODO: Remove this from Graphics class. This should be an ambiguous class - 
-                            // Maybe we can send this to another class which handles erroneous requests
-                            if (SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
-                            {
-                                var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
-                                Utils.Logging.Log.WriteLine(string.Format("The toolkit has failed to analyse a model: {0} {1}", frame.Name, t));
-                            }
-                        }
-
                         var worldPosition = ray.Position + t * ray.Direction;
                         var distance = (worldPosition - ray.Position).LengthSquared();
                         if (distance < lowest)

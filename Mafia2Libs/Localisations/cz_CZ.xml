@@ -59,6 +59,7 @@
 	<String ID="$NO_COL_FILE_CREATE_NEW">Žádný soubor s kolizí není nalezen. Vytvořit nový soubor kolize?</String>
 	<String ID="$CANNOT_CREATE_COL">Nelze přidat kolizi. Žádný soubor s kolizí není nalezen!</String>
 	<String ID="$ADD_COLLISION">Přidat kolizi</String>
+	<String ID="$TOOLTIP">Přetáhněte s levým tlačítkem myši k nastavení Parent1|Přetáhněte s pravým tlačítkem myši k nastavení Parent2|Přetáhněte s prostředním tlačítkem myši k záměně objektů</String>
 
 	<!-- Main Options Strings-->
 	<String ID="$GENERAL">Obecné</String>

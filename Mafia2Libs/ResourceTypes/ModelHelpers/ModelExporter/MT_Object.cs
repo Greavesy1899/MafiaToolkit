@@ -684,7 +684,19 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 MT_Object NewObject = MT_Object.TryBuildObject(InChildren[i]);
                 if(NewObject != null)
                 {
-                    // Slot into array
+                    IndexBuffer[] ChildIBuffers = new IndexBuffer[CastedMesh.Geometry.LOD.Length];
+                    VertexBuffer[] ChildVBuffers = new VertexBuffer[CastedMesh.Geometry.LOD.Length];
+
+                    //we need to retrieve buffers first.
+                    for (int c = 0; c < CastedMesh.Geometry.LOD.Length; c++)
+                    {
+                        ChildIBuffers[c] = CastedMesh.GetIndexBuffer(c);
+                        ChildVBuffers[c] = CastedMesh.GetVertexBuffer(c);
+                    }
+
+                    ChildObject.BuildFromCooked(CastedMesh, ChildVBuffers, ChildIBuffers);
+					
+					// Slot into array
                     TempChildren.Add(NewObject);
                 }
             }

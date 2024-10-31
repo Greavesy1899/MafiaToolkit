@@ -3,6 +3,7 @@ using Rendering.Graphics;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using ResourceTypes.BufferPools;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;
@@ -212,5 +213,19 @@ namespace ResourceTypes.FrameResource
         {
             return string.Format("{0}", Name);
         }
+
+        public IndexBuffer GetIndexBuffer(int lod)
+        {
+            return OwningResource.SceneData.IndexBufferPool.GetBuffer(Geometry.LOD[lod]
+                .IndexBufferRef.Hash);
+        }
+        
+        public VertexBuffer GetVertexBuffer(int lod)
+        {
+            return OwningResource.SceneData.VertexBufferPool.GetBuffer(Geometry.LOD[lod]
+                .VertexBufferRef.Hash);
+        }
+        
+        
     }
 }

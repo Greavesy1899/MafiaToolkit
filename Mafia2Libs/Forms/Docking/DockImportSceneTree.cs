@@ -9,41 +9,31 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
 {
-    public partial class DockSceneTree : DockContent
+    public partial class DockImportSceneTree : DockContent
     {
         public TreeNode SelectedNode {
             get { return TreeView_Explorer.SelectedNode; }
             set { TreeView_Explorer.SelectedNode = value; }
         }
 
-        public TreeNode DraggedNode;
-        public TreeNode targetNode;
-
         // Cache the last searched string so we can check if it has changed before we search again.
         private string LastSearchedString = String.Empty;
-        
-        private MouseButtons dragButton;
-        
-        public event EventHandler<TreeViewDragEventArgs> TreeViewNodeDropped;
 
-        public DockSceneTree()
+        public DockImportSceneTree(string sceneName)
         {
             InitializeComponent();
-
-            Localize();
+            Localize(sceneName);
         }
 
-        public void Localize()
+        public DockImportSceneTree()
         {
-            Text = Language.GetString("$SCENE_OUTLINER_FORMNAME");
+            
+        }
+        public void Localize(string sceneName)
+        {
+            Text = sceneName.Substring(sceneName.LastIndexOf('\\') + 1);
             TabPage_Explorer.Text = Language.GetString("$SCENE_OUTLINER_EXPLORER");
             TabPage_Searcher.Text = Language.GetString("$SCENE_OUTLINER_SEARCHER");
-            string xmlText = Language.GetString("$TOOLTIP");
-            string tooltipText = xmlText.Replace("|", Environment.NewLine);
-            if (!tooltipText.Equals("$TOOLTIP", StringComparison.InvariantCulture))
-            {
-                this.tooltipText.Text = tooltipText;
-            }
         }
 
         /* Abstract Functions for the outliner */
@@ -90,103 +80,6 @@ namespace Forms.Docking
                 throw new NotImplementedException();
             }
         }
-        
-        private void TreeView_Explorer_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle)
-            {
-                dragButton = e.Button;
-            }
-            
-            TreeNode clickedNode = TreeView_Explorer.GetNodeAt(e.X, e.Y);
-            if (dragButton == MouseButtons.Middle && clickedNode != null)
-            {
-                TreeView_Explorer.SelectedNode = clickedNode;
-                DoDragDrop(clickedNode, DragDropEffects.Move);
-            }
-        }
-        
-        private void TreeView_Explorer_ItemDrag(object sender, ItemDragEventArgs e)
-        {
-            DoDragDrop(e.Item, DragDropEffects.Move);
-        }
-        
-        private void TreeView_Explorer_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(TreeNode)))
-            {
-                e.Effect = DragDropEffects.Move;
-            }
-        }
-        
-        private void TreeView_Explorer_DragDrop(object sender, DragEventArgs e)
-        {
-            Point pt = TreeView_Explorer.PointToClient(new Point(e.X, e.Y));
-            targetNode = TreeView_Explorer.GetNodeAt(TreeView_Explorer.PointToClient(new System.Drawing.Point(e.X, e.Y)));
-            DraggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
-            TreeView_Explorer.SelectedNode = DraggedNode;
-
-            if (targetNode != null && DraggedNode != null && DraggedNode != targetNode)
-            {
-                TreeViewNodeDropped?.Invoke(this, new TreeViewDragEventArgs(DraggedNode, targetNode, dragButton));
-            }
-            if (previousNode != null)
-            {
-                previousNode.BackColor = TreeView_Explorer.BackColor;
-                previousNode.ForeColor = TreeView_Explorer.ForeColor;
-                previousNode = null;
-            }
-        }
-        
-        private TreeNode previousNode;
-
-        private void TreeView_Explorer_DragOver(object sender, DragEventArgs e)
-        {
-            Point pt = TreeView_Explorer.PointToClient(new Point(e.X, e.Y));
-            
-            TreeNode currentNode = TreeView_Explorer.GetNodeAt(pt);
-            
-            if (currentNode != null && currentNode != previousNode)
-            {
-                if (previousNode != null)
-                {
-                    previousNode.BackColor = TreeView_Explorer.BackColor;
-                    previousNode.ForeColor = TreeView_Explorer.ForeColor;
-                }
-
-                if ((dragButton & MouseButtons.Left) != 0)
-                {
-                    currentNode.BackColor = Color.LightBlue; 
-                    currentNode.ForeColor = Color.Black;
-                }
-
-                if ((dragButton & MouseButtons.Right) != 0)
-                {
-                    currentNode.BackColor = Color.Orange; 
-                    currentNode.ForeColor = Color.Black;
-                }
-                
-                if ((dragButton & MouseButtons.Middle) != 0)
-                {
-                    currentNode.BackColor = Color.LimeGreen; 
-                    currentNode.ForeColor = Color.Black;
-                }
-                
-                previousNode = currentNode;
-            }
-            
-            e.Effect = DragDropEffects.Move;
-        }
-
-        private void TreeView_Explorer_DragLeave(object sender, EventArgs e)
-        {
-            if (previousNode != null)
-            {
-                previousNode.BackColor = TreeView_Explorer.BackColor;
-                previousNode.ForeColor = TreeView_Explorer.ForeColor;
-                previousNode = null;
-            }
-        }
 
         public TreeNode[] Find(string key, bool searchAllChildren)
         {
@@ -200,7 +93,7 @@ namespace Forms.Docking
 
         public void AddToTree(TreeNode node, TreeNode parentNode = null)
         {
-            node.Checked = true;
+            node.Checked = false;
             ApplyImageIndex(node);
             RecurseChildren(node);
 
@@ -242,7 +135,7 @@ namespace Forms.Docking
         {
             foreach (TreeNode child in node.Nodes)
             {
-                child.Checked = true;
+                child.Checked = false;
                 ApplyImageIndex(child);
                 RecurseChildren(child);
             }
@@ -292,54 +185,6 @@ namespace Forms.Docking
                 node.SelectedImageKey = node.ImageKey = "SceneObject.png";
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
-        }
-
-        /* Context function */
-        private void OpenEntryContext(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            //TODO: Clean this messy system.
-            EntryMenuStrip.Items[0].Visible = false;
-            EntryMenuStrip.Items[1].Visible = false;
-            EntryMenuStrip.Items[2].Visible = false;
-            Export3DButton.Visible = false;
-            EntryMenuStrip.Items[4].Visible = false;
-            FrameActions.DropDownItems[3].Visible = false;
-
-            if (TreeView_Explorer.SelectedNode != null && TreeView_Explorer.SelectedNode.Tag != null)
-            {
-
-                EntryMenuStrip.Items[1].Visible = true;
-                EntryMenuStrip.Items[2].Visible = true;
-
-                object data = TreeView_Explorer.SelectedNode.Tag;
-                if (FrameResource.IsFrameType(data) || data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || data.GetType() == typeof(Rendering.Graphics.RenderJunction) ||
-                    data.GetType() == typeof(ResourceTypes.Actors.ActorEntry) || data.GetType() == typeof(Rendering.Graphics.RenderNav))
-                {
-                    EntryMenuStrip.Items[0].Visible = true;
-                }
-                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)) 
-                    || (TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.FrameResource.FrameHeaderScene)))
-                {
-                    Export3DButton.Visible = true;
-                }
-                if(TreeView_Explorer.SelectedNode.Text == "Collision Data")
-                {
-                    // TODO: Get a better check than the string of a tree node.
-                    // It doesn't prove to be very stable.
-                    Export3DButton.Visible = true;
-                }
-                if (FrameResource.IsFrameType(TreeView_Explorer.SelectedNode.Tag))
-                {
-                    EntryMenuStrip.Items[3].Visible = true;
-                    EntryMenuStrip.Items[4].Visible = true;
-
-                    if (TreeView_Explorer.SelectedNode.Tag is FrameObjectFrame)
-                    {
-                        Export3DButton.Visible = true;
-                        LinkToActorButton.Visible = true;
-                    }
-                }
-            }
         }
 
         public Vector3 JumpToHelper()
@@ -473,18 +318,10 @@ namespace Forms.Docking
                 InternalGotoExplorerNode();
             }
         }
-    }
-}
-public class TreeViewDragEventArgs : EventArgs
-{
-    public TreeNode DraggedNode { get; } 
-    public TreeNode TargetNode { get; } 
-    public MouseButtons DragButton { get; }
 
-    public TreeViewDragEventArgs(TreeNode draggedNode, TreeNode targetNode, MouseButtons dragButton)
-    {
-        DraggedNode = draggedNode;
-        TargetNode = targetNode;
-        DragButton = dragButton;
+        private void CancelButton_OnClick(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }
