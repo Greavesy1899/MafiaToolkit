@@ -96,54 +96,12 @@ namespace Utils.Models
 
         public (float DecompressionFactor, Vector3 DecompressionOffset) GetDecompFactor(BoundingBox boundingBox)
         {
-            float Xdiff = 0.0f;
-            float Ydiff = 0.0f;
-            float Zdiff = 0.0f;
+            float Size = boundingBox.Depth * 2.0f;
 
-            for (int i = 0; i != ModelObject.Lods.Length; i++)
-            {
-                int Count = ModelObject.Lods[i].Vertices.Length;
+            float decompressionFactor = Size / 65520.0f;
+            float offset = 8 * decompressionFactor;
 
-                for (int v = 0; v != Count; v++)
-                {
-                    Vertex vert = ModelObject.Lods[i].Vertices[v];
-
-                    float AbsX = Math.Abs(vert.Position.X);
-                    float AbsY = Math.Abs(vert.Position.Y);
-                    float AbsZ = Math.Abs(vert.Position.Z);
-
-                    Xdiff += AbsX - MathF.Floor(AbsX);
-                    Ydiff += AbsY - MathF.Floor(AbsY);
-                    Zdiff += AbsZ - MathF.Floor(AbsZ);
-                }
-
-                Xdiff /= Count;
-                Ydiff /= Count;
-                Zdiff /= Count;
-
-                break;
-            }
-
-            Xdiff = 1.0f - Xdiff;
-            Ydiff = 1.0f - Ydiff;
-            Zdiff = 1.0f - Zdiff;
-
-            Vector3 bbox = boundingBox.Min;
-
-            Xdiff *= Math.Sign(bbox.X);
-            Ydiff *= Math.Sign(bbox.Y);
-            Zdiff *= Math.Sign(bbox.Z);
-
-            Vector3 decompressionOffset = Vector3.Zero;
-            decompressionOffset.X = bbox.X + Xdiff;
-            decompressionOffset.Y = bbox.Y + Ydiff;
-            decompressionOffset.Z = bbox.Z + Zdiff;
-
-            List<float> SizeValues = new() { Math.Abs(boundingBox.Max.X) + Math.Abs(decompressionOffset.X), Math.Abs(boundingBox.Max.Y) + Math.Abs(decompressionOffset.Y), Math.Abs(boundingBox.Max.Z) + Math.Abs(decompressionOffset.Z) };
-
-            float Size = SizeValues.Max();
-
-            float decompressionFactor = 1.0f / (65535.0f / Size);
+            Vector3 decompressionOffset = new Vector3(boundingBox.Min.X - offset, boundingBox.Min.Y - offset, boundingBox.Min.Z - offset / 2.0f);
 
             return (decompressionFactor, decompressionOffset);
         }
