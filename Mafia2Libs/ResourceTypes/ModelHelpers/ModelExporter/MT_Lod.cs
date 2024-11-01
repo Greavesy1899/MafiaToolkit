@@ -55,7 +55,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     Vertex V2 = Vertices[Indices[Idx + 1]];
                     Vertex V3 = Vertices[Indices[Idx + 2]];
 
-                    CurFaceGroup.AddTriangle(BuildRidgedVertex(V1), BuildRidgedVertex(V2), BuildRidgedVertex(V3));
+                    (int A, int B, int C) Result = CurFaceGroup.AddTriangle(BuildRidgedVertex(V1), BuildRidgedVertex(V2), BuildRidgedVertex(V3));
+                    if(Result.A == -1 || Result.B == -1 || Result.C == -1)
+                    {
+                        int z = 0;
+                    }
                 }
             }
 
@@ -165,7 +169,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
                 IList<Vector2> Tex0List = null;
                 Accessor TexCoord0Accessor = Primitive.GetVertexAccessor("TEXCOORD_0");
-                if (TangentAccessor != null)
+                if (TexCoord0Accessor != null)
                 {
                     Tex0List = TexCoord0Accessor.AsVector2Array();
                     VertexDeclaration |= VertexFlags.TexCoords0;
