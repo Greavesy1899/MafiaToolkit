@@ -1,7 +1,5 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Vortice;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -96,6 +94,9 @@ namespace Rendering.Graphics
             {
                 return;
             }
+
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);

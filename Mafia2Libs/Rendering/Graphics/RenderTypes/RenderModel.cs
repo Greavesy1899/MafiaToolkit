@@ -256,8 +256,8 @@ namespace Rendering.Graphics
                 return;
             }
 
-            //if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
-            //     return;
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                 return;
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
