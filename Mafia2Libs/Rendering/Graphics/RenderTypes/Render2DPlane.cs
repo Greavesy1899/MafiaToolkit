@@ -1,9 +1,6 @@
 ﻿using ResourceTypes.Navigation.Traffic;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Utils.Extensions;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Color = System.Drawing.Color;
@@ -93,6 +90,9 @@ namespace Rendering.Graphics
             {
                 return;
             }
+
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);

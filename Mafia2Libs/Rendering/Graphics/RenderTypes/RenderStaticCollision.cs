@@ -151,6 +151,9 @@ namespace Rendering.Graphics
                 return;
             }
 
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
+
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
             deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);

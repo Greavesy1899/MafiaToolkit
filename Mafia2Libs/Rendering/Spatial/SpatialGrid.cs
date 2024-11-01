@@ -29,6 +29,15 @@ namespace Rendering.Core
 
         private GraphicsClass OwnGraphicsClass;
         private bool bIsReady = false;
+        private Matrix4x4 Transform
+        {
+            get
+            { 
+                Matrix4x4 m = new();
+                m.Translation = origin;
+                return m;
+            }
+        }
 
         public SpatialGrid()
         {
@@ -164,6 +173,9 @@ namespace Rendering.Core
         {
             if (bIsReady)
             {
+                if (!camera.CheckBBoxFrustum(Transform, gridBounds))
+                    return;
+
                 if (currentCell != -1)
                 {
                     cells[currentCell].Render(device, deviceContext, camera);
