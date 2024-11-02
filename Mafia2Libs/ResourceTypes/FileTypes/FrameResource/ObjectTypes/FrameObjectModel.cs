@@ -103,7 +103,6 @@ namespace ResourceTypes.FrameResource
             SkeletonHierarchy = other.SkeletonHierarchy;
             SkeletonHierarchy.RefID = RefManager.GetNewRefID();
             skeleton = other.skeleton;
-            skeleton.RefID = RefManager.GetNewRefID();
             blendInfo = other.blendInfo;
 
             restTransform = new Matrix4x4[skeleton.NumBones[0]];
