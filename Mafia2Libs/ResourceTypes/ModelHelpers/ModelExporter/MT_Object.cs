@@ -708,9 +708,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 return false;
             }
 
-            JsonValue Test = PropertyNode.AsValue();
-            if(Test.TryGetValue<TType>(out OutValue))
+            if(PropertyNode is not JsonValue)
             {
+                // not a JsonValue type
+                return false;
+            }
+
+            JsonValue PropertyValue = PropertyNode.AsValue();
+            if(PropertyValue.TryGetValue<TType>(out OutValue))
+            {
+                // we got the value
                 return true;
             }
 
