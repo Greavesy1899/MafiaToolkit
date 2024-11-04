@@ -29,7 +29,15 @@ namespace Rendering.Core
 
         private GraphicsClass OwnGraphicsClass;
         private bool bIsReady = false;
-
+        private Matrix4x4 Transform
+        {
+            get
+            { 
+                Matrix4x4 m = new();
+                m.Translation = origin;
+                return m;
+            }
+        }
         public SpatialGrid()
         {
             cells = new SpatialCell[0];
@@ -149,12 +157,12 @@ namespace Rendering.Core
                 boundingBox = new RenderBoundingBox();
                 boundingBox.SetColour(System.Drawing.Color.Red, true);
                 boundingBox.Init(gridBounds);
-                boundingBox.InitBuffers(device, deviceContext);
+                boundingBox.InitBuffers(device, deviceContext,null);
 
                 cellBoundingBox = new RenderBoundingBox();
                 cellBoundingBox.SetColour(System.Drawing.Color.Blue, true);
                 cellBoundingBox.Init(cellBounds);
-                cellBoundingBox.InitBuffers(device, deviceContext);
+                cellBoundingBox.InitBuffers(device, deviceContext,null);
 
                 foreach (var cell in cells)
                 {
@@ -167,6 +175,9 @@ namespace Rendering.Core
         {
             if (bIsReady)
             {
+                if (!camera.CheckBBoxFrustum(Transform, gridBounds))
+                    return;
+
                 if (currentCell != -1)
                 {
                     cells[currentCell].Render(device, deviceContext, camera);

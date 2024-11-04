@@ -1,74 +1,71 @@
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer : register(b0)
 {
-	matrix worldMatrix;
-	matrix viewMatrix;
-	matrix projectionMatrix;
+    float4x4 worldMatrix;        // Changed to float4x4
+    float4x4 viewMatrix;         // Changed to float4x4
+    float4x4 projectionMatrix;   // Changed to float4x4
 };
 
-cbuffer CameraBuffer
+cbuffer CameraBuffer : register(b1)
 {
-	float3 cameraPosition;
-	float padding;
+    float3 cameraPosition;
+    float padding; // padding to align to 16 bytes
+};
+
+// Instance transformation matrix buffer
+cbuffer InstanceBuffer : register(b2)
+{
+    float4x4 instanceTransforms[100]; // Adjust size as needed
 };
 
 struct VS_INPUT
 {
-	float4 Position : POSITION;
+    float4 Position : POSITION;
     float3 Normal : NORMAL;
-	float3 Tangent : TANGENT;
+    float3 Tangent : TANGENT;
     float3 Binormal : BINORMAL;
-	float2 TexCoord0 : TEXCOORD0;
-	float2 TexCoord7 : TEXCOORD1;
+    float2 TexCoord0 : TEXCOORD0;
+    float2 TexCoord7 : TEXCOORD1;
+    uint InstanceID : INSTANCEID; // This must match the semantic name and index
 };
+
 
 struct VS_OUTPUT
 {
-	float4 Position : SV_POSITION;
+    float4 Position : SV_POSITION;
     float3 Normal : NORMAL;
-	float3 Tangent : TANGENT;
-	float3 Binormal : BINORMAL;
-	float2 TexCoord0 : TEXCOORD0;
-	float2 TexCoord7 : TEXCOORD1;
+    float3 Tangent : TANGENT;
+    float3 Binormal : BINORMAL;
+    float2 TexCoord0 : TEXCOORD0;
+    float2 TexCoord7 : TEXCOORD1;
     float3 viewDirection : TEXCOORD2;
 };
 
 VS_OUTPUT LightVertexShader(VS_INPUT input)
 {
-	VS_OUTPUT output;
-	float4 worldPosition;
+    VS_OUTPUT output;
 
-	// Change the position vector to be 4 units for proper matrix calculations.
-	input.Position.w = 1.0f;
-	input.TexCoord0.y = -input.TexCoord0.y;
-    input.TexCoord7.y = -input.TexCoord7.y;
+    // Fetch the instance transformation matrix using InstanceID
+    //float4x4 instanceMatrix = instanceTransforms[input.InstanceID];
 
-	// Calculate the position of the vertex against the world, view, and projection matrices.
-	output.Position = mul(input.Position, worldMatrix);
-	output.Position = mul(output.Position, viewMatrix);
-	output.Position = mul(output.Position, projectionMatrix);
+    // Transform position by instance matrix
+    float4 worldPosition = mul(input.Position, 0);
+    output.Position = mul(worldPosition, viewMatrix); // Apply view matrix
+    output.Position = mul(output.Position, projectionMatrix); // Apply projection matrix
 
-	// Store the texture coordinates for the pixel shader.
-	output.TexCoord0 = input.TexCoord0;
-	output.TexCoord7 = input.TexCoord7;
-    
-	// Calculate the normal vector against the world matrix only.
-    output.Normal = mul(input.Normal, (float3x3) worldMatrix);
-    output.Normal = normalize(output.Normal);
-    
-    output.Tangent = mul(input.Tangent, (float3x3) worldMatrix);
-    output.Tangent = normalize(output.Tangent);
-    
-    output.Binormal = mul(input.Binormal, (float3x3) worldMatrix);
-    output.Binormal = normalize(output.Binormal);
+    // Store the texture coordinates for the pixel shader
+    output.TexCoord0 = input.TexCoord0;
+    output.TexCoord7 = input.TexCoord7;
 
-	// Calculate the position of the vertex in the world.
-	worldPosition = mul(input.Position, worldMatrix);
+    // Calculate normals, tangents, and binormals using the instance matrix
+    output.Normal = normalize(mul(input.Normal, (float3x3)0));
+    output.Tangent = normalize(mul(input.Tangent, (float3x3)0));
+    output.Binormal = normalize(mul(input.Binormal, (float3x3)0));
 
-	// Determine the viewing direction based on the position of the camera and the position of the vertex in the world.
-	output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
+    // Determine the world position for view direction calculation
+    worldPosition = mul(input.Position, 0);
 
-	// Normalize the viewing direction vector.
-	output.viewDirection = normalize(output.viewDirection);
+    // Calculate the viewing direction
+    output.viewDirection = normalize(cameraPosition - worldPosition.xyz); // Normalize the view direction
 
-	return output;
+    return output;
 }

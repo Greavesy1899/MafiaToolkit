@@ -45,7 +45,7 @@ namespace Rendering.Core
         {
             foreach (KeyValuePair<int, IRenderer> entry in assets)
             {
-                entry.Value.InitBuffers(device, deviceContext);
+                entry.Value.InitBuffers(device, deviceContext,null);
             }
         }
 

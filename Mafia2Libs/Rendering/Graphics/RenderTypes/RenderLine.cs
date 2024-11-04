@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using Rendering.Graphics.Instances;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Color = System.Drawing.Color;
@@ -81,7 +82,7 @@ namespace Rendering.Graphics
             UnselectedColour = color;
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context,ModelInstanceManager modelManager)
         {
             if (vertices.Length != 0)
             {
@@ -95,6 +96,8 @@ namespace Rendering.Graphics
             {
                 return;
             }
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
@@ -134,7 +137,7 @@ namespace Rendering.Graphics
                 vertexBuffer.Dispose();
                 vertexBuffer = null;
             }
-            InitBuffers(device, deviceContext);
+            InitBuffers(device, deviceContext,null);
             bIsUpdatedNeeded = false;
         }
 

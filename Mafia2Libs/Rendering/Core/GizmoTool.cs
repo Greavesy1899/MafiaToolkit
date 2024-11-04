@@ -30,7 +30,7 @@ namespace Rendering.Core
 
         public void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
-            GizmoModel.InitBuffers(d3d, d3dContext);
+            GizmoModel.InitBuffers(d3d, d3dContext,null);
         }
 
         public void UpdateBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)

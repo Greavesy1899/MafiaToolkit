@@ -1,4 +1,5 @@
-﻿using Rendering.Graphics;
+﻿using System.Collections.Generic;
+using Rendering.Graphics;
 using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Navigation;
@@ -25,7 +26,7 @@ namespace Rendering.Factories
             return Plane3D;
         }
 
-        public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh)
+        public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh,Dictionary<int, IRenderer> assets)
         {
             if (Mesh.MaterialIndex == -1 && Mesh.MeshIndex == -1)
             {
@@ -49,7 +50,7 @@ namespace Rendering.Factories
                 return null;
             }
             RenderModel model = new RenderModel();
-            model.ConvertFrameToRenderModel(Mesh, geom, mat, indexBuffers, vertexBuffers);
+            model.ConvertFrameToRenderModel(Mesh, geom, mat, indexBuffers, vertexBuffers,assets);
             return model;
         }
 

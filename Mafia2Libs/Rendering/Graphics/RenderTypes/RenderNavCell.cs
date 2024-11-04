@@ -3,6 +3,7 @@ using ResourceTypes.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Rendering.Graphics.Instances;
 using Toolkit.Core;
 using Vortice.Direct3D11;
 
@@ -79,7 +80,7 @@ namespace Rendering.Graphics
             Update();
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext) { }
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext,ModelInstanceManager modelManager) { }
 
         public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera) { }
 

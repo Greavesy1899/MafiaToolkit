@@ -1,4 +1,5 @@
-﻿using Rendering.Factories;
+﻿using System.Collections.Generic;
+using Rendering.Factories;
 using Rendering.Graphics;
 using ResourceTypes.ItemDesc;
 using System.IO;
@@ -49,7 +50,7 @@ namespace ResourceTypes.FrameResource
             writer.Write(_Hash);
         }
 
-        public override void ConstructRenderable()
+        public override void ConstructRenderable(Dictionary<int, IRenderer> assets)
         {
             GetUsedItemDesc();
 

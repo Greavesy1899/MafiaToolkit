@@ -1,4 +1,5 @@
-﻿using Rendering.Factories;
+﻿using System.Collections.Generic;
+using Rendering.Factories;
 using Rendering.Graphics;
 using System.ComponentModel;
 using System.IO;
@@ -202,9 +203,9 @@ namespace ResourceTypes.FrameResource
             NewModel.CreateObjectsFromModel();
         }
 
-        public override void ConstructRenderable()
+        public override void ConstructRenderable(Dictionary<int, IRenderer> assets)
         {
-            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this);
+            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this,assets);
             RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }

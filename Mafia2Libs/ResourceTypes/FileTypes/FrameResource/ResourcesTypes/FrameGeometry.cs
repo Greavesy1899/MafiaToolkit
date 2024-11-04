@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 using Utils.Extensions;
 using Utils.VorticeUtils;
@@ -12,6 +14,7 @@ namespace ResourceTypes.FrameResource
         Vector3 decompressionOffset;
         float decompressionFactor;
         FrameLOD[] lod;
+        public int geometryHash;
 
         public byte NumLods {
             get { return numLods; }
@@ -45,12 +48,16 @@ namespace ResourceTypes.FrameResource
             decompressionFactor = reader.ReadSingle(isBigEndian);
 
             LOD = new FrameLOD[numLods];
-
+            int combinedHash = 0;
             for (int i = 0; i < numLods; i++)
             {
                 LOD[i] = new FrameLOD();
                 LOD[i].ReadFromFile(reader, isBigEndian);
+                int lodHash = HashCode.Combine(LOD[i].IndexBufferRef, LOD[i].VertexBufferRef);
+                combinedHash = HashCode.Combine(combinedHash, lodHash);
             }
+
+            geometryHash = combinedHash;
         }
 
         public void WriteToFile(BinaryWriter writer)

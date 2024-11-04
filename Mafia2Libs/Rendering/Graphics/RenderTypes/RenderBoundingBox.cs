@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Rendering.Graphics.Instances;
 using Vortice;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -71,7 +72,7 @@ namespace Rendering.Graphics
             Init(box);
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext,ModelInstanceManager modelManager)
         {
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, Indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
@@ -96,6 +97,8 @@ namespace Rendering.Graphics
             {
                 return;
             }
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);

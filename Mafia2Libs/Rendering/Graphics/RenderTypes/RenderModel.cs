@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using Rendering.Graphics.Instances;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;
@@ -37,6 +38,7 @@ namespace Rendering.Graphics
             public ModelPart[] ModelParts { get; set; }
             public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
             public uint[] Indices { get; set; }
+            public int parentGeomHash { get; set; }
         }
 
         public LOD[] LODs { get; private set; }
@@ -103,7 +105,7 @@ namespace Rendering.Graphics
             SetupShaders();
         }
 
-        public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
+        public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers,Dictionary<int, IRenderer> assets)
         {
             if (mesh == null || geom == null || mats == null || indexBuffers[0] == null || vertexBuffers[0] == null)
                 return false;
@@ -114,53 +116,75 @@ namespace Rendering.Graphics
             BoundingBox = mesh.Boundings;
             LODs = new LOD[geom.NumLods];
 
-            for(int i = 0; i != geom.NumLods; i++)
+            bool found = false;
+            if (assets != null)
             {
-                LOD lod = new LOD();
-                lod.Indices = indexBuffers[i].GetData();
-                lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
-
-                for (int z = 0; z != mats.Materials[i].Length; z++)
+                foreach (var ass in assets.Values)
                 {
-                    lod.ModelParts[z] = new ModelPart();
-                    lod.ModelParts[z].NumFaces = (uint)mats.Materials[i][z].NumFaces;
-                    lod.ModelParts[z].StartIndex = (uint)mats.Materials[i][z].StartIndex;
-                    lod.ModelParts[z].MaterialHash = mats.Materials[i][z].MaterialHash;
-                    lod.ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
-                }
-
-                lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVerts];
-                int vertexSize;
-                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = geom.LOD[i].GetVertexOffsets(out vertexSize);
-                try
-                {
-                    for (int x = 0; x != lod.Vertices.Length; x++)
+                    if (ass is RenderModel rm &&!found)
                     {
-                        VertexLayouts.NormalLayout.Vertex vertex = new VertexLayouts.NormalLayout.Vertex();
-
-                        //declare data required and send to decompresser
-                        byte[] data = new byte[vertexSize];
-                        Array.Copy(vertexBuffers[i].Data, (x * vertexSize), data, 0, vertexSize);
-                        Vertex decompressed = VertexTranslator.DecompressVertex(data, geom.LOD[i].VertexDeclaration, geom.DecompressionOffset, geom.DecompressionFactor, vertexOffsets);
-
-                        //retrieve the data we require
-                        vertex.Position = decompressed.Position;
-                        vertex.Normal = decompressed.Normal;
-                        vertex.Tangent = decompressed.Tangent;
-                        vertex.Binormal = decompressed.Binormal;
-                        vertex.TexCoord0 = decompressed.UVs[0];
-                        vertex.TexCoord7 = decompressed.UVs[3];
-
-                        lod.Vertices[x] = vertex;
-                    }
+                        if (rm.LODs[0].parentGeomHash == geom.geometryHash)
+                        {
+                            LODs = rm.LODs;
+                            found = true;
+                            Console.WriteLine("instance");
+                        }
+                    }                    
                 }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(string.Format("Error when creating renderable {1}!: \n{0}", ex.Message, mesh.Name.ToString()), "Toolkit");
-                    return false;
-                }
-                LODs[i] = lod;
             }
+            if(!found)
+            {
+                for(int i = 0; i != geom.NumLods; i++)
+                {
+                    LOD lod = new LOD();
+                    lod.parentGeomHash = geom.geometryHash;
+                    lod.Indices = indexBuffers[i].GetData();
+                    lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
+    
+                    for (int z = 0; z != mats.Materials[i].Length; z++)
+                    {
+                        lod.ModelParts[z] = new ModelPart();
+                        lod.ModelParts[z].NumFaces = (uint)mats.Materials[i][z].NumFaces;
+                        lod.ModelParts[z].StartIndex = (uint)mats.Materials[i][z].StartIndex;
+                        lod.ModelParts[z].MaterialHash = mats.Materials[i][z].MaterialHash;
+                        lod.ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
+                    }
+    
+                    lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVerts];
+                    int vertexSize;
+                    Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = geom.LOD[i].GetVertexOffsets(out vertexSize);
+                    try
+                    {
+                        for (int x = 0; x != lod.Vertices.Length; x++)
+                        {
+                            VertexLayouts.NormalLayout.Vertex vertex = new VertexLayouts.NormalLayout.Vertex();
+    
+                            //declare data required and send to decompresser
+                            byte[] data = new byte[vertexSize];
+                            Array.Copy(vertexBuffers[i].Data, (x * vertexSize), data, 0, vertexSize);
+                            Vertex decompressed = VertexTranslator.DecompressVertex(data, geom.LOD[i].VertexDeclaration, geom.DecompressionOffset, geom.DecompressionFactor, vertexOffsets);
+    
+                            //retrieve the data we require
+                            vertex.Position = decompressed.Position;
+                            vertex.Normal = decompressed.Normal;
+                            vertex.Tangent = decompressed.Tangent;
+                            vertex.Binormal = decompressed.Binormal;
+                            vertex.TexCoord0 = decompressed.UVs[0];
+                            vertex.TexCoord7 = decompressed.UVs[3];
+    
+                            lod.Vertices[x] = vertex;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(string.Format("Error when creating renderable {1}!: \n{0}", ex.Message, mesh.Name.ToString()), "Toolkit");
+                        return false;
+                    }
+                    LODs[i] = lod;
+                }      
+                Console.WriteLine("new");
+            }
+
 
             SetupShaders();
             return true;
@@ -236,10 +260,23 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext,ModelInstanceManager modelManager)
         {
-            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
-            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+            if (modelManager!=null && modelManager.HasInstances(LODs[0].parentGeomHash))
+            {
+                vertexBuffer = modelManager.GetInstances(LODs[0].parentGeomHash)[0].vertexBuffer;
+                indexBuffer = modelManager.GetInstances(LODs[0].parentGeomHash)[0].indexBuffer;
+                isInstance = true;
+            }
+            else
+            {
+                vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+                indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+                if (modelManager != null)
+                { 
+                    modelManager.AddInstance(LODs[0].parentGeomHash,indexBuffer,vertexBuffer,LODs);               
+                }
+            }
 
             InitTextures(d3d, d3dContext);
         }
@@ -256,9 +293,10 @@ namespace Rendering.Graphics
                 return;
             }
 
-            //if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
-            //     return;
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
 
+            
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
             deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);

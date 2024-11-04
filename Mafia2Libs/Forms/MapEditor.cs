@@ -778,9 +778,9 @@ namespace Mafia2Tool
             }
         }
 
-        private IRenderer BuildRenderObjectFromFrame(FrameObjectBase fObject)
+        private IRenderer BuildRenderObjectFromFrame(FrameObjectBase fObject,Dictionary<int, IRenderer> assets)
         {
-            fObject.ConstructRenderable();
+            fObject.ConstructRenderable(assets);
             IRenderer Renderable = fObject.GetRenderItem();
             if(Renderable != null)
             {
@@ -798,7 +798,7 @@ namespace Mafia2Tool
             {
                 foreach(FrameObjectBase FrameObject in SceneData.FrameResource.FrameObjects.Values)
                 {
-                    IRenderer NewAsset = BuildRenderObjectFromFrame(FrameObject);
+                    IRenderer NewAsset = BuildRenderObjectFromFrame(FrameObject,assets);
                     if(NewAsset != null)
                     {
                         assets.Add(FrameObject.RefID, NewAsset);
@@ -997,8 +997,65 @@ namespace Mafia2Tool
             }
             if (SceneData.Translokator != null && ToolkitSettings.Experimental)
             {
-                LoadTranslokatorFiles();
-                Graphics.SetTranslokatorGrid(SceneData.Translokator);
+                translokatorRoot = new TreeNode("Translokator Items");
+                translokatorRoot.Tag = "Folder";
+                TreeNode ogNode = new TreeNode("Objects Groups");
+                ogNode.Tag = "Folder";
+                for (int z = 0; z < SceneData.Translokator.ObjectGroups.Length; z++)
+                {
+                    ObjectGroup objectGroup = SceneData.Translokator.ObjectGroups[z];
+                    TreeNode objectGroupNode = new TreeNode(String.Format("Object Group: [{0}]", objectGroup.ActorType));
+                    objectGroupNode.Tag = objectGroup;
+                    for (int y = 0; y < objectGroup.Objects.Length; y++)
+                    {
+                        Object obj = objectGroup.Objects[y];
+                        TreeNode objNode = new TreeNode(obj.Name.ToString());
+                        objNode.Tag = obj;
+                        objectGroupNode.Nodes.Add(objNode);
+                        FrameObjectBase groupRef =
+                            SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(obj.Name.Hash);
+
+                        for (int x = 0; x < obj.Instances.Length; x++)
+                        {
+                            Instance instance = obj.Instances[x];
+                            
+                            if (groupRef != null && groupRef.Children[0] is FrameObjectSingleMesh meshref)
+                            {
+                                FrameObjectSingleMesh instanceMesh = new FrameObjectSingleMesh(meshref);
+                                instanceMesh.RefID = RefManager.GetNewRefID();
+                                
+                                Matrix4x4 newtransform = new Matrix4x4();
+                                newtransform = MatrixUtils.SetMatrix(instance.Rotation, new Vector3(instance.Scale,instance.Scale,instance.Scale), instance.Position);
+
+                            
+                                IRenderer NewAsset = BuildRenderObjectFromFrame(instanceMesh,assets);
+                                NewAsset.SetTransform(newtransform);
+                                assets.Add(instanceMesh.RefID, NewAsset);
+                            }
+                            
+                            TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
+                            instanceNode.Tag = instance;
+                            objNode.Nodes.Add(instanceNode);
+                        }
+                    }
+                    ogNode.Nodes.Add(objectGroupNode);
+                }
+                translokatorRoot.Nodes.Add(ogNode);
+            
+                TreeNode gridNode = new TreeNode("Grids");
+                gridNode.Tag = "Folder";
+                for (int i = 0; i < SceneData.Translokator.Grids.Length; i++)
+                {
+                    Grid grid = SceneData.Translokator.Grids[i];
+                    TreeNode child = new TreeNode("Grid " + i);
+                    child.Tag = grid;
+                    gridNode.Nodes.Add(child);
+                }
+
+                translokatorRoot.Nodes.Add(gridNode);
+
+                dSceneTree.AddToTree(translokatorRoot);
+                //Graphics.SetTranslokatorGrid(SceneData.Translokator);
             }
 
             for(int i = 0; i < SceneData.FrameNameTable.FrameData.Length; i++)
@@ -1068,47 +1125,6 @@ namespace Mafia2Tool
         
         private void LoadTranslokatorFiles()
         {
-            translokatorRoot = new TreeNode("Translokator Items");
-            translokatorRoot.Tag = "Folder";
-            TreeNode ogNode = new TreeNode("Objects Groups");
-            ogNode.Tag = "Folder";
-            for (int z = 0; z < SceneData.Translokator.ObjectGroups.Length; z++)
-            {
-                ObjectGroup objectGroup = SceneData.Translokator.ObjectGroups[z];
-                TreeNode objectGroupNode = new TreeNode(String.Format("Object Group: [{0}]", objectGroup.ActorType));
-                objectGroupNode.Tag = objectGroup;
-                for (int y = 0; y < objectGroup.Objects.Length; y++)
-                {
-                    Object obj = objectGroup.Objects[y];
-                    TreeNode objNode = new TreeNode(obj.Name.ToString());
-                    objNode.Tag = obj;
-                    objectGroupNode.Nodes.Add(objNode);
-
-                    for (int x = 0; x < obj.Instances.Length; x++)
-                    {
-                        Instance instance = obj.Instances[x];
-                        TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
-                        instanceNode.Tag = instance;
-                        objNode.Nodes.Add(instanceNode);
-                    }
-                }
-                ogNode.Nodes.Add(objectGroupNode);
-            }
-            translokatorRoot.Nodes.Add(ogNode);
-            
-            TreeNode gridNode = new TreeNode("Grids");
-            gridNode.Tag = "Folder";
-            for (int i = 0; i < SceneData.Translokator.Grids.Length; i++)
-            {
-                Grid grid = SceneData.Translokator.Grids[i];
-                TreeNode child = new TreeNode("Grid " + i);
-                child.Tag = grid;
-                gridNode.Nodes.Add(child);
-            }
-
-            translokatorRoot.Nodes.Add(gridNode);
-
-            dSceneTree.AddToTree(translokatorRoot);
         }
 
         private void TreeViewUpdateSelected()
@@ -1370,7 +1386,7 @@ namespace Mafia2Tool
             // If everything was succesful, then we would have reached this point.
             dSceneTree.AddToTree(node, frameResourceRoot);
 
-            IRenderer renderer = BuildRenderObjectFromFrame(frame);
+            IRenderer renderer = BuildRenderObjectFromFrame(frame,null);
             if (renderer != null)
             {
                 Graphics.InitObjectStack.Add(frame.RefID, renderer);
@@ -1744,7 +1760,7 @@ namespace Mafia2Tool
                     newEntry = new FrameObjectModel((FrameObjectModel)node.Tag);
                     FrameObjectModel mesh = (newEntry as FrameObjectModel);
                     SceneData.FrameResource.DuplicateBlocks(mesh);
-                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh);
+                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh, null);
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectSector))
@@ -1759,7 +1775,7 @@ namespace Mafia2Tool
                     newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
                     FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
                     SceneData.FrameResource.DuplicateBlocks(mesh);
-                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh);
+                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh,null);
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectTarget))
@@ -2175,7 +2191,7 @@ namespace Mafia2Tool
 
         private void ConvertFrameToRender(FrameObjectBase parent)
         {
-            IRenderer asset = BuildRenderObjectFromFrame(parent);
+            IRenderer asset = BuildRenderObjectFromFrame(parent,null);
             if(asset != null)
             {
                 Graphics.InitObjectStack.TryAdd(parent.RefID, asset);
@@ -2361,7 +2377,7 @@ namespace Mafia2Tool
                 }
 
                 // Construct renderer and add to stack
-                IRenderer Renderer = BuildRenderObjectFromFrame(NewFrame);
+                IRenderer Renderer = BuildRenderObjectFromFrame(NewFrame,null);
                 if (Renderer != null)
                 {
                     Graphics.InitObjectStack.Add(NewFrame.RefID, Renderer);

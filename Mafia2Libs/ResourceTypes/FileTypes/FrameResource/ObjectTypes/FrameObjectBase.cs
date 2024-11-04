@@ -282,7 +282,7 @@ namespace ResourceTypes.FrameResource
             return null;
         }
 
-        public virtual void ConstructRenderable()
+        public virtual void ConstructRenderable(Dictionary<int, IRenderer> assets)
         {
             // Empty, FrameObjectBase doesn't have anything to create.
             // TODO: Consider making empty adapter?5

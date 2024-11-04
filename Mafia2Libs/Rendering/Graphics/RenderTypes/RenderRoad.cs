@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
+using Rendering.Graphics.Instances;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
 using Color = System.Drawing.Color;
@@ -79,13 +80,13 @@ namespace Rendering.Graphics
             BBox = BoundingBox.CreateFromPoints(RoadSpline.Points.ToArray());
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context,ModelInstanceManager modelManager)
         {
-            Spline.InitBuffers(d3d, context);
+            Spline.InitBuffers(d3d, context,null);
 
             foreach (Render2DPlane plane in Planes)
             {
-                plane.InitBuffers(d3d, context);
+                plane.InitBuffers(d3d, context,null);
             }
         }
 
@@ -95,6 +96,8 @@ namespace Rendering.Graphics
             {
                 return;
             }
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
 
             Spline.Render(device, deviceContext, camera);
 

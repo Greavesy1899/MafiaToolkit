@@ -1,6 +1,7 @@
 ﻿using Rendering.Factories;
 using Rendering.Graphics;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
@@ -151,7 +152,7 @@ namespace ResourceTypes.FrameResource
             return Name.String;
         }
 
-        public override void ConstructRenderable()
+        public override void ConstructRenderable(Dictionary<int, IRenderer> assets)
         {
             RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(Bounds, WorldTransform);
             RenderAdapter = new Rendering.Core.RenderableAdapter();

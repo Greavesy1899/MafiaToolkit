@@ -327,6 +327,9 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Shaders\mrdka.hlsl" />
+  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"
 cd $(TargetDir)

@@ -15,6 +15,7 @@ namespace Rendering.Graphics
             DefaultInitParams.Elements = VertexLayouts.NormalLayout.GetLayout();
             DefaultInitParams.PixelShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightPS.hlsl", "LightPixelShader", "ps_4_0");
             DefaultInitParams.VertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightVertexShader", "vs_4_0");
+            //DefaultInitParams.VertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("mrdka.hlsl", "LightVertexShader", "vs_4_0");
 
             DefaultShader OurDefaultShader = new DefaultShader(device, DefaultInitParams);
 
@@ -49,6 +50,8 @@ namespace Rendering.Graphics
             Shader_50760736_InitParams.VertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightVertexShader", "vs_4_0");
 
             Shader_50760736 OurShader50760736 = new Shader_50760736(device, Shader_50760736_InitParams);
+            
+            
 
             shaders = new Dictionary<ulong, BaseShader>();
             shaders.Add(0, OurDefaultShader);

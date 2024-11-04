@@ -88,15 +88,16 @@ namespace Rendering.Graphics
             public IMaterial MaterialData { get; set; }
             public Vector3 SelectionColour { get; set; }
         }
-        protected ID3D11VertexShader OurVertexShader { get; set; }
-        protected ID3D11PixelShader OurPixelShader { get; set; }
-        protected ID3D11GeometryShader OurGeometryShader { get; set; }
-        protected ID3D11InputLayout Layout { get; set; }
+        public ID3D11VertexShader OurVertexShader { get; set; }
+        public ID3D11PixelShader OurPixelShader { get; set; }
+        public ID3D11GeometryShader OurGeometryShader { get; set; }
+        public ID3D11VertexShader strasnaMrdka { get; set; }
+        public ID3D11InputLayout Layout { get; set; }
         protected ID3D11Buffer ConstantMatrixBuffer { get; set; }
         protected ID3D11Buffer ConstantLightBuffer { get; set; }
         protected ID3D11Buffer ConstantCameraBuffer { get; set; }
         protected ID3D11Buffer ConstantEditorParamsBuffer { get; set; }
-        protected ID3D11SamplerState SamplerState { get; set; }
+        public ID3D11SamplerState SamplerState { get; set; }
 
         // These allow the editor to only make changes if the 
         // incoming changes are different.
@@ -280,7 +281,7 @@ namespace Rendering.Graphics
             OurGeometryShader = null;
         }
 
-        private Blob ConstructBytecode(ShaderInitParams.ShaderFileEntryPoint ShaderFileData)
+        public Blob ConstructBytecode(ShaderInitParams.ShaderFileEntryPoint ShaderFileData)
         {      
             string ShaderFileName = ShaderPath + ShaderFileData.FilePath;
 
