@@ -332,12 +332,12 @@ namespace Rendering.Graphics
 
             foreach (IRenderer RenderEntry in Assets.Values)
             {
-                RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
                 if (!RenderEntry.isInstance){
+                    RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
                     RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);                
                 }
-
             }
+            instanceManager.UpdateBuffers(D3D.Device,D3D.DeviceContext);
 
             instanceManager.Render(D3D.Device, D3D.DeviceContext, Camera);
             
@@ -388,7 +388,7 @@ namespace Rendering.Graphics
                     }
                 }
             }
-
+            instanceManager.PrepareInstanceBuffers(D3D.Device,D3D.DeviceContext);
             InitObjectStack.Clear();
         }
 

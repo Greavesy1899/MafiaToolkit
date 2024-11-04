@@ -12,7 +12,7 @@ namespace Rendering.Graphics.Instances
         private Dictionary<int, ModelInstances> instancesByLodHash = new Dictionary<int, ModelInstances>();
 
         // Metoda pro přidání nové instance
-        public void AddInstance(int lodHash, ID3D11Buffer indexBuffer, ID3D11Buffer vertexBuffer,RenderModel.LOD[] lod)
+        public void AddInstance(int lodHash, ID3D11Buffer indexBuffer, ID3D11Buffer vertexBuffer,RenderModel.LOD[] lod,ID3D11ShaderResourceView ao)
         {
             // Pokud už existují instance s tímto LOD hashem, přidá se nová, jinak se vytvoří nový seznam
             if (!instancesByLodHash.TryGetValue(lodHash, out ModelInstances modelInstances))
@@ -26,7 +26,8 @@ namespace Rendering.Graphics.Instances
                 LodHash = lodHash,
                 indexBuffer = indexBuffer,
                 vertexBuffer = vertexBuffer,
-                LODs = lod
+                LODs = lod,
+                AoTexture = ao,
             });
         }
 
@@ -65,5 +66,6 @@ namespace Rendering.Graphics.Instances
         public ID3D11Buffer vertexBuffer;
         public ID3D11Buffer InstanceBuffer; 
         public List<Matrix4x4> Transforms; 
+        public ID3D11ShaderResourceView AoTexture;
     }
 }

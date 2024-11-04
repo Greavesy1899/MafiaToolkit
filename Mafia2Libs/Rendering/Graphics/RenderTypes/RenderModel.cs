@@ -274,7 +274,7 @@ namespace Rendering.Graphics
                 indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
                 if (modelManager != null)
                 { 
-                    modelManager.AddInstance(LODs[0].parentGeomHash,indexBuffer,vertexBuffer,LODs);               
+                    modelManager.AddInstance(LODs[0].parentGeomHash,indexBuffer,vertexBuffer,LODs,RenderStorageSingleton.Instance.TextureCache[0]);               
                 }
             }
 
