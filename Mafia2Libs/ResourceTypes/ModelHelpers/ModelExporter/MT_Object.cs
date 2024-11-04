@@ -207,32 +207,23 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public static MT_Object TryBuildFromNode(Node CurrentNode)
         {
-            if (CurrentNode.Extras == null)
+            int ObjectTypeID = -1;
+            if(!GetValueFromNode<int>(CurrentNode, PROP_OBJECT_TYPE_ID, out ObjectTypeID))
             {
-                // we ignore any node without our MT data
+                // did not find valid type ID
                 return null;
             }
 
-            JsonNode ObjectTypeNode = CurrentNode.Extras[PROP_OBJECT_TYPE_ID];
-            if(ObjectTypeNode == null)
-            {
-                // we have extra but not the object type, thus invalid node
-                return null;
-            }
-
-            MT_ObjectType DesiredType = (MT_ObjectType)ObjectTypeNode.GetValue<int>();
+            MT_ObjectType DesiredType = (MT_ObjectType)ObjectTypeID;
             if(DesiredType == MT_ObjectType.Null)
             {
-                // not valid type found
+                // the type found in node is bad, cannot import
                 return null;
             }
 
+            // attempt to import from optional node
             string DesiredName = CurrentNode.Name;
-            JsonNode ObjectNameNode = CurrentNode.Extras[PROP_OBJECT_NAME];
-            if (ObjectNameNode != null)
-            {
-                DesiredName = ObjectNameNode.GetValue<string>();
-            }
+            GetValueFromNode<string>(CurrentNode, PROP_OBJECT_NAME, out DesiredName);
 
             MT_Object NewObject = new MT_Object();
             NewObject.ObjectName = DesiredName;
@@ -243,15 +234,12 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             NewObject.Scale = CurrentNode.LocalTransform.Scale;
 
             // see if we need to store frame name table data
-            JsonNode FrameNameTableNode = CurrentNode.Extras[PROP_OBJECT_ON_FRT];
-            if(FrameNameTableNode != null)
+            if (GetValueFromNode<bool>(CurrentNode, PROP_OBJECT_ON_FRT, out bool bOnTable))
             {
-                NewObject.ObjectFlags |= MT_ObjectFlags.AddToFrameNameTable;
-
-                JsonNode FrameNameTableFlagNode = CurrentNode.Extras[PROP_OBJECT_FRT_FLAGS];
-                if(FrameNameTableFlagNode != null)
+                if (GetValueFromNode<int>(CurrentNode, PROP_OBJECT_FRT_FLAGS, out int Flags))
                 {
-                    NewObject.FrameNameTableFlags = FrameNameTableFlagNode.GetValue<int>();
+                    // apply flags to this object
+                    NewObject.FrameNameTableFlags = Flags;
                 }
             }
 
@@ -695,6 +683,39 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public override string ToString()
         {
             return ObjectName;
+        }
+
+        private static bool GetValueFromNode<TType>(Node InNode, string InPropertyName, out TType OutValue)
+        {
+            OutValue = default(TType);
+
+            if(InNode == null)
+            {
+                // node is invalid
+                return false;
+            }
+
+            if(InNode.Extras == null)
+            {
+                // node does not have extras
+                return false;
+            }
+
+            JsonNode PropertyNode = InNode.Extras[InPropertyName];
+            if (PropertyNode == null)
+            {
+                // specified property does not exist
+                return false;
+            }
+
+            JsonValue Test = PropertyNode.AsValue();
+            if(Test.TryGetValue<TType>(out OutValue))
+            {
+                return true;
+            }
+
+            // value in node does not match type expected
+            return false;
         }
     }
 }
