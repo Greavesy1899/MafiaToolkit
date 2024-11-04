@@ -174,7 +174,7 @@ public static InputElementDescription[] GetLayout()
             SemanticName = "INSTANCEID", // The semantic name should match what is expected in the shader
             SemanticIndex = 0,
             Format = Vortice.DXGI.Format.R32_UInt,
-            Slot = 0,
+            Slot = 1,
             AlignedByteOffset = InputElementDescription.AppendAligned, // Ensure this calculates correctly
             Classification = InputClassification.PerInstanceData,
             InstanceDataStepRate = 1 // Indicates it changes per instance
