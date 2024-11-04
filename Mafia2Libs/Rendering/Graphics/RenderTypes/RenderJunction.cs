@@ -80,6 +80,9 @@ namespace Rendering.Graphics
                 return;
             }
 
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
+
             if (Boundary != null)
             {
                 Boundary.Render(device, deviceContext, camera);

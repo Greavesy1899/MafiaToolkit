@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Toolkit.Mathematics;
 using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
@@ -59,48 +60,73 @@ namespace Rendering.Graphics
             ViewMatrixTransposed = Matrix4x4.Transpose(ViewMatrix);
         }
 
-        public void ContructFrustum(bool bNormalise = false)
+        public void ConstructFrustum(bool normalize = false)
         {
-            Matrix4x4 inverse = Matrix4x4.Identity;
-            Matrix4x4.Invert(ViewMatrix, out inverse);
+            // Combine the View and Projection matrices to get the ViewProjection matrix
+            Matrix4x4 viewProjectionMatrix = ViewMatrix * ProjectionMatrix;
 
+            // Extract the frustum planes from the ViewProjection matrix
             // Left clipping plane
-            Plane LeftPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M11, ViewMatrix.M24 + ViewMatrix.M21, ViewMatrix.M34 + ViewMatrix.M31, ViewMatrix.M44 + ViewMatrix.M41);
-            frustumPlanes[0] = LeftPlane;
+            frustumPlanes[0] = new Plane(
+                viewProjectionMatrix.M14 + viewProjectionMatrix.M11,
+                viewProjectionMatrix.M24 + viewProjectionMatrix.M21,
+                viewProjectionMatrix.M34 + viewProjectionMatrix.M31,
+                viewProjectionMatrix.M44 + viewProjectionMatrix.M41
+            );
 
             // Right clipping plane
-            Plane RightPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M11, ViewMatrix.M24 + ViewMatrix.M21, ViewMatrix.M34 + ViewMatrix.M31, ViewMatrix.M44 + ViewMatrix.M41);
-            frustumPlanes[1] = RightPlane;
+            frustumPlanes[1] = new Plane(
+                viewProjectionMatrix.M14 - viewProjectionMatrix.M11,
+                viewProjectionMatrix.M24 - viewProjectionMatrix.M21,
+                viewProjectionMatrix.M34 - viewProjectionMatrix.M31,
+                viewProjectionMatrix.M44 - viewProjectionMatrix.M41
+            );
 
             // Top clipping plane
-            Plane TopPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M12, ViewMatrix.M24 + ViewMatrix.M22, ViewMatrix.M34 + ViewMatrix.M32, ViewMatrix.M44 + ViewMatrix.M42);
-            frustumPlanes[2] = TopPlane;
+            frustumPlanes[2] = new Plane(
+                viewProjectionMatrix.M14 - viewProjectionMatrix.M12,
+                viewProjectionMatrix.M24 - viewProjectionMatrix.M22,
+                viewProjectionMatrix.M34 - viewProjectionMatrix.M32,
+                viewProjectionMatrix.M44 - viewProjectionMatrix.M42
+            );
 
             // Bottom clipping plane
-            Plane BottomPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M12, ViewMatrix.M24 + ViewMatrix.M22, ViewMatrix.M34 + ViewMatrix.M32, ViewMatrix.M44 + ViewMatrix.M42);
-            frustumPlanes[3] = BottomPlane;
+            frustumPlanes[3] = new Plane(
+                viewProjectionMatrix.M14 + viewProjectionMatrix.M12,
+                viewProjectionMatrix.M24 + viewProjectionMatrix.M22,
+                viewProjectionMatrix.M34 + viewProjectionMatrix.M32,
+                viewProjectionMatrix.M44 + viewProjectionMatrix.M42
+            );
 
             // Near clipping plane
-            Plane NearPlane = new Plane(ViewMatrix.M14 - ViewMatrix.M13, ViewMatrix.M24 - ViewMatrix.M23, ViewMatrix.M34 - ViewMatrix.M33, ViewMatrix.M44 - ViewMatrix.M44);
-            frustumPlanes[4] = NearPlane;
+            frustumPlanes[4] = new Plane(
+                viewProjectionMatrix.M13,
+                viewProjectionMatrix.M23,
+                viewProjectionMatrix.M33,
+                viewProjectionMatrix.M43
+            );
 
             // Far clipping plane
-            Plane FarPlane = new Plane(ViewMatrix.M13, ViewMatrix.M23, ViewMatrix.M33, ViewMatrix.M43);
-            frustumPlanes[5] = FarPlane;
+            frustumPlanes[5] = new Plane(
+                viewProjectionMatrix.M14 - viewProjectionMatrix.M13,
+                viewProjectionMatrix.M24 - viewProjectionMatrix.M23,
+                viewProjectionMatrix.M34 - viewProjectionMatrix.M33,
+                viewProjectionMatrix.M44 - viewProjectionMatrix.M43
+            );
 
-            // Normalise if asked too.
-            if (bNormalise)
+            // Normalize the planes if requested
+            if (normalize)
             {
                 for (int i = 0; i < frustumPlanes.Length; i++)
                 {
-                    Vector3 Normal = frustumPlanes[i].Normal;
-                    float Mag = (float)Math.Sqrt(Normal.X * Normal.X + Normal.Y * Normal.Y + Normal.Z * Normal.Z);
+                    Vector3 normal = frustumPlanes[i].Normal;
+                    float magnitude = normal.Length();
 
-                    Normal.X /= Mag;
-                    Normal.Y /= Mag;
-                    Normal.Z /= Mag;
-
-                    frustumPlanes[i].Normal = Normal;
+                    if (magnitude > 0)
+                    {
+                        frustumPlanes[i].Normal = normal / magnitude;
+                        frustumPlanes[i].D /= magnitude;
+                    }
                 }
             }
         }
@@ -133,21 +159,29 @@ namespace Rendering.Graphics
             }
         }
 
-        public bool CheckBBoxFrustum(Vector3 Position, BoundingBox box)
+        public bool CheckBBoxFrustum(Matrix4x4 Transform, BoundingBox box)
         {
-            bool result = false;
-            for (int i = 0; i < 6; i++) 
-            {
-                if(result)
-                {
-                    return true;
-                }
+            Vector3[] corners = box.GetCorners();
 
-                int Result = Frustum_ClassifyPoint(frustumPlanes[i], Position + box.Center);
-                result = Result == 1;
+            for (int i = 0; i < 6; i++)
+            {
+                bool allOutside = true;
+                for (int j = 0; j < corners.Length; j++)
+                {
+                    if (Frustum_ClassifyPoint(frustumPlanes[i], Vector3.Transform(corners[j], Transform)) >= 0)
+                    {
+                        allOutside = false;
+                        break;
+                    }
+                }
+                if (allOutside)
+                {
+                    return false; // The box is completely outside of this plane.
+                }
             }
-            return result;
+            return true; // The box is at least partially inside all planes.
         }
+
 
         public void SetProjectionMatrix(int width, int height)
         {
@@ -177,7 +211,7 @@ namespace Rendering.Graphics
         public void Render()
         {
             UpdateViewMatrix();
-            ContructFrustum();
+            ConstructFrustum();
         }
 
         public void SetRotation(float pitch, float yaw, float roll = 0.0f)

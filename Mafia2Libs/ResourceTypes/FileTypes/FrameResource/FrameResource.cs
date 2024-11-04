@@ -215,6 +215,19 @@ namespace ResourceTypes.FrameResource
             }
         }
 
+        public byte[] WriteToStream()
+        {
+            using (MemoryStream ms = new())
+            {
+                using (BinaryWriter writer = new(ms))
+                {
+                    WriteToFile(writer);
+                }
+
+                return ms.ToArray();
+            }
+        }
+
         public void WriteToFile(BinaryWriter writer)
         {
             //BEFORE WE WRITE, WE NEED TO COMPILE AND UPDATE THE FRAME.
@@ -379,7 +392,7 @@ namespace ResourceTypes.FrameResource
         }
         
         //name is either name of the imported frame or name of .framedata that will be red
-        public TreeNode ReadFramesFromImport(string name,MemoryStream fromFR = null)
+        public TreeNode ReadFramesFromImport(string name, byte[] fromFR = null)
         {
             FramePack Packet = new FramePack(this);
             if (fromFR == null)
@@ -400,10 +413,10 @@ namespace ResourceTypes.FrameResource
             Packet.WriteToFile(FileName, frame);
         }
         
-        public void SaveFramesStream(FrameObjectBase frame,Stream MainStream)
+        public byte[] SaveFramesStream(FrameObjectBase frame)
         {
             FramePack Packet = new FramePack(this);
-            Packet.WriteToStream(frame,MainStream);
+            return Packet.WriteToStream(frame);
         }
 
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)
