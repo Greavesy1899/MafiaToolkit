@@ -2313,19 +2313,35 @@ namespace Mafia2Tool
                 FrameNode.Name = NewFrame.RefID.ToString();
                 dSceneTree.AddToTree(FrameNode, Parent);
 
-                FrameEntry ParentEntry = (Parent.Tag as FrameEntry);
-                if (ParentEntry != null)
+                if(Parent.Tag is FrameEntry)
                 {
+                    FrameEntry ParentEntry = (Parent.Tag as FrameEntry);
                     SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, ParentEntry);
                     SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex1, NewFrame, ParentEntry);
                 }
-
+                else if(Parent.Tag is FrameHeaderScene)
+                {
+                    FrameHeaderScene SceneEntry = (Parent.Tag as FrameHeaderScene);
+                    SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, SceneEntry);
+                }
+               
                 // Construct renderer and add to stack
                 IRenderer Renderer = BuildRenderObjectFromFrame(NewFrame);
                 if (Renderer != null)
                 {
                     Graphics.InitObjectStack.Add(NewFrame.RefID, Renderer);
                 }
+            }
+
+            // object is a scene so it has an alternative import route
+            if(ObjectInfo.ObjectType == MT_ObjectType.Scene)
+            {
+                var scene = SceneData.FrameResource.AddSceneFolder(ObjectInfo.ObjectName);
+                FrameNode = new TreeNode(scene.ToString());
+                FrameNode.Tag = scene;
+                FrameNode.Name = scene.RefID.ToString();
+
+                dSceneTree.AddToTree(FrameNode, frameResourceRoot);
             }
 
             if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))

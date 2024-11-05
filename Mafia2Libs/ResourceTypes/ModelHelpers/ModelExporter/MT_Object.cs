@@ -43,6 +43,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         ItemDesc,
         Dummy,
         StaticCollision,
+        Scene,
     }
 
     public class MT_Object : IValidator
@@ -207,6 +208,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public static MT_Object TryBuildFromNode(Node CurrentNode, MT_Logger Logger)
         {
+            Logger.WriteInfo("Started on Node: [{0}]", CurrentNode.Name);
+
             int ObjectTypeID = -1;
             if(!GetValueFromNode<int>(CurrentNode, PROP_OBJECT_TYPE_ID, out ObjectTypeID))
             {
@@ -654,12 +657,12 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         private void BuildFromScene(FrameHeaderScene Scene)
         {
+            ObjectName = Scene.Name.ToString();
+            ObjectType = MT_ObjectType.Scene;
+
             Position = Vector3.Zero;
             Rotation = Vector3.Zero;
             Scale = Vector3.One;
-
-            // Force a dummy
-            ObjectType = MT_ObjectType.Dummy;
 
             // Avoid calling if we have no children
             if (Scene.Children.Count > 0)
