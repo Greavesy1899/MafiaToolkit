@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             RenderGroup = new System.Windows.Forms.GroupBox();
+            Checkbox_EnableNavigation = new System.Windows.Forms.CheckBox();
             CheckBox_VSync = new System.Windows.Forms.CheckBox();
             FieldOfViewNumDown = new System.Windows.Forms.NumericUpDown();
             RenderFieldOfView = new System.Windows.Forms.Label();
@@ -44,7 +45,6 @@
             ScreenFarLabel = new System.Windows.Forms.Label();
             ScreenNearLabel = new System.Windows.Forms.Label();
             TexBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            Checkbox_EnableNavigation = new System.Windows.Forms.CheckBox();
             RenderGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)FieldOfViewNumDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CameraSpeedUpDown).BeginInit();
@@ -78,6 +78,18 @@
             RenderGroup.TabIndex = 2;
             RenderGroup.TabStop = false;
             RenderGroup.Text = "$RENDER_OPTIONS";
+            // 
+            // Checkbox_EnableNavigation
+            // 
+            Checkbox_EnableNavigation.AutoSize = true;
+            Checkbox_EnableNavigation.Location = new System.Drawing.Point(274, 19);
+            Checkbox_EnableNavigation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Checkbox_EnableNavigation.Name = "Checkbox_EnableNavigation";
+            Checkbox_EnableNavigation.Size = new System.Drawing.Size(147, 19);
+            Checkbox_EnableNavigation.TabIndex = 15;
+            Checkbox_EnableNavigation.Text = "$ENABLE_NAVIGATION";
+            Checkbox_EnableNavigation.UseVisualStyleBackColor = true;
+            Checkbox_EnableNavigation.CheckedChanged += Button_EnableNavigation_CheckedChanged;
             // 
             // CheckBox_VSync
             // 
@@ -194,6 +206,7 @@
             // 
             // ScreenFarUpDown
             // 
+            ScreenFarUpDown.DecimalPlaces = 2;
             ScreenFarUpDown.Location = new System.Drawing.Point(8, 93);
             ScreenFarUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             ScreenFarUpDown.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
@@ -206,6 +219,7 @@
             // 
             // ScreenNearUpDown
             // 
+            ScreenNearUpDown.DecimalPlaces = 2;
             ScreenNearUpDown.Location = new System.Drawing.Point(8, 43);
             ScreenNearUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             ScreenNearUpDown.Maximum = new decimal(new int[] { 2500, 0, 0, 0 });
@@ -237,18 +251,6 @@
             // TexBrowser
             // 
             TexBrowser.Description = "$SELECT_TEX_FOLDER";
-            // 
-            // Button_EnableNavigation
-            // 
-            Checkbox_EnableNavigation.AutoSize = true;
-            Checkbox_EnableNavigation.Location = new System.Drawing.Point(274, 19);
-            Checkbox_EnableNavigation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            Checkbox_EnableNavigation.Name = "Button_EnableNavigation";
-            Checkbox_EnableNavigation.Size = new System.Drawing.Size(147, 19);
-            Checkbox_EnableNavigation.TabIndex = 15;
-            Checkbox_EnableNavigation.Text = "$ENABLE_NAVIGATION";
-            Checkbox_EnableNavigation.UseVisualStyleBackColor = true;
-            Checkbox_EnableNavigation.CheckedChanged += Button_EnableNavigation_CheckedChanged;
             // 
             // RenderOptions
             // 

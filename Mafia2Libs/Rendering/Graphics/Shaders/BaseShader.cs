@@ -1,7 +1,7 @@
 ﻿using Rendering.Core;
 using ResourceTypes.Materials;
-using System.Runtime.InteropServices;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using Vortice.D3DCompiler;
 using Vortice.Direct3D;

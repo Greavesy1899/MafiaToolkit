@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Rendering.Core;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Rendering.Core;
 using Utils.Extensions;
-using Vortice;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 
@@ -33,59 +32,62 @@ namespace Rendering.Graphics.Instances
                     instance.Transforms = new List<Matrix4x4>();
                 }
 
-                instance.Transforms.Add(transform);
+                instance.Transforms.Add(Matrix4x4.Transpose(transform));
             }
         }
 
-        public void UpdateBuffers( ID3D11Device id3D11Device,ID3D11DeviceContext context)
+        public void UpdateBuffers(ID3D11Device id3D11Device, ID3D11DeviceContext context)
         {
             foreach (var instance in modelInstanceManager.GetAllInstances().Values)
             {
-                UpdateInstanceBuffer(id3D11Device,context,instance.modelInstances[0]); 
+                foreach (var val in instance.modelInstances)
+                {
+                    UpdateInstanceBuffer(id3D11Device, context, val);
+                }
             }
         }
-public void UpdateInstanceBuffer(ID3D11Device device, ID3D11DeviceContext deviceContext, ModelInstance instance)
-{
-    if (instance.Transforms == null || instance.Transforms.Count == 0)
-        return;
 
-    int newSize = instance.Transforms.Count * Marshal.SizeOf<Matrix4x4>();
-
-    // Create or update buffer only if necessary
-    if (instance.InstanceBuffer == null || instance.InstanceBuffer.Description.SizeInBytes < newSize)
-    {
-        // Buffer description for instance buffer
-        var bufferDescription = new BufferDescription
+        public void UpdateInstanceBuffer(ID3D11Device device, ID3D11DeviceContext deviceContext, ModelInstance instance)
         {
-            SizeInBytes = newSize,
-            Usage = ResourceUsage.Dynamic,
-            BindFlags = BindFlags.VertexBuffer,
-            CpuAccessFlags = CpuAccessFlags.Write,
-        };
+            if (instance.Transforms == null || instance.Transforms.Count == 0)
+                return;
 
-        // Dispose old buffer if necessary
-        instance.InstanceBuffer?.Dispose();
-        instance.InstanceBuffer = device.CreateBuffer(bufferDescription);
-    }
+            int newSize = 1024 * Marshal.SizeOf<Matrix4x4>();
 
-    // Convert list to array
-    Matrix4x4[] transformsArray = instance.Transforms.ToArray();
-    
-    // Pin the array in memory
-    GCHandle handle = GCHandle.Alloc(transformsArray, GCHandleType.Pinned);
-    try
-    {
-        IntPtr pointer = handle.AddrOfPinnedObject();
-        // Update the instance buffer
-        deviceContext.UpdateSubresource(instance.InstanceBuffer, 0, null, pointer, 0, 0);
-    }
-    finally
-    {
-        handle.Free();
-    }
-}
+            // Create or update buffer only if necessary
+            if (instance.InstanceBuffer == null || instance.InstanceBuffer.Description.SizeInBytes < newSize)
+            {
+                // Buffer description for instance buffer
+                var bufferDescription = new BufferDescription
+                {
+                    SizeInBytes = newSize,
+                    Usage = ResourceUsage.Dynamic,
+                    BindFlags = BindFlags.ConstantBuffer,
+                    CpuAccessFlags = CpuAccessFlags.Write,
+                };
 
+                // Dispose old buffer if necessary
+                instance.InstanceBuffer?.Dispose();
 
+                // Convert list to array
+                Matrix4x4[] transformsArray1 = instance.Transforms.ToArray();
+                Matrix4x4[] transformsArray = new Matrix4x4[1024];
+                Array.Copy(transformsArray1, 0, transformsArray, 0, transformsArray1.Length < 1024 ? transformsArray1.Length : 1024);
+
+                // Pin the array in memory
+                GCHandle handle = GCHandle.Alloc(transformsArray, GCHandleType.Pinned);
+                try
+                {
+                    IntPtr pointer = handle.AddrOfPinnedObject();
+                    // Update the instance buffer
+                    instance.InstanceBuffer = device.CreateBuffer(bufferDescription, pointer);
+                }
+                finally
+                {
+                    handle.Free();
+                }
+            }
+        }
 
         private void SetupShaders(ModelInstance instance)
         {
@@ -104,113 +106,85 @@ public void UpdateInstanceBuffer(ID3D11Device device, ID3D11DeviceContext device
             }
         }
 
-
-
         public void PrepareInstanceBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
+            //foreach (var lod in modelInstanceManager.GetAllInstances())
+            //{
+            //    foreach (var instance in lod.Value.modelInstances)
+            //    {
+            //        if (instance.Transforms != null && instance.Transforms.Count > 0)
+            //        {
+            //            // Create or resize the instance buffer if needed
+            //            var bufferSize = instance.Transforms.Count * Marshal.SizeOf<Matrix4x4>();
+            //            if (instance.InstanceBuffer == null)
+            //            {
+            //                // Create buffer description for the instance buffer
+            //                var bufferDescription = new BufferDescription
+            //                {
+            //                    SizeInBytes = bufferSize,
+            //                    Usage = ResourceUsage.Dynamic,
+            //                    BindFlags = BindFlags.ConstantBuffer,  // Use as a vertex buffer for instancing
+            //                    CpuAccessFlags = CpuAccessFlags.Write,
+            //                };
+            //
+            //                // Dispose of the old buffer if it exists
+            //                instance.InstanceBuffer?.Dispose();
+            //                instance.InstanceBuffer = device.CreateBuffer(bufferDescription);
+            //            }
+            //        }
+            //    }
+            //}
+        }
+
+        public void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
+        {
+            // Předávejte kamerové matice do shaderu
             foreach (var lod in modelInstanceManager.GetAllInstances())
             {
                 foreach (var instance in lod.Value.modelInstances)
                 {
                     if (instance.Transforms != null && instance.Transforms.Count > 0)
                     {
-                        // Create or resize the instance buffer if needed
-                        var bufferSize = instance.Transforms.Count * Marshal.SizeOf<Matrix4x4>();
-                        if (instance.InstanceBuffer == null )
-                        {
-                            // Create buffer description for the instance buffer
-                            var bufferDescription = new BufferDescription
-                            {
-                                SizeInBytes = bufferSize,
-                                Usage = ResourceUsage.Dynamic,
-                                BindFlags = BindFlags.VertexBuffer,  // Use as a vertex buffer for instancing
-                                CpuAccessFlags = CpuAccessFlags.Write,
-                            };
+                        // Nastavte vertex buffer a instance buffer
+                        VertexBufferView vertexBufferView = new VertexBufferView(instance.vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
+                        deviceContext.IASetVertexBuffers(0, vertexBufferView);
+                        deviceContext.IASetIndexBuffer(instance.indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+                        deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
-                            // Dispose of the old buffer if it exists
-                            instance.InstanceBuffer?.Dispose();
-                            instance.InstanceBuffer = device.CreateBuffer(bufferDescription);
-                        }
+                        // Renderujte jednotlivé části modelu
+                        RenderInstances(deviceContext, instance, camera, device);
                     }
                 }
             }
         }
 
-        
-
-public void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
-{
-    // Předávejte kamerové matice do shaderu
-    foreach (var lod in modelInstanceManager.GetAllInstances())
-    {
-        foreach (var instance in lod.Value.modelInstances)
+        private void RenderInstances(ID3D11DeviceContext deviceContext, ModelInstance instance, Camera camera, ID3D11Device device)
         {
-            if (instance.Transforms != null && instance.Transforms.Count > 0)
+            deviceContext.PSSetShaderResource(2, instance.AoTexture);
+            for (int i = 0; i < instance.LODs[0].ModelParts.Length; i++)
             {
-                // Nastavte vertex buffer a instance buffer
-                VertexBufferView vertexBufferView = new VertexBufferView(instance.vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
-                deviceContext.IASetVertexBuffers(0, vertexBufferView);
-                deviceContext.IASetVertexBuffers(1, new VertexBufferView(instance.InstanceBuffer, Marshal.SizeOf<Matrix4x4>(), 0)); // Přidejte instance buffer
-                deviceContext.IASetIndexBuffer(instance.indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
-                deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+                RenderModel.ModelPart segment = instance.LODs[0].ModelParts[i];
 
-                // Renderujte jednotlivé části modelu
-                for (int i = 0; i < instance.LODs[0].ModelParts.Length; i++)
-                {
-                    RenderModel.ModelPart segment = instance.LODs[0].ModelParts[i];
+                // Set the shaders
+                deviceContext.VSSetShader(segment.Shader.OurVertexShader);
+                deviceContext.PSSetShader(segment.Shader.OurPixelShader);
+                deviceContext.PSSetSampler(0, segment.Shader.SamplerState);
+                deviceContext.GSSetShader(segment.Shader.OurGeometryShader);
 
-                    // Nastavte shader
-                    deviceContext.VSSetShader(segment.Shader.OurVertexShader);
-                    deviceContext.PSSetShader(segment.Shader.OurPixelShader);
-                    deviceContext.PSSetSampler(0, segment.Shader.SamplerState);
+                // Set material parameters
+                segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, Color.White.Normalize()));
 
-                    // Pro každý model part nastavte proměnné scény
-                    foreach (var transform in instance.Transforms)
-                    {
-                        segment.Shader.SetSceneVariables(deviceContext, transform, camera);
-                    }
 
-                    // Nastavení input layout a vykreslení
-                    deviceContext.IASetInputLayout(segment.Shader.Layout);
-                    deviceContext.DrawIndexedInstanced((int)segment.NumFaces * 3, instance.Transforms.Count, (int)segment.StartIndex, 0, 0);
-                    Profiler.NumDrawCallsThisFrame++;
-                }
+                // Set instance buffer for transformations
+                deviceContext.VSSetConstantBuffers(2, 1, new ID3D11Buffer[] { instance.InstanceBuffer });
+
+                // Set input layout and draw
+                deviceContext.IASetInputLayout(segment.Shader.Layout);
+
+                // Draw indexed instances
+                deviceContext.DrawIndexedInstanced((int)segment.NumFaces * 3, instance.Transforms.Count < 1024 ? instance.Transforms.Count : 1024, (int)segment.StartIndex, 0, 0);
+                Profiler.NumDrawCallsThisFrame++;
             }
         }
-    }
-}
-
-
-
-private void RenderInstances(ID3D11DeviceContext deviceContext, ModelInstance instance, Camera camera, ID3D11Device device)
-{
-    deviceContext.PSSetShaderResource(2,instance.AoTexture);
-    for (int i = 0; i < instance.LODs[0].ModelParts.Length; i++)
-    {
-        RenderModel.ModelPart segment = instance.LODs[0].ModelParts[i];
-
-        // Set the shaders
-        deviceContext.VSSetShader(segment.Shader.OurVertexShader);
-        deviceContext.PSSetShader(segment.Shader.OurPixelShader);
-        deviceContext.PSSetSampler(0, segment.Shader.SamplerState);
-        deviceContext.GSSetShader(segment.Shader.OurGeometryShader);
-
-        // Set material parameters
-        segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, Color.White.Normalize()));
-        
-
-        // Set instance buffer for transformations
-        deviceContext.VSSetConstantBuffers(1, 1, new ID3D11Buffer[] { instance.InstanceBuffer });
-
-        // Set input layout and draw
-        deviceContext.IASetInputLayout(segment.Shader.Layout);
-
-        // Draw indexed instances
-        deviceContext.DrawIndexedInstanced((int)segment.NumFaces * 3, instance.Transforms.Count, (int)segment.StartIndex, 0, 0);
-        Profiler.NumDrawCallsThisFrame++;
-    }
-}
-
-
     }
 }

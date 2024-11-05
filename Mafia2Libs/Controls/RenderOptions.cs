@@ -29,8 +29,8 @@ namespace Forms.OptionControls
 
         private void LoadSettings()
         {
-            ScreenFarUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenDepth), ScreenFarUpDown.Maximum);
-            ScreenNearUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenNear), ScreenNearUpDown.Maximum);
+            ScreenFarUpDown.Value = Math.Min((decimal)ToolkitSettings.ScreenDepth, ScreenFarUpDown.Maximum);
+            ScreenNearUpDown.Value = Math.Min((decimal)ToolkitSettings.ScreenNear, ScreenNearUpDown.Maximum);
             CameraSpeedUpDown.Value = Math.Min((decimal)ToolkitSettings.CameraSpeed, CameraSpeedUpDown.Maximum);
             FieldOfViewNumDown.Value = Math.Min(Math.Max(Convert.ToInt16(ToolkitSettings.FieldOfView), FieldOfViewNumDown.Minimum), FieldOfViewNumDown.Maximum);
             TexDirectoryBox.Text = ToolkitSettings.TexturePath;
