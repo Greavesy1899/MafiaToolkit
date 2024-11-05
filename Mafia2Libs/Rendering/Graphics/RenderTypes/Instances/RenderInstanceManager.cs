@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Utils.Extensions;
+using Utils.VorticeUtils;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 
@@ -32,7 +33,11 @@ namespace Rendering.Graphics.Instances
                     instance.Transforms = new List<Matrix4x4>();
                 }
 
-                instance.Transforms.Add(Matrix4x4.Transpose(transform));
+                var m = Matrix4x4.Transpose(transform);
+                m.SetColumn(3, m.GetColumn(3) * 20); // Can't see anything when it is all bunched up, why is it bunched up though?
+                m.M44 = 1.0f;
+
+                instance.Transforms.Add(m);
             }
         }
 
@@ -176,7 +181,7 @@ namespace Rendering.Graphics.Instances
 
 
                 // Set instance buffer for transformations
-                deviceContext.VSSetConstantBuffers(2, 1, new ID3D11Buffer[] { instance.InstanceBuffer });
+                deviceContext.VSSetConstantBuffers(2, 1, new ID3D11Buffer[] { instance.InstanceBuffer }); // We should move this into a separate vertex buffer so it can be dynamic instead of a fixed 65536 byte size
 
                 // Set input layout and draw
                 deviceContext.IASetInputLayout(segment.Shader.Layout);

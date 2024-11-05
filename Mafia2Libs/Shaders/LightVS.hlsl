@@ -25,7 +25,6 @@ struct VS_INPUT
     float3 Binormal : BINORMAL;   // Vertex binormal
     float2 TexCoord0 : TEXCOORD0; // Texture coordinate 0
     float2 TexCoord7 : TEXCOORD1; // Texture coordinate 1
-    uint InstanceID : INSTANCEID;  // Instance ID for instance buffer lookup
 };
 
 struct VS_OUTPUT
@@ -39,12 +38,12 @@ struct VS_OUTPUT
     float3 viewDirection : TEXCOORD2; // View direction for lighting calculations
 };
 
-VS_OUTPUT LightVertexShader(VS_INPUT input)
+VS_OUTPUT LightVertexShader(VS_INPUT input, uint InstanceId : SV_InstanceID)
 {
     VS_OUTPUT output;
 
     // Fetch the instance transformation matrix using InstanceID
-    matrix instanceMatrix = instanceTransforms[input.InstanceID];
+    matrix instanceMatrix = instanceTransforms[InstanceId];
 
     // Transform position by instance matrix
     float4 worldPosition = mul(input.Position, instanceMatrix);
