@@ -205,25 +205,28 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return NewObject;
         }
 
-        public static MT_Object TryBuildFromNode(Node CurrentNode)
+        public static MT_Object TryBuildFromNode(Node CurrentNode, MT_Logger Logger)
         {
             int ObjectTypeID = -1;
             if(!GetValueFromNode<int>(CurrentNode, PROP_OBJECT_TYPE_ID, out ObjectTypeID))
             {
-                // did not find valid type ID
+                Logger.WriteError("Failed to find property [{0}] on node [{1}] cannot determine type.", PROP_OBJECT_TYPE_ID, CurrentNode.Name);
                 return null;
             }
 
             MT_ObjectType DesiredType = (MT_ObjectType)ObjectTypeID;
             if(DesiredType == MT_ObjectType.Null)
             {
-                // the type found in node is bad, cannot import
+                Logger.WriteError("The value [{0}] assigned to [{1}] is invalid on node [{2}]", DesiredType, PROP_OBJECT_TYPE_ID, CurrentNode.Name);
                 return null;
             }
 
             // attempt to import from optional node
             string DesiredName = CurrentNode.Name;
-            GetValueFromNode<string>(CurrentNode, PROP_OBJECT_NAME, out DesiredName);
+            if(GetValueFromNode<string>(CurrentNode, PROP_OBJECT_NAME, out DesiredName))
+            {
+                Logger.WriteInfo("Detected [{0}], assigning name [{1}]", PROP_OBJECT_NAME, CurrentNode.Name);
+            }
 
             MT_Object NewObject = new MT_Object();
             NewObject.ObjectName = DesiredName;
@@ -240,6 +243,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 {
                     // apply flags to this object
                     NewObject.FrameNameTableFlags = Flags;
+
+                    Logger.WriteInfo("Detected FrameNameTable flags [{0}] to Node [{1}]", Flags, CurrentNode.Name);
                 }
             }
 
@@ -252,7 +257,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             List<MT_Lod> ObjectLods = new List<MT_Lod>();
             foreach(Node ChildNode in CurrentNode.VisualChildren)
             {
-                MT_Object PotentialChildObject = MT_Object.TryBuildFromNode(ChildNode);
+                MT_Object PotentialChildObject = MT_Object.TryBuildFromNode(ChildNode, Logger);
                 if(PotentialChildObject != null)
                 {
                     ImportedObjects.Add(PotentialChildObject);
@@ -318,6 +323,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 NewObject.ObjectFlags |= MT_ObjectFlags.HasCollisions;
             }
+
+            Logger.WriteInfo("Created MT_Object [{0}], type [{1}], from node [{2}]", NewObject.ObjectName, NewObject.ObjectType, CurrentNode.Name);
 
             return NewObject;
         }

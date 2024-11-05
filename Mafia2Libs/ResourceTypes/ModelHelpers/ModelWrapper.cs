@@ -6,7 +6,6 @@ using ResourceTypes.ModelHelpers.ModelExporter;
 using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Utils.Types;
 using Utils.VorticeUtils;
@@ -130,29 +129,9 @@ namespace Utils.Models
             bounds.SetMinimum(frameMesh.Boundings.Min);
             bounds.SetMaximum(frameMesh.Boundings.Max);
 
-            // new shit
             (float, Vector3) Values = GetDecompFactor(bounds);
             frameGeometry.DecompressionFactor = Values.Item1;
             frameGeometry.DecompressionOffset = Values.Item2;
-
-            // old shit
-            /**
-            frameGeometry.DecompressionOffset = new Vector3(bounds.Min.X, bounds.Min.Y, bounds.Min.Z);
-
-            double MaxX = bounds.Max.X - bounds.Min.X;
-            double MaxY = bounds.Max.Y - bounds.Min.Y;
-            double MaxZ = bounds.Max.Z - bounds.Min.Z;
-
-            float Max = (float)Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
-            frameGeometry.DecompressionFactor = Max / 0xFFFF;
-
-            double fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
-            Console.WriteLine("Decompress value before: " + fMaxSize);
-            double result = Math.Log(fMaxSize) / Math.Log(2.0f);
-            double pow = Math.Ceiling(result);
-            double factor = Math.Pow(2.0f, pow);
-            float OldOutput = (float)(factor / 0x10000);
-            float NewOutput = frameGeometry.DecompressionFactor;*/
         }
 
         public void BuildIndexBuffer()

@@ -79,6 +79,8 @@ namespace Mafia2Tool
             InitializeComponent();
             Localise();
 
+            sceneData.FrameResource.OnFrameRemoved += OnFrameRemoved;
+
             if (MaterialsManager.MaterialLibraries.Count == 0)
             {
                 MessageBox.Show("No material libraries have loaded, make sure they are set up correctly in the options window!", "Warning!", MessageBoxButtons.OK);
@@ -1541,38 +1543,25 @@ namespace Mafia2Tool
 
         private void DeleteFrames(TreeNode node)
         {
-            for (int i = 0; i < node.Nodes.Count; i++)
+            if (FrameResource.IsFrameType(node.Tag))
             {
-                if (FrameResource.IsFrameType(node.Nodes[i].Tag))
-                {
-                    FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                    bool bDidRemove = SceneData.FrameResource.DeleteFrame(entry);
-                    Graphics.DeleteAsset(entry.RefID);
-                    DeleteFrames(node.Nodes[i]);
+                FrameEntry entry = node.Tag as FrameEntry;
+                bool bDidRemove = SceneData.FrameResource.DeleteFrame(entry);
 
-                    ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
-                }
+                ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
             }
         }
+
         private void DeleteButton_Click(object sender, EventArgs e)
         {
             TreeNode node = dSceneTree.SelectedNode;
 
             if (FrameResource.IsFrameType(node.Tag))
             {
-                FrameEntry obj = node.Tag as FrameEntry;
-
-                if (obj != null)
-                {
-                    dSceneTree.RemoveNode(node);
-                    Graphics.DeleteAsset(obj.RefID);
-                    bool bDidRemove = SceneData.FrameResource.DeleteFrame(obj);
-                    Graphics.DeleteAsset(obj.RefID);
-
-                    ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
-                }
-
                 DeleteFrames(node);
+
+                // we can just delete root node here, all children are vanquished
+                dSceneTree.RemoveNode(node);
             }
             else if(node.Tag.GetType() == typeof(FrameHeaderScene))
             {
@@ -2255,8 +2244,10 @@ namespace Mafia2Tool
                 return;
             }
 
+            MT_Logger ImportResults = new MT_Logger();
+
             MT_ObjectBundle BundleObject = new MT_ObjectBundle();
-            BundleObject.BuildFromGLTF(ModelRoot.Load(MeshBrowser.FileName));
+            BundleObject.BuildFromGLTF(ModelRoot.Load(MeshBrowser.FileName), ImportResults);
 
             // Let users change their import values
             FrameResourceModelImporter modelForm = new FrameResourceModelImporter(BundleObject);
@@ -2358,6 +2349,11 @@ namespace Mafia2Tool
                     ConstructFrameFromImportedObject(Child, FrameNode);
                 }
             }
+        }
+
+        private void OnFrameRemoved(object sender, OnFrameRemovedArgs e)
+        {
+            Graphics.DeleteAsset(e.FrameRefID);
         }
     }
 }

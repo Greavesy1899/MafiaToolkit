@@ -12,6 +12,12 @@ using Utils.Logging;
 
 namespace ResourceTypes.FrameResource
 {
+    public class OnFrameRemovedArgs
+    {
+        public OnFrameRemovedArgs(int InFrameRefID) { FrameRefID = InFrameRefID; }
+        public int FrameRefID { get; }
+    }
+
     public class FrameResource
     {
         public SceneData SceneData = null;
@@ -25,6 +31,11 @@ namespace ResourceTypes.FrameResource
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
 
         private FrameProps FramePropContents;
+
+        // allows external systems to listen for when a Frame has been removed from the FrameResource
+        // See @OnFrameRemovedArgs for what arguments are passed through the event
+        public delegate void FrameRemovedHandler(object sender, OnFrameRemovedArgs e);
+        public event FrameRemovedHandler OnFrameRemoved;
 
         public FrameHeader Header {
             get { return header; }
@@ -318,20 +329,32 @@ namespace ResourceTypes.FrameResource
                 return false;
             }
 
-            // Remove Parent reference
             FrameObjectBase BaseObject = (EntryToDelete as FrameObjectBase);
-            if(BaseObject != null)
+            if (BaseObject == null)
             {
-                FrameObjectBase ParentObject = BaseObject.Parent;
-                if(ParentObject != null)
-                {
-                    bool bDeleted = ParentObject.Children.Remove(BaseObject);
-                    ToolkitAssert.Ensure(bDeleted, "Failed to delete an object which should be in the child array.");
-
-                    BaseObject.Parent = null;
-                }
+                return false;
             }
 
+            // Remove Parent reference
+            FrameObjectBase ParentObject = BaseObject.Parent;
+            if (ParentObject != null)
+            {
+                bool bDeleted = ParentObject.Children.Remove(BaseObject);
+                ToolkitAssert.Ensure(bDeleted, "Failed to delete an object which should be in the child array.");
+
+                BaseObject.Parent = null;
+            }
+
+            // Remove all children
+            while(BaseObject.Children.Count > 0)
+            {
+                DeleteFrame(BaseObject.Children[0]);
+            }
+
+            // broadcast for other systems
+            OnFrameRemoved.Invoke(this, new OnFrameRemovedArgs(EntryToDelete.RefID));
+
+            // Remove frame from list
             return FrameObjects.Remove(EntryToDelete.RefID);
         }
 

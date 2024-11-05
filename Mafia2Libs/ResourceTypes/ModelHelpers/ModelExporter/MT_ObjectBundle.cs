@@ -30,7 +30,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return Scene.ToGltf2();
         }
 
-        public void BuildFromGLTF(ModelRoot InRoot)
+        public void BuildFromGLTF(ModelRoot InRoot, MT_Logger Logger)
         {
             if(InRoot == null)
             {
@@ -43,7 +43,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Scene CurrentScene = InRoot.DefaultScene;
             foreach(Node CurNode in CurrentScene.VisualChildren)
             {
-                MT_Object PotentialChildObject = MT_Object.TryBuildFromNode(CurNode);
+                MT_Object PotentialChildObject = MT_Object.TryBuildFromNode(CurNode, Logger);
                 if (PotentialChildObject != null)
                 {
                     ImportedObjects.Add(PotentialChildObject);

@@ -423,6 +423,10 @@ namespace Rendering.Graphics
         {
             if (Assets.ContainsKey(RefID))
             {
+                // ensure that dx11 related objects are properly destroyed
+                IRenderer FoundAsset = Assets[RefID];
+                FoundAsset.Shutdown();
+
                 return Assets.Remove(RefID);
             }
 
