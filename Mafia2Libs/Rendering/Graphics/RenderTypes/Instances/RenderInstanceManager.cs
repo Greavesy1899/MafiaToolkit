@@ -34,8 +34,6 @@ namespace Rendering.Graphics.Instances
                 }
 
                 var m = Matrix4x4.Transpose(transform);
-                m.SetColumn(3, m.GetColumn(3) * 20); // Can't see anything when it is all bunched up, why is it bunched up though?
-                m.M44 = 1.0f;
 
                 instance.Transforms.Add(m);
             }
@@ -50,11 +48,14 @@ namespace Rendering.Graphics.Instances
                     UpdateInstanceBuffer(id3D11Device, context, val);
                 }
             }
+            //is this relevant? if used only by translokators, then not
+            //modelInstanceManager.SetupShaders();
+            //modelInstanceManager.InitTextures(id3D11Device,context);
         }
 
         public void UpdateInstanceBuffer(ID3D11Device device, ID3D11DeviceContext deviceContext, ModelInstance instance)
         {
-            if (instance.Transforms == null || instance.Transforms.Count == 0)
+            if (instance.Transforms == null || instance.Transforms.Count < 2)//if it is 1, if is not instance
                 return;
 
             int newSize = 1024 * Marshal.SizeOf<Matrix4x4>();

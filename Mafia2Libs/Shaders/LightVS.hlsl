@@ -42,6 +42,7 @@ VS_OUTPUT LightVertexShader(VS_INPUT input, uint InstanceId : SV_InstanceID)
 {
     VS_OUTPUT output;
 
+    input.Position.w = 1.0f;
     // Fetch the instance transformation matrix using InstanceID
     matrix instanceMatrix = instanceTransforms[InstanceId];
 
@@ -50,14 +51,16 @@ VS_OUTPUT LightVertexShader(VS_INPUT input, uint InstanceId : SV_InstanceID)
     output.Position = mul(worldPosition, viewMatrix); // Apply view matrix
     output.Position = mul(output.Position, projectionMatrix); // Apply projection matrix
 
+    input.TexCoord0.y = -input.TexCoord0.y;
+    input.TexCoord7.y = -input.TexCoord7.y;
     // Store the texture coordinates for the pixel shader
     output.TexCoord0 = input.TexCoord0;
     output.TexCoord7 = input.TexCoord7;
 
     // Calculate normals, tangents, and binormals using the instance matrix
-    output.Normal = normalize(mul(input.Normal, (float3x3)instanceMatrix));
-    output.Tangent = normalize(mul(input.Tangent, (float3x3)instanceMatrix));
-    output.Binormal = normalize(mul(input.Binormal, (float3x3)instanceMatrix));
+    output.Normal = normalize(mul(input.Normal, (matrix)instanceMatrix));
+    output.Tangent = normalize(mul(input.Tangent, (matrix)instanceMatrix));
+    output.Binormal = normalize(mul(input.Binormal, (matrix)instanceMatrix));
 
     // Determine the world position for view direction calculation
     worldPosition = mul(input.Position, instanceMatrix);
