@@ -12,10 +12,7 @@ cbuffer CameraBuffer : register(b1)
 };
 
 // Instance transformation matrix buffer
-cbuffer InstanceBuffer : register(b2)
-{
-    matrix instanceTransforms[1024]; // Buffer for instance transformation matrices
-};
+StructuredBuffer<matrix> InstanceBuffer : register(t0);
 
 struct VS_INPUT
 {
@@ -44,7 +41,7 @@ VS_OUTPUT LightVertexShader(VS_INPUT input, uint InstanceId : SV_InstanceID)
 
     input.Position.w = 1.0f;
     // Fetch the instance transformation matrix using InstanceID
-    matrix instanceMatrix = instanceTransforms[InstanceId];
+    matrix instanceMatrix = InstanceBuffer[InstanceId];
 
     // Transform position by instance matrix
     float4 worldPosition = mul(input.Position, instanceMatrix);
@@ -58,9 +55,9 @@ VS_OUTPUT LightVertexShader(VS_INPUT input, uint InstanceId : SV_InstanceID)
     output.TexCoord7 = input.TexCoord7;
 
     // Calculate normals, tangents, and binormals using the instance matrix
-    output.Normal = normalize(mul(input.Normal, (matrix)instanceMatrix));
-    output.Tangent = normalize(mul(input.Tangent, (matrix)instanceMatrix));
-    output.Binormal = normalize(mul(input.Binormal, (matrix)instanceMatrix));
+    output.Normal = normalize(mul(input.Normal, (float3x3)instanceMatrix));
+    output.Tangent = normalize(mul(input.Tangent, (float3x3)instanceMatrix));
+    output.Binormal = normalize(mul(input.Binormal, (float3x3)instanceMatrix));
 
     // Determine the world position for view direction calculation
     worldPosition = mul(input.Position, instanceMatrix);

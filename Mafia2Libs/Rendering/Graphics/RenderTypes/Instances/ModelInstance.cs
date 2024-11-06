@@ -166,8 +166,10 @@ namespace Rendering.Graphics.Instances
         public ID3D11Buffer indexBuffer;
         public ID3D11Buffer vertexBuffer;
         public ID3D11Buffer InstanceBuffer; 
+        public ID3D11ShaderResourceView InstanceBufferView; 
         public List<Matrix4x4> Transforms; 
         public ID3D11ShaderResourceView AoTexture;
         public HashName aoHash;
+        public bool BufferChanged = true;
     }
 }

@@ -33,9 +33,7 @@ namespace Rendering.Graphics.Instances
                     instance.Transforms = new List<Matrix4x4>();
                 }
 
-                var m = Matrix4x4.Transpose(transform);
-
-                instance.Transforms.Add(m);
+                instance.Transforms.Add(Matrix4x4.Transpose(transform));
             }
         }
 
@@ -55,10 +53,13 @@ namespace Rendering.Graphics.Instances
 
         public void UpdateInstanceBuffer(ID3D11Device device, ID3D11DeviceContext deviceContext, ModelInstance instance)
         {
-            if (instance.Transforms == null || instance.Transforms.Count < 2)//if it is 1, if is not instance
+            if (instance.Transforms == null || instance.Transforms.Count < 2) //if it is 1, if is not instance
                 return;
 
-            int newSize = 1024 * Marshal.SizeOf<Matrix4x4>();
+            if (!instance.BufferChanged)
+                return;
+
+            int newSize = instance.Transforms.Count * Marshal.SizeOf<Matrix4x4>();
 
             // Create or update buffer only if necessary
             if (instance.InstanceBuffer == null || instance.InstanceBuffer.Description.SizeInBytes < newSize)
@@ -68,17 +69,26 @@ namespace Rendering.Graphics.Instances
                 {
                     SizeInBytes = newSize,
                     Usage = ResourceUsage.Dynamic,
-                    BindFlags = BindFlags.ConstantBuffer,
+                    BindFlags = BindFlags.ShaderResource,
+                    OptionFlags = ResourceOptionFlags.BufferStructured,
                     CpuAccessFlags = CpuAccessFlags.Write,
+                    StructureByteStride = Marshal.SizeOf<Matrix4x4>(),
                 };
+
+                var viewDescription = new ShaderResourceViewDescription()
+                {
+                    Format = Vortice.DXGI.Format.Unknown,
+                    ViewDimension = ShaderResourceViewDimension.Buffer,
+                };
+
+                viewDescription.Buffer.FirstElement = 0;
+                viewDescription.Buffer.NumElements = instance.Transforms.Count;
 
                 // Dispose old buffer if necessary
                 instance.InstanceBuffer?.Dispose();
 
                 // Convert list to array
-                Matrix4x4[] transformsArray1 = instance.Transforms.ToArray();
-                Matrix4x4[] transformsArray = new Matrix4x4[1024];
-                Array.Copy(transformsArray1, 0, transformsArray, 0, transformsArray1.Length < 1024 ? transformsArray1.Length : 1024);
+                Matrix4x4[] transformsArray = instance.Transforms.ToArray();
 
                 // Pin the array in memory
                 GCHandle handle = GCHandle.Alloc(transformsArray, GCHandleType.Pinned);
@@ -87,11 +97,15 @@ namespace Rendering.Graphics.Instances
                     IntPtr pointer = handle.AddrOfPinnedObject();
                     // Update the instance buffer
                     instance.InstanceBuffer = device.CreateBuffer(bufferDescription, pointer);
+
+                    instance.InstanceBufferView = device.CreateShaderResourceView(instance.InstanceBuffer, viewDescription);
                 }
                 finally
                 {
                     handle.Free();
                 }
+
+                instance.BufferChanged = false;
             }
         }
 
@@ -180,9 +194,8 @@ namespace Rendering.Graphics.Instances
                 // Set material parameters
                 segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, Color.White.Normalize()));
 
-
                 // Set instance buffer for transformations
-                deviceContext.VSSetConstantBuffers(2, 1, new ID3D11Buffer[] { instance.InstanceBuffer }); // We should move this into a separate vertex buffer so it can be dynamic instead of a fixed 65536 byte size
+                deviceContext.VSSetShaderResource(0, instance.InstanceBufferView); // We should move this into a separate vertex buffer so it can be dynamic instead of a fixed 65536 byte size
 
                 // Set input layout and draw
                 deviceContext.IASetInputLayout(segment.Shader.Layout);
