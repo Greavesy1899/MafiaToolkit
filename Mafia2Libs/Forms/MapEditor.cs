@@ -32,6 +32,7 @@ using Utils.VorticeUtils;
 using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
 using static ResourceTypes.Collisions.Collision;
+using static UnluacNET.TableLiteral;
 using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
@@ -1541,34 +1542,29 @@ namespace Mafia2Tool
             ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
         }
 
-        private void DeleteFrames(TreeNode node)
-        {
-            if (FrameResource.IsFrameType(node.Tag))
-            {
-                FrameEntry entry = node.Tag as FrameEntry;
-                bool bDidRemove = SceneData.FrameResource.DeleteFrame(entry);
-
-                ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
-            }
-        }
-
         private void DeleteButton_Click(object sender, EventArgs e)
         {
             TreeNode node = dSceneTree.SelectedNode;
 
             if (FrameResource.IsFrameType(node.Tag))
             {
-                DeleteFrames(node);
+                FrameEntry entry = node.Tag as FrameEntry;
+                bool bDidRemove = SceneData.FrameResource.DeleteFrame(entry);
+
+                ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
 
                 // we can just delete root node here, all children are vanquished
                 dSceneTree.RemoveNode(node);
             }
             else if(node.Tag.GetType() == typeof(FrameHeaderScene))
             {
-                var scene = (node.Tag as FrameHeaderScene);
+                FrameHeaderScene scene = (node.Tag as FrameHeaderScene);
+                bool bDidRemove = SceneData.FrameResource.DeleteScene(scene);
+
+                ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
+
+                // we can just delete root node here, all children are vanquished
                 dSceneTree.RemoveNode(node);
-                SceneData.FrameResource.FrameScenes.Remove(scene.RefID);
-                DeleteFrames(node);
             }
             else if (node.Tag.GetType() == typeof(Collision.Placement))
             {

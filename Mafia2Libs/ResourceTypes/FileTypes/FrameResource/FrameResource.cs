@@ -358,6 +358,16 @@ namespace ResourceTypes.FrameResource
             return FrameObjects.Remove(EntryToDelete.RefID);
         }
 
+        public bool DeleteScene(FrameHeaderScene Scene)
+        {
+            foreach(FrameObjectBase ChildObject in Scene.Children)
+            {
+                DeleteFrame(ChildObject);
+            }
+
+            return frameScenes.Remove(Scene.RefID);
+        }
+
         public T ConstructFrameAssetOfType<T>() where T : FrameEntry
         {
             T NewFrame = (T)Activator.CreateInstance(typeof(T), this);
