@@ -5,6 +5,7 @@ using ResourceTypes.Misc;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using Utils.Extensions;
 using Utils.Logging;
@@ -298,6 +299,23 @@ namespace ResourceTypes.FrameResource
             foreach (var child in children)
             {
                 if (child.IsFrameOwnChildren(newParentRefID))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public bool CheckForMeshObjects()//checking for at least one SingleMesh for translokator ref
+        {
+            if (this is FrameObjectSingleMesh)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < children.Count; i++)
+            {
+                if (children[i].CheckForMeshObjects())
                 {
                     return true;
                 }

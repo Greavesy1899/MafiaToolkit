@@ -266,7 +266,7 @@ namespace Rendering.Graphics
             {
                 vertexBuffer = modelManager.GetInstances(LODs[0].parentGeomHash)[0].vertexBuffer;
                 indexBuffer = modelManager.GetInstances(LODs[0].parentGeomHash)[0].indexBuffer;
-                isInstance = true;
+                isInstance = false;
             }
             else
             {

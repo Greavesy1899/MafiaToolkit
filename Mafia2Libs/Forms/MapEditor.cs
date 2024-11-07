@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using ResourceTypes.Translokator;
 using Toolkit.Core;
@@ -1014,23 +1015,23 @@ namespace Mafia2Tool
                         objectGroupNode.Nodes.Add(objNode);
                         FrameObjectBase groupRef =
                             SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(obj.Name.Hash);
-
+                        bool hasMesh = false;
+                        if (groupRef != null)
+                        {
+                            hasMesh = groupRef.CheckForMeshObjects();
+                            
+                        }
+                        
                         for (int x = 0; x < obj.Instances.Length; x++)
                         {
                             Instance instance = obj.Instances[x];
                             
-                            if (groupRef != null && groupRef.Children[0] is FrameObjectSingleMesh meshref)
+                            if (hasMesh && groupRef.Children.Count>0)
                             {
-                                FrameObjectSingleMesh instanceMesh = new FrameObjectSingleMesh(meshref);
-                                instanceMesh.RefID = RefManager.GetNewRefID();
-                                
-                                Matrix4x4 newtransform = new Matrix4x4();
-                                newtransform = MatrixUtils.SetMatrix(instance.Rotation, new Vector3(instance.Scale,instance.Scale,instance.Scale), instance.Position);
-
-                            
-                                IRenderer NewAsset = BuildRenderObjectFromFrame(instanceMesh,assets);
-                                NewAsset.SetTransform(newtransform);
-                                assets.Add(instanceMesh.RefID, NewAsset);
+                                for (int i = 0; i < groupRef.Children.Count; i++)
+                                { 
+                                    InstanceTranslokatorPart(assets,groupRef,instance, Quaternion.Identity);
+                                }
                             }
                             
                             TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
@@ -1084,6 +1085,41 @@ namespace Mafia2Tool
             Graphics.InitObjectStack = assets;
         }
 
+        public void InstanceTranslokatorPart(Dictionary<int, IRenderer> assets, FrameObjectBase refframe,Instance instance,Quaternion resultrot)
+        {
+            if (refframe is FrameObjectSingleMesh mesh)
+            {
+                mesh.RefID = RefManager.GetNewRefID();
+
+                Vector3 s,n;
+                Quaternion framerot,parentrot;
+                Matrix4x4 newtransform = new Matrix4x4();
+                Matrix4x4.Decompose(refframe.LocalTransform, out s,out framerot, out n);
+                resultrot = framerot*resultrot;
+                if (mesh.Parent != null)
+                {
+                    //Matrix4x4.Decompose(refframe.Parent.LocalTransform, out s,out parentrot, out n);
+                    //resultrot = parentrot * framerot *resultrot;
+                }
+                newtransform = MatrixUtils.SetMatrix(instance.Rotation*resultrot.ToEuler(), new Vector3(instance.Scale,instance.Scale,instance.Scale), instance.Position);
+                //resultrot = framerot*resultrot;
+                                
+                IRenderer NewAsset = BuildRenderObjectFromFrame(mesh,assets);
+                NewAsset.SetTransform(newtransform);
+                assets.Add(mesh.RefID, NewAsset);            
+            }
+
+            if (refframe.Children.Count>0)
+            {
+                for (int i = 0; i < refframe.Children.Count; i++)
+                {
+                    if (refframe.Children[i] is FrameObjectSingleMesh meshref)
+                    {
+                        InstanceTranslokatorPart(assets,meshref,instance,resultrot);
+                    } 
+                }
+            }
+        }
         private void LoadActorFiles()
         {
             actorRoot = new TreeNode("Actor Items");
