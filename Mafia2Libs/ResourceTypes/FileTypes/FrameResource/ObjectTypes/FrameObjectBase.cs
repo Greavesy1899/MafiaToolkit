@@ -304,5 +304,18 @@ namespace ResourceTypes.FrameResource
             }
             return false;
         }
+
+        public bool HasMeshObject()
+        {
+            foreach (var child in Children)
+            {
+                if (child is FrameObjectSingleMesh || child.HasMeshObject())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

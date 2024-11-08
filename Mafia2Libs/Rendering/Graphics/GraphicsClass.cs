@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Windows.Forms;
-using Rendering.Graphics.Instances;
 using Toolkit.Core;
 using Utils.Models;
 using Utils.Settings;
@@ -53,8 +52,6 @@ namespace Rendering.Graphics
         private PrimitiveBatch LineBatch = null;
         private PrimitiveBatch BBoxBatch = null;
         public PrimitiveManager OurPrimitiveManager { get; private set; }
-        private ModelInstanceManager modelManager;
-        private RenderInstanceManager instanceManager;
 
 
         public GraphicsClass()
@@ -66,8 +63,6 @@ namespace Rendering.Graphics
             translokatorGrid = new SpatialGrid();
             navigationGrids = new SpatialGrid[0];
             OurPrimitiveManager = new PrimitiveManager();
-            modelManager = new ModelInstanceManager();
-            instanceManager = new RenderInstanceManager(modelManager);
 
             OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
 
@@ -98,7 +93,7 @@ namespace Rendering.Graphics
                 RenderModel gizmo = new RenderModel();
                 structure.ReadFromM2T("Resources/GizmoModel.m2t");
                 gizmo.ConvertMTKToRenderModel(structure);
-                gizmo.InitBuffers(D3D.Device, D3D.DeviceContext,null);
+                gizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
                 gizmo.DoRender = true;
                 TranslationGizmo = new GizmoTool(gizmo);
 
@@ -106,13 +101,13 @@ namespace Rendering.Graphics
                 structure = new M2TStructure();
                 structure.ReadFromM2T("Resources/sky_backdrop.m2t");
                 sky.ConvertMTKToRenderModel(structure);
-                sky.InitBuffers(D3D.Device, D3D.DeviceContext,null);
+                sky.InitBuffers(D3D.Device, D3D.DeviceContext);
 
                 clouds = new RenderModel();
                 structure = new M2TStructure();
                 structure.ReadFromM2T("Resources/weather_clouds.m2t");
                 clouds.ConvertMTKToRenderModel(structure);
-                clouds.InitBuffers(D3D.Device, D3D.DeviceContext,null);
+                clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
                 clouds.DoRender = false;
             }
 
@@ -130,11 +125,11 @@ namespace Rendering.Graphics
             Camera.Position = new Vector3(0.0f, 0.0f, 15.0f);
             Camera.SetProjectionMatrix(width, height);
             ClearRenderStack();
-            selectionBox.InitBuffers(D3D.Device, D3D.DeviceContext,null);
+            selectionBox.InitBuffers(D3D.Device, D3D.DeviceContext);
             TranslationGizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
-            sky.InitBuffers(D3D.Device, D3D.DeviceContext,null);
+            sky.InitBuffers(D3D.Device, D3D.DeviceContext);
             sky.DoRender = WorldSettings.RenderSky;
-            clouds.InitBuffers(D3D.Device, D3D.DeviceContext,null);
+            clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
             Input = new InputClass();
             Input.Init();
             return true;
@@ -337,9 +332,10 @@ namespace Rendering.Graphics
                     RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);                
                 }
             }
-            instanceManager.UpdateBuffers(D3D.Device,D3D.DeviceContext);
 
-            instanceManager.Render(D3D.Device, D3D.DeviceContext, Camera);
+            //instanceManager.UpdateBuffers(D3D.Device,D3D.DeviceContext);
+            //
+            //instanceManager.Render(D3D.Device, D3D.DeviceContext, Camera);
             
             //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);
             foreach (var grid in navigationGrids)
@@ -368,7 +364,7 @@ namespace Rendering.Graphics
         {
             foreach (KeyValuePair<int, IRenderer> asset in InitObjectStack)
             {
-                asset.Value.InitBuffers(D3D.Device, D3D.DeviceContext,modelManager);
+                asset.Value.InitBuffers(D3D.Device, D3D.DeviceContext);
 
                 if (asset.Value is RenderBoundingBox)
                 {
@@ -381,14 +377,9 @@ namespace Rendering.Graphics
                 else
                 {
                     Assets.Add(asset.Key, asset.Value);
-
-                    if (asset.Value is RenderModel ass && ass.isInstance)
-                    {
-                        instanceManager.AddInstance(ass.LODs[0].parentGeomHash,ass.Transform);
-                    }
                 }
             }
-            instanceManager.PrepareInstanceBuffers(D3D.Device,D3D.DeviceContext);
+
             InitObjectStack.Clear();
         }
 

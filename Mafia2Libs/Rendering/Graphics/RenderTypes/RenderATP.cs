@@ -1,6 +1,5 @@
 ﻿using ResourceTypes.Navigation;
 using System.Numerics;
-using Rendering.Graphics.Instances;
 using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
@@ -28,10 +27,10 @@ namespace Rendering.Graphics
             Path.Init(points);
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext,ModelInstanceManager modelManager)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
-            BBox.InitBuffers(d3d, deviceContext,null);
-            Path.InitBuffers(d3d, deviceContext,null);
+            BBox.InitBuffers(d3d, deviceContext);
+            Path.InitBuffers(d3d, deviceContext);
         }
 
         public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)

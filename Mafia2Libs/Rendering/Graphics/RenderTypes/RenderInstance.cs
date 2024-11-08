@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Rendering.Graphics.Instances;
 using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
@@ -16,9 +15,9 @@ namespace Rendering.Graphics
             instance = col;
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context,ModelInstanceManager modelManager)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
-            instance.InitBuffers(d3d, context,modelManager);
+            instance.InitBuffers(d3d, context);
         }
 
         public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)

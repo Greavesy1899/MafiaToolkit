@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Rendering.Graphics.Instances;
 using Utils.Extensions;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -82,7 +81,7 @@ namespace Rendering.Graphics
             colour = newColor;
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext,ModelInstanceManager modelManager)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, Vertices);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, Indices);
@@ -138,7 +137,7 @@ namespace Rendering.Graphics
                     vertexBuffer = null;
                 }
 
-                InitBuffers(device, deviceContext,null);
+                InitBuffers(device, deviceContext);
             }
         }
 

@@ -991,71 +991,10 @@ namespace Mafia2Tool
                 }
                 dSceneTree.AddToTree(animalTrafficRoot);
             }
+
             if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
                 LoadActorFiles();
-            }
-            if (SceneData.Translokator != null && ToolkitSettings.Experimental)
-            {
-                translokatorRoot = new TreeNode("Translokator Items");
-                translokatorRoot.Tag = "Folder";
-                TreeNode ogNode = new TreeNode("Objects Groups");
-                ogNode.Tag = "Folder";
-                for (int z = 0; z < SceneData.Translokator.ObjectGroups.Length; z++)
-                {
-                    ObjectGroup objectGroup = SceneData.Translokator.ObjectGroups[z];
-                    TreeNode objectGroupNode = new TreeNode(String.Format("Object Group: [{0}]", objectGroup.ActorType));
-                    objectGroupNode.Tag = objectGroup;
-                    for (int y = 0; y < objectGroup.Objects.Length; y++)
-                    {
-                        Object obj = objectGroup.Objects[y];
-                        TreeNode objNode = new TreeNode(obj.Name.ToString());
-                        objNode.Tag = obj;
-                        objectGroupNode.Nodes.Add(objNode);
-                        FrameObjectBase groupRef =
-                            SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(obj.Name.Hash);
-
-                        for (int x = 0; x < obj.Instances.Length; x++)
-                        {
-                            Instance instance = obj.Instances[x];
-                            
-                            if (groupRef != null && groupRef.Children[0] is FrameObjectSingleMesh meshref)
-                            {
-                                FrameObjectSingleMesh instanceMesh = new FrameObjectSingleMesh(meshref);
-                                instanceMesh.RefID = RefManager.GetNewRefID();
-                                
-                                Matrix4x4 newtransform = new Matrix4x4();
-                                newtransform = MatrixUtils.SetMatrix(instance.Rotation, new Vector3(instance.Scale,instance.Scale,instance.Scale), instance.Position);
-
-                            
-                                IRenderer NewAsset = BuildRenderObjectFromFrame(instanceMesh,assets);
-                                NewAsset.SetTransform(newtransform);
-                                assets.Add(instanceMesh.RefID, NewAsset);
-                            }
-                            
-                            TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
-                            instanceNode.Tag = instance;
-                            objNode.Nodes.Add(instanceNode);
-                        }
-                    }
-                    ogNode.Nodes.Add(objectGroupNode);
-                }
-                translokatorRoot.Nodes.Add(ogNode);
-            
-                TreeNode gridNode = new TreeNode("Grids");
-                gridNode.Tag = "Folder";
-                for (int i = 0; i < SceneData.Translokator.Grids.Length; i++)
-                {
-                    Grid grid = SceneData.Translokator.Grids[i];
-                    TreeNode child = new TreeNode("Grid " + i);
-                    child.Tag = grid;
-                    gridNode.Nodes.Add(child);
-                }
-
-                translokatorRoot.Nodes.Add(gridNode);
-
-                dSceneTree.AddToTree(translokatorRoot);
-                //Graphics.SetTranslokatorGrid(SceneData.Translokator);
             }
 
             for(int i = 0; i < SceneData.FrameNameTable.FrameData.Length; i++)
@@ -1082,6 +1021,113 @@ namespace Mafia2Tool
             }
 
             Graphics.InitObjectStack = assets;
+
+            if (SceneData.Translokator != null && ToolkitSettings.Experimental)
+            {
+                translokatorRoot = new TreeNode("Translokator Items");
+                translokatorRoot.Tag = "Folder";
+                TreeNode ogNode = new TreeNode("Objects Groups");
+                ogNode.Tag = "Folder";
+                for (int z = 0; z < SceneData.Translokator.ObjectGroups.Length; z++)
+                {
+                    ObjectGroup objectGroup = SceneData.Translokator.ObjectGroups[z];
+                    TreeNode objectGroupNode = new TreeNode(String.Format("Object Group: [{0}]", objectGroup.ActorType));
+                    objectGroupNode.Tag = objectGroup;
+                    for (int y = 0; y < objectGroup.Objects.Length; y++)
+                    {
+                        Object obj = objectGroup.Objects[y];
+                        TreeNode objNode = new TreeNode(obj.Name.ToString());
+                        objNode.Tag = obj;
+                        objectGroupNode.Nodes.Add(objNode);
+                        FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(obj.Name.Hash);
+
+                        if (groupRef == null)
+                        {
+                            continue;
+                        }
+
+                        if (!assets.ContainsKey(groupRef.RefID))
+                        {
+                            continue;
+                        }
+
+                        bool hasMesh = groupRef.HasMeshObject();
+                        
+                        if (!hasMesh)
+                        {
+                            continue;
+                        }
+
+                        for (int x = 0; x < obj.Instances.Length; x++)
+                        {
+                            Instance instance = obj.Instances[x];
+
+                            if (groupRef.Children.Count > 0)
+                            {
+                                for (int i = 0; i < groupRef.Children.Count; i++)
+                                {
+                                    InstanceTranslokatorPart(assets, groupRef.Children[i], groupRef.LocalTransform, instance);
+                                }
+                            }
+
+                            TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
+                            instanceNode.Tag = instance;
+                            objNode.Nodes.Add(instanceNode);
+                        }
+                    }
+                    ogNode.Nodes.Add(objectGroupNode);
+                }
+                translokatorRoot.Nodes.Add(ogNode);
+
+                TreeNode gridNode = new TreeNode("Grids");
+                gridNode.Tag = "Folder";
+                for (int i = 0; i < SceneData.Translokator.Grids.Length; i++)
+                {
+                    Grid grid = SceneData.Translokator.Grids[i];
+                    TreeNode child = new TreeNode("Grid " + i);
+                    child.Tag = grid;
+                    gridNode.Nodes.Add(child);
+                }
+
+                translokatorRoot.Nodes.Add(gridNode);
+
+                dSceneTree.AddToTree(translokatorRoot);
+                //Graphics.SetTranslokatorGrid(SceneData.Translokator);
+            }
+        }
+
+        public void InstanceTranslokatorPart(Dictionary<int, IRenderer> assets, FrameObjectBase refframe, Matrix4x4 parentTransform, Instance instance)
+        {
+            parentTransform.M44 = 1.0f;
+            var refTransform = refframe.LocalTransform;
+            refTransform.M44 = 1.0f;
+
+            if (refframe is FrameObjectSingleMesh mesh)
+            {
+                if (!assets.ContainsKey(refframe.RefID))
+                {
+                    return;
+                }
+
+                if (assets[refframe.RefID] is RenderModel model)
+                {
+                    Matrix4x4 newtransform = new Matrix4x4();
+
+                    newtransform = MatrixUtils.SetMatrix(instance.Rotation, new Vector3(instance.Scale, instance.Scale, instance.Scale), instance.Position);
+                    newtransform = parentTransform * newtransform;
+                    newtransform.M44 = 1.0f;
+
+                    model.InstanceTransforms.Add(Matrix4x4.Transpose(newtransform));
+                }
+            }
+
+            if (refframe.Children.Count > 0)
+            {
+                for (int i = 0; i < refframe.Children.Count; i++)
+                {
+                    InstanceTranslokatorPart(assets, refframe.Children[i], parentTransform, instance);
+                }
+            }
         }
 
         private void LoadActorFiles()

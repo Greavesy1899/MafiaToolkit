@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
-using Rendering.Graphics.Instances;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
 using Color = System.Drawing.Color;
@@ -80,13 +79,13 @@ namespace Rendering.Graphics
             BBox = BoundingBox.CreateFromPoints(RoadSpline.Points.ToArray());
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context,ModelInstanceManager modelManager)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
-            Spline.InitBuffers(d3d, context,null);
+            Spline.InitBuffers(d3d, context);
 
             foreach (Render2DPlane plane in Planes)
             {
-                plane.InitBuffers(d3d, context,null);
+                plane.InitBuffers(d3d, context);
             }
         }
 

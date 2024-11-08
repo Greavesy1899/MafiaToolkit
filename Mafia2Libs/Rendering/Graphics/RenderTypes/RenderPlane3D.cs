@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Rendering.Graphics.Instances;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Color = System.Drawing.Color;
@@ -104,7 +103,7 @@ namespace Rendering.Graphics
             Axis2 = Vector3.Cross(Axis1, Vector);
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context,ModelInstanceManager modelManager)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
@@ -166,7 +165,7 @@ namespace Rendering.Graphics
                 indexBuffer = null;
             }
 
-            InitBuffers(device, deviceContext,null);
+            InitBuffers(device, deviceContext);
             bIsUpdatedNeeded = false;
         }
     }

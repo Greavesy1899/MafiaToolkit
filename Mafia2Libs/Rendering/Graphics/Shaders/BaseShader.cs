@@ -1,5 +1,6 @@
 ﻿using Rendering.Core;
 using ResourceTypes.Materials;
+using System.Drawing;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -255,6 +256,32 @@ namespace Rendering.Graphics
             }
 
             //context.DrawIndexed(size, (int)offset, 0); //Don't wanna see other meshes when testing instances
+
+            Profiler.NumDrawCallsThisFrame++;
+        }
+
+        public virtual void RenderInstanced(ID3D11DeviceContext context, PrimitiveTopology type, int size, int offset, int count)
+        {
+            context.IASetInputLayout(Layout);
+
+            // set shaders only if available
+            if (OurVertexShader != null)
+            {
+                context.VSSetShader(OurVertexShader);
+            }
+
+            if (OurVertexShader != null)
+            {
+                context.PSSetShader(OurPixelShader);
+                context.PSSetSampler(0, SamplerState);
+            }
+
+            if (OurVertexShader != null)
+            {
+                context.GSSetShader(OurGeometryShader);
+            }
+
+            context.DrawIndexedInstanced(size, count, offset, 0, 0);
 
             Profiler.NumDrawCallsThisFrame++;
         }

@@ -2,7 +2,6 @@
 using ResourceTypes.Navigation.Traffic;
 using System.ComponentModel;
 using System.Numerics;
-using Rendering.Graphics.Instances;
 using Toolkit.Core;
 using Vortice.Direct3D11;
 
@@ -66,11 +65,11 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext,ModelInstanceManager modelManager)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
             if (Boundary != null)
             {
-                Boundary.InitBuffers(d3d, deviceContext,null);
+                Boundary.InitBuffers(d3d, deviceContext);
             }
         }
 

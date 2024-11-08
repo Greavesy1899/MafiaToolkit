@@ -157,12 +157,12 @@ namespace Rendering.Core
                 boundingBox = new RenderBoundingBox();
                 boundingBox.SetColour(System.Drawing.Color.Red, true);
                 boundingBox.Init(gridBounds);
-                boundingBox.InitBuffers(device, deviceContext,null);
+                boundingBox.InitBuffers(device, deviceContext);
 
                 cellBoundingBox = new RenderBoundingBox();
                 cellBoundingBox.SetColour(System.Drawing.Color.Blue, true);
                 cellBoundingBox.Init(cellBounds);
-                cellBoundingBox.InitBuffers(device, deviceContext,null);
+                cellBoundingBox.InitBuffers(device, deviceContext);
 
                 foreach (var cell in cells)
                 {

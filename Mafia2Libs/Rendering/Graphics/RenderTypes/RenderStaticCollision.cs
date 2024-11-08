@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Rendering.Graphics.Instances;
 using Utils.Extensions;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -26,7 +25,7 @@ namespace Rendering.Graphics
             SelectionColour = Color.White;
         }
 
-        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context,ModelInstanceManager modelManager)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
