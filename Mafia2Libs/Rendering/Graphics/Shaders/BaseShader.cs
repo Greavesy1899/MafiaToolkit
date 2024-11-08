@@ -255,7 +255,7 @@ namespace Rendering.Graphics
                 context.GSSetShader(OurGeometryShader);
             }
 
-            //context.DrawIndexed(size, (int)offset, 0); //Don't wanna see other meshes when testing instances
+            context.DrawIndexed(size, (int)offset, 0); //Don't wanna see other meshes when testing instances
 
             Profiler.NumDrawCallsThisFrame++;
         }
