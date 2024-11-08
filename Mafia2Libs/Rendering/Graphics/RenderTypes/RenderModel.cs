@@ -45,7 +45,7 @@ namespace Rendering.Graphics
 
         public LOD[] LODs { get; private set; }
 
-        public List<Matrix4x4> InstanceTransforms { get; set; } = new();
+        public List<Matrix4x4> InstanceTransforms { get; set; } = new() { };
 
         public RenderModel()
         {
@@ -258,6 +258,80 @@ namespace Rendering.Graphics
         {
             int newSize = InstanceTransforms.Count * Marshal.SizeOf<Matrix4x4>();
 
+            if (isInstanceBuffer == null)
+            {
+                var countBufferDesc = new BufferDescription
+                {
+                    SizeInBytes = sizeof(uint),
+                    Usage = ResourceUsage.Default,
+                    BindFlags = BindFlags.ShaderResource,
+                    CpuAccessFlags = CpuAccessFlags.None,
+                    StructureByteStride = sizeof(uint),
+                    OptionFlags = ResourceOptionFlags.None
+                };
+
+                var viewDescription = new ShaderResourceViewDescription()
+                {
+                    Format = Vortice.DXGI.Format.R32_UInt,
+                    ViewDimension = ShaderResourceViewDimension.Buffer,
+                };
+
+                viewDescription.Buffer.FirstElement = 0;
+                viewDescription.Buffer.NumElements = 1;
+
+                // Pin the array in memory
+                GCHandle handle = GCHandle.Alloc(1, GCHandleType.Pinned);
+                try
+                {
+                    IntPtr pointer = handle.AddrOfPinnedObject();
+                    // Create the count buffer
+                    isInstanceBuffer = d3d.CreateBuffer(countBufferDesc, pointer);
+
+                    isInstanceBufferView = d3d.CreateShaderResourceView(isInstanceBuffer, viewDescription);
+                }
+                finally
+                {
+                    handle.Free();
+                }
+            }
+
+            if (isNotInstanceBuffer == null)
+            {
+                var countBufferDesc = new BufferDescription
+                {
+                    SizeInBytes = sizeof(uint),
+                    Usage = ResourceUsage.Default,
+                    BindFlags = BindFlags.ShaderResource,
+                    CpuAccessFlags = CpuAccessFlags.None,
+                    StructureByteStride = sizeof(uint),
+                    OptionFlags = ResourceOptionFlags.None
+                };
+
+                var viewDescription = new ShaderResourceViewDescription()
+                {
+                    Format = Vortice.DXGI.Format.R32_UInt,
+                    ViewDimension = ShaderResourceViewDimension.Buffer,
+                };
+
+                viewDescription.Buffer.FirstElement = 0;
+                viewDescription.Buffer.NumElements = 1;
+
+                // Pin the array in memory
+                GCHandle handle = GCHandle.Alloc(0, GCHandleType.Pinned);
+                try
+                {
+                    IntPtr pointer = handle.AddrOfPinnedObject();
+                    // Create the count buffer
+                    isNotInstanceBuffer = d3d.CreateBuffer(countBufferDesc, pointer);
+
+                    isNotInstanceBufferView = d3d.CreateShaderResourceView(isNotInstanceBuffer, viewDescription);
+                }
+                finally
+                {
+                    handle.Free();
+                }
+            }
+
             if (InstanceTransforms.Count == 0)
             {
                 return;
@@ -325,6 +399,8 @@ namespace Rendering.Graphics
 
             if (InstanceTransforms.Count > 0)
             {
+                deviceContext.VSSetShaderResource(0, isInstanceBufferView);
+
                 VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
                 deviceContext.IASetVertexBuffers(0, VertexBufferView);
                 deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
@@ -349,6 +425,8 @@ namespace Rendering.Graphics
                 BuffersSet = true;
             }
 
+            deviceContext.VSSetShaderResource(0, isNotInstanceBufferView);
+
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
                 ModelPart Segment = LODs[0].ModelParts[i];
@@ -370,7 +448,7 @@ namespace Rendering.Graphics
                 segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
 
                 // Set instance buffer for transformations
-                deviceContext.VSSetShaderResource(0, instanceBufferView);
+                deviceContext.VSSetShaderResource(1, instanceBufferView);
 
                 // Draw indexed instances
                 segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);

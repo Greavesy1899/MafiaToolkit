@@ -1066,7 +1066,7 @@ namespace Mafia2Tool
                             {
                                 for (int i = 0; i < groupRef.Children.Count; i++)
                                 {
-                                    InstanceTranslokatorPart(assets, groupRef.Children[i], groupRef.LocalTransform, instance);
+                                    InstanceTranslokatorPart(assets, groupRef.Children[i], instance);
                                 }
                             }
 
@@ -1096,17 +1096,16 @@ namespace Mafia2Tool
             }
         }
 
-        public void InstanceTranslokatorPart(Dictionary<int, IRenderer> assets, FrameObjectBase refframe, Matrix4x4 parentTransform, Instance instance)
+        public void InstanceTranslokatorPart(Dictionary<int, IRenderer> assets, FrameObjectBase refframe, Instance instance)
         {
-            parentTransform.M44 = 1.0f;
-            var refTransform = refframe.LocalTransform;
+            var refTransform = refframe.WorldTransform;
             refTransform.M44 = 1.0f;
 
             if (refframe is FrameObjectSingleMesh mesh)
             {
                 if (!assets.ContainsKey(refframe.RefID))
                 {
-                    return;
+                    goto SkipToChildren;
                 }
 
                 if (assets[refframe.RefID] is RenderModel model)
@@ -1114,18 +1113,19 @@ namespace Mafia2Tool
                     Matrix4x4 newtransform = new Matrix4x4();
 
                     newtransform = MatrixUtils.SetMatrix(instance.Rotation, new Vector3(instance.Scale, instance.Scale, instance.Scale), instance.Position);
-                    newtransform = parentTransform * newtransform;
+                    newtransform = refTransform * newtransform;
                     newtransform.M44 = 1.0f;
 
                     model.InstanceTransforms.Add(Matrix4x4.Transpose(newtransform));
                 }
             }
 
+        SkipToChildren:;
             if (refframe.Children.Count > 0)
             {
                 for (int i = 0; i < refframe.Children.Count; i++)
                 {
-                    InstanceTranslokatorPart(assets, refframe.Children[i], parentTransform, instance);
+                    InstanceTranslokatorPart(assets, refframe.Children[i], instance);
                 }
             }
         }

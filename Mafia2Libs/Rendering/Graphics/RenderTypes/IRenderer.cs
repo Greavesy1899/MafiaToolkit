@@ -12,7 +12,11 @@ namespace Rendering.Graphics
         protected ID3D11Buffer indexBuffer;
         protected ID3D11Buffer vertexBuffer;
         protected ID3D11Buffer instanceBuffer;
+        protected ID3D11Buffer isInstanceBuffer;
+        protected ID3D11Buffer isNotInstanceBuffer;
         protected ID3D11ShaderResourceView instanceBufferView;
+        protected ID3D11ShaderResourceView isInstanceBufferView;
+        protected ID3D11ShaderResourceView isNotInstanceBufferView;
 
         public bool DoRender { get; set; }
         public Matrix4x4 Transform { get; protected set; }
