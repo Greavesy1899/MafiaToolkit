@@ -84,6 +84,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Localisations\ar_AR.xml" />
+    <None Remove="Shaders\LightInstanceVS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
@@ -202,6 +203,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Localisations\sk_SK.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\LightInstanceVS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Update="libs\M2FBX.dll">

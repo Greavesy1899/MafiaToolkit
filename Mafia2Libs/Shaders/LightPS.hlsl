@@ -41,13 +41,13 @@ cbuffer Shader_50760736Params
 //////////////////////
 struct VS_OUTPUT
 {
-	float4 Position : SV_POSITION;
-    float3 Normal : NORMAL;
-	float3 Tangent : TANGENT;
-	float3 Binormal : BINORMAL;
-	float2 TexCoord0 : TEXCOORD0;
-	float2 TexCoord7 : TEXCOORD1;
-	float3 viewDirection : TEXCOORD2;
+    float4 Position : SV_POSITION;
+    half3 Normal : NORMAL;
+    half3 Tangent : TANGENT;
+    half3 Binormal : BINORMAL;
+    float2 TexCoord0 : TEXCOORD0;
+    float2 TexCoord7 : TEXCOORD1;
+    half3 viewDirection : TEXCOORD2;
 };
 
 float4 GetDiffuseColour(VS_OUTPUT input)

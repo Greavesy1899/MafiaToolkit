@@ -33,17 +33,19 @@ namespace Rendering.Graphics
         }
 
         public ShaderInitParams() { }
-        public ShaderInitParams(InputElementDescription[] InElements, ShaderFileEntryPoint InPSShader, ShaderFileEntryPoint InVSShader, ShaderFileEntryPoint InGSShader)
+        public ShaderInitParams(InputElementDescription[] InElements, ShaderFileEntryPoint InPSShader, ShaderFileEntryPoint InVSShader, ShaderFileEntryPoint InInstanceVSShader, ShaderFileEntryPoint InGSShader)
         {
             Elements = InElements;
             PixelShaderFile = InPSShader;
             VertexShaderFile = InVSShader;
+            InstancedVertexShaderFile = InInstanceVSShader;
             GeometryShaderFile = InGSShader;
         }
 
         public InputElementDescription[] Elements { get; set; }
         public ShaderFileEntryPoint PixelShaderFile { get; set; }
         public ShaderFileEntryPoint VertexShaderFile { get; set; }
+        public ShaderFileEntryPoint InstancedVertexShaderFile { get; set; }
         public ShaderFileEntryPoint GeometryShaderFile { get; set; }
     }
 
@@ -53,8 +55,7 @@ namespace Rendering.Graphics
         internal struct MatrixBuffer
         {
             public Matrix4x4 world;
-            public Matrix4x4 view;
-            public Matrix4x4 projection;
+            public Matrix4x4 viewProjection;
         }
         [StructLayout(LayoutKind.Sequential)]
         internal struct DCameraBuffer
@@ -90,6 +91,7 @@ namespace Rendering.Graphics
             public Vector3 SelectionColour { get; set; }
         }
         public ID3D11VertexShader OurVertexShader { get; set; }
+        public ID3D11VertexShader OurInstanceVertexShader { get; set; }
         public ID3D11PixelShader OurPixelShader { get; set; }
         public ID3D11GeometryShader OurGeometryShader { get; set; }
         public ID3D11VertexShader strasnaMrdka { get; set; }
@@ -130,6 +132,15 @@ namespace Rendering.Graphics
             {
                 Blob VertexBytecode = ConstructBytecode(InitParams.VertexShaderFile);
                 OurVertexShader = device.CreateVertexShader(VertexBytecode);
+                Layout = device.CreateInputLayout(InitParams.Elements, VertexBytecode);
+                VertexBytecode.Dispose();
+            }
+
+            // Attempt to construct vertex shader
+            if (InitParams.InstancedVertexShaderFile.IsValid())
+            {
+                Blob VertexBytecode = ConstructBytecode(InitParams.InstancedVertexShaderFile);
+                OurInstanceVertexShader = device.CreateVertexShader(VertexBytecode);
                 Layout = device.CreateInputLayout(InitParams.Elements, VertexBytecode);
                 VertexBytecode.Dispose();
             }
@@ -197,8 +208,7 @@ namespace Rendering.Graphics
             MatrixBuffer matrixBuffer = new MatrixBuffer()
             {
                 world = tMatrix,
-                view = camera.ViewMatrixTransposed,
-                projection = camera.ProjectionMatrixTransposed
+                viewProjection = camera.ViewProjectionMatrixTransposed,
             };
             ConstantBufferFactory.UpdateVertexBuffer(context, ConstantMatrixBuffer, 0, matrixBuffer);
         }
@@ -265,18 +275,18 @@ namespace Rendering.Graphics
             context.IASetInputLayout(Layout);
 
             // set shaders only if available
-            if (OurVertexShader != null)
+            if (OurInstanceVertexShader != null)
             {
-                context.VSSetShader(OurVertexShader);
+                context.VSSetShader(OurInstanceVertexShader);
             }
 
-            if (OurVertexShader != null)
+            if (OurInstanceVertexShader != null)
             {
                 context.PSSetShader(OurPixelShader);
                 context.PSSetSampler(0, SamplerState);
             }
 
-            if (OurVertexShader != null)
+            if (OurInstanceVertexShader != null)
             {
                 context.GSSetShader(OurGeometryShader);
             }
@@ -304,12 +314,15 @@ namespace Rendering.Graphics
             OurPixelShader = null;
             OurVertexShader?.Dispose();
             OurVertexShader = null;
+            OurInstanceVertexShader?.Dispose();
+            OurInstanceVertexShader = null;
             OurGeometryShader?.Dispose();
             OurGeometryShader = null;
         }
 
         public Blob ConstructBytecode(ShaderInitParams.ShaderFileEntryPoint ShaderFileData)
-        {      
+        {
+            string Error;
             string ShaderFileName = ShaderPath + ShaderFileData.FilePath;
 
             Blob OurBytecode = null;
@@ -318,7 +331,7 @@ namespace Rendering.Graphics
             Compiler.CompileFromFile(ShaderFileName, ShaderFileData.EntryPoint, ShaderFileData.Target, out OurBytecode, out OurErrorcode);
             if(OurErrorcode != null)
             {
-                string Error = OurErrorcode.ConvertToString();
+                Error = OurErrorcode.ConvertToString();
             }
 
             return OurBytecode;

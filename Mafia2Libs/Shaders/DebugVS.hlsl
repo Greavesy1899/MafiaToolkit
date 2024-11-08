@@ -1,8 +1,7 @@
 cbuffer MatrixBuffer
 {
 	matrix worldMatrix;
-	matrix viewMatrix;
-	matrix projectionMatrix;
+	matrix viewProjectionMatrix;
 };
 
 struct VS_INPUT
@@ -26,8 +25,7 @@ VS_OUTPUT DebugVertexShader(VS_INPUT input)
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
 	output.Position = mul(input.Position, worldMatrix);
-	output.Position = mul(output.Position, viewMatrix);
-	output.Position = mul(output.Position, projectionMatrix);
+	output.Position = mul(output.Position, viewProjectionMatrix);
     output.Colour = input.Colour.bgra;
 
 	return output;
