@@ -11,6 +11,7 @@ using Utils.StringHelpers;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
+using static Octokit.Caching.CachedResponse;
 
 namespace ResourceTypes.Translokator
 {
@@ -73,6 +74,41 @@ namespace ResourceTypes.Translokator
         public Vector3 Rotation {
             get { return rotation; }
             set { rotation = value; }
+        }
+
+        public Quaternion Quaternion
+        {
+            get
+            {
+                Quaternion q = Quaternion.Identity;
+
+                float pitch = Rotation.X;
+                float yaw = Rotation.Y;
+                float roll = Rotation.Z;
+
+                float v12 = pitch * 0.5f;
+                float v8 = MathF.Sin(v12);
+                float v11 = v8;
+                float v13 = MathF.Cos(v12);
+                float v10 = v13;
+                float v14 = yaw * 0.5f;
+                float v18 = MathF.Sin(v14);
+                float v15 = MathF.Cos(v14);
+                float v9 = v15;
+                float v16 = roll * 0.5f;
+                float v19 = MathF.Sin(v16);
+                float v17 = MathF.Cos(v16);
+                float v4 = v17 * v9;
+                float v5 = v19 * v18;
+                q.X = v10 * v5 + v11 * v4;
+                float v6 = v17 * v18;
+                float v7 = v9 * v19;
+                q.Y = v11 * v7 + v10 * v6;
+                q.Z = (v7 * v10 - v6 * v11);
+                q.W = -(v4 * v10 - v5 * v11);
+
+                return q;
+            }
         }
 
         public float Scale {
@@ -267,11 +303,12 @@ namespace ResourceTypes.Translokator
                 v7 = 0.0001220852136611938 * ((instance.D4 & 0xF000 | (v10 >> 6) & 0xFF8) >> 3) * v8;
             }
             var Z = 2.0f * v7 - v8;
-            X = MathHelper.ToDegrees((float)X);
-            Y = MathHelper.ToDegrees((float)Y);
-            Z = MathHelper.ToDegrees((float)Z);
+            //X = MathHelper.ToDegrees((float)X);
+            //Y = MathHelper.ToDegrees((float)Y);
+            //Z = MathHelper.ToDegrees((float)Z);
             instance.Rotation = new Vector3((float)X, (float)Y, (float)Z);
         }
+
         private void CompressRotation(Instance instance)
         {
             MathHelper.ToRadians(instance.Rotation.X);
