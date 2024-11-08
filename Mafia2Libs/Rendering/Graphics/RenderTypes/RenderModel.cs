@@ -109,7 +109,7 @@ namespace Rendering.Graphics
             SetupShaders();
         }
 
-        public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers, Dictionary<int, IRenderer> assets)
+        public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             if (mesh == null || geom == null || mats == null || indexBuffers[0] == null || vertexBuffers[0] == null)
                 return false;
@@ -123,7 +123,6 @@ namespace Rendering.Graphics
             for (int i = 0; i != geom.NumLods; i++)
             {
                 LOD lod = new LOD();
-                lod.parentGeomHash = geom.geometryHash;
                 lod.Indices = indexBuffers[i].GetData();
                 lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
 
@@ -168,7 +167,6 @@ namespace Rendering.Graphics
                 }
                 LODs[i] = lod;
             }
-
 
             SetupShaders();
             return true;
@@ -388,6 +386,8 @@ namespace Rendering.Graphics
             vertexBuffer = null;
             indexBuffer?.Dispose();
             indexBuffer = null;
+            instanceBuffer?.Dispose();
+            instanceBuffer = null;
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
