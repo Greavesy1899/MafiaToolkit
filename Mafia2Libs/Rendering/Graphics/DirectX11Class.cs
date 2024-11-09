@@ -59,7 +59,7 @@ namespace Rendering.Graphics
             // Create Device and DeviceContext
             ID3D11Device TempDevice = null;
             ID3D11DeviceContext TempDeviceContext = null;
-            D3D11.D3D11CreateDevice(adapter, DriverType.Hardware, DeviceCreationFlags.Debug, [FeatureLevel.Level_11_0,FeatureLevel.Level_11_0], out TempDevice, out TempDeviceContext);
+            D3D11.D3D11CreateDevice(adapter, DriverType.Hardware, DeviceCreationFlags.None, null, out TempDevice, out TempDeviceContext);
 
             Device = TempDevice.QueryInterface<ID3D11Device1>();
             DeviceContext = TempDeviceContext.QueryInterface<ID3D11DeviceContext1>();

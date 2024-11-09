@@ -327,15 +327,9 @@ namespace Rendering.Graphics
 
             foreach (IRenderer RenderEntry in Assets.Values)
             {
-                if (!RenderEntry.isInstance){
-                    RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-                    RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);                
-                }
+                RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);                
             }
-
-            //instanceManager.UpdateBuffers(D3D.Device,D3D.DeviceContext);
-            //
-            //instanceManager.Render(D3D.Device, D3D.DeviceContext, Camera);
             
             //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);
             foreach (var grid in navigationGrids)

@@ -8,7 +8,6 @@ namespace Rendering.Graphics
     {
         protected BaseShader shader;
         protected bool bIsUpdatedNeeded;
-        public bool isInstance = false;
         protected ID3D11Buffer indexBuffer;
         protected ID3D11Buffer vertexBuffer;
         protected ID3D11Buffer instanceBuffer;

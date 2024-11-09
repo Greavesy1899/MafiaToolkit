@@ -50,7 +50,7 @@ namespace Rendering.Factories
                 return null;
             }
             RenderModel model = new RenderModel();
-            model.ConvertFrameToRenderModel(Mesh, geom, mat, indexBuffers, vertexBuffers,assets);
+            model.ConvertFrameToRenderModel(Mesh, geom, mat, indexBuffers, vertexBuffers);
             return model;
         }
 

@@ -358,7 +358,9 @@ namespace Rendering.Graphics
 
         private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
         {
-            deviceContext.PSSetShaderResource(2, AOTexture);
+            // Set instance buffer for transformations
+            deviceContext.VSSetShaderResource(0, instanceBufferView);
+
             for (int i = 0; i < LODs[0].ModelParts.Length; i++)
             {
                 RenderModel.ModelPart segment = LODs[0].ModelParts[i];
@@ -366,9 +368,6 @@ namespace Rendering.Graphics
                 // Set material parameters
                 segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, Color.White.Normalize()));
                 segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
-
-                // Set instance buffer for transformations
-                deviceContext.VSSetShaderResource(0, instanceBufferView);
 
                 // Draw indexed instances
                 segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
