@@ -1494,6 +1494,34 @@ namespace Mafia2Tool
             if (nodes.Length > 0)
             {
                 dSceneTree.SelectedNode = nodes[0];
+
+                if (OutParams.LowestInstanceID != -1)
+                {
+                    if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)
+                    {
+                        int Parent1Index = obj.ParentIndex1.Index;
+                        int Parent2Index = obj.ParentIndex2.Index;
+
+                        while(Parent1Index != -1 && Parent2Index != -1)
+                        {
+                            if (dSceneTree.SelectedNode.Parent != null)
+                            {
+                                dSceneTree.SelectedNode = dSceneTree.SelectedNode.Parent;
+
+                                if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj2)
+                                {
+                                    Parent1Index = obj2.ParentIndex1.Index;
+                                    Parent2Index = obj2.ParentIndex2.Index;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 TreeViewUpdateSelected();
             }
         }

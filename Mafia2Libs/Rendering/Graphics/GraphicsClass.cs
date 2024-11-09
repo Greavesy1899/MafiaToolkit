@@ -23,6 +23,7 @@ namespace Rendering.Graphics
     public struct PickOutParams
     {
         public int LowestRefID { get; set; }
+        public int LowestInstanceID { get; set; }
         public Vector3 WorldPosition { get; set; }
     }
 
@@ -164,6 +165,7 @@ namespace Rendering.Graphics
         {
             float lowest = float.MaxValue;
             int lowestRefID = -1;
+            int lowestInstanceID = -1;
             Vector3 WorldPosIntersect = Vector3.Zero;
 
             Ray ray = Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(Width, Height));
@@ -183,10 +185,69 @@ namespace Rendering.Graphics
                     Vector3.TransformNormal(ray.Direction, vWM)
                 );
 
-                if (model.Value is RenderModel)
+                if (model.Value is RenderModel mesh)
                 {
-                    RenderModel mesh = (model.Value as RenderModel);
                     var bbox = mesh.BoundingBox;
+
+                    if (mesh.InstanceTransforms.Count > 0)
+                    {
+                        foreach (var transform in mesh.InstanceTransforms)
+                        {
+                            var transposed = Matrix4x4.Transpose(transform.Value);
+
+                            bbox.Max = Vector3.Transform(bbox.Max, transposed);
+                            bbox.Min = Vector3.Transform(bbox.Min, transposed);
+
+                            if (localRay.Intersects(bbox) == 0.0f) continue;
+
+                            var distance = (bbox.Center - ray.Position).LengthSquared();
+
+                            if (distance < lowest)
+                            {
+                                lowest = distance;
+                                lowestRefID = model.Key;
+                                lowestInstanceID = transform.Key;
+                                WorldPosIntersect = bbox.Center;
+                            }
+
+                            bbox = mesh.BoundingBox;
+                        }
+
+                        //Very slow and sometimes broken alternative, can be more precise
+                        /*foreach (var transform in mesh.InstanceTransforms)
+                        {
+                            var transposed = Matrix4x4.Transpose(transform.Value);
+
+                            bbox.Max = Vector3.Transform(bbox.Max, transposed);
+                            bbox.Min = Vector3.Transform(bbox.Min, transposed);
+
+                            if (localRay.Intersects(bbox) == 0.0f) continue;
+
+                            for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
+                            {
+                                var v0 = Vector3.Transform(mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position, transposed);
+                                var v1 = Vector3.Transform(mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position, transposed);
+                                var v2 = Vector3.Transform(mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position, transposed);
+                                float t;
+
+                                if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
+
+                                var worldPosition = ray.Position + t * ray.Direction;
+                                var distance = (worldPosition - ray.Position).LengthSquared();
+                                if (distance < lowest)
+                                {
+                                    lowest = distance;
+                                    lowestRefID = model.Key;
+                                    lowestInstanceID = transform.Key;
+                                    WorldPosIntersect = worldPosition;
+                                }
+                            }
+
+                            bbox = mesh.BoundingBox;
+                        }*/
+                    }
+
+                    bbox = mesh.BoundingBox;
 
                     if (localRay.Intersects(bbox) == 0.0f) continue;
 
@@ -205,13 +266,13 @@ namespace Rendering.Graphics
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
+                            lowestInstanceID = -1;
                             WorldPosIntersect = worldPosition;
                         }
                     }
                 }
-                if (model.Value is RenderInstance)
+                if (model.Value is RenderInstance instance)
                 {
-                    RenderInstance instance = (model.Value as RenderInstance);
                     RenderStaticCollision collision = instance.GetCollision();
                     var bbox = collision.BoundingBox;
 
@@ -242,6 +303,7 @@ namespace Rendering.Graphics
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
+                            lowestInstanceID = -1;
                             WorldPosIntersect = worldPosition;
                         }
                     }
@@ -252,6 +314,7 @@ namespace Rendering.Graphics
 
             PickOutParams OutputParams = new PickOutParams();
             OutputParams.LowestRefID = lowestRefID;
+            OutputParams.LowestInstanceID = lowestInstanceID;
             OutputParams.WorldPosition = WorldPosIntersect;
 
             return OutputParams;
