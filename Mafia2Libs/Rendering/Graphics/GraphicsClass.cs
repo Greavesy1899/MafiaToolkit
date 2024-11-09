@@ -36,7 +36,7 @@ namespace Rendering.Graphics
 
         public EventHandler<UpdateSelectedEventArgs> OnSelectedObjectUpdated;
 
-        private Dictionary<int, IRenderer> Assets;
+        public Dictionary<int, IRenderer> Assets { get; private set; }
         private int selectedID;
         private RenderBoundingBox selectionBox;
         private RenderModel sky;
@@ -503,6 +503,15 @@ namespace Rendering.Graphics
             Assets = null;
             D3D?.Shutdown();
             D3D = null;
+        }
+
+
+        public void UpdateInstanceBuffers(List<RenderModel> renderModels)
+        {
+            foreach (var model in renderModels)
+            {
+                model.ReloadInstanceBuffer(D3D.Device);
+            }
         }
 
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();

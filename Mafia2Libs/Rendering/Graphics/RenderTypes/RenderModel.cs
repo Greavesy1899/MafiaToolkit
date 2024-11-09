@@ -17,6 +17,7 @@ using Color = System.Drawing.Color;
 using Rendering.Core;
 using ResourceTypes.Translokator;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Rendering.Graphics
 {
@@ -45,7 +46,7 @@ namespace Rendering.Graphics
 
         public LOD[] LODs { get; private set; }
 
-        public List<Matrix4x4> InstanceTransforms { get; set; } = new() { };
+        public Dictionary<ushort, Matrix4x4> InstanceTransforms { get; set; } = new() { };
 
         public RenderModel()
         {
@@ -288,7 +289,7 @@ namespace Rendering.Graphics
                 instanceBuffer?.Dispose();
 
                 // Convert list to array
-                Matrix4x4[] transformsArray = InstanceTransforms.ToArray();
+                Matrix4x4[] transformsArray = InstanceTransforms.Values.ToArray();
 
                 // Pin the array in memory
                 GCHandle handle = GCHandle.Alloc(transformsArray, GCHandleType.Pinned);
@@ -305,6 +306,16 @@ namespace Rendering.Graphics
                     handle.Free();
                 }
             }
+        }
+
+        public void ReloadInstanceBuffer(ID3D11Device d3d)
+        {
+            instanceBuffer?.Dispose();
+            instanceBuffer = null;
+            instanceBufferView?.Dispose();
+            instanceBufferView = null;
+
+            InitInstanceBuffer(d3d);
         }
 
         public override void SetTransform(Matrix4x4 matrix)
@@ -387,6 +398,8 @@ namespace Rendering.Graphics
             indexBuffer = null;
             instanceBuffer?.Dispose();
             instanceBuffer = null;
+            instanceBufferView?.Dispose();
+            instanceBufferView = null;
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)

@@ -34,6 +34,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using static ResourceTypes.Collisions.Collision;
 using Collision = ResourceTypes.Collisions.Collision;
 using Object = ResourceTypes.Translokator.Object;
+using ResourceTypes.Cutscene.AnimEntities;
 
 namespace Mafia2Tool
 {
@@ -1041,28 +1042,18 @@ namespace Mafia2Tool
                         objectGroupNode.Nodes.Add(objNode);
                         FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(obj.Name.Hash);
 
-                        if (groupRef == null)
-                        {
-                            continue;
-                        }
+                        bool hasMesh = false;
 
-                        if (!assets.ContainsKey(groupRef.RefID))
+                        if (groupRef != null)
                         {
-                            continue;
-                        }
-
-                        bool hasMesh = groupRef.HasMeshObject();
-                        
-                        if (!hasMesh)
-                        {
-                            continue;
+                            hasMesh = groupRef.HasMeshObject();
                         }
 
                         for (int x = 0; x < obj.Instances.Length; x++)
                         {
                             Instance instance = obj.Instances[x];
 
-                            if (groupRef.Children.Count > 0)
+                            if (groupRef != null && hasMesh && groupRef.Children.Count > 0 && assets.ContainsKey(groupRef.RefID))
                             {
                                 for (int i = 0; i < groupRef.Children.Count; i++)
                                 {
@@ -1077,6 +1068,7 @@ namespace Mafia2Tool
                     }
                     ogNode.Nodes.Add(objectGroupNode);
                 }
+
                 translokatorRoot.Nodes.Add(ogNode);
 
                 TreeNode gridNode = new TreeNode("Grids");
@@ -1115,7 +1107,10 @@ namespace Mafia2Tool
                     newtransform = MatrixUtils.SetMatrix(instance.Quaternion, new Vector3(instance.Scale, instance.Scale, instance.Scale), instance.Position);
                     newtransform = refTransform * newtransform;
 
-                    model.InstanceTransforms.Add(Matrix4x4.Transpose(newtransform));
+                    if (!model.InstanceTransforms.ContainsKey(instance.ID))
+                    {
+                        model.InstanceTransforms.Add(instance.ID, Matrix4x4.Transpose(newtransform));
+                    }
                 }
             }
 
@@ -1127,6 +1122,57 @@ namespace Mafia2Tool
                     InstanceTranslokatorPart(assets, refframe.Children[i], groupRef, instance);
                 }
             }
+        }
+
+        public List<RenderModel> UpdateTranslocatorPart(FrameObjectBase refframe, Instance instance)
+        {
+            List<RenderModel> modelsToUpdate = new();
+
+            if (Graphics == null)
+            {
+                return modelsToUpdate;
+            }
+
+            var refTransform = refframe.WorldTransform;
+            refTransform.M44 = 1.0f;
+
+            if (refframe is FrameObjectSingleMesh mesh)
+            {
+                if (!Graphics.Assets.ContainsKey(refframe.RefID))
+                {
+                    goto SkipToChildren;
+                }
+
+                if (Graphics.Assets[refframe.RefID] is RenderModel model)
+                {
+                    Matrix4x4 newtransform = new Matrix4x4();
+
+                    newtransform = MatrixUtils.SetMatrix(instance.Quaternion, new Vector3(instance.Scale, instance.Scale, instance.Scale), instance.Position);
+                    newtransform = refTransform * newtransform;
+
+                    if (!model.InstanceTransforms.ContainsKey(instance.ID))
+                    {
+                        model.InstanceTransforms.Add(instance.ID, Matrix4x4.Transpose(newtransform));
+                    }
+                    else
+                    {
+                        model.InstanceTransforms[instance.ID] = Matrix4x4.Transpose(newtransform);
+                    }
+
+                    modelsToUpdate.Add(model);
+                }
+            }
+
+        SkipToChildren:;
+            if (refframe.Children.Count > 0)
+            {
+                for (int i = 0; i < refframe.Children.Count; i++)
+                {
+                    modelsToUpdate.AddRange(UpdateTranslocatorPart(refframe.Children[i], instance));
+                }
+            }
+
+            return modelsToUpdate;
         }
 
         private void LoadActorFiles()
@@ -1653,6 +1699,20 @@ namespace Mafia2Tool
                     selected.Text = (pGrid.SelectedObject as FrameHeaderScene).Name.ToString();
                 }
             }
+            if (pGrid.SelectedObject is Instance instance && dSceneTree.SelectedNode.Parent.Tag is Object objGroup)
+            {
+                FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(objGroup.Name.Hash);
+
+                if (groupRef != null)
+                {
+                    for (int i = 0; i < groupRef.Children.Count; i++)
+                    {
+                        var modelsToUpdate = UpdateTranslocatorPart(groupRef.Children[i], instance);
+                        Graphics.UpdateInstanceBuffers(modelsToUpdate);
+                    }
+                }
+            }
+
             pGrid.Refresh();
         }
 
