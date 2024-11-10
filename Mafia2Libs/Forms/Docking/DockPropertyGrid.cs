@@ -5,6 +5,7 @@ using ResourceTypes.Materials;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using ResourceTypes.Translokator;
 using Utils.Language;
 using Utils.VorticeUtils;
 using WeifenLuo.WinFormsUI.Docking;
@@ -150,6 +151,19 @@ namespace Forms.Docking
                 ScaleXNumeric.Value = ScaleYNumeric.Value = ScaleZNumeric.Value = 0.0M;
                 ScaleXNumeric.Enabled = ScaleYNumeric.Enabled = ScaleZNumeric.Enabled = false;
             }
+            else if (currentObject is Instance)
+            {
+                Instance instance = (currentObject as Instance);
+                CurrentEntry.Text = instance.ID.ToString();
+                PositionXNumeric.Value = Convert.ToDecimal(instance.Position.X);
+                PositionYNumeric.Value = Convert.ToDecimal(instance.Position.Y);
+                PositionZNumeric.Value = Convert.ToDecimal(instance.Position.Z);
+                RotationXNumeric.Value = Convert.ToDecimal(instance.Rotation.X);//redo this with quat later?
+                RotationYNumeric.Value = Convert.ToDecimal(instance.Rotation.Y);
+                RotationZNumeric.Value = Convert.ToDecimal(instance.Rotation.Z);
+                ScaleXNumeric.Value = ScaleYNumeric.Value = ScaleZNumeric.Value = Convert.ToDecimal(instance.Scale);
+                ScaleYNumeric.Enabled = ScaleZNumeric.Enabled = false;
+            }
             IsEntryReady = true;
         }
 
@@ -176,6 +190,13 @@ namespace Forms.Docking
                     ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
                     placement.Position = position;
                     placement.RotationDegrees = rotation;
+                }
+                else if (currentObject is Instance)
+                {
+                    Instance instance = (currentObject as Instance);
+                    instance.Position = position;
+                    instance.Rotation = rotation;
+                    instance.Scale = scale.X;
                 }
             }
         }

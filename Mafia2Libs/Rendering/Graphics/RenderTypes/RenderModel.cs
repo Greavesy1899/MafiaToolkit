@@ -367,24 +367,38 @@ namespace Rendering.Graphics
             }
         }
 
-        private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
-        {
-            // Set instance buffer for transformations
-            deviceContext.VSSetShaderResource(0, instanceBufferView);
+private float colorTransitionTime = 0.0f; // timer for distinguishing translokators
 
-            for (int i = 0; i < LODs[0].ModelParts.Length; i++)
-            {
-                RenderModel.ModelPart segment = LODs[0].ModelParts[i];
+private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
+{
+    deviceContext.VSSetShaderResource(0, instanceBufferView);
 
-                // Set material parameters
-                segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, Color.White.Normalize()));
-                segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
+    colorTransitionTime += 0.1f;
 
-                // Draw indexed instances
-                segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
-                Profiler.NumDrawCallsThisFrame++;
-            }
-        }
+
+    float t = (float)(Math.Sin(colorTransitionTime) * 0.5 + 0.5);//todo:optionable
+    
+    Color startColor = Color.White;
+    Color endColor = Color.Yellow;
+    
+    Color tint = Color.FromArgb(
+        (int)(startColor.A + (endColor.A - startColor.A) * t),
+        (int)(startColor.R + (endColor.R - startColor.R) * t),
+        (int)(startColor.G + (endColor.G - startColor.G) * t),
+        (int)(startColor.B + (endColor.B - startColor.B) * t)
+    );
+
+    for (int i = 0; i < LODs[0].ModelParts.Length; i++)
+    {
+        RenderModel.ModelPart segment = LODs[0].ModelParts[i];
+        
+        segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, tint.Normalize()));
+        segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
+        
+        segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
+        Profiler.NumDrawCallsThisFrame++;
+    }
+}
 
         public override void Shutdown()
         {

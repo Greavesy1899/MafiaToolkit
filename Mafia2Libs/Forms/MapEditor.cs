@@ -1340,6 +1340,25 @@ namespace Mafia2Tool
                     Arguments.RefID = int.Parse(selected.Name);
                     Graphics.OnSelectedObjectUpdated(this, Arguments);
                 }
+                else if (selected.Tag is Instance)
+                {
+                    Instance instance = (selected.Tag as Instance);
+                    dPropertyGrid.UpdateObject();
+                    //get refframe and set instance index transform
+                    if (dSceneTree.SelectedNode.Parent.Tag is Object objGroup)
+                    {
+                        FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(objGroup.Name.Hash);
+
+                        if (groupRef != null)
+                        {
+                            for (int i = 0; i < groupRef.Children.Count; i++)
+                            {
+                                var modelsToUpdate = UpdateTranslocatorPart(groupRef.Children[i], instance);
+                                Graphics.UpdateInstanceBuffers(modelsToUpdate);
+                            }
+                        }
+                    }
+                }
             }
         }
 
