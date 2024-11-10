@@ -2309,16 +2309,16 @@ namespace Mafia2Tool
                 FrameNode.Name = NewFrame.RefID.ToString();
                 dSceneTree.AddToTree(FrameNode, Parent);
 
-                if(Parent.Tag is FrameEntry)
+                if (Parent.Tag is FrameHeaderScene)
+                {
+                    FrameHeaderScene SceneEntry = (Parent.Tag as FrameHeaderScene);
+                    SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, SceneEntry);
+                }
+                else if (Parent.Tag is FrameEntry)
                 {
                     FrameEntry ParentEntry = (Parent.Tag as FrameEntry);
                     SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, ParentEntry);
                     SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex1, NewFrame, ParentEntry);
-                }
-                else if(Parent.Tag is FrameHeaderScene)
-                {
-                    FrameHeaderScene SceneEntry = (Parent.Tag as FrameHeaderScene);
-                    SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, SceneEntry);
                 }
                
                 // Construct renderer and add to stack
