@@ -1516,7 +1516,7 @@ namespace Mafia2Tool
 
                 if (OutParams.LowestInstanceID != -1)
                 {
-                    if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)
+                    if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)//dostat se na instance, ne na ref frame, od toho je jump, když na nějakej instance šáhnu, abych v tree viděl jakej to přesně je
                     {
                         int Parent1Index = obj.ParentIndex1.Index;
                         int Parent2Index = obj.ParentIndex2.Index;

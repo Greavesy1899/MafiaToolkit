@@ -158,7 +158,7 @@ namespace Forms.Docking
                 PositionXNumeric.Value = Convert.ToDecimal(instance.Position.X);
                 PositionYNumeric.Value = Convert.ToDecimal(instance.Position.Y);
                 PositionZNumeric.Value = Convert.ToDecimal(instance.Position.Z);
-                RotationXNumeric.Value = Convert.ToDecimal(instance.Rotation.X);//redo this with quat later?
+                RotationXNumeric.Value = Convert.ToDecimal(instance.Rotation.X);
                 RotationYNumeric.Value = Convert.ToDecimal(instance.Rotation.Y);
                 RotationZNumeric.Value = Convert.ToDecimal(instance.Rotation.Z);
                 ScaleXNumeric.Value = ScaleYNumeric.Value = ScaleZNumeric.Value = Convert.ToDecimal(instance.Scale);
