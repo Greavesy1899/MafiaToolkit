@@ -111,6 +111,19 @@ namespace Utils.Models
                 offset = 4 * decompressionFactor;
             }
 
+            MinusOffset = boundingBox.Max - decompressionOffset;
+            Factorised = MinusOffset / decompressionFactor;
+
+            if (Factorised.X > ushort.MaxValue || Factorised.Y > ushort.MaxValue || Factorised.Z > ushort.MaxValue)
+            {
+                List<float> values = new() { boundingBox.Height, boundingBox.Width, boundingBox.Depth };
+
+                Size = values.Max();
+
+                decompressionFactor = Size / 65520.0f;
+                offset = 8 * decompressionFactor;
+            }
+
             decompressionOffset = new Vector3(boundingBox.Min.X - offset, boundingBox.Min.Y - offset, boundingBox.Min.Z - offset / 2.0f);
 
             return (decompressionFactor, decompressionOffset);
