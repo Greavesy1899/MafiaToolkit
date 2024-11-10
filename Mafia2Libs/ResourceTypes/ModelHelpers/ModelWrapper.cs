@@ -6,6 +6,7 @@ using ResourceTypes.ModelHelpers.ModelExporter;
 using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Utils.Types;
 using Utils.VorticeUtils;
