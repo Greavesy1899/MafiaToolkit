@@ -35,6 +35,13 @@ namespace Rendering.Graphics
         private HashName aoHash;
         public ID3D11ShaderResourceView AOTexture { get; set; }
         public Color SelectionColour { get; private set; }
+        
+        public struct SelectionInstance
+        {
+            public int instanceID;
+        }
+
+        public SelectionInstance selectionInstance;
 
         public struct LOD
         {
@@ -54,6 +61,10 @@ namespace Rendering.Graphics
             bIsUpdatedNeeded = false;
             Transform = Matrix4x4.Identity;
             SelectionColour = Color.White;
+            selectionInstance = new SelectionInstance()
+            {
+                instanceID = 0,
+            };
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -387,13 +398,16 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
         (int)(startColor.G + (endColor.G - startColor.G) * t),
         (int)(startColor.B + (endColor.B - startColor.B) * t)
     );
-
+    
     for (int i = 0; i < LODs[0].ModelParts.Length; i++)
     {
         RenderModel.ModelPart segment = LODs[0].ModelParts[i];
         
         segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, tint.Normalize()));
         segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
+        
+        segment.Shader.setHightLightInstance(deviceContext,(uint)selectionInstance.instanceID);
+        
         
         segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
         Profiler.NumDrawCallsThisFrame++;
@@ -430,6 +444,23 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
         {
             SelectionColour = Color.Red;
         }
+        public void SelectInstance(ushort instanceID)
+        {
+            List<ushort> instanceids = InstanceTransforms.Keys.ToList();
+            for (int i = 0; i < instanceids.Count; i++)
+            {
+                if (instanceids[i] == instanceID)
+                {
+                    selectionInstance.instanceID = i;
+                    return;
+                }
+            }
+        }
+        
+        public void UnselectInstance()
+        {
+            selectionInstance.instanceID = 0;
+        }
 
         public override void Unselect()
         {
@@ -455,6 +486,11 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
                     }
                 }
             }
+        }
+
+        public bool ContainsInstanceTransform(ushort instanceID)
+        {
+            return InstanceTransforms.ContainsKey(instanceID);
         }
     }
 }

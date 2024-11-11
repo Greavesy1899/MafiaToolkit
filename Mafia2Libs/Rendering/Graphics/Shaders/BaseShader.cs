@@ -1,4 +1,5 @@
-﻿using Rendering.Core;
+﻿using System;
+using Rendering.Core;
 using ResourceTypes.Materials;
 using System.Drawing;
 using System.Numerics;
@@ -73,6 +74,14 @@ namespace Rendering.Graphics
             public Vector4 specularColor;
         }
         [StructLayout(LayoutKind.Sequential)]
+        internal struct HighLightBuffer
+        {
+            public uint instanceID;
+            public uint s;
+            public uint ss;
+            public uint sss;
+        }
+        [StructLayout(LayoutKind.Sequential)]
         protected struct EditorParameterBuffer
         {
             public Vector3 selectionColour;
@@ -99,6 +108,7 @@ namespace Rendering.Graphics
         protected ID3D11Buffer ConstantMatrixBuffer { get; set; }
         protected ID3D11Buffer ConstantLightBuffer { get; set; }
         protected ID3D11Buffer ConstantCameraBuffer { get; set; }
+        protected ID3D11Buffer ConstantHightlightBuffer { get; set; }
         protected ID3D11Buffer ConstantEditorParamsBuffer { get; set; }
         public ID3D11SamplerState SamplerState { get; set; }
 
@@ -172,6 +182,7 @@ namespace Rendering.Graphics
             ConstantCameraBuffer = ConstantBufferFactory.ConstructBuffer<DCameraBuffer>(device, "CameraBuffer");
             ConstantLightBuffer = ConstantBufferFactory.ConstructBuffer<LightBuffer>(device, "LightBuffer");
             ConstantMatrixBuffer = ConstantBufferFactory.ConstructBuffer<MatrixBuffer>(device, "MatrixBuffer");
+            ConstantHightlightBuffer = ConstantBufferFactory.ConstructBuffer<HighLightBuffer>(device, "HighlightBuffer");
             ConstantEditorParamsBuffer = ConstantBufferFactory.ConstructBuffer<EditorParameterBuffer>(device, "EditorBuffer");
 
             return true;
@@ -199,6 +210,15 @@ namespace Rendering.Graphics
                 previousLighting = settings.Lighting;
                 ConstantBufferFactory.UpdatePixelBuffer(context, ConstantLightBuffer, 0, lightbuffer);
             }
+        }
+
+        public void setHightLightInstance(ID3D11DeviceContext context, uint instanceID)
+        {
+            var hightlight = new HighLightBuffer()
+            {
+                instanceID = instanceID,
+            };
+            ConstantBufferFactory.UpdateVertexBuffer(context,ConstantHightlightBuffer,2,hightlight);
         }
 
         public virtual void SetSceneVariables(ID3D11DeviceContext context, Matrix4x4 WorldMatrix, Camera camera)

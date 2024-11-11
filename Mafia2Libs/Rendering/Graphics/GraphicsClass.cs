@@ -5,6 +5,7 @@ using ResourceTypes.FrameResource;
 using ResourceTypes.Translokator;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using Toolkit.Core;
@@ -39,6 +40,7 @@ namespace Rendering.Graphics
 
         public Dictionary<int, IRenderer> Assets { get; private set; }
         private int selectedID;
+        private Dictionary<int, ushort> selectedInstances;
         private RenderBoundingBox selectionBox;
         private RenderModel sky;
         private RenderModel clouds;
@@ -457,12 +459,58 @@ namespace Rendering.Graphics
                     OldObject.Unselect();
                 }
 
+                if (selectedInstances != null)
+                {
+                    foreach (var selinst in selectedInstances)
+                    {
+                        RenderModel model = Assets[selinst.Key] as RenderModel;
+                        model.UnselectInstance();
+                    }
+                    selectedInstances.Clear();
+                }
+
                 TranslationGizmo.OnSelectEntry(NewObject.Transform, true);
                 NewObject.Select();
                 selectionBox.DoRender = true;
                 selectionBox.SetTransform(NewObject.Transform);
                 selectionBox.Update(NewObject.BoundingBox);
                 selectedID = id;
+            }
+        }
+        
+        public void SelectInstance(ushort instanceId)
+        {
+            IRenderer SelectedEntry = GetAsset(selectedID);
+            if (SelectedEntry != null)
+            {
+                SelectedEntry.Unselect();
+            }
+
+            if (selectedInstances != null)
+            {
+                foreach (var selinst in selectedInstances)
+                {
+                    RenderModel model = Assets[selinst.Key] as RenderModel;
+                    model.UnselectInstance();
+                }
+                selectedInstances.Clear();
+            }
+
+            selectedInstances = new Dictionary<int, ushort>();
+            
+            foreach (var asset in Assets)
+            {
+                if (asset.Value is RenderModel model && model.ContainsInstanceTransform(instanceId))
+                {
+                    selectedInstances.Add(asset.Key, instanceId);
+                    model.SelectInstance(instanceId);
+                }
+
+            }
+
+            if (selectedInstances != null)
+            {
+                TranslationGizmo.OnSelectEntry(Assets[selectedInstances.First().Key].Transform, true);
             }
         }
 

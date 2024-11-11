@@ -11,6 +11,7 @@ namespace Rendering.Graphics
         protected ID3D11Buffer indexBuffer;
         protected ID3D11Buffer vertexBuffer;
         protected ID3D11Buffer instanceBuffer;
+        protected ID3D11Buffer highlightBuffer;
         protected ID3D11ShaderResourceView instanceBufferView;
 
         public bool DoRender { get; set; }

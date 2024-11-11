@@ -102,7 +102,6 @@ namespace Rendering.Graphics
                 public Vector3 Binormal;
                 public Vector2 TexCoord0;
                 public Vector2 TexCoord7;
-                public uint InstanceID;
             }
 
 public static InputElementDescription[] GetLayout()
@@ -169,16 +168,6 @@ public static InputElementDescription[] GetLayout()
             Classification = InputClassification.PerVertexData,
             InstanceDataStepRate = 0
         },
-        new InputElementDescription() // Adding the INSTANCEID element
-        {
-            SemanticName = "INSTANCEID", // The semantic name should match what is expected in the shader
-            SemanticIndex = 0,
-            Format = Vortice.DXGI.Format.R32_UInt,
-            Slot = 1,
-            AlignedByteOffset = InputElementDescription.AppendAligned, // Ensure this calculates correctly
-            Classification = InputClassification.PerInstanceData,
-            InstanceDataStepRate = 1 // Indicates it changes per instance
-        }
     };
 }
 

@@ -1063,7 +1063,8 @@ namespace Mafia2Tool
 
                             TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
                             instanceNode.Tag = instance;
-                            objNode.Nodes.Add(instanceNode);
+                            instanceNode.Name = instance.ID.ToString();
+                            objNode.Nodes.Add( instanceNode);
                         }
                     }
                     ogNode.Nodes.Add(objectGroupNode);
@@ -1213,10 +1214,6 @@ namespace Mafia2Tool
 
             dSceneTree.AddToTree(actorRoot);
         }
-        
-        private void LoadTranslokatorFiles()
-        {
-        }
 
         private void TreeViewUpdateSelected()
         {
@@ -1239,6 +1236,10 @@ namespace Mafia2Tool
             {
                 RenderNav ObjNav = (node.Parent.Tag as RenderNav);
                 ObjNav.SelectNode(node.Index);
+            }
+            else if (node.Tag is Instance instance)
+            {
+                Graphics.SelectInstance(instance.ID);
             }
             else
             {
@@ -1507,41 +1508,49 @@ namespace Mafia2Tool
         {
             PickOutParams OutParams = Graphics.Pick(sx, sy, RenderPanel.Size.Width, RenderPanel.Size.Height);
             dViewProperties.SetPickInfo(OutParams);
-
-            TreeNode[] nodes = dSceneTree.Find(OutParams.LowestRefID.ToString(), true);
-
-            if (nodes.Length > 0)
+            if (OutParams.LowestInstanceID != -1)
             {
-                dSceneTree.SelectedNode = nodes[0];
-
-                if (OutParams.LowestInstanceID != -1)
+                TreeNode[] instancenodes = dSceneTree.Find(OutParams.LowestInstanceID.ToString(), true);
+                if (instancenodes.Length > 0)
                 {
-                    if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)//dostat se na instance, ne na ref frame, od toho je jump, když na nějakej instance šáhnu, abych v tree viděl jakej to přesně je
-                    {
-                        int Parent1Index = obj.ParentIndex1.Index;
-                        int Parent2Index = obj.ParentIndex2.Index;
-
-                        while(Parent1Index != -1 && Parent2Index != -1)
+                    dSceneTree.SelectedNode = instancenodes[0];
+                    TreeViewUpdateSelected();
+                }
+            }
+            else
+            {
+                TreeNode[] nodes = dSceneTree.Find(OutParams.LowestRefID.ToString(), true);
+    
+                if (nodes.Length > 0)
+                {
+                    dSceneTree.SelectedNode = nodes[0];
+                    
+                        if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)//dostat se na instance, ne na ref frame, od toho je jump, když na nějakej instance šáhnu, abych v tree viděl jakej to přesně je
                         {
-                            if (dSceneTree.SelectedNode.Parent != null)
+                            int Parent1Index = obj.ParentIndex1.Index;
+                            int Parent2Index = obj.ParentIndex2.Index;
+    
+                            while(Parent1Index != -1 && Parent2Index != -1)
                             {
-                                dSceneTree.SelectedNode = dSceneTree.SelectedNode.Parent;
-
-                                if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj2)
+                                if (dSceneTree.SelectedNode.Parent != null)
                                 {
-                                    Parent1Index = obj2.ParentIndex1.Index;
-                                    Parent2Index = obj2.ParentIndex2.Index;
+                                    dSceneTree.SelectedNode = dSceneTree.SelectedNode.Parent;
+    
+                                    if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj2)
+                                    {
+                                        Parent1Index = obj2.ParentIndex1.Index;
+                                        Parent2Index = obj2.ParentIndex2.Index;
+                                    }
+                                }
+                                else
+                                {
+                                    break;
                                 }
                             }
-                            else
-                            {
-                                break;
-                            }
                         }
-                    }
-                }
-
-                TreeViewUpdateSelected();
+    
+                    TreeViewUpdateSelected();
+                }            
             }
         }
 

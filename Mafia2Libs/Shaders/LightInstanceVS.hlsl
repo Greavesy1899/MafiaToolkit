@@ -10,6 +10,15 @@ cbuffer CameraBuffer : register(b1)
     float padding;               // Padding for alignment
 };
 
+cbuffer HighlightBuffer : register(b2)
+{
+    uint highlightedInstanceIndex; // Index of instance we want to be selected
+    uint s;
+    uint ss;
+    uint sss;
+};
+
+
 // Instance transformation matrix buffer
 StructuredBuffer<matrix> InstanceBuffer : register(t0);
 
@@ -32,6 +41,7 @@ struct VS_OUTPUT
     float2 TexCoord0 : TEXCOORD0;
     float2 TexCoord7 : TEXCOORD1;
     half3 viewDirection : TEXCOORD2;
+    uint instanceID : INSTANCEID;
 };
 
 VS_OUTPUT LightInstanceVertexShader(VS_INPUT input, uint InstanceId : SV_InstanceID)
@@ -60,6 +70,12 @@ VS_OUTPUT LightInstanceVertexShader(VS_INPUT input, uint InstanceId : SV_Instanc
 
     // Calculate the viewing direction
     output.viewDirection = normalize(cameraPosition - worldPosition.xyz); // Normalize the view direction
+
+    output.instanceID = 0;
+    if(InstanceId==highlightedInstanceIndex)
+    {
+        output.instanceID =1;
+    }
 
     return output;
 }
