@@ -47,7 +47,7 @@ namespace Mafia2Tool
         public PrefabLoader Prefabs;
         public string ScenePath = "";
 
-        private SDSContentFile sdsContent;
+        public SDSContentFile sdsContent;
         private bool isBigEndian;
 
         private FileInfo BuildFileInfo(string name)

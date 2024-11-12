@@ -769,9 +769,41 @@ namespace Mafia2Tool
                             collision.Placements.Add(placement);
                         }
                     }
-
+                    
                     SceneData.Collisions = collision;
                     SceneData.Collisions.WriteToFile();
+                }
+
+                if (SceneData.Translokator != null && ToolkitSettings.Experimental)
+                    {
+                        TranslokatorLoader translokator = SceneData.Translokator;
+                           translokator.Grids = new Grid[translokatorRoot.Nodes[1].GetNodeCount(false)];
+                           for (int i = 0; i < translokator.Grids.Length; i++)
+                           {
+                               Grid grid = (translokatorRoot.Nodes[1].Nodes[i].Tag as Grid);
+                               translokator.Grids[i] = grid;
+                           }
+
+                           translokator.ObjectGroups = new ObjectGroup[translokatorRoot.Nodes[0].GetNodeCount(false)];
+                           for (int i = 0; i < translokator.ObjectGroups.Length; i++)
+                           {
+                               ObjectGroup objectGroup = (translokatorRoot.Nodes[0].Nodes[i].Tag as ObjectGroup);
+                               objectGroup.Objects = new ResourceTypes.Translokator.Object[translokatorRoot.Nodes[0].Nodes[i].GetNodeCount(false)];
+                               for (int y = 0; y < objectGroup.Objects.Length; y++)
+                               {
+                                   ResourceTypes.Translokator.Object obj = (translokatorRoot.Nodes[0].Nodes[i].Nodes[y].Tag as ResourceTypes.Translokator.Object);
+                                   obj.Instances = new Instance[translokatorRoot.Nodes[0].Nodes[i].Nodes[y].GetNodeCount(false)];
+                                   for (int z = 0; z < obj.Instances.Length; z++)
+                                   {
+                                       Instance instance = (translokatorRoot.Nodes[0].Nodes[i].Nodes[y].Nodes[z].Tag as Instance);
+                                       obj.Instances[z] = instance;
+                                   }
+                                   objectGroup.Objects[y] = obj;
+                               }
+
+                               translokator.ObjectGroups[i] = objectGroup;
+                           }
+                           translokator.WriteToFile(new FileInfo(SceneData.sdsContent.GetResourceFiles("Translokator", true)[0]));
                 }
                 SceneData.UpdateResourceType();
                 Cursor.Current = Cursors.Default;
