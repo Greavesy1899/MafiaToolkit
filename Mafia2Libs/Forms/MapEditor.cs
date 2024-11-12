@@ -110,6 +110,7 @@ namespace Mafia2Tool
             ToggleWireframeButton.Text = Language.GetString("$TOGGLE_WIREFRAME");
             ToggleCullingButton.Text = Language.GetString("$TOGGLE_CULLING");
             EditLighting.Text = Language.GetString("$EDIT_LIGHTING");
+            ToggleTranslokatorTint.Text = Language.GetString("$TOGGLE_TRANSLOKATOR_TINT");
             SceneTreeButton.Text = Language.GetString("$VIEW_SCENE_TREE");
             ObjectPropertiesButton.Text = Language.GetString("$VIEW_PROPERTY_GRID");
             WindowButton.Text = Language.GetString("$VIEW_OPTIONS");
@@ -1025,6 +1026,7 @@ namespace Mafia2Tool
 
             if (SceneData.Translokator != null && ToolkitSettings.Experimental)
             {
+                ToggleTranslokatorTint.Enabled = true;
                 translokatorRoot = new TreeNode("Translokator Items");
                 translokatorRoot.Tag = "Folder";
                 TreeNode ogNode = new TreeNode("Objects Groups");
@@ -2315,6 +2317,11 @@ namespace Mafia2Tool
         private void EditLighting_Click(object sender, EventArgs e)
         {
             dPropertyGrid.SetObject(Graphics.WorldSettings);
+        }
+
+        private void TranslokatorTint_Click(object sender, EventArgs e)
+        {
+            Graphics.ToggleInstanceTint();
         }
 
         private void Button_TestConvert_Click(object sender, EventArgs e)

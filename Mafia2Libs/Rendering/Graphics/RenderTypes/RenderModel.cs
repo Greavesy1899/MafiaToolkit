@@ -55,6 +55,8 @@ namespace Rendering.Graphics
 
         public Dictionary<ushort, Matrix4x4> InstanceTransforms { get; set; } = new() { };
 
+        public bool InstanceTint;
+
         public RenderModel()
         {
             DoRender = true;
@@ -65,6 +67,7 @@ namespace Rendering.Graphics
             {
                 instanceID = 0,
             };
+            InstanceTint = true;
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -403,7 +406,7 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
     {
         RenderModel.ModelPart segment = LODs[0].ModelParts[i];
         
-        segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, tint.Normalize()));
+        segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, InstanceTint ? tint.Normalize() : startColor.Normalize()));
         segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
         
         segment.Shader.setHightLightInstance(deviceContext,(uint)selectionInstance.instanceID);
