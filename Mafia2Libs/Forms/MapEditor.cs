@@ -14,6 +14,7 @@ using ResourceTypes.Materials;
 using ResourceTypes.ModelHelpers.ModelExporter;
 using ResourceTypes.Navigation;
 using ResourceTypes.Navigation.Traffic;
+using ResourceTypes.Translokator;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +22,6 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
-using ResourceTypes.Translokator;
 using Toolkit.Core;
 using Utils.Extensions;
 using Utils.Language;
@@ -31,10 +31,8 @@ using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
-using static ResourceTypes.Collisions.Collision;
 using Collision = ResourceTypes.Collisions.Collision;
 using Object = ResourceTypes.Translokator.Object;
-using ResourceTypes.Cutscene.AnimEntities;
 
 namespace Mafia2Tool
 {
@@ -1026,7 +1024,7 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(animalTrafficRoot);
             }
 
-            if (SceneData.Actors.Length > 0 && !ToolkitSettings.Experimental)
+            if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
                 LoadActorFiles();
             }
@@ -1091,7 +1089,7 @@ namespace Mafia2Tool
                             {
                                 for (int i = 0; i < groupRef.Children.Count; i++)
                                 {
-                                    InstanceTranslokatorPart(assets, groupRef.Children[i], groupRef, instance);
+                                    InstanceTranslokatorPart(assets, groupRef.Children[i], Matrix4x4.Identity, instance);
                                 }
                             }
 
@@ -1123,9 +1121,9 @@ namespace Mafia2Tool
             }
         }
 
-        public void InstanceTranslokatorPart(Dictionary<int, IRenderer> assets, FrameObjectBase refframe, FrameObjectBase groupRef, Instance instance)
+        public void InstanceTranslokatorPart(Dictionary<int, IRenderer> assets, FrameObjectBase refframe, Matrix4x4 ParentTransform, Instance instance)
         {
-            var refTransform = refframe.WorldTransform;
+            var refTransform = ComputeWorldTransform(refframe.LocalTransform, ParentTransform);
             refTransform.M44 = 1.0f;
 
             if (refframe is FrameObjectSingleMesh mesh)
@@ -1154,12 +1152,12 @@ namespace Mafia2Tool
             {
                 for (int i = 0; i < refframe.Children.Count; i++)
                 {
-                    InstanceTranslokatorPart(assets, refframe.Children[i], groupRef, instance);
+                    InstanceTranslokatorPart(assets, refframe.Children[i], refTransform, instance);
                 }
             }
         }
 
-        public List<RenderModel> UpdateTranslocatorPart(FrameObjectBase refframe, Instance instance)
+        public List<RenderModel> UpdateTranslocatorPart(FrameObjectBase refframe, Matrix4x4 ParentTransform, Instance instance)
         {
             List<RenderModel> modelsToUpdate = new();
 
@@ -1168,7 +1166,7 @@ namespace Mafia2Tool
                 return modelsToUpdate;
             }
 
-            var refTransform = refframe.WorldTransform;
+            var refTransform = ComputeWorldTransform(refframe.LocalTransform, ParentTransform); ;
             refTransform.M44 = 1.0f;
 
             if (refframe is FrameObjectSingleMesh mesh)
@@ -1203,11 +1201,31 @@ namespace Mafia2Tool
             {
                 for (int i = 0; i < refframe.Children.Count; i++)
                 {
-                    modelsToUpdate.AddRange(UpdateTranslocatorPart(refframe.Children[i], instance));
+                    modelsToUpdate.AddRange(UpdateTranslocatorPart(refframe.Children[i], refTransform, instance));
                 }
             }
 
             return modelsToUpdate;
+        }
+
+        public Matrix4x4 ComputeWorldTransform(Matrix4x4 LocalTransform, Matrix4x4 ParentTransform)
+        {
+            //The world transform is calculated and then decomposed because some reason,
+            //the renderer does not update on the first startup of the editor.
+            Vector3 position, scale, newPos;
+            Quaternion rotation, newRot;
+            Matrix4x4.Decompose(LocalTransform, out scale, out rotation, out position);
+
+            Vector3 parentPosition = Vector3.Zero;
+            Vector3 parentScale = Vector3.One;
+            Quaternion parentRotation = Quaternion.Identity;
+            Matrix4x4.Decompose(ParentTransform, out parentScale, out parentRotation, out parentPosition);
+
+            newRot = parentRotation * rotation;
+            newPos = Vector3Utils.TransformCoordinate(position, ParentTransform);
+
+            return MatrixUtils.SetMatrix(newRot, scale, newPos);
+            //ToolkitAssert.Ensure(!worldTransform.IsNaN(), string.Format("Frame: {0} caused NaN()!", name.ToString()));
         }
 
         private void LoadActorFiles()
@@ -1388,7 +1406,7 @@ namespace Mafia2Tool
                         {
                             for (int i = 0; i < groupRef.Children.Count; i++)
                             {
-                                var modelsToUpdate = UpdateTranslocatorPart(groupRef.Children[i], instance);
+                                var modelsToUpdate = UpdateTranslocatorPart(groupRef.Children[i], Matrix4x4.Identity, instance);
                                 Graphics.UpdateInstanceBuffers(modelsToUpdate);
                             }
                         }
@@ -1797,7 +1815,7 @@ namespace Mafia2Tool
                 {
                     for (int i = 0; i < groupRef.Children.Count; i++)
                     {
-                        var modelsToUpdate = UpdateTranslocatorPart(groupRef.Children[i], instance);
+                        var modelsToUpdate = UpdateTranslocatorPart(groupRef.Children[i], Matrix4x4.Identity, instance);
                         Graphics.UpdateInstanceBuffers(modelsToUpdate);
                     }
                 }
