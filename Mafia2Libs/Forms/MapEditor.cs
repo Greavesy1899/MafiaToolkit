@@ -2057,6 +2057,23 @@ namespace Mafia2Tool
                 instance.SetTransform(placement.Transform);
                 Graphics.InitObjectStack.Add(refID, instance);
             }
+            else if (node.Tag is Instance instance)
+            {
+                Instance newInstance = new Instance(instance);
+                newInstance.ID = SceneData.Translokator.UniqueIdGenerator.GenerateUniqueId();
+                TreeNode instanceNode = new TreeNode();
+                instanceNode.Text = node.Parent.Text + " " + node.Parent.Nodes.Count.ToString();
+                instanceNode.Name = newInstance.ID.ToString();
+                instanceNode.Tag = newInstance;
+                
+                Object parent = node.Parent.Tag as Object;
+                FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
+                if (frameref != null)//todo nonframerefs solution once they are managed
+                {
+                    InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance);
+                }
+                dSceneTree.AddToTree(instanceNode,node.Parent);
+            }
         }
 
         private int CheckIfDuplicationContainsString(string Key)
