@@ -1677,9 +1677,11 @@ namespace Mafia2Tool
             //checking if we are not trying to make children our new parent
             foreach (var child in newChildChildren)
             {
-                FrameObjectBase childFrame = child.Tag as FrameObjectBase;
-                if (childFrame.IsFrameOwnChildren(refID)) {
-                    return;
+                if (child.Tag is FrameObjectBase childFrame)
+                {
+                    if (childFrame.IsFrameOwnChildren(refID)) {
+                        return;
+                    }                
                 }
             }
             
