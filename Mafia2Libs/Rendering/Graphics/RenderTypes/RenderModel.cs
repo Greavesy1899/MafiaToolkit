@@ -375,47 +375,53 @@ namespace Rendering.Graphics
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
                 ModelPart Segment = LODs[0].ModelParts[i];
+
+                if (InstanceTransforms.Count == 0)
+                {
+                    Segment.Shader.ResetShaderParameters(device, deviceContext);
+                }
+
                 Segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(Segment.Material, SelectionColour.Normalize()));
                 Segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
                 Segment.Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(Segment.NumFaces * 3), Segment.StartIndex);
             }
         }
 
-private float colorTransitionTime = 0.0f; // timer for distinguishing translokators
+        private float colorTransitionTime = 0.0f; // timer for distinguishing translokators
 
-private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
-{
-    deviceContext.VSSetShaderResource(0, instanceBufferView);
+        private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
+        {
+            deviceContext.VSSetShaderResource(0, instanceBufferView);
 
-    colorTransitionTime += 0.1f;
+            colorTransitionTime += 0.1f;
 
 
-    float t = (float)(Math.Sin(colorTransitionTime) * 0.5 + 0.5);
-    
-    Color startColor = Color.White;
-    Color endColor = Color.Yellow;
-    
-    Color tint = Color.FromArgb(
-        (int)(startColor.A + (endColor.A - startColor.A) * t),
-        (int)(startColor.R + (endColor.R - startColor.R) * t),
-        (int)(startColor.G + (endColor.G - startColor.G) * t),
-        (int)(startColor.B + (endColor.B - startColor.B) * t)
-    );
-    
-    for (int i = 0; i < LODs[0].ModelParts.Length; i++)
-    {
-        RenderModel.ModelPart segment = LODs[0].ModelParts[i];
-        
-        segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, InstanceTint ? tint.Normalize() : startColor.Normalize()));
-        segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
-        
-        segment.Shader.setHightLightInstance(deviceContext,(uint)selectionInstance.instanceRefID);
-        
-        
-        segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
-        Profiler.NumDrawCallsThisFrame++;
-    }
-}
+            float t = (float)(Math.Sin(colorTransitionTime) * 0.5 + 0.5);
+
+            Color startColor = Color.White;
+            Color endColor = Color.Yellow;
+
+            Color tint = Color.FromArgb(
+                (int)(startColor.A + (endColor.A - startColor.A) * t),
+                (int)(startColor.R + (endColor.R - startColor.R) * t),
+                (int)(startColor.G + (endColor.G - startColor.G) * t),
+                (int)(startColor.B + (endColor.B - startColor.B) * t)
+            );
+
+            for (int i = 0; i < LODs[0].ModelParts.Length; i++)
+            {
+                RenderModel.ModelPart segment = LODs[0].ModelParts[i];
+
+                segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, InstanceTint ? tint.Normalize() : startColor.Normalize()));
+                segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
+
+                segment.Shader.setHightLightInstance(deviceContext, (uint)selectionInstance.instanceRefID);
+
+
+                segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
+                Profiler.NumDrawCallsThisFrame++;
+            }
+        }
 
         public override void Shutdown()
         {

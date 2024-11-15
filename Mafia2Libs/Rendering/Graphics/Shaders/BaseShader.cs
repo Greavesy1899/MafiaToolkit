@@ -264,6 +264,34 @@ namespace Rendering.Graphics
             SamplerState = new SamplerState(device, samplerDesc);*/
         }
 
+        public void ResetShaderParameters(ID3D11Device device, ID3D11DeviceContext deviceContext)
+        {
+            var editorParams = new EditorParameterBuffer()
+            {
+                selectionColour = new Vector3(1,1,1)
+            };
+
+            ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantEditorParamsBuffer, 1, editorParams);
+            previousEditorParams = editorParams.selectionColour;
+
+            //experiments with samplers; currently the toolkit doesn't not support any types.
+            /*SamplerStateDescription samplerDesc = new SamplerStateDescription()
+            {
+                Filter = Filter.Anisotropic,
+                AddressU = (material != null) ? (TextureAddressMode)material.Samplers["S000"].SamplerStates[0] : TextureAddressMode.Wrap,
+                AddressV = (material != null) ? (TextureAddressMode)material.Samplers["S000"].SamplerStates[1] : TextureAddressMode.Wrap,
+                AddressW = (material != null) ? (TextureAddressMode)material.Samplers["S000"].SamplerStates[2] : TextureAddressMode.Wrap,
+                MipLodBias = 0,
+                MaximumAnisotropy = 16,
+                ComparisonFunction = Comparison.Always,
+                BorderColor = new Color4(0, 0, 0, 0),
+                MinimumLod = 0,
+                MaximumLod = float.MaxValue
+            };
+
+            SamplerState = new SamplerState(device, samplerDesc);*/
+        }
+
         public virtual void Render(ID3D11DeviceContext context, PrimitiveTopology type, int size, uint offset)
         {
             context.IASetInputLayout(Layout);
