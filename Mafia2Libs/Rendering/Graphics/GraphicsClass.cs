@@ -511,7 +511,8 @@ namespace Rendering.Graphics
 
             if (selectedInstances != null)
             {
-                TranslationGizmo.OnSelectEntry(Assets[selectedInstances.First().Key].Transform, true);
+                RenderModel model = Assets[selectedInstances.First().Key] as RenderModel;
+                TranslationGizmo.OnSelectEntry(Matrix4x4.Transpose(model.InstanceTransforms[selectedInstances.First().Value]) , true);
             }
         }
 

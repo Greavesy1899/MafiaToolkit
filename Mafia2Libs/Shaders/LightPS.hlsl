@@ -159,15 +159,6 @@ float4 PS_601151254(VS_OUTPUT input) : SV_TARGET
 
     color = CalculateColor(input, color);
     color *= float4(selectionColour.xyz, 1.0f);
-    if(input.instanceID==0)
-    {
-        color *= float4(selectionColour.xyz, 1.0f);
-    }
-    else
-    {
-        color *= float4(1.0f, 0.0f, 0.0f, 1.0f);
-    }
-    
     //if(renderMode == 2)
     //{
         color *= C002MaterialColour;
