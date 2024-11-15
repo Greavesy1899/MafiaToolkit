@@ -38,7 +38,7 @@ namespace Rendering.Graphics
         
         public struct SelectionInstance
         {
-            public int instanceID;
+            public int instanceRefID;
         }
 
         public SelectionInstance selectionInstance;
@@ -53,7 +53,7 @@ namespace Rendering.Graphics
 
         public LOD[] LODs { get; private set; }
 
-        public Dictionary<ushort, Matrix4x4> InstanceTransforms { get; set; } = new() { };
+        public Dictionary<int, Matrix4x4> InstanceTransforms { get; set; } = new() { };
 
         public bool InstanceTint;
 
@@ -65,7 +65,7 @@ namespace Rendering.Graphics
             SelectionColour = Color.White;
             selectionInstance = new SelectionInstance()
             {
-                instanceID = 0,
+                instanceRefID = 0,
             };
             InstanceTint = true;
         }
@@ -409,7 +409,7 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
         segment.Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(segment.Material, InstanceTint ? tint.Normalize() : startColor.Normalize()));
         segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
         
-        segment.Shader.setHightLightInstance(deviceContext,(uint)selectionInstance.instanceID);
+        segment.Shader.setHightLightInstance(deviceContext,(uint)selectionInstance.instanceRefID);
         
         
         segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
@@ -447,14 +447,14 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
         {
             SelectionColour = Color.Red;
         }
-        public void SelectInstance(ushort instanceID)
+        public void SelectInstance(int instanceRefID)
         {
-            List<ushort> instanceids = InstanceTransforms.Keys.ToList();
-            for (int i = 0; i < instanceids.Count; i++)
+            List<int> instanceRefIDs = InstanceTransforms.Keys.ToList();
+            for (int i = 0; i < instanceRefIDs.Count; i++)
             {
-                if (instanceids[i] == instanceID)
+                if (instanceRefIDs[i] == instanceRefID)
                 {
-                    selectionInstance.instanceID = i;
+                    selectionInstance.instanceRefID = i;
                     return;
                 }
             }
@@ -462,7 +462,7 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
         
         public void UnselectInstance()
         {
-            selectionInstance.instanceID = 0;
+            selectionInstance.instanceRefID = 0;
         }
 
         public override void Unselect()
@@ -491,7 +491,7 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
             }
         }
 
-        public bool ContainsInstanceTransform(ushort instanceID)
+        public bool ContainsInstanceTransform(int instanceID)
         {
             return InstanceTransforms.ContainsKey(instanceID);
         }

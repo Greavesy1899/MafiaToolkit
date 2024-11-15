@@ -1089,6 +1089,7 @@ namespace Mafia2Tool
                         for (int x = 0; x < obj.Instances.Length; x++)
                         {
                             Instance instance = obj.Instances[x];
+                            instance.RefID = RefManager.GetNewRefID();
 
                             if (groupRef != null && hasMesh && groupRef.Children.Count > 0 && assets.ContainsKey(groupRef.RefID))
                             {
@@ -1100,7 +1101,7 @@ namespace Mafia2Tool
 
                             TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
                             instanceNode.Tag = instance;
-                            instanceNode.Name = instance.ID.ToString();
+                            instanceNode.Name = instance.RefID.ToString();
                             objNode.Nodes.Add( instanceNode);
                         }
                     }
@@ -1126,7 +1127,7 @@ namespace Mafia2Tool
             }
         }
 
-        public void InstanceTranslokatorPart(Dictionary<int, IRenderer> assets, FrameObjectBase refframe, Matrix4x4 ParentTransform, Instance instance)
+        public void InstanceTranslokatorPart(Dictionary<int, IRenderer> assets, FrameObjectBase refframe, Matrix4x4 ParentTransform, Instance instance,bool updateInstanceBuffers = false)
         {
             var refTransform = ComputeWorldTransform(refframe.LocalTransform, ParentTransform);
             refTransform.M44 = 1.0f;
@@ -1145,9 +1146,13 @@ namespace Mafia2Tool
                     newtransform = MatrixUtils.SetMatrix(instance.Quaternion, new Vector3(instance.Scale, instance.Scale, instance.Scale), instance.Position);
                     newtransform = refTransform * newtransform;
 
-                    if (!model.InstanceTransforms.ContainsKey(instance.ID))
+                    if (!model.InstanceTransforms.ContainsKey(instance.RefID))
                     {
-                        model.InstanceTransforms.Add(instance.ID, Matrix4x4.Transpose(newtransform));
+                        model.InstanceTransforms.Add(instance.RefID, Matrix4x4.Transpose(newtransform));
+                        if (updateInstanceBuffers)
+                        {
+                            model.ReloadInstanceBuffer(Graphics.GetId3D11Device());
+                        }
                     }
                 }
             }
@@ -1157,7 +1162,7 @@ namespace Mafia2Tool
             {
                 for (int i = 0; i < refframe.Children.Count; i++)
                 {
-                    InstanceTranslokatorPart(assets, refframe.Children[i], refTransform, instance);
+                    InstanceTranslokatorPart(assets, refframe.Children[i], refTransform, instance,updateInstanceBuffers);
                 }
             }
         }
@@ -1188,13 +1193,13 @@ namespace Mafia2Tool
                     newtransform = MatrixUtils.SetMatrix(instance.Quaternion, new Vector3(instance.Scale, instance.Scale, instance.Scale), instance.Position);
                     newtransform = refTransform * newtransform;
 
-                    if (!model.InstanceTransforms.ContainsKey(instance.ID))
+                    if (!model.InstanceTransforms.ContainsKey(instance.RefID))
                     {
-                        model.InstanceTransforms.Add(instance.ID, Matrix4x4.Transpose(newtransform));
+                        model.InstanceTransforms.Add(instance.RefID, Matrix4x4.Transpose(newtransform));
                     }
                     else
                     {
-                        model.InstanceTransforms[instance.ID] = Matrix4x4.Transpose(newtransform);
+                        model.InstanceTransforms[instance.RefID] = Matrix4x4.Transpose(newtransform);
                     }
 
                     modelsToUpdate.Add(model);
@@ -1296,7 +1301,7 @@ namespace Mafia2Tool
             }
             else if (node.Tag is Instance instance)
             {
-                Graphics.SelectInstance(instance.ID);
+                Graphics.SelectInstance(instance.RefID);
             }
             else
             {
@@ -2065,17 +2070,17 @@ namespace Mafia2Tool
             else if (node.Tag is Instance instance)
             {
                 Instance newInstance = new Instance(instance);
-                newInstance.ID = SceneData.Translokator.UniqueIdGenerator.GenerateUniqueId();
+                newInstance.RefID = RefManager.GetNewRefID();
                 TreeNode instanceNode = new TreeNode();
                 instanceNode.Text = node.Parent.Text + " " + node.Parent.Nodes.Count.ToString();
-                instanceNode.Name = newInstance.ID.ToString();
+                instanceNode.Name = newInstance.RefID.ToString();
                 instanceNode.Tag = newInstance;
                 
                 Object parent = node.Parent.Tag as Object;
                 FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
                 if (frameref != null)//todo nonframerefs solution once they are managed
                 {
-                    InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance);
+                    InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance,true);
                 }
                 dSceneTree.AddToTree(instanceNode,node.Parent);
             }

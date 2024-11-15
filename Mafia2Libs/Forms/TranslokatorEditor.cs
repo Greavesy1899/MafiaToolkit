@@ -135,7 +135,6 @@ namespace Mafia2Tool.Forms
             {
                 ResourceTypes.Translokator.Object obj = (TranslokatorTree.SelectedNode.Tag as ResourceTypes.Translokator.Object);
                 Instance instance = new Instance();
-                instance.ID = translokator.UniqueIdGenerator.GenerateUniqueId();
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
                 instanceNode.Tag = instance;
                 TranslokatorTree.SelectedNode.Nodes.Add(instanceNode);
@@ -147,7 +146,6 @@ namespace Mafia2Tool.Forms
             {
                 var obj = (TranslokatorTree.SelectedNode.Parent.Tag as ResourceTypes.Translokator.Object);
                 Instance instance = new Instance();
-                instance.ID = translokator.UniqueIdGenerator.GenerateUniqueId();
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.Parent.GetNodeCount(false));
                 instanceNode.Tag = instance;
                 TranslokatorTree.SelectedNode.Parent.Nodes.Add(instanceNode);

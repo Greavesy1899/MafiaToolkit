@@ -66,6 +66,7 @@ namespace ResourceTypes.Translokator
         int d5;
         ushort id;
         ushort d4;
+        public int RefID;
 
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 Position {
@@ -269,8 +270,6 @@ namespace ResourceTypes.Translokator
             get { return bounds; }
             set { bounds = value; }
         }
-
-        public UniqueIdGenerator UniqueIdGenerator;
 
         public TranslokatorLoader()
         {
@@ -667,8 +666,6 @@ namespace ResourceTypes.Translokator
 
                 ObjectGroups[i] = objectGroup;
             }
-
-            UniqueIdGenerator = new UniqueIdGenerator(ObjectGroups);
         }
 
         public void WriteToFile(FileInfo info)
@@ -767,46 +764,6 @@ namespace ResourceTypes.Translokator
             Unk1 = FileContents.Unk1;
             Unk2 = FileContents.Unk2;
             Bounds = FileContents.Bounds;
-        }
-    }
-    
-    public class UniqueIdGenerator
-    {
-        private readonly ObjectGroup[] objectGroups;
-        private HashSet<ushort> usedIds;
-        public UniqueIdGenerator(ObjectGroup[] objectGroups)
-        {
-            this.objectGroups = objectGroups;
-            usedIds = new HashSet<ushort>();
-            CacheUsedIDs();
-        }
-
-        public ushort GenerateUniqueId()
-        {
-            //(0 - 65535)
-            for (ushort id = 0; id <= ushort.MaxValue; id++)
-            {
-                if (!usedIds.Contains(id))
-                {
-                    usedIds.Add(id);
-                    return id;
-                }
-            }
-
-            throw new Exception("There are no more free ID slots.");
-        }
-        private void CacheUsedIDs()
-        {
-            foreach (var group in objectGroups)
-            {
-                foreach (var obj in group.Objects)
-                {
-                    foreach (var instance in obj.Instances)
-                    {
-                        usedIds.Add(instance.ID);
-                    }
-                }
-            }
         }
     }
 }

@@ -245,7 +245,14 @@ namespace Forms.Docking
         {
             foreach (TreeNode child in node.Nodes)
             {
-                child.Checked = true;
+                if (child.Tag is Grid)
+                {
+                    child.Checked = false;
+                }
+                else
+                {
+                    child.Checked = true;                
+                }
                 ApplyImageIndex(child);
                 RecurseChildren(child);
             }
@@ -386,7 +393,7 @@ namespace Forms.Docking
             }
             else if (data is Instance instance)//jump to instance coords
             {
-                return MatrixUtils.SetMatrix(instance.Quaternion, new Vector3(instance.Scale,instance.Scale,instance.Scale), instance.Position).Translation;
+                return instance.Position;
             }
 
             return Vector3.Zero;

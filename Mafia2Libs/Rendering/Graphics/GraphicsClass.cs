@@ -12,6 +12,7 @@ using Toolkit.Core;
 using Utils.Models;
 using Utils.Settings;
 using Utils.VorticeUtils;
+using Vortice.Direct3D11;
 using Vortice.Mathematics;
 
 namespace Rendering.Graphics
@@ -40,7 +41,7 @@ namespace Rendering.Graphics
 
         public Dictionary<int, IRenderer> Assets { get; private set; }
         private int selectedID;
-        private Dictionary<int, ushort> selectedInstances;
+        private Dictionary<int, int> selectedInstances;//refframe refid, instance refid
         private RenderBoundingBox selectionBox;
         private RenderModel sky;
         private RenderModel clouds;
@@ -478,7 +479,7 @@ namespace Rendering.Graphics
             }
         }
         
-        public void SelectInstance(ushort instanceId)
+        public void SelectInstance(int instanceId)
         {
             IRenderer SelectedEntry = GetAsset(selectedID);
             if (SelectedEntry != null)
@@ -496,7 +497,7 @@ namespace Rendering.Graphics
                 selectedInstances.Clear();
             }
 
-            selectedInstances = new Dictionary<int, ushort>();
+            selectedInstances = new Dictionary<int, int>();
             
             foreach (var asset in Assets)
             {
@@ -633,6 +634,10 @@ namespace Rendering.Graphics
             }
         }
 
+        public ID3D11Device GetId3D11Device()
+        {
+            return D3D.Device;
+        }
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();
         public void ToggleD3DCullMode() => D3D.ToggleCullMode();
     }
