@@ -70,18 +70,21 @@ float4 GetAOColour(VS_OUTPUT input)
 float3 CalculateFromNormalMap(VS_OUTPUT input)
 {
 	//Load normal from normal map
-	float4 normalMap = textures[1].Sample(SampleType, input.TexCoord0);
+	float3 normalMap = textures[1].Sample(SampleType, input.TexCoord0).xyz;
 
-	//Change normal map range from [0, 1] to [-1, 1]
-	normalMap = (2.0f * normalMap) - 1.0f;
+    normalMap = 2.0f * normalMap - 1.0f;
 
-	//Make sure tangent is completely orthogonal to normal
-	input.Tangent = normalize(input.Tangent - dot(input.Tangent, input.Normal) * input.Normal);
+    // Ensure the tangent and binormal are perfectly orthonormal to the normal vector
+    float3 Normal = input.Normal;
+    float3 Tangent = normalize(input.Tangent - dot(input.Tangent, input.Normal) * input.Normal);
+    float3 Binormal = cross(Normal, Tangent);
 
-	//Convert normal from normal map to texture space and store in input.normal
-    float3 bumpNormal = (normalMap.x * input.Tangent) + (normalMap.y * input.Binormal)/* + (normalMap.z * input.Normal)*/;
-    bumpNormal = normalize(bumpNormal);
-    return bumpNormal;
+    float3x3 NormalTransform = float3x3(Tangent, Binormal, Normal);
+
+    // Transform from tangent space to world space.
+    float3 bump = mul(normalMap, NormalTransform);
+
+    return bump;
 }
 
 float4 CalculateColor(VS_OUTPUT input, float4 color)
@@ -90,11 +93,12 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     float lightIntensity;
     float3 reflection;
     float4 specular;
-    float3 normal = float3(1.0f, 1.0f, 1.0f);
+    float3 normal = input.Normal;//float3(1.0f, 1.0f, 1.0f);
+    float normalMapScale = 5.0f;
     
     if(hasTangentSpace == 1)
     {
-        normal = CalculateFromNormalMap(input);
+        normal = CalculateFromNormalMap(input) * normalMapScale;
     }
 
     // Set the default output color to the ambient light value for all pixels.
@@ -107,7 +111,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     lightDir = -lightDirection;
 
 	// Calculate the amount of the light on this pixel.
-    lightIntensity = saturate(dot(input.Normal * normal, lightDir));
+    lightIntensity = saturate(dot(normal, lightDir));
 
     // Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
     color += (diffuseColor * lightIntensity);
@@ -115,7 +119,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     color = saturate(color);
 
 	// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
-	reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
+	reflection = normalize(2 * lightIntensity * normal - lightDir);
 
 	// Determine the amount of the specular light based on the reflection vector, viewing direction, and specular power.
 	specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
