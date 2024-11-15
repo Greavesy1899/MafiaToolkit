@@ -176,6 +176,11 @@ namespace Mafia2Tool
             {
                 return;
             }
+
+            if (e.DraggedNode.Tag is not FrameObjectBase)
+            {
+                return;
+            }
             if (e.DragButton == MouseButtons.Left)
             {
                 FrameEntry NewParent = (e.TargetNode.Tag != null ? e.TargetNode.Tag as FrameEntry : null);
