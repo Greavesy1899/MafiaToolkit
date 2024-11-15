@@ -390,7 +390,7 @@ private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, I
     colorTransitionTime += 0.1f;
 
 
-    float t = (float)(Math.Sin(colorTransitionTime) * 0.5 + 0.5);//todo:optionable
+    float t = (float)(Math.Sin(colorTransitionTime) * 0.5 + 0.5);
     
     Color startColor = Color.White;
     Color endColor = Color.Yellow;

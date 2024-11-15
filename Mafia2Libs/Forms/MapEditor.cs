@@ -176,6 +176,11 @@ namespace Mafia2Tool
             {
                 return;
             }
+
+            if (e.DraggedNode.Tag is not FrameObjectBase)
+            {
+                return;
+            }
             if (e.DragButton == MouseButtons.Left)
             {
                 FrameEntry NewParent = (e.TargetNode.Tag != null ? e.TargetNode.Tag as FrameEntry : null);
@@ -1677,9 +1682,11 @@ namespace Mafia2Tool
             //checking if we are not trying to make children our new parent
             foreach (var child in newChildChildren)
             {
-                FrameObjectBase childFrame = child.Tag as FrameObjectBase;
-                if (childFrame.IsFrameOwnChildren(refID)) {
-                    return;
+                if (child.Tag is FrameObjectBase childFrame)
+                {
+                    if (childFrame.IsFrameOwnChildren(refID)) {
+                        return;
+                    }                
                 }
             }
             
@@ -2054,6 +2061,23 @@ namespace Mafia2Tool
                 instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                 instance.SetTransform(placement.Transform);
                 Graphics.InitObjectStack.Add(refID, instance);
+            }
+            else if (node.Tag is Instance instance)
+            {
+                Instance newInstance = new Instance(instance);
+                newInstance.ID = SceneData.Translokator.UniqueIdGenerator.GenerateUniqueId();
+                TreeNode instanceNode = new TreeNode();
+                instanceNode.Text = node.Parent.Text + " " + node.Parent.Nodes.Count.ToString();
+                instanceNode.Name = newInstance.ID.ToString();
+                instanceNode.Tag = newInstance;
+                
+                Object parent = node.Parent.Tag as Object;
+                FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
+                if (frameref != null)//todo nonframerefs solution once they are managed
+                {
+                    InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance);
+                }
+                dSceneTree.AddToTree(instanceNode,node.Parent);
             }
         }
 
