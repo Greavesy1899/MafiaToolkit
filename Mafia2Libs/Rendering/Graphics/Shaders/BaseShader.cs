@@ -77,7 +77,7 @@ namespace Rendering.Graphics
         internal struct HighLightBuffer
         {
             public uint instanceID;
-            public uint s;
+            public uint s;//this is a placeholder, since shader buffers have to be the size of 16bytes*N
             public uint ss;
             public uint sss;
         }
@@ -103,7 +103,6 @@ namespace Rendering.Graphics
         public ID3D11VertexShader OurInstanceVertexShader { get; set; }
         public ID3D11PixelShader OurPixelShader { get; set; }
         public ID3D11GeometryShader OurGeometryShader { get; set; }
-        public ID3D11VertexShader strasnaMrdka { get; set; }
         public ID3D11InputLayout Layout { get; set; }
         protected ID3D11Buffer ConstantMatrixBuffer { get; set; }
         protected ID3D11Buffer ConstantLightBuffer { get; set; }

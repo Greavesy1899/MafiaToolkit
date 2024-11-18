@@ -151,9 +151,8 @@ namespace Forms.Docking
                 ScaleXNumeric.Value = ScaleYNumeric.Value = ScaleZNumeric.Value = 0.0M;
                 ScaleXNumeric.Enabled = ScaleYNumeric.Enabled = ScaleZNumeric.Enabled = false;
             }
-            else if (currentObject is Instance)
+            else if (currentObject is Instance instance)
             {
-                Instance instance = (currentObject as Instance);
                 CurrentEntry.Text = instance.ID.ToString();
                 PositionXNumeric.Value = Convert.ToDecimal(instance.Position.X);
                 PositionYNumeric.Value = Convert.ToDecimal(instance.Position.Y);
@@ -191,9 +190,8 @@ namespace Forms.Docking
                     placement.Position = position;
                     placement.RotationDegrees = rotation;
                 }
-                else if (currentObject is Instance)
+                else if (currentObject is Instance instance)
                 {
-                    Instance instance = (currentObject as Instance);
                     instance.Position = position;
                     instance.Rotation = rotation;
                     instance.Scale = scale.X;

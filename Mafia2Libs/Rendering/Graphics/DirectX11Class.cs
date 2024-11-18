@@ -2,7 +2,6 @@
 using Utils.Settings;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
-using Vortice.Direct3D11.Debug;
 using Vortice.DXGI;
 using Vortice.Mathematics;
 

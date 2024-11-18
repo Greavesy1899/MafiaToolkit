@@ -59,7 +59,7 @@ namespace ResourceTypes.FrameResource
             return string.Format("{0}", Name);
         }
 
-        public override void ConstructRenderable(Dictionary<int, IRenderer> assets)
+        public override void ConstructRenderable()
         {
             BoundingBox TempBox = new BoundingBox(new Vector3(0.5f), new Vector3(0.5f));
             RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(TempBox, WorldTransform);

@@ -85,6 +85,7 @@
   <ItemGroup>
     <None Remove="Localisations\ar_AR.xml" />
     <None Remove="Shaders\LightInstanceVS.hlsl" />
+    <None Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
@@ -146,6 +147,7 @@
     <Compile Update="Forms\ATPEditor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <ItemGroup>
     <None Update="build.cmd">
@@ -321,7 +323,6 @@
     <PackageReference Include="Vortice.XInput" Version="3.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Rendering\Graphics\RenderTypes\Instances\" />
     <Folder Include="ResourceTypes\FileTypes\M3\XBin\Types\PaintCombinations\Mafia3\" />
     <Folder Include="ResourceTypes\FileTypes\Wwise\HIRC\Helpers\" />
     <Folder Include="ResourceTypes\FileTypes\Wwise\HIRC\Objects\" />
@@ -334,6 +335,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shaders\mrdka.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Rendering\Graphics\RenderTypes\Instances\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"

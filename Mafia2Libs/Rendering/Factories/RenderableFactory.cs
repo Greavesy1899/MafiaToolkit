@@ -26,7 +26,7 @@ namespace Rendering.Factories
             return Plane3D;
         }
 
-        public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh,Dictionary<int, IRenderer> assets)
+        public static RenderModel BuildRenderModelFromFrame(FrameObjectSingleMesh Mesh)
         {
             if (Mesh.MaterialIndex == -1 && Mesh.MeshIndex == -1)
             {

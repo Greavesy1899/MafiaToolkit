@@ -624,6 +624,7 @@ namespace Rendering.Graphics
             Assets = null;
             D3D?.Shutdown();
             D3D = null;
+            selectedInstances = null;
         }
 
 

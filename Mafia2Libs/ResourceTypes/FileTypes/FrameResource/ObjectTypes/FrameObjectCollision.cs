@@ -50,7 +50,7 @@ namespace ResourceTypes.FrameResource
             writer.Write(_Hash);
         }
 
-        public override void ConstructRenderable(Dictionary<int, IRenderer> assets)
+        public override void ConstructRenderable()
         {
             GetUsedItemDesc();
 

@@ -203,9 +203,9 @@ namespace ResourceTypes.FrameResource
             NewModel.CreateObjectsFromModel();
         }
 
-        public override void ConstructRenderable(Dictionary<int, IRenderer> assets)
+        public override void ConstructRenderable()
         {
-            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this,assets);
+            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this);
             RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }
