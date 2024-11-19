@@ -1,5 +1,13 @@
-﻿using System.IO;
+﻿using Mafia2Tool;
+using ResourceTypes.Actors;
+using ResourceTypes.SoundTable;
+using System;
 using Microsoft.Win32;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using static ResourceTypes.FrameNameTable.FrameNameTable;
+using Gibbed.Squish;
 using ResourceTypes.Navigation.Traffic;
 
 namespace Core.IO

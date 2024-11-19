@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
-using System.Drawing.Design;
-using System.IO;
-using Rendering.Core;
+﻿using System.Collections.Generic;
 using Rendering.Factories;
 using Rendering.Graphics;
+using System.ComponentModel;
+using System.IO;
+using System.Numerics;
 using ResourceTypes.BufferPools;
 using Utils.Extensions;
 using Utils.Models;
@@ -27,7 +27,7 @@ namespace ResourceTypes.FrameResource
         private FrameMaterial material;
         private FrameGeometry geometry;
 
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public SingleMeshFlags SingleMeshFlags {
             get { return flags; }
             set { flags = value; }
@@ -206,7 +206,7 @@ namespace ResourceTypes.FrameResource
         public override void ConstructRenderable()
         {
             RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this);
-            RenderAdapter = new RenderableAdapter();
+            RenderAdapter = new Rendering.Core.RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }
 

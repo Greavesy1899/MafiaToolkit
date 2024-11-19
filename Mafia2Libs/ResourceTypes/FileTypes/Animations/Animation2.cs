@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ResourceTypes.ModelHelpers.ModelExporter;
+using System;
 using System.IO;
-using ResourceTypes.ModelHelpers.ModelExporter;
 using Utils.Logging;
 
 namespace ResourceTypes.Animation2

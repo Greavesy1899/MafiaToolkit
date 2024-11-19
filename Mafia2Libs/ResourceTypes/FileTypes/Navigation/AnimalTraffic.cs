@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing.Design;
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
 using Utils.Helpers;
+using Utils.Logging;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
@@ -42,7 +42,7 @@ namespace ResourceTypes.Navigation
             public Vector3 Rotation { get; set; }
 
             // 7 for dove, 5 for idle?, 2 for despawn?, 0 for transition?
-            [LocalisedDescription("The flags for this point in the path."), Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+            [LocalisedDescription("The flags for this point in the path."), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
             public PathPointFlags Flags { get; set; } 
 
             public override string ToString()

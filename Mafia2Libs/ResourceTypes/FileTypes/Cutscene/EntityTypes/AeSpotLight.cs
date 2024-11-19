@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
+﻿using ResourceTypes.Cutscene.AnimEntities.LightTypes;
+using System.ComponentModel;
 using System.IO;
-using ResourceTypes.Cutscene.AnimEntities.LightTypes;
 using Toolkit.Mathematics;
 using Utils.Extensions;
 using Utils.Logging;

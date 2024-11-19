@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Materials;
+using ResourceTypes.ModelHelpers.ModelExporter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.Materials;
-using ResourceTypes.ModelHelpers.ModelExporter;
 using Utils.Language;
 using Utils.Models;
 using Utils.Settings;

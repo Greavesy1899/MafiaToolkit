@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Utils.Helpers.Reflection;
 using Utils.StringHelpers;
+using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.Navigation
 {

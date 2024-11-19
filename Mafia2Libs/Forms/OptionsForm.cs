@@ -1,5 +1,5 @@
-﻿using System.Windows.Forms;
-using Forms.OptionControls;
+﻿using Forms.OptionControls;
+using System.Windows.Forms;
 using Utils.Language;
 using Utils.Settings;
 

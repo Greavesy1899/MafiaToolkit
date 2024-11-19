@@ -1,8 +1,11 @@
-﻿using System.Numerics;
-using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.Collisions;
-using ResourceTypes.Materials;
+﻿using ResourceTypes.Collisions;
+using Vortice;
 using Utils.Models;
+using System.Numerics;
+using ResourceTypes.Materials;
+using Gibbed.Illusion.FileFormats.Hashing;
+using Toolkit.Mathematics;
+using System;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {

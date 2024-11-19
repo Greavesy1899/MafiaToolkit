@@ -1,12 +1,11 @@
-﻿using System.ComponentModel;
+﻿using Rendering.Core;
+using Rendering.Graphics;
+using System.ComponentModel;
 using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
-using Rendering.Core;
-using Rendering.Graphics;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
-using Color = System.Drawing.Color;
 
 namespace ResourceTypes.Navigation
 {
@@ -73,7 +72,7 @@ namespace ResourceTypes.Navigation
             base.ConstructRenderable(BBoxBatcher);
 
             RenderBoundingBox navigationBox = new RenderBoundingBox();
-            navigationBox.SetColour(Color.Yellow);
+            navigationBox.SetColour(System.Drawing.Color.Yellow);
 
             BoundingBox BBox = new BoundingBox(Minimum, Maximum);
 

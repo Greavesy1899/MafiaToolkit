@@ -1,5 +1,5 @@
-﻿using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
+using System.ComponentModel;
 
 namespace ResourceTypes.OC3.FaceFX
 {

@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin.TableContainers
 {

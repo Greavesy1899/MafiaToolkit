@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.Windows;
 using System.Windows.Forms;
 using ResourceTypes.Actors;
 using ResourceTypes.EntityDataStorage;
@@ -9,7 +8,6 @@ using Utils.Helpers.Reflection;
 using Utils.Language;
 using Utils.Logging;
 using Utils.Settings;
-using MessageBox = System.Windows.MessageBox;
 
 namespace Toolkit.Forms
 {
@@ -179,7 +177,7 @@ namespace Toolkit.Forms
         private void Button_Paste_Click(object sender, EventArgs e) => PasteTagData();
         private void ToolStrip_Copy_Click(object sender, EventArgs e) => CopyTagData();
         private void ToolStrip_Paste_Click(object sender, EventArgs e) => PasteTagData();
-        private void ContextMenu_Opening(object sender, CancelEventArgs e)
+        private void ContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             TreeNode SelectedNode = TreeView_Tables.SelectedNode;
             if (SelectedNode != null && SelectedNode.Tag != null)
@@ -268,13 +266,13 @@ namespace Toolkit.Forms
         {
             if (bIsFileEdited)
             {
-                MessageBoxResult SaveChanges = MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == MessageBoxResult.Yes)
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == MessageBoxResult.Cancel)
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }

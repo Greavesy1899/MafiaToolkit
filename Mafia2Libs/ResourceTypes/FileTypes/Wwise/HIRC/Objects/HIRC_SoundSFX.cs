@@ -1,12 +1,17 @@
-﻿using System.ComponentModel;
+﻿using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Collections.Generic;
+using System.Windows;
+using ResourceTypes.Wwise;
 using ResourceTypes.Wwise.Helpers;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class SoundSFX
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public int Type { get; set; }
         public uint ID { get; set; }
         public uint PluginID { get; set; }

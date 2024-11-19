@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Gibbed.IO;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
-using Gibbed.IO;
 using Toolkit.Mathematics;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
+using Utils.StringHelpers;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Sound
 {
@@ -110,9 +112,9 @@ namespace ResourceTypes.Sound
             Name = string.Empty;
         }
 
-        public virtual void ReadSDS(MemoryStream Stream, Endian Endianess)
+        public virtual void ReadSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            bool bIsBigEndian = (Endianess == Endian.Big);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
             // Read array of ushorts, I suppsoe they reference big hash list in main file.
             ushort NumCount = Stream.ReadUInt16(bIsBigEndian);
@@ -142,9 +144,9 @@ namespace ResourceTypes.Sound
             bBasicSceneOnly = Stream.ReadBoolean();
         }
 
-        public virtual void WriteSDS(MemoryStream Stream, Endian Endianess)
+        public virtual void WriteSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            bool bIsBigEndian = (Endianess == Endian.Big);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
             // Write lookup list
             Stream.Write((ushort)Unk0.Length, bIsBigEndian);
@@ -177,9 +179,9 @@ namespace ResourceTypes.Sound
             Planes = new Plane[0];
         }
 
-        public override void ReadSDS(MemoryStream Stream, Endian Endianess)
+        public override void ReadSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            bool bIsBigEndian = (Endianess == Endian.Big);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
             // Read floats, yes, before the base class. How odd.
             byte NumFloats = Stream.ReadByte8(); // Probably vector count
@@ -197,7 +199,7 @@ namespace ResourceTypes.Sound
 
         public override void WriteSDS(MemoryStream Stream, Endian Endianess)
         {
-            bool bIsBigEndian = (Endianess == Endian.Big);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
             // Write planes
             Stream.WriteByte((byte)Planes.Length);
@@ -245,9 +247,9 @@ namespace ResourceTypes.Sound
             VolumeFactor = 0.0f;
         }
 
-        public void ReadSDS(MemoryStream Stream, Endian Endianess)
+        public void ReadSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            bool bIsBigEndian = (Endianess == Endian.Big);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
             Name = Stream.ReadString8(bIsBigEndian);
             Position.ReadFromFile(Stream, bIsBigEndian);
@@ -269,9 +271,9 @@ namespace ResourceTypes.Sound
             }
         }
 
-        public void WriteSDS(MemoryStream Stream, Endian Endianess)
+        public void WriteSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            bool bIsBigEndian = (Endianess == Endian.Big);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
             Stream.WriteString8(Name, bIsBigEndian);
             Position.WriteToFile(Stream, bIsBigEndian);
@@ -314,22 +316,22 @@ namespace ResourceTypes.Sound
             byte[] FileBytes = File.ReadAllBytes(info.FullName);
             using(MemoryStream Stream = new MemoryStream(FileBytes))
             {
-                ReadSDS(Stream, Endian.Little);
+                ReadSDS(Stream, Gibbed.IO.Endian.Little);
 
                 XElement XMLFile = ReflectionHelpers.ConvertPropertyToXML(this);
                 XMLFile.Save("Output.xml");
 
                 using(MemoryStream WriteStream = new MemoryStream())
                 {
-                    WriteSDS(WriteStream, Endian.Little);
+                    WriteSDS(WriteStream, Gibbed.IO.Endian.Little);
                     File.WriteAllBytes("Output.bin", WriteStream.ToArray());
                 }
             }
         }
 
-        public void ReadSDS(MemoryStream Stream, Endian Endianess)
+        public void ReadSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            bool bIsBigEndian = (Endianess == Endian.Big);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
             Name = Stream.ReadString8(bIsBigEndian);
 
@@ -380,9 +382,9 @@ namespace ResourceTypes.Sound
             }
         }
 
-        public void WriteSDS(MemoryStream Stream, Endian Endianess)
+        public void WriteSDS(MemoryStream Stream, Gibbed.IO.Endian Endianess)
         {
-            bool bIsBigEndian = (Endianess == Endian.Big);
+            bool bIsBigEndian = (Endianess == Gibbed.IO.Endian.Big);
 
             Stream.WriteString8(Name, bIsBigEndian);
 

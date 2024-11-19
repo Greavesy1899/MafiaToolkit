@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Rendering.Graphics;
+using System;
 using System.Numerics;
-using Rendering.Graphics;
+using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
@@ -34,11 +35,11 @@ namespace Forms.Docking
 
         }
 
-        private void OnResize(object sender, EventArgs e)
+        private void OnResize(object sender, System.EventArgs e)
         {
         }
 
-        private void Numeric_OnValueChanged(object sender, EventArgs e)
+        private void Numeric_OnValueChanged(object sender, System.EventArgs e)
         {
             if(sender == Numeric_PosX)
             {

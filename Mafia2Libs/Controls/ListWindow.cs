@@ -1,8 +1,7 @@
-﻿using System;
+﻿using ResourceTypes.Actors;
+using ResourceTypes.FrameResource;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ResourceTypes.Actors;
-using ResourceTypes.FrameResource;
 using Utils.Language;
 
 namespace Mafia2Tool
@@ -69,7 +68,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void SearchOnClick(object sender, EventArgs e)
+        private void SearchOnClick(object sender, System.EventArgs e)
         {
             if (!searchMode)
             {
@@ -87,7 +86,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void OnItemSelect(object sender, EventArgs e)
+        private void OnItemSelect(object sender, System.EventArgs e)
         {
             if (listBox1.SelectedItem != null)
             {

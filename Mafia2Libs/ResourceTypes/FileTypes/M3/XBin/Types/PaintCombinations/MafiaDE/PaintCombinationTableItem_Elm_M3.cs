@@ -1,5 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Utils.Helpers.Reflection;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin.PaintCombinations
 {

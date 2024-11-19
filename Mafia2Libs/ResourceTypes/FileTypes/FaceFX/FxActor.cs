@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
-using System.IO;
-using System.Numerics;
+﻿using System.IO;
+using System.ComponentModel;
 using Utils.StringHelpers;
+using System.Numerics;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.OC3.FaceFX

@@ -1,13 +1,18 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Collections.Generic;
+using System.ComponentModel;
+using ResourceTypes.Wwise;
+using Utils;
 
 namespace ResourceTypes.Wwise.Helpers
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class StateChunk
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public HIRCObject Parent { get; set; }
         public uint GroupID { get; set; }
         public byte SyncType { get; set; } //0x00 = Immediate

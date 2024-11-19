@@ -1,9 +1,13 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using ResourceTypes.M3.XBin.Vehicles;
+using Utils.Extensions;
 using Utils.Helpers.Reflection;
 using Utils.Settings;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin
 {

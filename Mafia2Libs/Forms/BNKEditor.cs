@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
+using System;
 using System.IO;
-using System.Windows;
 using System.Windows.Forms;
 using ResourceTypes.Wwise;
 using Utils.Language;
 using Utils.Settings;
-using MessageBox = System.Windows.Forms.MessageBox;
+using Forms.EditorControls;
+using System.Collections.Generic;
 
 namespace Mafia2Tool
 {
@@ -121,7 +121,7 @@ namespace Mafia2Tool
             WemGrid.SelectedObject = e.Node.Tag;
         }
 
-        private void Button_ImportWem_Click(object sender, EventArgs e)
+        private void Button_ImportWem_Click(object sender, System.EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
 
@@ -172,7 +172,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void Button_ReplaceWem_Click(object sender, EventArgs e)
+        private void Button_ReplaceWem_Click(object sender, System.EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
 
@@ -226,7 +226,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void Button_ExportWem_Click(object sender, EventArgs e)
+        private void Button_ExportWem_Click(object sender, System.EventArgs e)
         {
             OpenFileDialog exportFile = new OpenFileDialog();
             exportFile.InitialDirectory = BnkFile.DirectoryName;
@@ -246,7 +246,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void Button_ExportAll_Click(object sender, EventArgs e)
+        private void Button_ExportAll_Click(object sender, System.EventArgs e)
         {
             OpenFileDialog exportFile = new OpenFileDialog();
             exportFile.InitialDirectory = BnkFile.DirectoryName;
@@ -263,7 +263,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void ContextEdit_Click(object sender, EventArgs e)
+        private void ContextEdit_Click(object sender, System.EventArgs e)
         {
             int itemIndex = bnk.WemList.IndexOf((Wem)WemGrid.SelectedObject);
 
@@ -303,23 +303,23 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == MessageBoxResult.Yes)
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == MessageBoxResult.Cancel)
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }
             }
         }
 
-        private void ContextDelete_Click(object sender, EventArgs e) => Delete();
-        private void Button_DeleteWem_Click(object sender, EventArgs e) => Delete();
-        private void SaveButton_OnClick(object sender, EventArgs e) => Save();
-        private void ReloadButton_OnClick(object sender, EventArgs e) => Reload();
-        private void ExitButton_OnClick(object sender, EventArgs e) => Close();
+        private void ContextDelete_Click(object sender, System.EventArgs e) => Delete();
+        private void Button_DeleteWem_Click(object sender, System.EventArgs e) => Delete();
+        private void SaveButton_OnClick(object sender, System.EventArgs e) => Save();
+        private void ReloadButton_OnClick(object sender, System.EventArgs e) => Reload();
+        private void ExitButton_OnClick(object sender, System.EventArgs e) => Close();
     }
 }

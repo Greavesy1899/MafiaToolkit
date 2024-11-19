@@ -20,6 +20,8 @@
  *    distribution.
  */
 
+using Gibbed.Mafia2.ResourceFormats;
+
 namespace Gibbed.Mafia2.FileFormats.Archive
 {
     public class ResourceEntry

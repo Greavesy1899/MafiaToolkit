@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
 using System.ComponentModel;
+using System;
 using System.IO;
 using System.Numerics;
-using Gibbed.Illusion.FileFormats.Hashing;
 using Utils.StringHelpers;
 using Utils.VorticeUtils;
 

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Gibbed.IO;
+using Gibbed.Mafia2.FileFormats.Archive;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml.XPath;
-using Gibbed.IO;
-using Gibbed.Mafia2.FileFormats.Archive;
 using Utils.Settings;
 
 namespace Gibbed.Mafia2.FileFormats

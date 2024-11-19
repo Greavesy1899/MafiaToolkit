@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using Gibbed.Illusion.FileFormats.Hashing;
+using Utils.Extensions;
 using Utils.Helpers;
 using Utils.Helpers.Reflection;
 

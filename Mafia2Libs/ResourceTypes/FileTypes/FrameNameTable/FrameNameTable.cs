@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using ResourceTypes.FrameResource;
 using System.IO;
 using System.Linq;
-using ResourceTypes.FrameResource;
+using Utils.StringHelpers;
 using Utils.Extensions;
 
 namespace ResourceTypes.FrameNameTable

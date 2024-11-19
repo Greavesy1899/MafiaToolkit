@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Gibbed.Illusion.FileFormats;
+﻿using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
 using Gibbed.Mafia2.FileFormats.Archive;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -86,19 +86,19 @@ namespace Gibbed.Mafia2.FileFormats
             resources = new ResourceEntry[UnkTotal];
             for (uint i = 0; i < resources.Length; i++)
             {
-                ResourceHeader resourceHeader;
+                Archive.ResourceHeader resourceHeader;
                 //always complains about hash errors; had to mix it up.
                 
                 using (var data = blockStream.ReadToMemoryStream(26))
                 {
-                    resourceHeader = ResourceHeader.Read(data, endian, 19);
+                    resourceHeader = Archive.ResourceHeader.Read(data, endian, 19);
                 }
                 blockStream.ReadBytes(4); //checksum i think
                 if (resourceHeader.Size < 30)
                 {
                     throw new FormatException();
                 }
-                resources[i] = new ResourceEntry()
+                resources[i] = new Archive.ResourceEntry()
                 {
                     TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,

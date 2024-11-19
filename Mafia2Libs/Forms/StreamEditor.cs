@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Forms;
 using ResourceTypes.Misc;
 using Utils.Language;
 using Utils.Logging;
 using Utils.Settings;
 using static ResourceTypes.Misc.StreamMapLoader;
-using MessageBox = System.Windows.MessageBox;
 
 namespace Mafia2Tool
 { 
@@ -305,11 +303,11 @@ namespace Mafia2Tool
         }
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e) => PropertyGrid_Stream.SelectedObject = e.Node.Tag;
-        private void ExitButtonPressed(object sender, EventArgs e) => Close();
-        private void ReloadButtonPressed(object sender, EventArgs e) => BuildData();
-        private void SaveButtonPressed(object sender, EventArgs e) => Save();
+        private void ExitButtonPressed(object sender, System.EventArgs e) => Close();
+        private void ReloadButtonPressed(object sender, System.EventArgs e) => BuildData();
+        private void SaveButtonPressed(object sender, System.EventArgs e) => Save();
 
-        private void OnContextMenuOpening(object sender, CancelEventArgs e)
+        private void OnContextMenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             for (int i = 0; i != LineContextStrip.Items.Count; i++)
             {
@@ -332,7 +330,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void DeleteLineButtonPressed(object sender, EventArgs e)
+        private void DeleteLineButtonPressed(object sender, System.EventArgs e)
         {
             linesTree?.Nodes.Remove(linesTree.SelectedNode);
 
@@ -340,7 +338,7 @@ namespace Mafia2Tool
             bIsFileEdited = true;
         }
 
-        private void AddLineButtonPressed(object sender, EventArgs e)
+        private void AddLineButtonPressed(object sender, System.EventArgs e)
         {
             TreeNode node = linesTree.SelectedNode;
             StreamLine line = new StreamLine();
@@ -402,7 +400,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void MoveItemUp_Click(object sender, EventArgs e)
+        private void MoveItemUp_Click(object sender, System.EventArgs e)
         {
             MoveItemUp();
         }
@@ -430,7 +428,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void MoveItemDown_Click(object sender, EventArgs e)
+        private void MoveItemDown_Click(object sender, System.EventArgs e)
         {
             MoveItemDown();
         }
@@ -569,13 +567,13 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                MessageBoxResult SaveChanges = MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == MessageBoxResult.Yes)
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == MessageBoxResult.Cancel)
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }

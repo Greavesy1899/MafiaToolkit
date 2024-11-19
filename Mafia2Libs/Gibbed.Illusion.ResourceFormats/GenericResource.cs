@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows;
-using Gibbed.Illusion.FileFormats;
-using Gibbed.Illusion.FileFormats.Hashing;
+﻿using System.IO;
 using Gibbed.IO;
+using Gibbed.Illusion.FileFormats;
+using System.Collections.Generic;
+using System.Windows;
+using System;
 using Gibbed.Mafia2.FileFormats.Archive;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {

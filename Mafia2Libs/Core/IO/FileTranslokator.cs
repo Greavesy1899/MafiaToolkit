@@ -1,5 +1,5 @@
-﻿using System.IO;
-using Mafia2Tool.Forms;
+﻿using Mafia2Tool.Forms;
+using System.IO;
 
 namespace Core.IO
 {

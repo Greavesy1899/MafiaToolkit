@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Rendering.Graphics;
+using ResourceTypes.Materials;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Rendering.Graphics;
-using ResourceTypes.Materials;
 
 namespace Mafia2Tool
 {

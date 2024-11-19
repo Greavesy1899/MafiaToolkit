@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using System.Numerics;
 using Utils.StringHelpers;
 using Utils.VorticeUtils;
+using System.Numerics;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {

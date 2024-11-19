@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Rendering.Graphics;
+﻿using Rendering.Graphics;
 using Vortice.Direct3D11;
+using System.Collections.Generic;
 
 namespace Rendering.Core
 {

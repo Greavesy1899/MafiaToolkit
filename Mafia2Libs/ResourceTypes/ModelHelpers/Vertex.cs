@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Numerics;
+using Vortice.Mathematics;
+using Utils.VorticeUtils;
 using Vortice.Mathematics.PackedVector;
+using System.ComponentModel;
 
 namespace Utils.Models
 {
@@ -180,13 +183,13 @@ namespace Utils.Models
         {
             // Do X
             
-            Half uXHalf = (Half)(float)UVs[uvNum].X;
+            System.Half uXHalf = (System.Half)(float)UVs[uvNum].X;
             byte[] tempPosData = BitConverter.GetBytes(uXHalf);
             Array.Copy(tempPosData, 0, data, i, 2);
 
             // Do Y
            
-            Half uYHalf = (Half)(float)UVs[uvNum].Y;
+            System.Half uYHalf = (System.Half)(float)UVs[uvNum].Y;
             tempPosData = BitConverter.GetBytes(uYHalf);
             Array.Copy(tempPosData, 0, data, i + 2, 2);
         }

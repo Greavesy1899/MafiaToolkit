@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Collections.Generic;
 using ResourceTypes.Wwise.Helpers;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class Settings
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public int Type { get; set; }
         public uint ID { get; set; }
         public List<Setting> SettingsList { get; set; }

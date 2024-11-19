@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ResourceTypes.Animation2;
+using System;
 using System.IO;
-using ResourceTypes.Animation2;
 
 namespace Core.IO
 {

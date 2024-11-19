@@ -1,19 +1,22 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Windows;
+using System.Collections.Generic;
 using ResourceTypes.Wwise.Helpers;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class Envelope
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public int Type { get; set; }
         public uint ID { get; set; }
         public List<Prop> Props { get; set; }
         public List<RangedModifier> RangedModifiers { get; set; }
         public List<RTPC> rtpc { get; set; }
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public byte[] Data { get; set; }
         public Envelope(BinaryReader br, int iType)
         {

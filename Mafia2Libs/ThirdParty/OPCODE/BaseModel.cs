@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ResourceTypes.Collisions.PhysX;
+using System;
 using System.IO;
-using ResourceTypes.Collisions.PhysX;
 using Utils.Extensions;
 using static ResourceTypes.Collisions.PhysX.SerializationUtils;
 

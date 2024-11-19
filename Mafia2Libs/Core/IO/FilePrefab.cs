@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Mafia2Tool;
+using System.Collections.Generic;
 using System.IO;
-using Mafia2Tool;
 
 namespace Core.IO
 {

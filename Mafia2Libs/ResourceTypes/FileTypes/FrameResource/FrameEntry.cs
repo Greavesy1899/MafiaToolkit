@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using Toolkit.Core;
 using Utils.Extensions;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.FrameResource
 {

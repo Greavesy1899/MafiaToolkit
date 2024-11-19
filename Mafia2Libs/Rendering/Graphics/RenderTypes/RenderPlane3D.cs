@@ -3,7 +3,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
-using Vortice.DXGI;
 using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
@@ -121,7 +120,7 @@ namespace Rendering.Graphics
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
+            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
 
             deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
 

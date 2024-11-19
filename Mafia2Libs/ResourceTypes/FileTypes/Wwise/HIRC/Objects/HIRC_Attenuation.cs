@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Windows;
+using System.Collections.Generic;
 using ResourceTypes.Wwise.Helpers;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class Attenuation
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public int Type { get; set; }
         public uint ID { get; set; }
         public int IsConeEnabled { get; set; }
@@ -25,7 +28,7 @@ namespace ResourceTypes.Wwise.Objects
         public byte CurveToUse6 { get; set; }
         public List<Curve> Curves { get; set; }
         public List<RTPC> rtpc { get; set; }
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public byte[] Data { get; set; }
         public Attenuation(BinaryReader br, int iType)
         {

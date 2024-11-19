@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Drawing.Design;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
+using Utils.Types;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -22,9 +22,9 @@ namespace ResourceTypes.M3.XBin
         [PropertyForceAsAttribute]
         public int VehicleID { get; set; }
         public ETrafficVehicleFlags_M3 VehicleFlags { get; set; } //E_TrafficVehicleFlags
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ETrafficVehicleLookFlags_M3 VehicleLookFlags { get; set; } //E_TrafficVehicleLookFlags
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public float Weight { get; set; }
         public XBinHashName Name { get; set; }
 

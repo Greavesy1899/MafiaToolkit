@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Windows;
 using System.Windows.Forms;
-using Forms.EditorControls;
 using Gibbed.Illusion.FileFormats.Hashing;
+using Forms.EditorControls;
 using ResourceTypes.Materials;
-using Utils.Extensions;
 using Utils.Language;
 using Utils.Settings;
-using MessageBox = System.Windows.Forms.MessageBox;
+using System.Linq;
+using Utils.Extensions;
 
 namespace Mafia2Tool
 {
@@ -441,15 +439,15 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == MessageBoxResult.Yes)
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     Save();
                     MaterialData.Load();
                     Dispose();
                 }
-                else if (SaveChanges == MessageBoxResult.No)
+                else if (SaveChanges == System.Windows.MessageBoxResult.No)
                 {
                     MaterialData.Load();
                     Dispose();
@@ -480,13 +478,13 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == MessageBoxResult.Yes)
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == MessageBoxResult.Cancel)
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }

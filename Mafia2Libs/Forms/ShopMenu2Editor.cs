@@ -1,11 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.IO;
-using System.Windows;
+﻿using System.IO;
 using System.Windows.Forms;
-using ResourceTypes.City;
+using Utils.Helpers;
 using Utils.Language;
-using MessageBox = System.Windows.MessageBox;
+using ResourceTypes.City;
+using System;
 
 namespace Mafia2Tool
 {
@@ -251,20 +249,20 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                MessageBoxResult SaveChanges = MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == MessageBoxResult.Yes)
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == MessageBoxResult.Cancel)
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }
             }
         }
 
-        private void Context_Menu_OnOpening(object sender, CancelEventArgs e)
+        private void Context_Menu_OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Context_DuplicateMetaInfo.Enabled = false;
             Context_DuplicateMetaInfoItem.Enabled = false;
@@ -296,13 +294,13 @@ namespace Mafia2Tool
             bIsFileEdited = true;
         }
 
-        private void Button_Save_OnClick(object sender, EventArgs e) => Save();
-        private void Button_Reload_OnClick(object sender, EventArgs e) => Reload();
-        private void Button_Exit_OnClick(object sender, EventArgs e) => Close();
-        private void Button_Delete_OnClick(object sender, EventArgs e) => Delete();
-        private void Button_AddType_OnClick(object sender, EventArgs e) => AddType();
-        private void Button_AddMetaInfo_OnClick(object sender, EventArgs e) => AddMetaInfo();
-        private void Button_ExportXml_OnClick(object sender, EventArgs e)
+        private void Button_Save_OnClick(object sender, System.EventArgs e) => Save();
+        private void Button_Reload_OnClick(object sender, System.EventArgs e) => Reload();
+        private void Button_Exit_OnClick(object sender, System.EventArgs e) => Close();
+        private void Button_Delete_OnClick(object sender, System.EventArgs e) => Delete();
+        private void Button_AddType_OnClick(object sender, System.EventArgs e) => AddType();
+        private void Button_AddMetaInfo_OnClick(object sender, System.EventArgs e) => AddMetaInfo();
+        private void Button_ExportXml_OnClick(object sender, System.EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "XML|*.XML";
@@ -332,10 +330,10 @@ namespace Mafia2Tool
             }
         }
 
-        private void Context_Delete_OnClick(object sender, EventArgs e) => Delete();
-        private void Context_AddType_OnClick(object sender, EventArgs e) => AddType();
-        private void Context_AddMetaInfo_OnClick(object sender, EventArgs e) => AddMetaInfo();
-        private void Context_DupeMetaInfo_Clicked(object sender, EventArgs e) => DuplicateMetaInfo();
-        private void Context_DupeMetaInfoItem_Clicked(object sender, EventArgs e) => DuplicateMetaInfoItem();
+        private void Context_Delete_OnClick(object sender, System.EventArgs e) => Delete();
+        private void Context_AddType_OnClick(object sender, System.EventArgs e) => AddType();
+        private void Context_AddMetaInfo_OnClick(object sender, System.EventArgs e) => AddMetaInfo();
+        private void Context_DupeMetaInfo_Clicked(object sender, System.EventArgs e) => DuplicateMetaInfo();
+        private void Context_DupeMetaInfoItem_Clicked(object sender, System.EventArgs e) => DuplicateMetaInfoItem();
     }
 }

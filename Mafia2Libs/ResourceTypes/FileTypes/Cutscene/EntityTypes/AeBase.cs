@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
+﻿using ResourceTypes.Cutscene.CurveParams;
+using System.ComponentModel;
 using System.IO;
-using ResourceTypes.Cutscene.CurveParams;
 using Utils.Extensions;
 using Utils.Logging;
 

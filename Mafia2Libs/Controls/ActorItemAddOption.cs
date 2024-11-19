@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
-using ResourceTypes.Actors;
 using Utils.Language;
+using ResourceTypes.Actors;
 
 namespace Forms.EditorControls
 {

@@ -19,10 +19,12 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
+using SharpGen.Runtime;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using SharpGen.Runtime;
+using Utils.Logging;
+using Vortice;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
@@ -651,7 +653,7 @@ namespace Rendering.Graphics
 
                     if ((pSrcBits + (NumBytes * d)).ToInt64() > pEndBits.ToInt64())
                     {
-                        throw new EndOfStreamException();
+                        throw new System.IO.EndOfStreamException();
                     }
 
                     pSrcBits += NumBytes * d;
@@ -1124,7 +1126,7 @@ namespace Rendering.Graphics
                         textureView = null;
                         tex.Dispose();
 
-                        throw new EndOfStreamException();
+                        throw new System.IO.EndOfStreamException();
                     }
 
                     ShaderResourceViewDescription desc = textureView.Description;
@@ -1158,7 +1160,7 @@ namespace Rendering.Graphics
                                 textureView.Dispose();
                                 textureView = null;
                                 tex.Dispose();
-                                throw new EndOfStreamException();
+                                throw new System.IO.EndOfStreamException();
                             }
                             int res = ID3D11Resource.CalculateSubResourceIndex(0, item, mipLevels);
                             d3dContext.UpdateSubresource(tex, res, null, pSrcBits, rowBytes, numBytes);

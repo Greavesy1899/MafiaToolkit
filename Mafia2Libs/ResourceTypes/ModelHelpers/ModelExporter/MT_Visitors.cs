@@ -1,5 +1,10 @@
-﻿using System.Collections.Generic;
-using Gibbed.Illusion.FileFormats.Hashing;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Utils.Logging;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter

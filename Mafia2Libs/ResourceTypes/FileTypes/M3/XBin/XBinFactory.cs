@@ -1,8 +1,10 @@
-﻿using System;
-using System.IO;
-using ResourceTypes.M3.XBin.GfxContainers;
-using ResourceTypes.M3.XBin.GuiContainers;
+﻿using ResourceTypes.M3.XBin;
 using ResourceTypes.M3.XBin.TableContainers;
+using ResourceTypes.M3.XBin.GfxContainers;
+using System;
+using System.Diagnostics;
+using System.IO;
+using ResourceTypes.M3.XBin.GuiContainers;
 using Utils.Logging;
 
 namespace ResourceTypes.M3.XBin

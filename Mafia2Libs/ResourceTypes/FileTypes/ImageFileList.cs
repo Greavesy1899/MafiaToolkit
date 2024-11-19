@@ -1,6 +1,6 @@
-﻿using System.IO;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using System.IO;
 using System.Xml.Linq;
-using Gibbed.Illusion.FileFormats.Hashing;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
 

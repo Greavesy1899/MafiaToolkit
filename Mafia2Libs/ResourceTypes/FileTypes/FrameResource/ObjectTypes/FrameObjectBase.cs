@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing.Design;
-using System.IO;
-using System.Numerics;
-using Rendering.Core;
+﻿using Rendering.Core;
 using Rendering.Graphics;
 using ResourceTypes.FrameNameTable;
 using ResourceTypes.Misc;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Numerics;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.Types;
@@ -82,7 +81,7 @@ namespace ResourceTypes.FrameResource
             get { return unk6; }
             set { unk6 = value; }
         }
-        [Description("Only use this if the object is going to be saved in the FrameNameTable"), Category("FrameNameTable Data"), Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Description("Only use this if the object is going to be saved in the FrameNameTable"), Category("FrameNameTable Data"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public NameTableFlags FrameNameTableFlags {
             get { return nameTableFlags; }
             set { nameTableFlags = value; }

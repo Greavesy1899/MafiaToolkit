@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
+using System.ComponentModel;
+using Utils.Settings;
 using Utils.Language;
 using Utils.Logging;
-using Utils.Settings;
 
 namespace Mafia2Tool
 {

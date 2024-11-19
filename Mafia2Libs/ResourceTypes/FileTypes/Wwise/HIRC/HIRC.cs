@@ -1,8 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Windows;
 using ResourceTypes.Wwise.Objects;
-using MessageBox = System.Windows.MessageBox;
+using ResourceTypes.Wwise.Helpers;
+using System.Xml;
+using System.Xml.Linq;
+using System.Reflection;
+using System.Diagnostics;
+using System.Windows.Controls;
+using Utils;
 
 namespace ResourceTypes.Wwise
 {
@@ -112,7 +120,7 @@ namespace ResourceTypes.Wwise
                         int length = br.ReadInt32();
                         br.BaseStream.Position -= 5;
                         Data = br.ReadBytes(length + 5);
-                        MessageBox.Show("Detected unkown HIRC Object type at: " + (LastPos - 1).ToString("X"), "Toolkit");
+                        System.Windows.MessageBox.Show("Detected unkown HIRC Object type at: " + (LastPos - 1).ToString("X"), "Toolkit");
                         break;
                 }
             }

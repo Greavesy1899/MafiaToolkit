@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Windows;
+using System.Collections.Generic;
 using ResourceTypes.Wwise.Helpers;
+using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class RandomContainer
     {
         //TODO - Read BitVectors on bit level
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public int Type { get; set; }
         public uint ID { get; set; }
         public NodeBase NodeBase { get; set; }

@@ -1,5 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {
@@ -7,9 +11,9 @@ namespace ResourceTypes.Wwise.Helpers
     public class TrackSource
     {
         public uint PluginID { get; set; }
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public int PluginType { get; set; }
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public int PluginCompany { get; set; }
         public byte StreamType { get; set; } //0x00 = Data/Bnk, 0x02 = Streaming
         public uint SourceID { get; set; }

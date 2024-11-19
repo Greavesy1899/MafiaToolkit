@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Gibbed.Mafia2.FileFormats;
+using Gibbed.Mafia2.FileFormats.Archive;
+using System;
 using System.IO;
 using System.Windows.Forms;
-using Gibbed.Mafia2.FileFormats;
-using Gibbed.Mafia2.FileFormats.Archive;
 using Utils.Logging;
 using Utils.Settings;
 

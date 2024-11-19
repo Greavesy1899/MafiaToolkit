@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
 using System.Numerics;
-using Utils.StringHelpers;
-using Utils.VorticeUtils;
+using System.IO;
 using Vortice.Mathematics;
+using Utils.VorticeUtils;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {

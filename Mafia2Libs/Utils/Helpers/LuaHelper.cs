@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Threading;
 using UnluacNET;
 using Utils.Settings;
 
@@ -28,8 +27,8 @@ namespace Utils.Lua
             bool isAP = (info.Extension.Equals(".AP") ? true : false);
             string name = info.FullName.Remove(info.FullName.Length - (isAP ? 7 : 4));
             name += "_d" + info.Extension;
-            var curCulture = Thread.CurrentThread.CurrentCulture;
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            var curCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             using (var writer = new StreamWriter(name, false, Encoding.ASCII))
             {
                 Output output = new Output(writer);
@@ -37,7 +36,7 @@ namespace Utils.Lua
                 writer.Flush();
             }
             FixDecompiledLua(name);
-            Thread.CurrentThread.CurrentCulture = curCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = curCulture;
         }
 
         private static void FixDecompiledLua(string Name)

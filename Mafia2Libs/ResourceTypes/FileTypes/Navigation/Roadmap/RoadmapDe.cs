@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using Gibbed.IO;
 
+
 namespace ResourceTypes.Navigation.Traffic
 {
     public class RangeFlagDe : IRangeFlag

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -178,7 +177,7 @@ namespace ResourceTypes.Misc
         }
         public void WriteToFile(BinaryReader reader)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
 
         public FrameInfo GetFramePropsFor(ulong Hash)

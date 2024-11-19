@@ -1,16 +1,16 @@
-﻿using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
+using System.Collections.Generic;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class DialogueEvent //Probably unused
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public int Type { get; set; }
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public uint Length { get; set; }
         public uint ID { get; set; }
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public byte[] Data { get; set; }
         public DialogueEvent(BinaryReader br, int iType)
         {

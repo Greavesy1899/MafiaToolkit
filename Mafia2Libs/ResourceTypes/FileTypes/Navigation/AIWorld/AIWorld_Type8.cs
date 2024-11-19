@@ -1,10 +1,9 @@
-﻿using System.IO;
+﻿using Rendering.Core;
+using Rendering.Graphics;
+using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
-using Rendering.Core;
-using Rendering.Graphics;
 using Vortice.Mathematics;
-using Color = System.Drawing.Color;
 
 namespace ResourceTypes.Navigation
 {
@@ -40,7 +39,7 @@ namespace ResourceTypes.Navigation
             // NB: Base class is not called here as it may result in PrimitiveBatch.AddObject conflict
 
             RenderBoundingBox navigationBox = new RenderBoundingBox();
-            navigationBox.SetColour(Color.Blue);
+            navigationBox.SetColour(System.Drawing.Color.Blue);
             navigationBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
             navigationBox.SetTransform(Matrix4x4.CreateTranslation(Unk2));
 

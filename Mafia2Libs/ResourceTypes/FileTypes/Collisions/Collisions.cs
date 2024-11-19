@@ -1,11 +1,12 @@
-﻿using System;
+﻿using ResourceTypes.Collisions;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using Utils.Helpers;
 using Utils.Logging;
-using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 
@@ -74,7 +75,7 @@ namespace ResourceTypes.Collisions
             }
 
             //force cook collisions
-            if (ToolkitSettings.CookCollisions)
+            if (Utils.Settings.ToolkitSettings.CookCollisions)
             {
                 using(BinaryWriter writer = new BinaryWriter(File.Open("MeshBundle.bin", FileMode.Create)))
                 {

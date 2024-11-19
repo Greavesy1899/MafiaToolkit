@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Drawing.Design;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -12,7 +11,7 @@ namespace ResourceTypes.M3.XBin
     public class SlotItem
     {
         public int TypeID { get; set; }
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ESlotType SlotType { get; set; } //ESlotType
         [Browsable(false), PropertyIgnoreByReflector]
         public int BaseNameOffset { get; set; }

@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
+using Utils.Settings;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {

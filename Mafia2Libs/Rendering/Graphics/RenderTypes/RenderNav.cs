@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
-using Rendering.Core;
+﻿using Rendering.Core;
 using ResourceTypes.Navigation;
+using System.Collections.Generic;
+using System.Numerics;
 using Toolkit.Core;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
-using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -48,7 +47,7 @@ namespace Rendering.Graphics
             {
                 RenderBoundingBox navigationBox = new RenderBoundingBox();
                 navigationBox.Init(new BoundingBox(new Vector3(-0.1f), new Vector3(0.1f)));
-                navigationBox.SetColour(Color.Green);
+                navigationBox.SetColour(System.Drawing.Color.Green);
                 navigationBox.SetTransform(Matrix4x4.CreateTranslation(Vertex.Position));
 
                 int PathHandle = RefManager.GetNewRefID();
@@ -76,9 +75,9 @@ namespace Rendering.Graphics
 
             // Render debug work
             OBJData.VertexStruct PathPoint = data.vertices[Index];
-            RenderLine FromA = CreateConnectionLine(PathPoint, data.vertices[PathPoint.Unk3], Color.Yellow);
-            RenderLine FromB = CreateConnectionLine(PathPoint, data.vertices[PathPoint.Unk4], Color.Brown);
-            RenderLine FromC = CreateConnectionLine(PathPoint, data.vertices[PathPoint.Unk5], Color.Red);
+            RenderLine FromA = CreateConnectionLine(PathPoint, data.vertices[PathPoint.Unk3], System.Drawing.Color.Yellow);
+            RenderLine FromB = CreateConnectionLine(PathPoint, data.vertices[PathPoint.Unk4], System.Drawing.Color.Brown);
+            RenderLine FromC = CreateConnectionLine(PathPoint, data.vertices[PathPoint.Unk5], System.Drawing.Color.Red);
 
             PointConnectionsBatch.ClearObjects();
             PointConnectionsBatch.AddObject(RefManager.GetNewRefID(), FromA);
@@ -87,24 +86,24 @@ namespace Rendering.Graphics
 
             foreach (var IncomingPoint in PathPoint.IncomingConnections)
             {
-                RenderLine Connection = CreateConnectionLine(PathPoint, IncomingPoint, Color.Green);
+                RenderLine Connection = CreateConnectionLine(PathPoint, IncomingPoint, System.Drawing.Color.Green);
                 PointConnectionsBatch.AddObject(RefManager.GetNewRefID(), Connection);
             }
 
             foreach (var OutgoingPoint in PathPoint.OutgoingConnections)
             {
-                RenderLine Connection = CreateConnectionLine(PathPoint, OutgoingPoint, Color.Blue);
+                RenderLine Connection = CreateConnectionLine(PathPoint, OutgoingPoint, System.Drawing.Color.Blue);
                 PointConnectionsBatch.AddObject(RefManager.GetNewRefID(), Connection);
             }
 
             PointConnectionsBatch.SetIsDirty();
         }
 
-        private RenderLine CreateConnectionLine(OBJData.VertexStruct FromPoint, OBJData.VertexStruct ToPoint, Color Colour)
+        private RenderLine CreateConnectionLine(OBJData.VertexStruct FromPoint, OBJData.VertexStruct ToPoint, System.Drawing.Color Colour)
         {
             RenderLine navigationLine = new RenderLine();
             navigationLine.SetUnselectedColour(Colour);
-            navigationLine.SetSelectedColour(Color.Red);
+            navigationLine.SetSelectedColour(System.Drawing.Color.Red);
             navigationLine.Init(new Vector3[2] { FromPoint.Position, ToPoint.Position });
 
             return navigationLine;

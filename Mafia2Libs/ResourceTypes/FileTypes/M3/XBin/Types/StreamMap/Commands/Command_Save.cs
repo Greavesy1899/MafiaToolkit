@@ -1,5 +1,5 @@
-﻿using System.IO;
-using ResourceTypes.M3.XBin;
+﻿using ResourceTypes.M3.XBin;
+using System.IO;
 using Utils.StringHelpers;
 
 namespace FileTypes.XBin.StreamMap.Commands

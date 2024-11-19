@@ -1,12 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using ResourceTypes.Translokator;
+using System;
 using System.IO;
-using System.Windows;
 using System.Windows.Forms;
-using ResourceTypes.Translokator;
 using Utils.Language;
-using MessageBox = System.Windows.Forms.MessageBox;
-using Object = ResourceTypes.Translokator.Object;
 
 namespace Mafia2Tool.Forms
 {
@@ -75,7 +71,7 @@ namespace Mafia2Tool.Forms
 
                 for (int y = 0; y < objectGroup.Objects.Length; y++)
                 {
-                    Object obj = objectGroup.Objects[y];
+                    ResourceTypes.Translokator.Object obj = objectGroup.Objects[y];
                     TreeNode objNode = new TreeNode(obj.Name.ToString());
                     objNode.Tag = obj;
                     objectGroupNode.Nodes.Add(objNode);
@@ -112,10 +108,10 @@ namespace Mafia2Tool.Forms
             for (int i = 0; i < translokator.ObjectGroups.Length; i++)
             {
                 ObjectGroup objectGroup = (TranslokatorTree.Nodes[2].Nodes[i].Tag as ObjectGroup);
-                objectGroup.Objects = new Object[TranslokatorTree.Nodes[2].Nodes[i].GetNodeCount(false)];
+                objectGroup.Objects = new ResourceTypes.Translokator.Object[TranslokatorTree.Nodes[2].Nodes[i].GetNodeCount(false)];
                 for (int y = 0; y < objectGroup.Objects.Length; y++)
                 {
-                    Object obj = (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].Tag as Object);
+                    ResourceTypes.Translokator.Object obj = (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].Tag as ResourceTypes.Translokator.Object);
                     obj.Instances = new Instance[TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].GetNodeCount(false)];
                     for (int z = 0; z < obj.Instances.Length; z++)
                     {
@@ -135,9 +131,9 @@ namespace Mafia2Tool.Forms
 
         private void AddInstanceNode()
         {
-            if (TranslokatorTree.SelectedNode.Tag is Object)
+            if (TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object)
             {
-                Object obj = (TranslokatorTree.SelectedNode.Tag as Object);
+                ResourceTypes.Translokator.Object obj = (TranslokatorTree.SelectedNode.Tag as ResourceTypes.Translokator.Object);
                 Instance instance = new Instance();
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
                 instanceNode.Tag = instance;
@@ -146,9 +142,9 @@ namespace Mafia2Tool.Forms
                 Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
                 bIsFileEdited = true;
             }
-            if (TranslokatorTree.SelectedNode.Tag is Instance && TranslokatorTree.SelectedNode.Parent.Tag is Object)
+            if (TranslokatorTree.SelectedNode.Tag is Instance && TranslokatorTree.SelectedNode.Parent.Tag is ResourceTypes.Translokator.Object)
             {
-                var obj = (TranslokatorTree.SelectedNode.Parent.Tag as Object);
+                var obj = (TranslokatorTree.SelectedNode.Parent.Tag as ResourceTypes.Translokator.Object);
                 Instance instance = new Instance();
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.Parent.GetNodeCount(false));
                 instanceNode.Tag = instance;
@@ -164,7 +160,7 @@ namespace Mafia2Tool.Forms
             if (TranslokatorTree.SelectedNode.Tag is ObjectGroup)
             {
                 ObjectGroup group = (TranslokatorTree.SelectedNode.Tag as ObjectGroup);
-                Object obj = new Object();
+                ResourceTypes.Translokator.Object obj = new ResourceTypes.Translokator.Object();
                 obj.Name.Set("NewObject");
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
                 instanceNode.Tag = obj;
@@ -217,9 +213,9 @@ namespace Mafia2Tool.Forms
                 if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
                 {
                     var tag = TranslokatorTree.SelectedNode.Tag;
-                    if (tag is Object)
+                    if (tag is ResourceTypes.Translokator.Object)
                     {
-                        TranslokatorTree.SelectedNode.Tag = new Object((Object)clipboard);
+                        TranslokatorTree.SelectedNode.Tag = new ResourceTypes.Translokator.Object((ResourceTypes.Translokator.Object)clipboard);
                     }
                     else if (tag is Instance && data is Instance)
                     {
@@ -241,7 +237,7 @@ namespace Mafia2Tool.Forms
             }
         }
 
-        private void TranslokatorContext_Opening(object sender, CancelEventArgs e)
+        private void TranslokatorContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Clear state
             AddInstance.Enabled = false;
@@ -255,7 +251,7 @@ namespace Mafia2Tool.Forms
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
             {
                 object Tag = TranslokatorTree.SelectedNode.Tag;
-                if (Tag.GetType() == typeof(Object))
+                if (Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
                 {
                     AddInstance.Enabled = true;
                 }
@@ -264,7 +260,7 @@ namespace Mafia2Tool.Forms
                     AddObject.Enabled = true;
                 }
                 if (Tag.GetType() == typeof(Instance) 
-                    || Tag.GetType() == typeof(Object)
+                    || Tag.GetType() == typeof(ResourceTypes.Translokator.Object)
                     || Tag.GetType() == typeof(ObjectGroup))
                 {
                     Delete.Enabled = true;
@@ -274,7 +270,7 @@ namespace Mafia2Tool.Forms
                     string AsString = (Tag as string);
                     AddGroup.Enabled = AsString.Equals("OBJ_GROUPS");
                 }
-                if (Tag.GetType() == typeof(Object) ||
+                if (Tag.GetType() == typeof(ResourceTypes.Translokator.Object) ||
                     Tag.GetType() == typeof(Instance))
                 {
                     CopyButton.Enabled = true;
@@ -308,7 +304,7 @@ namespace Mafia2Tool.Forms
                 {
                     AddObjectNode();
                 }
-                else if (Tag is Object || TranslokatorTree.SelectedNode.Tag is Instance)
+                else if (Tag is ResourceTypes.Translokator.Object || TranslokatorTree.SelectedNode.Tag is Instance)
                 {
                     AddInstanceNode();
                 }
@@ -331,7 +327,7 @@ namespace Mafia2Tool.Forms
                 TreeNode selected = TranslokatorTree.SelectedNode;
                 TranslokatorTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
 
-                if(selected.Tag is Object)
+                if(selected.Tag is ResourceTypes.Translokator.Object)
                 {
                     for(int i = 0; i < selected.Nodes.Count; i++)
                     {
@@ -381,13 +377,13 @@ namespace Mafia2Tool.Forms
         {
             if (bIsFileEdited)
             {
-                MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == MessageBoxResult.Yes)
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     SaveFile();
                 }
-                else if (SaveChanges == MessageBoxResult.Cancel)
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }
@@ -411,7 +407,7 @@ namespace Mafia2Tool.Forms
         private void PasteButton_Click(object sender, EventArgs e) => Paste();
         private void SaveToolButton_Click(object sender, EventArgs e) => SaveFile();
         private void ExitButton_Click(object sender, EventArgs e) => Close();
-        private void Button_ExportXml_OnClick(object sender, EventArgs e)
+        private void Button_ExportXml_OnClick(object sender, System.EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "XML|*.XML";

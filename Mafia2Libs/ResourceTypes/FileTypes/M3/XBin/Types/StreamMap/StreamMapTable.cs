@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
+﻿using FileTypes.XBin.StreamMap.Commands;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using FileTypes.XBin.StreamMap.Commands;
 using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.M3.XBin

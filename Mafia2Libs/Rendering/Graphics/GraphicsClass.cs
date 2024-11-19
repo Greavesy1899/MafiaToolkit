@@ -1,20 +1,19 @@
-﻿using System;
+﻿using Mafia2Tool;
+using Rendering.Core;
+using Rendering.Input;
+using ResourceTypes.FrameResource;
+using ResourceTypes.Translokator;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
-using Rendering.Core;
-using Rendering.Input;
-using ResourceTypes.Navigation;
-using ResourceTypes.Translokator;
 using Toolkit.Core;
-using Toolkit.Mathematics;
 using Utils.Models;
 using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
-using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -116,7 +115,7 @@ namespace Rendering.Graphics
                 clouds.DoRender = false;
             }
 
-            selectionBox.SetColour(Color.Red);
+            selectionBox.SetColour(System.Drawing.Color.Red);
             selectionBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(-0.5f)));          
             selectionBox.DoRender = false;
             return true;
@@ -147,7 +146,7 @@ namespace Rendering.Graphics
             return translokatorGrid.GetTreeNodes();
         }
 
-        public TreeNode SetNavigationGrid(OBJData[] data)
+        public TreeNode SetNavigationGrid(ResourceTypes.Navigation.OBJData[] data)
         {
             TreeNode[] Grids = new TreeNode[data.Length];
             navigationGrids = new SpatialGrid[data.Length];
@@ -216,6 +215,39 @@ namespace Rendering.Graphics
 
                             bbox = mesh.BoundingBox;
                         }
+
+                        //Very slow and sometimes broken alternative, can be more precise
+                        /*foreach (var transform in mesh.InstanceTransforms)
+                        {
+                            var transposed = Matrix4x4.Transpose(transform.Value);
+
+                            bbox.Max = Vector3.Transform(bbox.Max, transposed);
+                            bbox.Min = Vector3.Transform(bbox.Min, transposed);
+
+                            if (localRay.Intersects(bbox) == 0.0f) continue;
+
+                            for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
+                            {
+                                var v0 = Vector3.Transform(mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position, transposed);
+                                var v1 = Vector3.Transform(mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position, transposed);
+                                var v2 = Vector3.Transform(mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position, transposed);
+                                float t;
+
+                                if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
+
+                                var worldPosition = ray.Position + t * ray.Direction;
+                                var distance = (worldPosition - ray.Position).LengthSquared();
+                                if (distance < lowest)
+                                {
+                                    lowest = distance;
+                                    lowestRefID = model.Key;
+                                    lowestInstanceID = transform.Key;
+                                    WorldPosIntersect = worldPosition;
+                                }
+                            }
+
+                            bbox = mesh.BoundingBox;
+                        }*/
                     }
 
                     bbox = mesh.BoundingBox;
@@ -229,7 +261,7 @@ namespace Rendering.Graphics
                         var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
                         float t;
 
-                        if (!Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
+                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
 
                         var worldPosition = ray.Position + t * ray.Direction;
                         var distance = (worldPosition - ray.Position).LengthSquared();
@@ -256,7 +288,7 @@ namespace Rendering.Graphics
                         var v2 = collision.Vertices[collision.Indices[i * 3 + 2]].Position;
                         float t;
 
-                        if (!Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
+                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
 
                         if (t < 0.0f || float.IsNaN(t))
                         {

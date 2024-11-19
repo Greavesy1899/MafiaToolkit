@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using Mafia2Tool;
+﻿using Mafia2Tool;
 using Mafia2Tool.Forms;
-using ResourceTypes.Collisions;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
 using ResourceTypes.Translokator;
 using Utils.Language;
 using Utils.VorticeUtils;
@@ -138,9 +137,9 @@ namespace Forms.Docking
                 ScaleYNumeric.Value = Convert.ToDecimal(scale.Y);
                 ScaleZNumeric.Value = Convert.ToDecimal(scale.Z);
             }
-            else if (currentObject is Collision.Placement)
+            else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
             {
-                Collision.Placement placement = (currentObject as Collision.Placement);
+                ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
                 CurrentEntry.Text = placement.Hash.ToString();
                 PositionXNumeric.Value = Convert.ToDecimal(placement.Position.X);
                 PositionYNumeric.Value = Convert.ToDecimal(placement.Position.Y);
@@ -185,9 +184,9 @@ namespace Forms.Docking
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
                     fObject.LocalTransform = MatrixUtils.SetMatrix(rotation, scale, position);
                 }
-                else if (currentObject is Collision.Placement)
+                else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {
-                    Collision.Placement placement = (currentObject as Collision.Placement);
+                    ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
                     placement.Position = position;
                     placement.RotationDegrees = rotation;
                 }

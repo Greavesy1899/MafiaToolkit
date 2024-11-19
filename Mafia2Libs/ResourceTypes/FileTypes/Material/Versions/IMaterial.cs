@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing.Design;
 using System.IO;
-using Utils.Extensions;
 using Utils.Types;
+using System.ComponentModel;
+using Utils.Extensions;
 
 namespace ResourceTypes.Materials
 {
@@ -13,7 +12,7 @@ namespace ResourceTypes.Materials
         public HashName MaterialName { get; set; }
         public string MaterialGUID { get { return MaterialName.ConstructGUID(); } }
 
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public MaterialFlags Flags { get; set; }
         public ulong ShaderID { get; set; }
         public uint ShaderHash { get; set; }

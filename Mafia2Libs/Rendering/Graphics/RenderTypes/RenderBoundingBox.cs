@@ -1,13 +1,10 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using Vortice;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
-using Vortice.DXGI;
 using Vortice.Mathematics;
 using Color = System.Drawing.Color;
-using MapFlags = Vortice.Direct3D11.MapFlags;
 
 namespace Rendering.Graphics
 {
@@ -102,7 +99,7 @@ namespace Rendering.Graphics
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Format.R32_UInt, 0);
+            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
             deviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineList);
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
@@ -157,7 +154,7 @@ namespace Rendering.Graphics
         public VertexLayouts.BasicLayout.Vertex[] GetTransformVertices()
         {
             VertexLayouts.BasicLayout.Vertex[] NewVertices = new VertexLayouts.BasicLayout.Vertex[vertices.Length];
-            Array.Copy(vertices, NewVertices, vertices.Length);
+            System.Array.Copy(vertices, NewVertices, vertices.Length);
 
             for (int i = 0; i < NewVertices.Length; i++)
             {

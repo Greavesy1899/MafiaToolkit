@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Linq;
 using System.Windows;
+using System.Collections.Generic;
+using System.ComponentModel;
+using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransitionRule
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public HIRCObject Parent { get; set; }
         public List<TransitionSrcRule> Sources { get; set; }
         public int SourceID { get; set; }
@@ -124,7 +128,7 @@ namespace ResourceTypes.Wwise.Helpers
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransitionSrcRule
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public HIRCObject Parent { get; set; }
         public uint TransitionTime { get; set; }
         public uint FadeCurve { get; set; }
@@ -156,7 +160,7 @@ namespace ResourceTypes.Wwise.Helpers
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransitionDstRule
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         public HIRCObject Parent { get; set; }
         public uint TransitionTime { get; set; }
         public uint FadeCurve { get; set; }
@@ -195,7 +199,7 @@ namespace ResourceTypes.Wwise.Helpers
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransitionObject
     {
-        [Browsable(false)]
+        [System.ComponentModel.Browsable(false)]
         private HIRCObject Parent { get; set; }
         public uint ID { get; set; }
         public uint FadeInTransitionTime { get; set; }

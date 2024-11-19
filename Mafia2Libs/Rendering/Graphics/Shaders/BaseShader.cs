@@ -1,8 +1,10 @@
-﻿using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Windows;
+﻿using System;
 using Rendering.Core;
 using ResourceTypes.Materials;
+using System.Drawing;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Windows;
 using Vortice.D3DCompiler;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -97,11 +99,11 @@ namespace Rendering.Graphics
             public IMaterial MaterialData { get; set; }
             public Vector3 SelectionColour { get; set; }
         }
-        protected ID3D11VertexShader OurVertexShader { get; set; }
-        protected ID3D11VertexShader OurInstanceVertexShader { get; set; }
-        protected ID3D11PixelShader OurPixelShader { get; set; }
-        protected ID3D11GeometryShader OurGeometryShader { get; set; }
-        protected ID3D11InputLayout Layout { get; set; }
+        public ID3D11VertexShader OurVertexShader { get; set; }
+        public ID3D11VertexShader OurInstanceVertexShader { get; set; }
+        public ID3D11PixelShader OurPixelShader { get; set; }
+        public ID3D11GeometryShader OurGeometryShader { get; set; }
+        public ID3D11InputLayout Layout { get; set; }
         protected ID3D11Buffer ConstantMatrixBuffer { get; set; }
         protected ID3D11Buffer ConstantLightBuffer { get; set; }
         protected ID3D11Buffer ConstantCameraBuffer { get; set; }

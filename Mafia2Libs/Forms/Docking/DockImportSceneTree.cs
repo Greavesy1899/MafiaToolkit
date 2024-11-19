@@ -1,12 +1,9 @@
-﻿using System;
+﻿using ResourceTypes.FrameResource;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
-using Rendering.Graphics;
-using ResourceTypes.Actors;
-using ResourceTypes.Collisions;
-using ResourceTypes.FrameResource;
 using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -178,7 +175,7 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 9;
             else if (node.Tag.GetType() == typeof(FrameObjectCollision))
                 node.SelectedImageIndex = node.ImageIndex = 3;
-            else if (node.Tag.GetType() == typeof(Collision.Placement))
+            else if (node.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
                 node.SelectedImageIndex = node.ImageIndex = 4;
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
@@ -198,17 +195,17 @@ namespace Forms.Docking
             {
                 return (data as FrameObjectBase).WorldTransform.Translation;
             }
-            else if (data.GetType() == typeof(Collision.Placement))
+            else if (data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
             {
-                return (data as Collision.Placement).Position;
+                return (data as ResourceTypes.Collisions.Collision.Placement).Position;
             }
-            else if (data.GetType() == typeof(RenderNav))
+            else if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
             {
-                return (data as RenderNav).Transform.Translation;
+                return (data as Rendering.Graphics.RenderNav).Transform.Translation;
             }
-            else if (data.GetType() == typeof(ActorEntry))
+            else if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
             {
-                return (data as ActorEntry).Position;
+                return (data as ResourceTypes.Actors.ActorEntry).Position;
             }
 
             return Vector3.Zero;

@@ -1,15 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
 using System.Windows.Forms;
-using Forms.EditorControls;
 using ResourceTypes.Actors;
-using Utils.Helpers.Reflection;
 using Utils.Language;
 using Utils.Settings;
-using MessageBox = System.Windows.MessageBox;
+using Utils.Helpers.Reflection;
+using Forms.EditorControls;
+using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 namespace Mafia2Tool
 {
@@ -198,7 +196,7 @@ namespace Mafia2Tool
             ActorGrid.SelectedObject = e.Node.Tag;
         }
 
-        private void AddItemButton_Click(object sender, EventArgs e)
+        private void AddItemButton_Click(object sender, System.EventArgs e)
         {
             NewObjectForm objectForm = new NewObjectForm(true);
             objectForm.SetLabel("$SELECT_TYPE_AND_NAME");
@@ -232,7 +230,7 @@ namespace Mafia2Tool
             objectForm.Dispose();
         }
 
-        private void AddDefinitionButton_Click(object sender, EventArgs e)
+        private void AddDefinitionButton_Click(object sender, System.EventArgs e)
         {
             ListWindow window = new ListWindow();
             window.PopulateForm(actors.Items);
@@ -282,28 +280,28 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                MessageBoxResult SaveChanges = MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == MessageBoxResult.Yes)
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == MessageBoxResult.Cancel)
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }
             }
         }
 
-        private void ContextDelete_Click(object sender, EventArgs e) => Delete();
-        private void SaveButton_OnClick(object sender, EventArgs e) => Save();
-        private void ReloadButton_OnClick(object sender, EventArgs e) => Reload();
-        private void ExitButton_OnClick(object sender, EventArgs e) => Close();
-        private void ContextCopy_Click(object sender, EventArgs e) => Copy();
-        private void ContextPaste_Click(object sender, EventArgs e) => Paste();
+        private void ContextDelete_Click(object sender, System.EventArgs e) => Delete();
+        private void SaveButton_OnClick(object sender, System.EventArgs e) => Save();
+        private void ReloadButton_OnClick(object sender, System.EventArgs e) => Reload();
+        private void ExitButton_OnClick(object sender, System.EventArgs e) => Close();
+        private void ContextCopy_Click(object sender, System.EventArgs e) => Copy();
+        private void ContextPaste_Click(object sender, System.EventArgs e) => Paste();
         private void Button_MoveUp_Clicked(object sender, EventArgs e) => MoveItemUp();
         private void Button_MoveDown_Clicked(object sender, EventArgs e) => MoveItemDown();
-        private void ContextMenu_OnOpening(object sender, CancelEventArgs e)
+        private void ContextMenu_OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ContextCopy.Visible = false;
             ContextPaste.Visible = false;

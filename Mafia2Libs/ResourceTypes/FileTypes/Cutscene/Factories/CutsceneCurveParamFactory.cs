@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using System;
+using System.Diagnostics;
 using System.IO;
-using Gibbed.Illusion.FileFormats.Hashing;
 using Utils.Logging;
 
 namespace ResourceTypes.Cutscene.CurveParams

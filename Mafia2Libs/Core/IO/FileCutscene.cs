@@ -1,7 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
 using Mafia2Tool.Forms;
 using ResourceTypes.Cutscene;
+using System;
+using System.IO;
 
 namespace Core.IO
 {

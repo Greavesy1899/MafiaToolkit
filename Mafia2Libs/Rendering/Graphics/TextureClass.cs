@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Gibbed.Squish;
+using Mafia2Tool;
+using ResourceTypes.Materials;
+using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using Gibbed.Squish;
-using ResourceTypes.Materials;
 using Utils.Logging;
 using Utils.Settings;
 using Utils.Types;
@@ -50,7 +52,7 @@ namespace Rendering.Graphics
             else
             {
                 Log.WriteLine(string.Format("Failed to load file: {0}", path), LoggingTypes.FATAL, LogCategoryTypes.IO);
-                throw new Exception("Unable to locate texture.dds! This should be located in the texture folder assigned. You can assign it in Options > Render > Texture Directory.");
+                throw new System.Exception("Unable to locate texture.dds! This should be located in the texture folder assigned. You can assign it in Options > Render > Texture Directory.");
             }
         }
 

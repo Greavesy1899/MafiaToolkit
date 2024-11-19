@@ -23,7 +23,6 @@
 //THIS VERSION IS MODIFIED.
 //SEE ORIGINAL CODE HERE::
 //https://github.com/gibbed/Gibbed.Illusion
-
 using System;
 using System.IO;
 using Gibbed.Illusion.FileFormats;

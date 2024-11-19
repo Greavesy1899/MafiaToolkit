@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Utils.Extensions;
 using Utils.Logging;
-using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -114,7 +115,7 @@ namespace ResourceTypes.M3.XBin
             }
 
             BaseStream.Seek(BufferStartOffset, SeekOrigin.Begin);
-            StringHelpers.WriteString(this, RawStringBuffer);
+            Utils.StringHelpers.StringHelpers.WriteString(this, RawStringBuffer);
             PtrsToFix.Clear();
         }
 

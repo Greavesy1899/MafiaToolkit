@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Drawing.Design;
 using System.IO;
+using System.Windows.Forms;
+using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
+using Utils.Settings;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin.Vehicles
@@ -12,13 +14,13 @@ namespace ResourceTypes.M3.XBin.Vehicles
         public int Unk0 { get; set; }
         [PropertyForceAsAttribute]
         public int ID { get; set; }
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ETrafficCommonFlags_M1 CommonFlags { get; set; } //E_TrafficCommonFlags
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ETrafficVehicleFlags_M1 VehicleFlags { get; set; } //E_TrafficVehicleFlags
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ETrafficVehicleLookFlags_M1 VehicleLookFlags { get; set; } //E_TrafficVehicleLookFlags
-        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public EVehiclesTableFunctionFlags VehicleFunctionFlags { get; set; } //E_VehiclesTableFunctionFlags
         [PropertyForceAsAttribute]
         public string ModelName { get; set; }

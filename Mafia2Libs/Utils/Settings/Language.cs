@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Xml;
 using Utils.Logging;
 using Utils.Settings;
@@ -66,7 +65,7 @@ namespace Utils.Language
             }
             else
             {
-                Debug.WriteLine("Missing: " + key);
+                System.Diagnostics.Debug.WriteLine("Missing: " + key);
                 return key;
             }
         }

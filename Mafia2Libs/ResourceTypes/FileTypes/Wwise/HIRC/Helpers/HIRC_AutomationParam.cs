@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Xml;
+using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace ResourceTypes.Wwise.Helpers
 {

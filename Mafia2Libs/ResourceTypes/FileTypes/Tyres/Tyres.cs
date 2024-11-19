@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
@@ -29,7 +28,7 @@ namespace ResourceTypes.Tyres
 
             if (_magic != Magic)
             {
-                throw new Exception("Wrong file type.");
+                throw new System.Exception("Wrong file type.");
             }
 
             Version = stream.ReadInt32(false);

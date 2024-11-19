@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.FrameResource;
 using System.ComponentModel;
 using System.IO;
-using Gibbed.Illusion.FileFormats.Hashing;
 using Utils.Extensions;
-using Utils.Helpers.Reflection;
-using Utils.Models;
 using Utils.StringHelpers;
+using Utils.Models;
+using System;
+using Utils.Helpers.Reflection;
 
 namespace Utils.Types
 {

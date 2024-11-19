@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
+﻿using ResourceTypes.Navigation.Traffic;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
-using ResourceTypes.Navigation.Traffic;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
 using Color = System.Drawing.Color;
@@ -73,7 +74,7 @@ namespace Rendering.Graphics
             }
 
             Spline = new RenderLine();
-            Spline.SetUnselectedColour(Color.White);
+            Spline.SetUnselectedColour(System.Drawing.Color.White);
             Spline.Init(RoadSpline.Points.ToArray());
             BBox = BoundingBox.CreateFromPoints(RoadSpline.Points.ToArray());
         }

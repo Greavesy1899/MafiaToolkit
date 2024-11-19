@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using ResourceTypes.Collisions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using ResourceTypes.Collisions;
-using ResourceTypes.ItemDesc;
 using Utils.Extensions;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
-using Vortice.DXGI;
 using Vortice.Mathematics;
 using Color = System.Drawing.Color;
 
@@ -34,7 +32,7 @@ namespace Rendering.Graphics
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[2];
         }
 
-        public void ConvertCollisionToRender(CollisionConvex convex)
+        public void ConvertCollisionToRender(ResourceTypes.ItemDesc.CollisionConvex convex)
         {
             DoRender = true;
             BoundingBox = new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f));
@@ -157,7 +155,7 @@ namespace Rendering.Graphics
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Format.R32_UInt, 0);
+            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
             deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
             Shader.SetSceneVariables(deviceContext, Transform, camera);

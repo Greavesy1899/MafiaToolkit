@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using System.Collections.Generic;
 
 namespace ResourceTypes.OC3.FaceFX
 {
