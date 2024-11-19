@@ -1,10 +1,9 @@
 ﻿using System;
-using Utils.Logging;
-using Utils.Discord;
-using System.Windows.Forms;
 using System.Diagnostics;
-using System.Reflection;
 using System.Globalization;
+using System.Windows.Forms;
+using Utils.Discord;
+using Utils.Logging;
 
 namespace Utils.Settings
 {

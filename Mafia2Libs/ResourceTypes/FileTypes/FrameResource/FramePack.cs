@@ -1,13 +1,10 @@
-﻿using System;
-using Mafia2Tool;
-using ResourceTypes.BufferPools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
+using ResourceTypes.BufferPools;
+using ResourceTypes.FrameNameTable;
 using Utils.Extensions;
-using Utils.Settings;
 
 namespace ResourceTypes.FrameResource
 {
@@ -215,7 +212,7 @@ namespace ResourceTypes.FrameResource
 
             // Read FrameNameTable data
             parent.IsOnFrameTable = stream.ReadBoolean();
-            parent.FrameNameTableFlags = (FrameNameTable.NameTableFlags)stream.ReadUInt32(false);
+            parent.FrameNameTableFlags = (NameTableFlags)stream.ReadUInt32(false);
 
             // Read ParentIndex from previous SDS
             int OldParentIndex1RefId = stream.ReadInt32(false);

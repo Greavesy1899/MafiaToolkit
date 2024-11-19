@@ -1,21 +1,21 @@
 ﻿/* Copyright (c) 2017 Rick (rick 'at' gibbed 'dot' us)
- * 
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
  * arising from the use of this software.
- * 
+ *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
- * 
+ *
  * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software
  *    in a product, an acknowledgment in the product documentation would
  *    be appreciated but is not required.
- * 
+ *
  * 2. Altered source versions must be plainly marked as such, and must not
  *    be misrepresented as being the original software.
- * 
+ *
  * 3. This notice may not be removed or altered from any source
  *    distribution.
  */
@@ -23,6 +23,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Gibbed.Illusion.FileFormats.Hashing;
 using Gibbed.IO;
 
 namespace Gibbed.Illusion.FileFormats
@@ -38,7 +39,7 @@ namespace Gibbed.Illusion.FileFormats
         {
             var output = new MemoryStream();
 
-            uint computedHash = Hashing.FNV32.Initial;
+            uint computedHash = FNV32.Initial;
             long remaining = size;
             byte[] buffer = new byte[4096];
             while (remaining > 0)
@@ -49,7 +50,7 @@ namespace Gibbed.Illusion.FileFormats
                 {
                     throw new EndOfStreamException();
                 }
-                computedHash = Hashing.FNV32.Hash(buffer, 0, block);
+                computedHash = FNV32.Hash(buffer, 0, block);
                 output.Write(buffer, 0, block);
                 remaining -= block;
             }
@@ -72,7 +73,7 @@ namespace Gibbed.Illusion.FileFormats
             input.Position = 0;
             var buffer = input.GetBuffer();
             var length = (int)input.Length;
-            var computedHash = Hashing.FNV32.Hash(buffer, 0, length);
+            var computedHash = FNV32.Hash(buffer, 0, length);
             stream.Write(buffer, 0, length);
             stream.WriteValueU32(computedHash, endian);
             input.Position = position;

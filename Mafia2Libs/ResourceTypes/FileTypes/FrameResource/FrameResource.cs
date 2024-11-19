@@ -1,14 +1,14 @@
-﻿using System.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using Gibbed.IO;
 using Mafia2Tool;
-using Utils.Extensions;
 using ResourceTypes.Misc;
+using Utils.Extensions;
 using Utils.Logging;
+using Utils.Types;
 
 namespace ResourceTypes.FrameResource
 {
@@ -107,7 +107,7 @@ namespace ResourceTypes.FrameResource
         public FrameHeaderScene AddSceneFolder(string name)
         {
             FrameHeaderScene scene = ConstructFrameAssetOfType<FrameHeaderScene>();
-            scene.Name = new Utils.Types.HashName(name);
+            scene.Name = new HashName(name);
             return scene;
         }
 

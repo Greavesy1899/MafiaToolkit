@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Numerics;
 using Utils.Extensions;
@@ -133,7 +134,7 @@ namespace ResourceTypes.FrameResource
                     mappingForBlendingInfos[i].Bounds[x] = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
                 }
                 if (stream.ReadByte() != 0)
-                    throw new System.Exception("oops");
+                    throw new Exception("oops");
 
                 mappingForBlendingInfos[i].RefToUsageArray = stream.ReadBytes(numBones[2]);
                 mappingForBlendingInfos[i].UsageArray = stream.ReadBytes(unkLodData[i]);

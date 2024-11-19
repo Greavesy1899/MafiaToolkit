@@ -1,5 +1,4 @@
 ﻿using ResourceTypes.Materials;
-using System.Collections.Generic;
 
 namespace Rendering
 {

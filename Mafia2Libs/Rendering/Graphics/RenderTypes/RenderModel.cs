@@ -1,23 +1,23 @@
-﻿using ResourceTypes.BufferPools;
-using ResourceTypes.FrameResource;
-using ResourceTypes.Materials;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows;
+using Rendering.Core;
+using ResourceTypes.BufferPools;
+using ResourceTypes.FrameResource;
+using ResourceTypes.Materials;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
+using Vortice.DXGI;
 using static Rendering.Graphics.BaseShader;
 using Color = System.Drawing.Color;
-using Rendering.Core;
-using ResourceTypes.Translokator;
-using System.Runtime.InteropServices;
-using System.Linq;
 
 namespace Rendering.Graphics
 {
@@ -292,7 +292,7 @@ namespace Rendering.Graphics
 
                 var viewDescription = new ShaderResourceViewDescription()
                 {
-                    Format = Vortice.DXGI.Format.Unknown,
+                    Format = Format.Unknown,
                     ViewDimension = ShaderResourceViewDimension.Buffer,
                 };
 
@@ -350,7 +350,7 @@ namespace Rendering.Graphics
             {
                 VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
                 deviceContext.IASetVertexBuffers(0, VertexBufferView);
-                deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+                deviceContext.IASetIndexBuffer(indexBuffer, Format.R32_UInt, 0);
                 deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
                 deviceContext.PSSetShaderResource(2, AOTexture);
 
@@ -366,7 +366,7 @@ namespace Rendering.Graphics
             {
                 VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
                 deviceContext.IASetVertexBuffers(0, VertexBufferView);
-                deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+                deviceContext.IASetIndexBuffer(indexBuffer, Format.R32_UInt, 0);
                 deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
                 deviceContext.PSSetShaderResource(2, AOTexture);
                 BuffersSet = true;
@@ -410,7 +410,7 @@ namespace Rendering.Graphics
 
             for (int i = 0; i < LODs[0].ModelParts.Length; i++)
             {
-                RenderModel.ModelPart segment = LODs[0].ModelParts[i];
+                ModelPart segment = LODs[0].ModelParts[i];
 
                 segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, InstanceTint ? tint.Normalize() : startColor.Normalize()));
                 segment.Shader.SetSceneVariables(deviceContext, Transform, camera);

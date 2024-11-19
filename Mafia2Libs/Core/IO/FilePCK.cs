@@ -1,8 +1,5 @@
-﻿using Mafia2Tool;
-using ResourceTypes.Actors;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using Mafia2Tool;
 
 namespace Core.IO
 {

@@ -1,17 +1,13 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Xml;
-using System.Xml.Linq;
-using System.Windows;
-using System.Collections.Generic;
 using ResourceTypes.Wwise.Helpers;
-using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class BlendContainer
     {
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public int Type { get; set; }
         public uint ID { get; set; }
         public NodeBase NodeBase { get; set; }

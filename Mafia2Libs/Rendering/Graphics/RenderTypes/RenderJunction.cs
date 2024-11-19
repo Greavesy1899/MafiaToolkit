@@ -1,7 +1,7 @@
-﻿using Rendering.Core;
-using ResourceTypes.Navigation.Traffic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Numerics;
+using Rendering.Core;
+using ResourceTypes.Navigation.Traffic;
 using Toolkit.Core;
 using Vortice.Direct3D11;
 

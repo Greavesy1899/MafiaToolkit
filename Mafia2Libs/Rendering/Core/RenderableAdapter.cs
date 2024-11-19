@@ -1,5 +1,5 @@
-﻿using Rendering.Graphics;
-using System;
+﻿using System;
+using Rendering.Graphics;
 
 namespace Rendering.Core
 {

@@ -1,4 +1,11 @@
-﻿using Forms.Docking;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using System.Windows.Forms;
+using Forms.Docking;
 using Forms.EditorControls;
 using Rendering.Core;
 using Rendering.Factories;
@@ -15,13 +22,6 @@ using ResourceTypes.ModelHelpers.ModelExporter;
 using ResourceTypes.Navigation;
 using ResourceTypes.Navigation.Traffic;
 using ResourceTypes.Translokator;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Extensions;
 using Utils.Language;
@@ -791,10 +791,10 @@ namespace Mafia2Tool
                            for (int i = 0; i < translokator.ObjectGroups.Length; i++)
                            {
                                ObjectGroup objectGroup = (translokatorRoot.Nodes[0].Nodes[i].Tag as ObjectGroup);
-                               objectGroup.Objects = new ResourceTypes.Translokator.Object[translokatorRoot.Nodes[0].Nodes[i].GetNodeCount(false)];
+                               objectGroup.Objects = new Object[translokatorRoot.Nodes[0].Nodes[i].GetNodeCount(false)];
                                for (int y = 0; y < objectGroup.Objects.Length; y++)
                                {
-                                   ResourceTypes.Translokator.Object obj = (translokatorRoot.Nodes[0].Nodes[i].Nodes[y].Tag as ResourceTypes.Translokator.Object);
+                                   Object obj = (translokatorRoot.Nodes[0].Nodes[i].Nodes[y].Tag as Object);
                                    obj.Instances = new Instance[translokatorRoot.Nodes[0].Nodes[i].Nodes[y].GetNodeCount(false)];
                                    for (int z = 0; z < obj.Instances.Length; z++)
                                    {

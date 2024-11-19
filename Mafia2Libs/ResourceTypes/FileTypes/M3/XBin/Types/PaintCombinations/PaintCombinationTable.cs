@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using ResourceTypes.M3.XBin;
 using ResourceTypes.M3.XBin.PaintCombinations;
 using Utils.Helpers.Reflection;
 using Utils.Logging;

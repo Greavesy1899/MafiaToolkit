@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Windows.Forms;
-using Utils.Settings;
-using Utils.Language;
 using System.IO;
+using System.Windows.Forms;
+using Utils.Language;
+using Utils.Settings;
 
 namespace Mafia2Tool.Controls
 {

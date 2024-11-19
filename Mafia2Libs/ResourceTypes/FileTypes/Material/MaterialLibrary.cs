@@ -1,10 +1,8 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Utils.Logging;
-using Utils.Settings;
-using System.Diagnostics;
 using System.Windows;
+using Utils.Logging;
 
 namespace ResourceTypes.Materials
 {

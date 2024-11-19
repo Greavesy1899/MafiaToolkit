@@ -1,15 +1,17 @@
-﻿using Core.IO;
-using ResourceTypes.Cutscene;
-using ResourceTypes.Cutscene.AnimEntities;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Forms;
+using Core.IO;
+using ResourceTypes.Cutscene;
+using ResourceTypes.Cutscene.AnimEntities;
 using Utils.Extensions;
 using Utils.Language;
-using Utils.Logging;
-using static ResourceTypes.Cutscene.CutsceneLoader;
 using static ResourceTypes.Cutscene.CutsceneLoader.Cutscene;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Mafia2Tool.Forms
 {
@@ -162,20 +164,20 @@ namespace Mafia2Tool.Forms
         {
             if (bIsFileEdited)
             {
-                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
+                MessageBoxResult SaveChanges = MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                if (SaveChanges == MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                else if (SaveChanges == MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }
             }
         }
 
-        private void TreeViewContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TreeViewContextMenu_Opening(object sender, CancelEventArgs e)
         {
             ContextMenu_Import.Enabled = false;
             ContextMenu_Export.Enabled = false;
@@ -453,7 +455,7 @@ namespace Mafia2Tool.Forms
 
             var entityNode = TreeView_Cutscene.SelectedNode;
             AnimEntityWrapper entity = (AnimEntityWrapper)entityNode.Tag;
-            System.Collections.Generic.List<AnimEntityWrapper> entities = null;
+            List<AnimEntityWrapper> entities = null;
 
             if (gcsData != null)
             {

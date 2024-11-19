@@ -1,10 +1,10 @@
-﻿using ResourceTypes.Collisions.PhysX;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using ResourceTypes.Collisions.PhysX;
 using ThirdParty.OPCODE;
 using Vortice.Mathematics;
 using static ResourceTypes.Collisions.PhysX.SerializationUtils;

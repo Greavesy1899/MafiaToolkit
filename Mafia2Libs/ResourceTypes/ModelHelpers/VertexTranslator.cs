@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using ResourceTypes.FrameResource;
 using Utils.VorticeUtils;
+using Half = Toolkit.Mathematics.Half;
 
 namespace Utils.Models
 {
@@ -32,7 +34,7 @@ namespace Utils.Models
          * 
          *
          * */
-        public static Vertex DecompressVertex(byte[] data, VertexFlags declaration, Vector3 offset, float scale, Dictionary<VertexFlags, ResourceTypes.FrameResource.FrameLOD.VertexOffset> offsets)
+        public static Vertex DecompressVertex(byte[] data, VertexFlags declaration, Vector3 offset, float scale, Dictionary<VertexFlags, FrameLOD.VertexOffset> offsets)
         {
             Vertex vertex = new Vertex();
 
@@ -186,10 +188,10 @@ namespace Utils.Models
                 Array.Reverse(yData);
             }
 
-            Toolkit.Mathematics.Half X = Toolkit.Mathematics.Half.ToHalf(xData, 0);
-            Toolkit.Mathematics.Half Y = Toolkit.Mathematics.Half.ToHalf(yData, 0);
+            Half X = Half.ToHalf(xData, 0);
+            Half Y = Half.ToHalf(yData, 0);
 
-            Y = (Toolkit.Mathematics.Half)(1.0f - Y);
+            Y = (Half)(1.0f - Y);
             return new Vector2(X, Y);
         }
 

@@ -1,16 +1,16 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.ComponentModel;
+using System.IO;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class MotionBus //Probably unused
     {
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public int Type { get; set; }
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public uint Length { get; set; }
         public uint ID { get; set; }
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public byte[] Data { get; set; }
         public MotionBus(BinaryReader br, int iType)
         {

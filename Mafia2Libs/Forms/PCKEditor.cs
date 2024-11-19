@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Runtime;
+using System.Windows;
 using System.Windows.Forms;
 using ResourceTypes.Wwise;
 using Utils.Language;
 using Utils.Settings;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace Mafia2Tool
 {
@@ -120,7 +122,7 @@ namespace Mafia2Tool
             WemGrid.SelectedObject = e.Node.Tag;
         }
 
-        private void Button_ImportWem_Click(object sender, System.EventArgs e)
+        private void Button_ImportWem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
 
@@ -171,7 +173,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void Button_ReplaceWem_Click(object sender, System.EventArgs e)
+        private void Button_ReplaceWem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
 
@@ -215,7 +217,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void Button_ExportWem_Click(object sender, System.EventArgs e)
+        private void Button_ExportWem_Click(object sender, EventArgs e)
         {
             OpenFileDialog exportFile = new OpenFileDialog();
             exportFile.InitialDirectory = PckFile.DirectoryName;
@@ -235,7 +237,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void Button_ExportAll_Click(object sender, System.EventArgs e)
+        private void Button_ExportAll_Click(object sender, EventArgs e)
         {
             OpenFileDialog exportFile = new OpenFileDialog();
             exportFile.InitialDirectory = PckFile.DirectoryName;
@@ -252,7 +254,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void Button_LoadHIRC_Click(object sender, System.EventArgs e)
+        private void Button_LoadHIRC_Click(object sender, EventArgs e)
         {
             OpenFileDialog importFile = new OpenFileDialog();
             importFile.InitialDirectory = PckFile.DirectoryName;
@@ -277,7 +279,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void Button_EditHIRC_Click(object sender, System.EventArgs e)
+        private void Button_EditHIRC_Click(object sender, EventArgs e)
         {
             int itemIndex = pck.WemList.IndexOf((Wem)WemGrid.SelectedObject);
 
@@ -317,13 +319,13 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
+                MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                if (SaveChanges == MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                else if (SaveChanges == MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }
@@ -344,7 +346,7 @@ namespace Mafia2Tool
             GC.Collect();
         }
 
-        private void Context_Opening(object sender, System.EventArgs e)
+        private void Context_Opening(object sender, EventArgs e)
         {
             if (pck.LoadedBNK == null)
             {
@@ -358,10 +360,10 @@ namespace Mafia2Tool
             }
         }
 
-        private void ContextDelete_Click(object sender, System.EventArgs e) => Delete();
-        private void Button_DeleteWem_Click(object sender, System.EventArgs e) => Delete();
-        private void SaveButton_OnClick(object sender, System.EventArgs e) => Save();
-        private void ReloadButton_OnClick(object sender, System.EventArgs e) => Reload();
-        private void ExitButton_OnClick(object sender, System.EventArgs e) => Close();
+        private void ContextDelete_Click(object sender, EventArgs e) => Delete();
+        private void Button_DeleteWem_Click(object sender, EventArgs e) => Delete();
+        private void SaveButton_OnClick(object sender, EventArgs e) => Save();
+        private void ReloadButton_OnClick(object sender, EventArgs e) => Reload();
+        private void ExitButton_OnClick(object sender, EventArgs e) => Close();
     }
 }

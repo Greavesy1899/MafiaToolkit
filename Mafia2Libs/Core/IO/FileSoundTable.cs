@@ -1,6 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using System.IO;
+using Microsoft.Win32;
 using ResourceTypes.SoundTable;
-using System.IO;
 
 namespace Core.IO
 {

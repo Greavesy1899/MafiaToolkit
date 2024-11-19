@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using Vortice.Mathematics;
-using Utils.VorticeUtils;
 using Utils.StringHelpers;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ApexSDK
 {

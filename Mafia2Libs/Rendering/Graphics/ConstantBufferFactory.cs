@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using Vortice;
+﻿using System.Runtime.CompilerServices;
 using Vortice.Direct3D11;
 
 namespace Rendering.Graphics

@@ -1,22 +1,19 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Xml;
-using System.Xml.Linq;
-using System.Windows;
-using System.Collections.Generic;
 using ResourceTypes.Wwise.Helpers;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class LFO
     {
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public int Type { get; set; }
         public uint ID { get; set; }
         public List<Prop> Props { get; set; }
         public List<RangedModifier> RangedModifiers { get; set; }
         public List<RTPC> rtpc { get; set; }
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public byte[] Data { get; set; }
         public LFO(BinaryReader br, int iType)
         {

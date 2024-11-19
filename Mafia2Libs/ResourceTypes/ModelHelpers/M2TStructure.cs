@@ -1,13 +1,13 @@
-﻿using ResourceTypes.BufferPools;
-using ResourceTypes.Collisions;
-using ResourceTypes.FrameResource;
-using ResourceTypes.Materials;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
+using ResourceTypes.BufferPools;
+using ResourceTypes.Collisions;
+using ResourceTypes.FrameResource;
+using ResourceTypes.Materials;
 using Utils.StringHelpers;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
@@ -73,7 +73,7 @@ namespace Utils.Models
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
                 lods[i].Vertices = new Vertex[frameLod.NumVerts];
 
-                if (vertexSize * frameLod.NumVerts != vertexBuffer.Data.Length) throw new System.Exception();
+                if (vertexSize * frameLod.NumVerts != vertexBuffer.Data.Length) throw new Exception();
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
                     //declare data required and send to decompresser
@@ -156,7 +156,7 @@ namespace Utils.Models
             }
         }
 
-        public void BuildCollision(ResourceTypes.Collisions.Collision.CollisionModel collisionModel, string name)
+        public void BuildCollision(Collision.CollisionModel collisionModel, string name)
         {
             lods = new Lod[1];
             lods[0] = new Lod();

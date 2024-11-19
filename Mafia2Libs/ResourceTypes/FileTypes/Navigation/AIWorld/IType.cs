@@ -1,7 +1,7 @@
-﻿using Rendering.Core;
-using System.IO;
+﻿using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
+using Rendering.Core;
 using Toolkit.Core;
 
 namespace ResourceTypes.Navigation

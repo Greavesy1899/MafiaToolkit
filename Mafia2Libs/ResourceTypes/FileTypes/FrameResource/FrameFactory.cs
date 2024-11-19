@@ -1,6 +1,6 @@
-﻿using ResourceTypes.ModelHelpers.ModelExporter;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
+using ResourceTypes.ModelHelpers.ModelExporter;
 
 namespace ResourceTypes.FrameResource
 {

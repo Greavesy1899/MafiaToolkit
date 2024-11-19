@@ -1,12 +1,12 @@
-﻿using Mafia2Tool;
+﻿using System.IO;
+using System.Windows.Forms;
+using Mafia2Tool;
 using ResourceTypes.CGame;
 using ResourceTypes.EntityActivator;
 using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;
 using ResourceTypes.Sound;
 using ResourceTypes.Tyres;
-using System.IO;
-using System.Windows.Forms;
 
 namespace Core.IO
 {

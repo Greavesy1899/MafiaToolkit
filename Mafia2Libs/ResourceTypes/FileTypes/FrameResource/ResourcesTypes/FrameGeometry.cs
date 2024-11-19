@@ -50,7 +50,6 @@ namespace ResourceTypes.FrameResource
             {
                 LOD[i] = new FrameLOD();
                 LOD[i].ReadFromFile(reader, isBigEndian);
-                int lodHash = HashCode.Combine(LOD[i].IndexBufferRef, LOD[i].VertexBufferRef);
             }
         }
 

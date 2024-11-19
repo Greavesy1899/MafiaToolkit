@@ -1,30 +1,25 @@
 ﻿/* Copyright (c) 2017 Rick (rick 'at' gibbed 'dot' us)
- * 
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
  * arising from the use of this software.
- * 
+ *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
- * 
+ *
  * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software
  *    in a product, an acknowledgment in the product documentation would
  *    be appreciated but is not required.
- * 
+ *
  * 2. Altered source versions must be plainly marked as such, and must not
  *    be misrepresented as being the original software.
- * 
+ *
  * 3. This notice may not be removed or altered from any source
  *    distribution.
  */
 
-using Gibbed.Illusion.FileFormats;
-using Gibbed.Illusion.FileFormats.Hashing;
-using Gibbed.Mafia2.FileFormats.Archive;
-using Gibbed.IO;
-using Gibbed.Mafia2.ResourceFormats;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,12 +28,16 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
+using Gibbed.Illusion.FileFormats;
+using Gibbed.Illusion.FileFormats.Hashing;
+using Gibbed.IO;
+using Gibbed.Mafia2.FileFormats.Archive;
+using Gibbed.Mafia2.ResourceFormats;
+using Mafia2Tool.Utils;
 using Utils.Language;
 using Utils.Logging;
 using Utils.Settings;
 using Utils.Types;
-using System.Diagnostics;
-using Mafia2Tool.Utils;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -48,15 +47,15 @@ namespace Gibbed.Mafia2.FileFormats
         #region Fields
         private Endian _Endian;
         private uint _Version;
-        private Archive.Platform _Platform;
+        private Platform _Platform;
         private uint _SlotRamRequired;
         private uint _SlotVramRequired;
         private uint _OtherRamRequired;
         private uint _OtherVramRequired;
         private byte[] _Unknown20;
-        private List<Archive.ResourceType> _ResourceTypes;
+        private List<ResourceType> _ResourceTypes;
         private string _ResourceInfoXml;
-        private readonly List<Archive.ResourceEntry> _ResourceEntries;
+        private readonly List<ResourceEntry> _ResourceEntries;
         private readonly List<string> _ResourceNames;
         private Dictionary<ulong, string> _TextureNames;
         private Game ChosenGame;
@@ -72,7 +71,7 @@ namespace Gibbed.Mafia2.FileFormats
             get { return this._Version; }
             set { this._Version = value; }
         }
-        public Archive.Platform Platform {
+        public Platform Platform {
             get { return this._Platform; }
             set { this._Platform = value; }
         }
@@ -96,14 +95,14 @@ namespace Gibbed.Mafia2.FileFormats
             get { return this._Unknown20; }
             set { this._Unknown20 = value; }
         }
-        public List<Archive.ResourceType> ResourceTypes {
+        public List<ResourceType> ResourceTypes {
             get { return this._ResourceTypes; }
         }
         public string ResourceInfoXml {
             get { return this._ResourceInfoXml; }
             set { this._ResourceInfoXml = value; }
         }
-        public List<Archive.ResourceEntry> ResourceEntries {
+        public List<ResourceEntry> ResourceEntries {
             get { return this._ResourceEntries; }
         }
         public List<string> ResourceNames {
@@ -113,8 +112,8 @@ namespace Gibbed.Mafia2.FileFormats
         #region Constructors
         public ArchiveFile()
         {
-            this._ResourceTypes = new List<Archive.ResourceType>();
-            this._ResourceEntries = new List<Archive.ResourceEntry>();
+            this._ResourceTypes = new List<ResourceType>();
+            this._ResourceEntries = new List<ResourceEntry>();
             this._ResourceNames = new List<string>();
             Unknown20 = new byte[16];
 
@@ -154,7 +153,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             var headerPosition = output.Position;
 
-            Archive.FileHeader fileHeader;
+            FileHeader fileHeader;
             output.Seek(56, SeekOrigin.Current);
 
             fileHeader.ResourceTypeTableOffset = (uint)(output.Position - basePosition);
@@ -171,7 +170,7 @@ namespace Gibbed.Mafia2.FileFormats
             var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress, ChosenGameType == GamesEnumerator.MafiaI_DE);           
             foreach (var resourceEntry in this._ResourceEntries)
             {
-                Archive.ResourceHeader resourceHeader;
+                ResourceHeader resourceHeader;
                 resourceHeader.TypeId = (uint)resourceEntry.TypeId;
                 resourceHeader.Size = stride + (uint)(resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
                 resourceHeader.Version = resourceEntry.Version;
@@ -251,7 +250,7 @@ namespace Gibbed.Mafia2.FileFormats
                 throw new FormatException(FormatError);
             }
 
-            var endian = platform == Archive.Platform.PC ? Endian.Little : Endian.Big;
+            var endian = platform == Platform.PC ? Endian.Little : Endian.Big;
 
             input.Seek(4, SeekOrigin.Begin);
             // Check Version, should be 19 (Mafia: II) or 20 (Mafia III).
@@ -277,32 +276,32 @@ namespace Gibbed.Mafia2.FileFormats
                 throw new FormatException("unsupported archive version");
             }
 
-            Archive.FileHeader fileHeader;
+            FileHeader fileHeader;
             using (var data = input.ReadToMemoryStreamSafe(52, endian))
             {
-                fileHeader = Archive.FileHeader.Read(data, endian);
+                fileHeader = FileHeader.Read(data, endian);
             }
 
             input.Position = basePosition + fileHeader.ResourceTypeTableOffset;
             var resourceTypeCount = input.ReadValueU32(endian);
-            var resourceTypes = new Archive.ResourceType[resourceTypeCount];
+            var resourceTypes = new ResourceType[resourceTypeCount];
             for (uint i = 0; i < resourceTypeCount; i++)
             {
-                resourceTypes[i] = Archive.ResourceType.Read(input, endian);
+                resourceTypes[i] = ResourceType.Read(input, endian);
             }
 
             input.Position = basePosition + fileHeader.BlockTableOffset;
             var blockStream = BlockReaderStream.FromStream(input, endian);
 
-            var resources = new Archive.ResourceEntry[fileHeader.ResourceCount];
+            var resources = new ResourceEntry[fileHeader.ResourceCount];
 
             for (uint i = 0; i < fileHeader.ResourceCount; i++)
             {
-                Archive.ResourceHeader resourceHeader;
+                ResourceHeader resourceHeader;
                 var size = (_Version == 20 ? 34 : 26);
                 using (var data = blockStream.ReadToMemoryStreamSafe(size, endian))
                 {
-                    resourceHeader = Archive.ResourceHeader.Read(data, endian, _Version);
+                    resourceHeader = ResourceHeader.Read(data, endian, _Version);
 
                 }
 
@@ -311,7 +310,7 @@ namespace Gibbed.Mafia2.FileFormats
                     throw new FormatException();
                 }
 
-                resources[i] = new Archive.ResourceEntry()
+                resources[i] = new ResourceEntry()
                 {
                     TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,

@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using Gibbed.IO;
 using Gibbed.Illusion.FileFormats;
+using Gibbed.IO;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {

@@ -1,10 +1,10 @@
-﻿using Rendering.Factories;
-using Rendering.Graphics;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using Rendering.Core;
+using Rendering.Factories;
+using Rendering.Graphics;
 using Utils.Extensions;
 using Utils.Types;
 using Utils.VorticeUtils;
@@ -155,7 +155,7 @@ namespace ResourceTypes.FrameResource
         public override void ConstructRenderable()
         {
             RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(Bounds, WorldTransform);
-            RenderAdapter = new Rendering.Core.RenderableAdapter();
+            RenderAdapter = new RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }
     }

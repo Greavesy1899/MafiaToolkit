@@ -1,7 +1,7 @@
-﻿using Gibbed.Illusion.FileFormats;
+﻿using System.IO;
+using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
 using Gibbed.Mafia2.ResourceFormats;
-using System.IO;
 
 namespace Gibbed.Illusion.ResourceFormats
 {

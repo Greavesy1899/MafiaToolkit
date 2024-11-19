@@ -1,28 +1,26 @@
-﻿using ResourceTypes.FrameResource;
-using ResourceTypes.FrameNameTable;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using Utils.Settings;
-using Utils.Language;
+using ResourceTypes.Actors;
 using ResourceTypes.BufferPools;
 using ResourceTypes.City;
+using ResourceTypes.Collisions;
+using ResourceTypes.FrameNameTable;
+using ResourceTypes.FrameResource;
 using ResourceTypes.ItemDesc;
 using ResourceTypes.Materials;
-using ResourceTypes.Sound;
-using ResourceTypes.Actors;
-using ResourceTypes.Collisions;
 using ResourceTypes.Navigation;
 using ResourceTypes.Navigation.Traffic;
-using ResourceTypes.Translokator;
 using ResourceTypes.Prefab;
-using ResourceTypes.Misc;
-using Utils.Types;
-using System.Diagnostics;
-using Utils.Models;
-using System.Linq;
+using ResourceTypes.Sound;
+using ResourceTypes.Translokator;
+using Utils.Language;
 using Utils.Logging;
+using Utils.Models;
+using Utils.Settings;
+using Utils.Types;
 
 namespace Mafia2Tool
 {
@@ -188,15 +186,13 @@ namespace Mafia2Tool
             //    }
             //}
 #endif // DEBUG
-
-            //~ENABLE THIS SECTION AT YOUR OWN RISK
-            //Translokator, I AM RISKING
+            
+            //Translokator
             if (!isBigEndian && sdsContent.HasResource("Translokator"))
             {
                 var name = sdsContent.GetResourceFiles("Translokator", true)[0];
                 Translokator = new TranslokatorLoader(new FileInfo(name));
             }
-            //~ENABLE THIS SECTION AT YOUR OWN RISK
 
             // Kynapse Navigation
             if (ToolkitSettings.bNavigation)

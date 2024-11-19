@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
+using System.Numerics;
+using Rendering.Core;
 using Rendering.Factories;
 using Rendering.Graphics;
 using ResourceTypes.Actors;
-using System.IO;
-using System.Numerics;
 using Utils.Types;
 using Vortice.Mathematics;
 
@@ -63,7 +63,7 @@ namespace ResourceTypes.FrameResource
         {
             BoundingBox TempBox = new BoundingBox(new Vector3(0.5f), new Vector3(0.5f));
             RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(TempBox, WorldTransform);
-            RenderAdapter = new Rendering.Core.RenderableAdapter();
+            RenderAdapter = new RenderableAdapter();
             RenderAdapter.InitAdaptor(Renderable, this);
         }
     }

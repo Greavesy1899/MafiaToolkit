@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using Gibbed.Mafia2.ResourceFormats;
 
 namespace Utils.Extensions
 {
@@ -17,7 +17,7 @@ namespace Utils.Extensions
     {
         private byte unk2;
         private ushort unk3;
-        private Gibbed.Mafia2.ResourceFormats.TableData.ColumnType m2Type;
+        private TableData.ColumnType m2Type;
         private uint hash;
 
         public byte Unk2 {
@@ -28,7 +28,7 @@ namespace Utils.Extensions
             get { return unk3; }
             set { unk3 = value; }
         }
-        public Gibbed.Mafia2.ResourceFormats.TableData.ColumnType TypeM2 {
+        public TableData.ColumnType TypeM2 {
             get { return m2Type; }
             set { m2Type = value; }
         }
@@ -680,7 +680,7 @@ namespace Utils.Extensions
 
     public static class ColorExtender
     {
-        public static Vector3 Normalize(this System.Drawing.Color color)
+        public static Vector3 Normalize(this Color color)
         {
             return new Vector3(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
         }

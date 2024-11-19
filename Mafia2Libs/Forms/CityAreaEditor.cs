@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Windows;
 using System.Windows.Forms;
 using ResourceTypes.City;
 using Utils.Language;
 using Utils.Settings;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Mafia2Tool
 {
@@ -145,13 +147,13 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", System.Windows.MessageBoxButton.YesNoCancel);
+                MessageBoxResult SaveChanges = MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButton.YesNoCancel);
 
-                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                if (SaveChanges == MessageBoxResult.Yes)
                 {
                     Save();
                 }
-                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                else if (SaveChanges == MessageBoxResult.Cancel)
                 {
                     e.Cancel = true;
                 }

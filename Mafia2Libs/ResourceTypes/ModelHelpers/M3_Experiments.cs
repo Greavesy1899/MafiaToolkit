@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Utils.Models;
-using ResourceTypes.FrameResource;
-using static ResourceTypes.FrameResource.FrameLOD;
 using System.Numerics;
+using Utils.Models;
 using Vortice.Mathematics;
+using static ResourceTypes.FrameResource.FrameLOD;
 
 namespace Mafia2Tool.MafiaLib.ModelHelpers
 {
@@ -89,7 +88,7 @@ namespace Mafia2Tool.MafiaLib.ModelHelpers
             //Scale = 0.013024263f;
 
             int vertexSize;
-            Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = GetVertexOffsets(out vertexSize);
+            Dictionary<VertexFlags, VertexOffset> vertexOffsets = GetVertexOffsets(out vertexSize);
 
             int tempVertexSize = VertexBuffer.Length / VertexCount;
             Vertex[] Vertices = new Vertex[VertexCount];

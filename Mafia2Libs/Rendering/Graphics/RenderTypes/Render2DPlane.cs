@@ -1,11 +1,9 @@
-﻿using ResourceTypes.Navigation.Traffic;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
-using Utils.Extensions;
+using ResourceTypes.Navigation.Traffic;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
+using Vortice.DXGI;
 using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
@@ -24,7 +22,7 @@ namespace Rendering.Graphics
             colour = Color.White;
         }
 
-        public void Init(ILaneDefinition LaneDefinition, Vector3[] Points, float Width, float Offset, float zOffset, System.Drawing.Color InColour)
+        public void Init(ILaneDefinition LaneDefinition, Vector3[] Points, float Width, float Offset, float zOffset, Color InColour)
         {
             Vertices = new VertexLayouts.BasicLayout.Vertex[Points.Length * 2];
             int NumTris = 2 * (Points.Length - 1);
@@ -98,7 +96,7 @@ namespace Rendering.Graphics
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
+            deviceContext.IASetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
             deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
             shader.SetSceneVariables(deviceContext, Transform, camera);

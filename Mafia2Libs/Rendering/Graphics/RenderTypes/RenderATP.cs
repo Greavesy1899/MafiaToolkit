@@ -1,5 +1,5 @@
-﻿using ResourceTypes.Navigation;
-using System.Numerics;
+﻿using System.Numerics;
+using ResourceTypes.Navigation;
 using Vortice.Direct3D11;
 
 namespace Rendering.Graphics

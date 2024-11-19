@@ -1,6 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using System.IO;
+using Microsoft.Win32;
 using ResourceTypes.ImageFileList;
-using System.IO;
 
 namespace Core.IO
 {

@@ -1,14 +1,15 @@
-﻿using Rendering.Graphics;
-using ResourceTypes.Navigation;
-using ResourceTypes.Translokator;
-using System;
+﻿using System;
 using System.Numerics;
 using System.Windows.Forms;
+using Rendering.Graphics;
+using ResourceTypes.Navigation;
+using ResourceTypes.Translokator;
 using Toolkit.Core;
-using Utils.StringHelpers;
 using Utils.VorticeUtils;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
+using Color = System.Drawing.Color;
+using Object = ResourceTypes.Translokator.Object;
 
 namespace Rendering.Core
 {
@@ -135,7 +136,7 @@ namespace Rendering.Core
 
                 for (int x = 0; x != objectGroup.Objects.Length; x++)
                 {
-                    ResourceTypes.Translokator.Object obj = objectGroup.Objects[x];
+                    Object obj = objectGroup.Objects[x];
 
                     for (int y = 0; y != obj.Instances.Length; y++)
                     {
@@ -155,12 +156,12 @@ namespace Rendering.Core
             if (bIsReady)
             {
                 boundingBox = new RenderBoundingBox();
-                boundingBox.SetColour(System.Drawing.Color.Red, true);
+                boundingBox.SetColour(Color.Red, true);
                 boundingBox.Init(gridBounds);
                 boundingBox.InitBuffers(device, deviceContext);
 
                 cellBoundingBox = new RenderBoundingBox();
-                cellBoundingBox.SetColour(System.Drawing.Color.Blue, true);
+                cellBoundingBox.SetColour(Color.Blue, true);
                 cellBoundingBox.Init(cellBounds);
                 cellBoundingBox.InitBuffers(device, deviceContext);
 

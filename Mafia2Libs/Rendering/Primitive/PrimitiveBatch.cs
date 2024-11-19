@@ -1,13 +1,15 @@
-﻿using Rendering.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Rendering.Graphics;
 using Utils.Extensions;
 using Vortice;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
+using Vortice.DXGI;
+using MapFlags = Vortice.Direct3D11.MapFlags;
 
 namespace Rendering.Core
 {
@@ -146,7 +148,7 @@ namespace Rendering.Core
                 }
 
                 VertexLayouts.BasicLayout.Vertex[] Cached = BBox.GetTransformVertices();
-                System.Array.Copy(Cached, 0, BBoxVertices, CurrentBBoxIndex * Cached.Length, Cached.Length);
+                Array.Copy(Cached, 0, BBoxVertices, CurrentBBoxIndex * Cached.Length, Cached.Length);
                 CurrentBBoxIndex++;
             }
 
@@ -170,19 +172,19 @@ namespace Rendering.Core
                     CopiedIndices[i] = (ushort)(BBox.Indices[i] + BBoxOffset);
                 }
 
-                System.Array.Copy(CopiedIndices, 0, BBoxIndices, CurrentBBoxIndex * BBox.Indices.Length, BBox.Indices.Length);
+                Array.Copy(CopiedIndices, 0, BBoxIndices, CurrentBBoxIndex * BBox.Indices.Length, BBox.Indices.Length);
                 CurrentBBoxIndex++;
             }
 
             // Remove empty data
             if (NumSkippedVertices > 0)
             {
-                System.Array.Resize(ref BBoxVertices, BBoxVertices.Length - NumSkippedVertices);
+                Array.Resize(ref BBoxVertices, BBoxVertices.Length - NumSkippedVertices);
             }
 
             if (NumSkippedIndices > 0)
             {
-                System.Array.Resize(ref BBoxIndices, BBoxIndices.Length - NumSkippedIndices);
+                Array.Resize(ref BBoxIndices, BBoxIndices.Length - NumSkippedIndices);
             }
 
             // Remove the objects we skipped
@@ -270,7 +272,7 @@ namespace Rendering.Core
         {
             VertexBufferView BufferView = new VertexBufferView(VertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             InDeviceContext.IASetVertexBuffers(0, BufferView);
-            InDeviceContext.IASetIndexBuffer(IndexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+            InDeviceContext.IASetIndexBuffer(IndexBuffer, Format.R32_UInt, 0);
             InDeviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineList);
 
             BaseShader Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
@@ -282,7 +284,7 @@ namespace Rendering.Core
         {
             VertexBufferView BufferView = new VertexBufferView(VertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             InDeviceContext.IASetVertexBuffers(0, BufferView);
-            InDeviceContext.IASetIndexBuffer(IndexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
+            InDeviceContext.IASetIndexBuffer(IndexBuffer, Format.R16_UInt, 0);
             InDeviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineStrip);
 
             BaseShader Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];

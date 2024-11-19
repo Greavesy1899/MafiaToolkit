@@ -3,14 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Xml;
-using System.Xml.Linq;
-using System.Reflection;
-using System.Diagnostics;
-using Utils;
 using ResourceTypes.Wwise.Helpers;
-using ResourceTypes.Wwise.Objects;
 
 namespace ResourceTypes.Wwise
 {

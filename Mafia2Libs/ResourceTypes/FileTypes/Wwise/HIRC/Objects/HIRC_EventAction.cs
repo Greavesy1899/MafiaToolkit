@@ -1,23 +1,19 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Xml;
-using System.Xml.Linq;
-using System.Collections.Generic;
-using System.Windows;
 using ResourceTypes.Wwise.Helpers;
-using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class EventAction
     {
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public HIRCObject Parent { get; set; }
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public int Type { get; set; }
         public uint ID { get; set; }
         public int ActionType { get; set; }
-        [System.ComponentModel.ReadOnly(true)]
+        [ReadOnly(true)]
         public string ActionTypeName { get; set; }
         public uint ObjectID { get; set; }
         public byte PropSectionInit { get; set; } //bit0 = "bIsBus"
@@ -26,10 +22,10 @@ namespace ResourceTypes.Wwise.Objects
         public byte BitVector { get; set; } //bit0 = "eFadeCurve"
         public uint BnkFileHashname { get; set; }
         public uint StateGroupID { get; set; }
-        [System.ComponentModel.ReadOnly(true)]
+        [ReadOnly(true)]
         public string StateGroupName { get; set; }
         public uint TargetStateID { get; set; } //529726532 = "end"
-        [System.ComponentModel.ReadOnly(true)]
+        [ReadOnly(true)]
         public string TargetStateName { get; set; }
         public uint SwitchGroupID { get; set; }
         public uint SwitchStateID { get; set; }
@@ -50,7 +46,7 @@ namespace ResourceTypes.Wwise.Objects
         public byte TargetMask { get; set; }
         public List<ExceptionItem> Exceptions { get; set; }
 
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         private Dictionary<int, string> ActionTypeNames = new Dictionary<int, string>();
 
         public EventAction(HIRCObject ParentObject, BinaryReader br, int iType)

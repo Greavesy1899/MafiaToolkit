@@ -1,10 +1,10 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.ModelHelpers.ModelExporter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.ModelHelpers.ModelExporter;
 using Utils.Helpers;
 using Utils.VorticeUtils;
 

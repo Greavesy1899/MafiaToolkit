@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
 using Vortice.Direct3D11;
+using Vortice.DXGI;
 
 namespace Rendering.Graphics
 {
@@ -23,7 +24,7 @@ namespace Rendering.Graphics
                     {
                         SemanticName = "POSITION",
                         SemanticIndex = 0,
-                        Format = Vortice.DXGI.Format.R32G32B32_Float,
+                        Format = Format.R32G32B32_Float,
                         Slot = 0,
                         AlignedByteOffset = 0,
                         Classification = InputClassification.PerVertexData,
@@ -33,7 +34,7 @@ namespace Rendering.Graphics
                     {
                         SemanticName = "COLOR",
                         SemanticIndex = 0,
-                        Format = Vortice.DXGI.Format.R8G8B8A8_UNorm,
+                        Format = Format.R8G8B8A8_UNorm,
                         Slot = 0,
                         AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
@@ -61,7 +62,7 @@ namespace Rendering.Graphics
                     {
                         SemanticName = "POSITION",
                         SemanticIndex = 0,
-                        Format = Vortice.DXGI.Format.R32G32B32_Float,
+                        Format = Format.R32G32B32_Float,
                         Slot = 0,
                         AlignedByteOffset = 0,
                         Classification = InputClassification.PerVertexData,
@@ -71,7 +72,7 @@ namespace Rendering.Graphics
                     {
                         SemanticName = "NORMAL",
                         SemanticIndex = 0,
-                        Format = Vortice.DXGI.Format.R32G32B32_Float,
+                        Format = Format.R32G32B32_Float,
                         Slot = 0,
                         AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
@@ -81,7 +82,7 @@ namespace Rendering.Graphics
                     {
                         SemanticName = "COLOR",
                         SemanticIndex = 0,
-                        Format = Vortice.DXGI.Format.R8G8B8A8_UNorm,
+                        Format = Format.R8G8B8A8_UNorm,
                         Slot = 0,
                         AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
@@ -112,7 +113,7 @@ public static InputElementDescription[] GetLayout()
         {
             SemanticName = "POSITION",
             SemanticIndex = 0,
-            Format = Vortice.DXGI.Format.R32G32B32_Float,
+            Format = Format.R32G32B32_Float,
             Slot = 0,
             AlignedByteOffset = 0,
             Classification = InputClassification.PerVertexData,
@@ -122,7 +123,7 @@ public static InputElementDescription[] GetLayout()
         {
             SemanticName = "NORMAL",
             SemanticIndex = 0,
-            Format = Vortice.DXGI.Format.R32G32B32_Float,
+            Format = Format.R32G32B32_Float,
             Slot = 0,
             AlignedByteOffset = InputElementDescription.AppendAligned, // Should compute correctly
             Classification = InputClassification.PerVertexData,
@@ -132,7 +133,7 @@ public static InputElementDescription[] GetLayout()
         {
             SemanticName = "TANGENT",
             SemanticIndex = 0,
-            Format = Vortice.DXGI.Format.R32G32B32_Float,
+            Format = Format.R32G32B32_Float,
             Slot = 0,
             AlignedByteOffset = InputElementDescription.AppendAligned,
             Classification = InputClassification.PerVertexData,
@@ -142,7 +143,7 @@ public static InputElementDescription[] GetLayout()
         {
             SemanticName = "BINORMAL",
             SemanticIndex = 0,
-            Format = Vortice.DXGI.Format.R32G32B32_Float,
+            Format = Format.R32G32B32_Float,
             Slot = 0,
             AlignedByteOffset = InputElementDescription.AppendAligned,
             Classification = InputClassification.PerVertexData,
@@ -152,7 +153,7 @@ public static InputElementDescription[] GetLayout()
         {
             SemanticName = "TEXCOORD",
             SemanticIndex = 0,
-            Format = Vortice.DXGI.Format.R32G32_Float,
+            Format = Format.R32G32_Float,
             Slot = 0,
             AlignedByteOffset = InputElementDescription.AppendAligned,
             Classification = InputClassification.PerVertexData,
@@ -162,7 +163,7 @@ public static InputElementDescription[] GetLayout()
         {
             SemanticName = "TEXCOORD",
             SemanticIndex = 1,
-            Format = Vortice.DXGI.Format.R32G32_Float,
+            Format = Format.R32G32_Float,
             Slot = 0,
             AlignedByteOffset = InputElementDescription.AppendAligned,
             Classification = InputClassification.PerVertexData,

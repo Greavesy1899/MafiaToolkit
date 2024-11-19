@@ -1,9 +1,5 @@
-﻿using BitStreams;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using Utils.Helpers.Reflection;
+﻿using System.ComponentModel;
+using BitStreams;
 
 namespace ResourceTypes.Prefab.CrashObject
 {

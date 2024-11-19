@@ -1,11 +1,9 @@
-﻿using ResourceTypes.Prefab.Vehicle;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-using static System.Resources.ResXFileRef;
 
 namespace Utils.Helpers.Reflection
 {

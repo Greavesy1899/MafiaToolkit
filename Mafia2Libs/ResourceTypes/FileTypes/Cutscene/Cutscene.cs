@@ -1,8 +1,6 @@
-﻿using ResourceTypes.Cutscene.AnimEntities;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
-using Utils.Extensions;
+using ResourceTypes.Cutscene.AnimEntities;
 using Utils.Logging;
 using Utils.StringHelpers;
 

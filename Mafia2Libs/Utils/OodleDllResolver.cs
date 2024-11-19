@@ -1,8 +1,8 @@
-﻿using OodleSharp;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using OodleSharp;
 
 namespace Mafia2Tool.Utils
 {

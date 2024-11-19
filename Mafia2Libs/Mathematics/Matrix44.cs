@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Numerics;
+using System.Reflection;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
 
@@ -26,9 +28,9 @@ namespace Toolkit.Mathematics
 
             if (!string.IsNullOrEmpty(stringValue))
             {
-                Type t = typeof(System.Numerics.Matrix4x4);
+                Type t = typeof(Matrix4x4);
 
-                System.Numerics.Matrix4x4 Matrix = new();
+                Matrix4x4 Matrix = new();
                 object M = Matrix;
 
                 stringValue = stringValue.Replace("\n", "");
@@ -49,12 +51,12 @@ namespace Toolkit.Mathematics
                         string PropertyName = "M" + (i + 1).ToString() + (j + 1).ToString();
                         float Value = Values[j].ToSingle();
 
-                        System.Reflection.FieldInfo fi = t.GetField(PropertyName);
+                        FieldInfo fi = t.GetField(PropertyName);
                         fi.SetValue(M, Value);
                     }
                 }
 
-                Matrix = (System.Numerics.Matrix4x4)M;
+                Matrix = (Matrix4x4)M;
                 result = new Matrix44(Matrix);
             }
 
@@ -124,7 +126,7 @@ namespace Toolkit.Mathematics
             M44 = Values[15];
         }
 
-        public Matrix44(System.Numerics.Matrix4x4 M)
+        public Matrix44(Matrix4x4 M)
         {
             M11 = M.M11;
             M12 = M.M12;

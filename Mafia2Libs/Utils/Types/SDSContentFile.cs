@@ -1,11 +1,11 @@
-﻿using ResourceTypes.FrameResource;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
-using System.Linq;
-using System;
+using ResourceTypes.FrameResource;
 using Utils.Extensions;
 
 // TODO: Make all resource types a constant variable so we can reuse the same strings

@@ -1,14 +1,11 @@
-﻿using BitStreams;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
+using BitStreams;
 using ResourceTypes.Prefab.CrashObject;
-using ResourceTypes.Prefab.Vehicle;
 using ResourceTypes.Prefab.Door;
+using ResourceTypes.Prefab.Vehicle;
 using ResourceTypes.Prefab.Wagon;
-using System.Xml.Linq;
 using Utils.Logging;
 
 namespace ResourceTypes.Prefab

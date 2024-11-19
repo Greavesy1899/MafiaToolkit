@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using Utils.StringHelpers;
-using Utils.Models;
 using System.Numerics;
+using Utils.Models;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {

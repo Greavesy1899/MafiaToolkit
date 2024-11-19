@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using Utils.Settings;
 
@@ -49,7 +50,7 @@ namespace Mafia2Tool.Forms
 
         private void ProjectLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(ProjectLink.Text);
+            Process.Start(ProjectLink.Text);
         }
     }
 }

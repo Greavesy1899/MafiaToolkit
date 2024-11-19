@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ResourceTypes.XBin.Types;
 using System.IO;
+using ResourceTypes.XBin.Types;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin.TableContainers.HealthSystem

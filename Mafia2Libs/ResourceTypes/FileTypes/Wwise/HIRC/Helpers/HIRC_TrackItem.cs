@@ -1,10 +1,5 @@
-﻿using System;
+﻿using System.ComponentModel;
 using System.IO;
-using System.Xml;
-using System.Xml.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
-using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Helpers
 {

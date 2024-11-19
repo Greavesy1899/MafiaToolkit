@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
-using Vortice.Mathematics;
 using Utils.Extensions;
 using Vortice.Mathematics.PackedVector;
-using Toolkit.Mathematics;
+using Half = Toolkit.Mathematics.Half;
 
 namespace Utils.VorticeUtils
 {
@@ -139,7 +138,7 @@ namespace Utils.VorticeUtils
 
     public static class HalfExtenders
     {
-        public static byte[] GetBytes(this Toolkit.Mathematics.Half value) => BitConverter.GetBytes(value.value);
+        public static byte[] GetBytes(this Half value) => BitConverter.GetBytes(value.value);
     }
     public static class Half2Extenders
     {

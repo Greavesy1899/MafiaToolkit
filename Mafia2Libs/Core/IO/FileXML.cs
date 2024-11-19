@@ -1,6 +1,5 @@
-﻿using Mafia2Tool;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
+using Mafia2Tool;
 using Utils.Settings;
 
 namespace Core.IO

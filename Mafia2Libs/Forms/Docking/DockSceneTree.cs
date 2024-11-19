@@ -1,12 +1,15 @@
-﻿using ResourceTypes.FrameResource;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
+using Rendering.Graphics;
+using ResourceTypes.Actors;
+using ResourceTypes.Collisions;
+using ResourceTypes.FrameResource;
 using ResourceTypes.Translokator;
 using Utils.Language;
-using Utils.VorticeUtils;
 using WeifenLuo.WinFormsUI.Docking;
 using Object = ResourceTypes.Translokator.Object;
 
@@ -125,7 +128,7 @@ namespace Forms.Docking
         private void TreeView_Explorer_DragDrop(object sender, DragEventArgs e)
         {
             Point pt = TreeView_Explorer.PointToClient(new Point(e.X, e.Y));
-            targetNode = TreeView_Explorer.GetNodeAt(TreeView_Explorer.PointToClient(new System.Drawing.Point(e.X, e.Y)));
+            targetNode = TreeView_Explorer.GetNodeAt(TreeView_Explorer.PointToClient(new Point(e.X, e.Y)));
             DraggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
             TreeView_Explorer.SelectedNode = DraggedNode;
 
@@ -245,14 +248,11 @@ namespace Forms.Docking
         {
             foreach (TreeNode child in node.Nodes)
             {
-                if (child.Tag is Grid)
+                if (child.Tag is not Grid)
                 {
-                    child.Checked = false;
+                    child.Checked = true;
                 }
-                else
-                {
-                    child.Checked = true;                
-                }
+                
                 ApplyImageIndex(child);
                 RecurseChildren(child);
             }
@@ -292,7 +292,7 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 9;
             else if (node.Tag.GetType() == typeof(FrameObjectCollision))
                 node.SelectedImageIndex = node.ImageIndex = 3;
-            else if (node.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
+            else if (node.Tag.GetType() == typeof(Collision.Placement))
                 node.SelectedImageIndex = node.ImageIndex = 4;
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
@@ -307,7 +307,7 @@ namespace Forms.Docking
         }
 
         /* Context function */
-        private void OpenEntryContext(object sender, System.ComponentModel.CancelEventArgs e)
+        private void OpenEntryContext(object sender, CancelEventArgs e)
         {
             //TODO: Clean this messy system.
             EntryMenuStrip.Items[0].Visible = false;
@@ -324,13 +324,13 @@ namespace Forms.Docking
                 EntryMenuStrip.Items[2].Visible = true;
 
                 object data = TreeView_Explorer.SelectedNode.Tag;
-                if (FrameResource.IsFrameType(data) || data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || data.GetType() == typeof(Rendering.Graphics.RenderJunction) ||
-                    data.GetType() == typeof(ResourceTypes.Actors.ActorEntry) || data.GetType() == typeof(Rendering.Graphics.RenderNav))
+                if (FrameResource.IsFrameType(data) || data.GetType() == typeof(Collision.Placement) || data.GetType() == typeof(RenderJunction) ||
+                    data.GetType() == typeof(ActorEntry) || data.GetType() == typeof(RenderNav))
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
-                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)) 
-                    || (TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(ResourceTypes.FrameResource.FrameHeaderScene)))
+                if ((TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(Collision.CollisionModel)) 
+                    || (TreeView_Explorer.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene)))
                 {
                     Export3DButton.Visible = true;
                 }
@@ -367,17 +367,17 @@ namespace Forms.Docking
             {
                 return (data as FrameObjectBase).WorldTransform.Translation;
             }
-            else if (data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
+            else if (data.GetType() == typeof(Collision.Placement))
             {
-                return (data as ResourceTypes.Collisions.Collision.Placement).Position;
+                return (data as Collision.Placement).Position;
             }
-            else if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
+            else if (data.GetType() == typeof(RenderNav))
             {
-                return (data as Rendering.Graphics.RenderNav).Transform.Translation;
+                return (data as RenderNav).Transform.Translation;
             }
-            else if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
+            else if (data.GetType() == typeof(ActorEntry))
             {
-                return (data as ResourceTypes.Actors.ActorEntry).Position;
+                return (data as ActorEntry).Position;
             }
             else if (data is Object objectgroup)
             {

@@ -1,10 +1,11 @@
-﻿using Rendering.Core;
-using Rendering.Graphics;
-using System.IO;
+﻿using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
+using Rendering.Core;
+using Rendering.Graphics;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
+using Color = System.Drawing.Color;
 
 namespace ResourceTypes.Navigation
 {
@@ -108,7 +109,7 @@ namespace ResourceTypes.Navigation
             base.ConstructRenderable(BBoxBatcher);
 
             RenderBoundingBox navigationBox = new RenderBoundingBox();
-            navigationBox.SetColour(System.Drawing.Color.White);
+            navigationBox.SetColour(Color.White);
             navigationBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
             navigationBox.SetTransform(Matrix4x4.CreateTranslation(Position));
             

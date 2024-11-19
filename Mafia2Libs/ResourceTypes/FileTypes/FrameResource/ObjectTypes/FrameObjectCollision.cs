@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using Rendering.Factories;
-using Rendering.Graphics;
+﻿using System.IO;
 using ResourceTypes.ItemDesc;
-using System.IO;
 using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource

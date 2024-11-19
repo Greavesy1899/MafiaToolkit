@@ -1,15 +1,14 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
-using Gibbed.Mafia2.FileFormats.Archive;
-using Gibbed.Mafia2.ResourceFormats;
-using Gibbed.IO;
-using System;
+﻿using System;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
-using Utils.Settings;
-using Utils.Lua;
 using Core.IO;
+using Gibbed.Illusion.FileFormats.Hashing;
+using Gibbed.IO;
+using Gibbed.Mafia2.FileFormats.Archive;
+using Gibbed.Mafia2.ResourceFormats;
 using Utils.Logging;
+using Utils.Settings;
 
 namespace Gibbed.Mafia2.FileFormats
 {

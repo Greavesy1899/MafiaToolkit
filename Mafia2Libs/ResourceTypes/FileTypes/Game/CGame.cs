@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
 
@@ -55,7 +56,7 @@ namespace ResourceTypes.CGame
 
             if (Magic != _magic)
             {
-                throw new System.Exception("Not a Game file.");
+                throw new Exception("Not a Game file.");
             }
 
             int ChunkCount = br.ReadInt32();

@@ -1,11 +1,9 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using ResourceTypes.Wwise;
 using Utils.Language;
 using Utils.Settings;
-using Forms.EditorControls;
-using System.Collections.Generic;
 
 namespace Mafia2Tool
 {
@@ -107,7 +105,7 @@ namespace Mafia2Tool
             HircGrid.Refresh();
         }
 
-        private void HIRCEditor_Load(object sender, System.EventArgs e)
+        private void HIRCEditor_Load(object sender, EventArgs e)
         {
 
         }

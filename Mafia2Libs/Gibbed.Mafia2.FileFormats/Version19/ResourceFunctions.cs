@@ -1,9 +1,9 @@
-﻿using Gibbed.Mafia2.FileFormats.Archive;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
+using Gibbed.Mafia2.FileFormats.Archive;
 using Utils.Logging;
 using Utils.Settings;
 

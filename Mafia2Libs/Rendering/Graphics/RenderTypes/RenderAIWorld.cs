@@ -1,6 +1,6 @@
-﻿using Rendering.Core;
+﻿using System.Numerics;
+using Rendering.Core;
 using ResourceTypes.Navigation;
-using System.Numerics;
 using Toolkit.Core;
 using Vortice.Direct3D11;
 

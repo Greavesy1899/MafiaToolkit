@@ -1,10 +1,6 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace ResourceTypes.M3.XBin
 {

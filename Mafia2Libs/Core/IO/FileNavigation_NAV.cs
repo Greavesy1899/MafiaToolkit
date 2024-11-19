@@ -1,6 +1,6 @@
-﻿using ResourceTypes.Navigation;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
+using ResourceTypes.Navigation;
 
 namespace Core.IO
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;

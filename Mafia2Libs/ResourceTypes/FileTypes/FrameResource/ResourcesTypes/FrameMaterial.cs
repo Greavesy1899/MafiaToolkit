@@ -1,8 +1,8 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.Materials;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Materials;
 using Utils.Extensions;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;

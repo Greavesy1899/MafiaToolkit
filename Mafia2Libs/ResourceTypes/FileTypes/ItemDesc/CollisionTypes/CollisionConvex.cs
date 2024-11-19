@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Numerics;
 using Utils.VorticeUtils;
 
@@ -125,7 +126,7 @@ namespace ResourceTypes.ItemDesc
             }
             else
             {
-                throw new System.NotImplementedException();
+                throw new NotImplementedException();
 
             }
 

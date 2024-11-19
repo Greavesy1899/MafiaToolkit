@@ -1,10 +1,6 @@
-﻿using ResourceTypes.XBin.Types;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
-using System.Windows.Forms;
-using System.Xml.Linq;
-using Utils.Helpers.Reflection;
-using Utils.StringHelpers;
+using ResourceTypes.XBin.Types;
 
 namespace ResourceTypes.M3.XBin.TableContainers
 {

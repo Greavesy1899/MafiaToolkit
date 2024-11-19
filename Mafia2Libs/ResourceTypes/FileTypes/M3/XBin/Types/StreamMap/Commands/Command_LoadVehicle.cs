@@ -1,7 +1,6 @@
-﻿using ResourceTypes.M3.XBin;
+﻿using System.IO;
+using ResourceTypes.M3.XBin;
 using ResourceTypes.XBin.Types;
-using System.Diagnostics;
-using System.IO;
 using Utils.Logging;
 
 namespace FileTypes.XBin.StreamMap.Commands

@@ -1,6 +1,6 @@
-﻿using ResourceTypes.M3.XBin;
+﻿using System.IO;
+using ResourceTypes.M3.XBin;
 using ResourceTypes.XBin.Types;
-using System.IO;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {

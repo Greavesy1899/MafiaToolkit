@@ -1,15 +1,20 @@
-﻿using Core.IO;
-using Mafia2Tool.Forms;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Core.IO;
+using Mafia2Tool.Forms;
+using Octokit;
 using Toolkit.Forms;
-using Utils.Language;
 using Utils.Settings;
+using Application = System.Windows.Forms.Application;
+using Language = Utils.Language.Language;
 
 namespace Mafia2Tool
 {
@@ -88,7 +93,7 @@ namespace Mafia2Tool
         {
             try
             {
-                Octokit.GitHubClient client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("ToolkitUpdater", "1"));
+                GitHubClient client = new GitHubClient(new ProductHeaderValue("ToolkitUpdater", "1"));
                 GetLatest(client).Wait();
             }
             catch (Exception)
@@ -97,13 +102,13 @@ namespace Mafia2Tool
             }
         }
 
-        private static async Task GetLatest(Octokit.GitHubClient client)
+        private static async Task GetLatest(GitHubClient client)
         {
             //NOTE: Getting the very latest release causes an exception, so we need to use GetAll().
             var releases = await client.Repository.Release.GetAll("Greavesy1899", "MafiaToolkit");
             var release = releases[0];
             var version = release.TagName.Replace("v", "");
-            version = version.Replace(".", System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+            version = version.Replace(".", CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
             float.TryParse(version, out float value);
             if (ToolkitSettings.Version < value)
             {
@@ -164,7 +169,7 @@ namespace Mafia2Tool
             }
         }
 
-        private static System.Reflection.Assembly Default_Resolving(AssemblyLoadContext ALC, System.Reflection.AssemblyName AssemblyName)
+        private static Assembly Default_Resolving(AssemblyLoadContext ALC, AssemblyName AssemblyName)
         {
             string probeSetting = AppContext.GetData("SubdirectoriesToProbe") as string;
             if (string.IsNullOrEmpty(probeSetting))
@@ -197,15 +202,15 @@ namespace Mafia2Tool
         {
             if (!Debugger.IsAttached)
             {
-                ToolkitExceptionHandler.ShowExceptionForm((Exception)e.ExceptionObject);
+                ShowExceptionForm((Exception)e.ExceptionObject);
             }
         }
 
-        private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
             if (!Debugger.IsAttached)
             {
-                ToolkitExceptionHandler.ShowExceptionForm(e.Exception);
+                ShowExceptionForm(e.Exception);
             }
         }
 

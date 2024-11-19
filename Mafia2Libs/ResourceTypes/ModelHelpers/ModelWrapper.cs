@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.FrameResource;
-using ResourceTypes.BufferPools;
-using Utils.Types;
-using ResourceTypes.ModelHelpers.ModelExporter;
-using System.IO;
-using Utils.Settings;
-using System.Windows.Forms;
-using ResourceTypes.Materials;
-using System.Numerics;
-using Vortice.Mathematics;
-using Utils.VorticeUtils;
 using System.Diagnostics;
+using System.IO;
+using System.Numerics;
+using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.BufferPools;
+using ResourceTypes.FrameResource;
+using ResourceTypes.Materials;
+using ResourceTypes.ModelHelpers.ModelExporter;
+using Utils.Types;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace Utils.Models
 {

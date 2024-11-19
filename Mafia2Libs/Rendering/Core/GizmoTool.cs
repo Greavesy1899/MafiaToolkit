@@ -1,6 +1,6 @@
-﻿using Rendering.Graphics;
-using System;
+﻿using System;
 using System.Numerics;
+using Rendering.Graphics;
 using Utils.VorticeUtils;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;

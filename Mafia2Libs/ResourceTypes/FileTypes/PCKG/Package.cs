@@ -1,9 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ResourceTypes.PCKG
 {
@@ -120,7 +118,7 @@ namespace ResourceTypes.PCKG
                 string sID = Path.GetFileNameWithoutExtension(file);
                 ulong ID = 0;
 
-                if (!ulong.TryParse(sID, System.Globalization.NumberStyles.HexNumber, null, out ID))
+                if (!ulong.TryParse(sID, NumberStyles.HexNumber, null, out ID))
                 {
                     return false;
                 }

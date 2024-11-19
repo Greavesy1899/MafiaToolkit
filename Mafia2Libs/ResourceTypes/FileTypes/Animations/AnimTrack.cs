@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using Utils.Models;
 
 namespace ResourceTypes.Animation2
 {
@@ -11,7 +12,7 @@ namespace ResourceTypes.Animation2
         public static byte TargetTimeSize = 22; //Max 31
         public static byte TargetComponentSize = 24; //Max 63
         public bool TrackDataChanged = true;
-        public Utils.Models.SkeletonBoneIDs BoneID { get; set; }
+        public SkeletonBoneIDs BoneID { get; set; }
         public byte Flags { get; set; } = 0x23;
         public bool IsDataPresent { get; set; } = true;
         public byte DataFlags { get; set; } = 0x0B;
@@ -49,7 +50,7 @@ namespace ResourceTypes.Animation2
 
         public void Read(BinaryReader br)
         {
-            BoneID = (Utils.Models.SkeletonBoneIDs)br.ReadUInt64();
+            BoneID = (SkeletonBoneIDs)br.ReadUInt64();
             Flags = br.ReadByte();
             IsDataPresent = br.ReadBoolean();
             DataFlags = br.ReadByte();

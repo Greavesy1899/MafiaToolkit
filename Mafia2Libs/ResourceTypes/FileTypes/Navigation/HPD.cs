@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Numerics;
-using Utils.StringHelpers;
 using Utils.Helpers.Reflection;
 using Utils.Logging;
-using Utils.MathHelpers;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {

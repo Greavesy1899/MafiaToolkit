@@ -1,6 +1,7 @@
 ﻿using System.IO;
-using Gibbed.IO;
 using Gibbed.Illusion.FileFormats;
+using Gibbed.Illusion.FileFormats.Hashing;
+using Gibbed.IO;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {
@@ -24,7 +25,7 @@ namespace Gibbed.Mafia2.ResourceFormats
         public void Serialize(ushort version, Stream output, Endian endian)
         {
             output.WriteStringU16(FileName, endian);
-            output.WriteValueU64(Illusion.FileFormats.Hashing.FNV64.Hash(Name), endian);
+            output.WriteValueU64(FNV64.Hash(Name), endian);
             output.WriteStringU16(Name, endian);
             output.WriteValueS32(Data.Length, endian);
             output.WriteBytes(Data);

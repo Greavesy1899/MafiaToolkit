@@ -1,20 +1,16 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Xml;
-using System.Xml.Linq;
 using System.Windows;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using ResourceTypes.Wwise.Helpers;
-using ResourceTypes.Wwise;
 
 namespace ResourceTypes.Wwise.Objects
 {
     public class MusicTrack
     {
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         public int Type { get; set; }
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false)]
         private HIRCObject Parent { get; set; }
         public uint ID { get; set; }
         public byte MusicFlags { get; set; } //bit1 = "bOverrideParentMidiTempo", bit2 = "bOverrideParentMidiTarget", bit3 = "bMidiTargetTypeBus"

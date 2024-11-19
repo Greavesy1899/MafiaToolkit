@@ -1,4 +1,5 @@
 ﻿using System;
+using ResourceTypes.Collisions;
 using ResourceTypes.Materials;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
@@ -37,7 +38,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             // First make sure to handle collisions
             if (MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
             {
-                Collisions.CollisionMaterials MaterialChoice = Collisions.CollisionMaterials.Undefined;
+                CollisionMaterials MaterialChoice = CollisionMaterials.Undefined;
                 if(!Enum.TryParse(Name, out MaterialChoice))
                 {
                     AddMessage(MT_MessageType.Error, "This Material is set to Collision, yet it cannot be converted to CollisionEnum - {0}", Name);

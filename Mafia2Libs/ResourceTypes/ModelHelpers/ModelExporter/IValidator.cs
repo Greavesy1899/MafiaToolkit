@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Utils.Logging;
+﻿using Utils.Logging;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {

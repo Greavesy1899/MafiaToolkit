@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Drawing.Design;
 using System.IO;
 using System.Numerics;
+using System.Windows;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.Types;
@@ -260,7 +261,7 @@ namespace ResourceTypes.Actors
         public float Radius { get; set; }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BBoxSize { get; set; }
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
         public ActorCleanEntityFlags Flags { get; set; }
 
         public ActorCleanEntity()
@@ -292,7 +293,7 @@ namespace ResourceTypes.Actors
 
     public class ActorRadio : ActorPhysicsBase
     {
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
         public ActorRadioFlags Flags { get; set; }
         public float Range { get; set; }
         public float NearRange { get; set; }
@@ -1242,7 +1243,7 @@ namespace ResourceTypes.Actors
         float outerAngle;
         float outerVolume;
 
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
         public ActorSoundEntityBehaviourFlags BehaviourFlags {
             get { return behFlags; }
             set { behFlags = value; }
@@ -1333,7 +1334,7 @@ namespace ResourceTypes.Actors
             set { randomPosRangeZ = value; }
         }
 
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
         public ActorSoundEntityPlayType PlayFlags {
             get { return playFlags; }
             set { playFlags = value; }
@@ -2227,7 +2228,7 @@ namespace ResourceTypes.Actors
             {
                 if (Data[i] != 0)
                 {
-                    System.Windows.MessageBox.Show("Detected ActionPoint actor with extra data! Please mention on the Mafia: Toolkit discord!", "Toolkit", System.Windows.MessageBoxButton.OK);
+                    MessageBox.Show("Detected ActionPoint actor with extra data! Please mention on the Mafia: Toolkit discord!", "Toolkit", MessageBoxButton.OK);
                 }
             }
 
@@ -2990,7 +2991,7 @@ namespace ResourceTypes.Actors
         }
 
         public int Unk0 { get; set; }
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
         public ActorSoundMixerFlags Flags { get; set; }
         public Mixer[] Mixers { get; set; }
 
@@ -3095,7 +3096,7 @@ namespace ResourceTypes.Actors
         public uint Unk1 { get; set; }
         public float Radius { get; set; }
         public Vector3 BBoxExtents { get; set; }
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
         public ActorDamageZoneFlags Flags { get; set; }
         public int ParticleID { get; set; }
         public int SoundID { get; set; }

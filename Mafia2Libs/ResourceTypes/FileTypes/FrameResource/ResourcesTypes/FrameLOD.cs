@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.IO;
 using ThirdParty.OPCODE;
 using Utils.Extensions;
@@ -56,7 +57,7 @@ namespace ResourceTypes.FrameResource
             get { return numVerts; }
             set { numVerts = value; }
         }
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(FlagEnumUIEditor), typeof(UITypeEditor))]
         public VertexFlags VertexDeclaration {
             get { return vertexDeclaration; }
             set { vertexDeclaration = value; }

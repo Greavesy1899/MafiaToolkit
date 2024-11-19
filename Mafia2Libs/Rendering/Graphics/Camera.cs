@@ -1,6 +1,4 @@
-﻿using System;
-using System.Numerics;
-using Toolkit.Mathematics;
+﻿using System.Numerics;
 using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;

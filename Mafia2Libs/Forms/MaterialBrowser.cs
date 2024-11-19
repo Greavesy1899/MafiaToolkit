@@ -1,8 +1,7 @@
 ﻿using System;
-using ResourceTypes.Materials;
-using System.Windows.Forms;
 using System.Linq;
-using System.Diagnostics;
+using System.Windows.Forms;
+using ResourceTypes.Materials;
 using Utils.Language;
 using Utils.Logging;
 

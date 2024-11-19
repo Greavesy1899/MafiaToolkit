@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using Vortice.Mathematics;
 using Utils.Models;
-using System;
+using Vortice.Mathematics;
 
 namespace Utils.VorticeUtils
 {

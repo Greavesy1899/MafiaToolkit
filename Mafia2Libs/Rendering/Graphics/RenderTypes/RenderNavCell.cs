@@ -1,8 +1,9 @@
-﻿using Rendering.Core;
-using ResourceTypes.Navigation;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
+using Rendering.Core;
+using ResourceTypes.Navigation;
 using Toolkit.Core;
 using Vortice.Direct3D11;
 
@@ -38,7 +39,7 @@ namespace Rendering.Graphics
                 foreach (var unk10 in set.unk10Boxes)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(System.Drawing.Color.Turquoise);
+                    line.SetUnselectedColour(Color.Turquoise);
                     line.InitSwap(new Vector3[2] { unk10.B1.Max, unk10.B1.Min });
                     Lines.Add(line);
                 }
@@ -46,7 +47,7 @@ namespace Rendering.Graphics
                 foreach (var unk12 in set.unk12Boxes)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(System.Drawing.Color.Green);
+                    line.SetUnselectedColour(Color.Green);
                     line.InitSwap(new Vector3[2] { unk12.B1.Max, unk12.B1.Min });
                     Lines.Add(line);
                 }
@@ -54,7 +55,7 @@ namespace Rendering.Graphics
                 foreach (var unk14 in set.unk14Boxes)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(System.Drawing.Color.Yellow);
+                    line.SetUnselectedColour(Color.Yellow);
                     line.InitSwap(unk14.Points);
                     Lines.Add(line);
                 }
@@ -62,7 +63,7 @@ namespace Rendering.Graphics
                 foreach (var unk16 in set.EdgeBoxes)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(System.Drawing.Color.Brown);
+                    line.SetUnselectedColour(Color.Brown);
                     line.InitSwap(new Vector3[2] { unk16.Max, unk16.Min });
                     Lines.Add(line);
                 }
@@ -70,7 +71,7 @@ namespace Rendering.Graphics
                 foreach (var unk18 in set.unk18Set)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(System.Drawing.Color.Red);
+                    line.SetUnselectedColour(Color.Red);
                     line.InitSwap(unk18.Points);
                     Lines.Add(line);
                 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Xml;
-using System.Xml.Linq;
-using System.Windows;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using Utils;
+using System.IO;
 
 namespace ResourceTypes.Wwise.Helpers
 {
