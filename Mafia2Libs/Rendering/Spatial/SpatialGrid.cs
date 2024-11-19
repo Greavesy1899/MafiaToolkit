@@ -115,17 +115,14 @@ namespace Rendering.Core
             origin = gridBounds.Min;
 
             var index = 0;
-            for (int i = 0; i < width; i++)
+            /*for (int i = 0; i < width; i++)
             {
                 for (int x = 0; x < height; x++)
                 {
-                    SpatialCell_InitParams InitParams = new SpatialCell_InitParams();
                     var extents = new BoundingBox();
                     extents.Min = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 10.0f);
                     extents.Max = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 10.0f);
-                    InitParams.CellExtents = extents;
-                    InitParams.OwnGraphics = OwnGraphicsClass;
-                    cells[index++] = new SpatialCell(InitParams);
+                    cells[index++] = new SpatialCell(InGraphics, extents);
                 }
             }
 
@@ -133,11 +130,11 @@ namespace Rendering.Core
             {
                 ObjectGroup objectGroup = translokator.ObjectGroups[i];
 
-                for (int x = 0; x != objectGroup.Objects.Length; x++)
+                for (int x = 0; x != objectGroup.NumObjects; x++)
                 {
                     ResourceTypes.Translokator.Object obj = objectGroup.Objects[x];
 
-                    for (int y = 0; y != obj.Instances.Length; y++)
+                    for (int y = 0; y != obj.NumInstances; y++)
                     {
                         Instance instance = obj.Instances[y];
                         var cell = GetCell(instance.Position);
@@ -147,7 +144,7 @@ namespace Rendering.Core
                         cells[cell].AddAsset(box, RefManager.GetNewRefID());
                     }
                 }
-            }
+            }*/
         }
 
         public void Initialise(ID3D11Device device, ID3D11DeviceContext deviceContext)

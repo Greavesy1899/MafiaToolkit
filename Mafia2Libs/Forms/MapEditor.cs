@@ -1641,11 +1641,7 @@ namespace Mafia2Tool
             
             FrameObjectBase frame = frnode.Tag as FrameObjectBase;
             TreeNode parent;
-            using (MemoryStream importedData = new MemoryStream())
-            {
-                ImportedScene.FrameResource.SaveFramesStream(frame,importedData);
-                parent = SceneData.FrameResource.ReadFramesFromImport(frame.Name.String,importedData);
-            }
+            parent = SceneData.FrameResource.ReadFramesFromImport(frame.Name.String, ImportedScene.FrameResource.SaveFramesStream(frame));
 
             if (dImportSceneTree.importTextures.Checked && parent != null && ImportedScene.FrameResource.CheckForMeshObjects(frnode))
             {

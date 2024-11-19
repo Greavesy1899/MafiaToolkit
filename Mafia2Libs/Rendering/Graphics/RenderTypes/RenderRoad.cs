@@ -98,6 +98,9 @@ namespace Rendering.Graphics
             if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
                 return;
 
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
+
             Spline.Render(device, deviceContext, camera);
 
             foreach (Render2DPlane plane in Planes)

@@ -27,6 +27,9 @@ namespace Rendering.Graphics
             if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
                 return;
 
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
+
             instance.SetTransform(Transform);
             instance.Render(device, deviceContext, camera);   
         }

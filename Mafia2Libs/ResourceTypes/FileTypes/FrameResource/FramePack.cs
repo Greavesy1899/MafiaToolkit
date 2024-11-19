@@ -1,13 +1,8 @@
-﻿using System;
-using Mafia2Tool;
-using ResourceTypes.BufferPools;
+﻿using ResourceTypes.BufferPools;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Utils.Extensions;
-using Utils.Settings;
 
 namespace ResourceTypes.FrameResource
 {
@@ -243,175 +238,46 @@ namespace ResourceTypes.FrameResource
 
         public void WriteToFile(string ExportName, FrameObjectBase Frame)
         {
-            using (MemoryStream mainMemoryStream = new MemoryStream())
-            {
-                WriteToStream(Frame, mainMemoryStream);
-                File.WriteAllBytes(ExportName, mainMemoryStream.ToArray());
-            }
+            File.WriteAllBytes(ExportName, WriteToStream(Frame));
         }
         
-        public void WriteToStream(FrameObjectBase Frame,Stream MainStream)
+        public byte[] WriteToStream(FrameObjectBase Frame)
         {
             ModelAttachments = new Dictionary<ulong, List<int>>();
-            
-                using (BinaryWriter writer = new BinaryWriter(MainStream, Encoding.UTF8,leaveOpen:true))
+
+            using (MemoryStream ms = new())
+            {
+                using (BinaryWriter writer = new(ms))
                 {
-                    MemoryStream frameStream = SaveFrameStream(Frame, null);
-                    writer.Write(frameStream.ToArray());
+                    writer.Write(SaveFrameStream(Frame));
 
                     writer.Write(ModelAttachments.Count);
-                    foreach(var Entry in ModelAttachments)
+                    foreach (var Entry in ModelAttachments)
                     {
                         writer.Write(Entry.Key);
                         writer.Write(Entry.Value.Count);
-                        foreach(var ListEntry in Entry.Value)
+                        foreach (var ListEntry in Entry.Value)
                         {
                             writer.Write(ListEntry);
                         }
                     }
                 }
 
-                MainStream.Position = 0;
+                return ms.ToArray();
+            }
         }
         
-        private MemoryStream SaveFrameStream(FrameObjectBase frame,MemoryStream memoryStream)
+        private byte[] SaveFrameStream(FrameObjectBase frame)
         {
-            if (memoryStream == null)
+            using (MemoryStream ms = new())
             {
-             memoryStream = new MemoryStream();   
+                using (BinaryWriter writer = new(ms))
+                {
+                    SaveFrame(frame, writer);
+                }
+
+                return ms.ToArray();
             }
-            
-            using (BinaryWriter writer = new BinaryWriter(memoryStream, Encoding.UTF8,leaveOpen:true))
-            {
-                writer.Write(frame.RefID); // Save old RefID
-                Debug.WriteLine(frame.ToString());
-                if (frame.GetType() == typeof(FrameObjectArea))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Area);
-                    (frame as FrameObjectArea).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectCamera))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Camera);
-                    (frame as FrameObjectCamera).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectCollision))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Collision);
-                    (frame as FrameObjectCollision).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectComponent_U005))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Component_U00000005);
-                    (frame as FrameObjectComponent_U005).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectDummy))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Dummy);
-                    (frame as FrameObjectDummy).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectDeflector))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.ParticleDeflector);
-                    (frame as FrameObjectDeflector).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectFrame))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Frame);
-                    (frame as FrameObjectFrame).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectJoint))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Joint);
-                    (frame as FrameObjectJoint).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectLight))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Light);
-                    (frame as FrameObjectLight).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectModel))
-                {
-                    var mesh = (frame as FrameObjectModel);
-                    writer.Write((ushort)FrameResourceObjectType.Model);
-                    mesh.WriteToFilePart1(writer);
-                    mesh.Geometry.WriteToFile(writer);
-                    mesh.Material.WriteToFile(writer);
-                    mesh.BlendInfo.WriteToFile(writer);
-                    mesh.Skeleton.WriteToFile(writer);
-                    mesh.SkeletonHierarchy.WriteToFile(writer);
-                    mesh.WriteToFilePart2(writer);
-
-                    // Write Attachment hashes to the dictionary
-                    List<int> AttachmentHashes = new List<int>();
-                    foreach (FrameObjectModel.AttachmentReference Attachment in mesh.AttachmentReferences)
-                    {
-                        AttachmentHashes.Add(Attachment.Attachment.RefID);
-                    }
-
-                    ModelAttachments.Add(mesh.Name.Hash, AttachmentHashes);
-
-                    foreach (var lod in mesh.Geometry.LOD)
-                    {
-                        using (var stream = new MemoryStream())
-                        {
-                            OwningResource.SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
-                            OwningResource.SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
-                            writer.Write(stream.ToArray());
-                        }
-                    }
-                }
-                else if (frame.GetType() == typeof(FrameObjectSector))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Sector);
-                    (frame as FrameObjectSector).WriteToFile(writer);
-                }
-                else if (frame.GetType() == typeof(FrameObjectSingleMesh))
-                {
-                    var mesh = (frame as FrameObjectSingleMesh);
-                    writer.Write((ushort)FrameResourceObjectType.SingleMesh);
-                    mesh.WriteToFile(writer);
-                    mesh.Geometry.WriteToFile(writer);
-                    mesh.Material.WriteToFile(writer);
-
-                    foreach (var lod in mesh.Geometry.LOD)
-                    {
-                        using (var stream = new MemoryStream())
-                        {
-                            OwningResource.SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
-                            OwningResource.SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
-                            writer.Write(stream.ToArray());
-                        }
-                    }
-                }
-                else if (frame.GetType() == typeof(FrameObjectTarget))
-                {
-                    writer.Write((ushort)FrameResourceObjectType.Target);
-                    (frame as FrameObjectTarget).WriteToFile(writer);
-                }
-                else
-                {
-                    writer.Write(frame.Type);
-                    frame.WriteToFile(writer);
-                }
-
-                // write FrameNameTable info
-                writer.Write(frame.IsOnFrameTable);
-                writer.Write((uint)frame.FrameNameTableFlags);
-
-                // Write ParentIndex1 and ParentIndex2 info
-                writer.Write(frame.ParentIndex1.RefID);
-                writer.Write(frame.ParentIndex2.RefID);
-
-                writer.Write(frame.Children.Count);
-                for (int i = 0; i < frame.Children.Count; i++)
-                {
-                    SaveFrameStream(frame.Children[i], memoryStream);
-                }
-                
-            }
-
-            return memoryStream;
         }
 
         public void ReadFramesFromFile(string name)
@@ -420,14 +286,7 @@ namespace ResourceTypes.FrameResource
             ReadFramesFromFile(packData);
         }
 
-        public void ReadFramesFromFile(Stream frImportData)
-        {
-            byte[] packData = new byte[frImportData.Length]; // Loading from stream
-            frImportData.Read(packData, 0, packData.Length);
-            ReadFramesFromFile(packData);
-        }
-
-        private void ReadFramesFromFile(byte[] PackData)
+        public void ReadFramesFromFile(byte[] PackData)
         {
             FrameObjects = new Dictionary<int, object>();
             FrameMaterials = new Dictionary<int, FrameMaterial>();
