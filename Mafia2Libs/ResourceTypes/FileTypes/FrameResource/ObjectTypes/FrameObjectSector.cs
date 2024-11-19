@@ -1,7 +1,6 @@
 ﻿using Rendering.Factories;
 using Rendering.Graphics;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;

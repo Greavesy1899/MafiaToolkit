@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Rendering.Factories;
+﻿using Rendering.Factories;
 using Rendering.Graphics;
 using ResourceTypes.Actors;
 using System.IO;

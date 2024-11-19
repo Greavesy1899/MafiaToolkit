@@ -188,15 +188,13 @@ namespace Mafia2Tool
             //    }
             //}
 #endif // DEBUG
-
-            //~ENABLE THIS SECTION AT YOUR OWN RISK
-            //Translokator, I AM RISKING
+            
+            //Translokator
             if (!isBigEndian && sdsContent.HasResource("Translokator"))
             {
                 var name = sdsContent.GetResourceFiles("Translokator", true)[0];
                 Translokator = new TranslokatorLoader(new FileInfo(name));
             }
-            //~ENABLE THIS SECTION AT YOUR OWN RISK
 
             // Kynapse Navigation
             if (ToolkitSettings.bNavigation)

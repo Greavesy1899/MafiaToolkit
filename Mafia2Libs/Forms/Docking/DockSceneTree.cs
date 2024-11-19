@@ -245,14 +245,11 @@ namespace Forms.Docking
         {
             foreach (TreeNode child in node.Nodes)
             {
-                if (child.Tag is Grid)
+                if (child.Tag is not Grid)
                 {
-                    child.Checked = false;
+                    child.Checked = true;
                 }
-                else
-                {
-                    child.Checked = true;                
-                }
+
                 ApplyImageIndex(child);
                 RecurseChildren(child);
             }
