@@ -60,6 +60,7 @@ namespace Mafia2Tool
             ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
             ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
             EditLighting = new System.Windows.Forms.ToolStripMenuItem();
+            ToggleTranslokatorTint = new System.Windows.Forms.ToolStripMenuItem();
             Button_TestConvert32 = new System.Windows.Forms.ToolStripMenuItem();
             Button_TestConvert16 = new System.Windows.Forms.ToolStripMenuItem();
             Button_DumpTexture = new System.Windows.Forms.ToolStripMenuItem();
@@ -308,7 +309,7 @@ namespace Mafia2Tool
             // OptionsButton
             // 
             OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { ToggleWireframeButton, ToggleCullingButton, EditLighting, Button_TestConvert32, Button_TestConvert16, Button_DumpTexture });
+            OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { ToggleWireframeButton, ToggleCullingButton, EditLighting, ToggleTranslokatorTint, Button_TestConvert32, Button_TestConvert16, Button_DumpTexture });
             OptionsButton.Image = (System.Drawing.Image)resources.GetObject("OptionsButton.Image");
             OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             OptionsButton.Name = "OptionsButton";
@@ -335,6 +336,14 @@ namespace Mafia2Tool
             EditLighting.Size = new System.Drawing.Size(193, 22);
             EditLighting.Text = "$EDIT_LIGHTING";
             EditLighting.Click += EditLighting_Click;
+            // 
+            // ToggleTranslokatorTint
+            // 
+            ToggleTranslokatorTint.Name = "ToggleTranslokatorTint";
+            ToggleTranslokatorTint.Size = new System.Drawing.Size(193, 22);
+            ToggleTranslokatorTint.Text = "$TOGGLE_TRANSLOKATOR_TINT";
+            ToggleTranslokatorTint.Click += TranslokatorTint_Click;
+            ToggleTranslokatorTint.Enabled = false;
             // 
             // Button_TestConvert32
             // 
@@ -485,6 +494,7 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripSplitButton CurrentModeButton;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
         private System.Windows.Forms.ToolStripMenuItem EditLighting;
+        private System.Windows.Forms.ToolStripMenuItem ToggleTranslokatorTint;
         private System.Windows.Forms.ToolStripMenuItem Button_TestConvert16;
         private System.Windows.Forms.ToolStripMenuItem Button_TestConvert32;
         private System.Windows.Forms.ToolStripStatusLabel Label_MemoryUsage;

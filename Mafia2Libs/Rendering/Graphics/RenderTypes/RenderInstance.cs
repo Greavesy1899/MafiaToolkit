@@ -24,6 +24,8 @@ namespace Rendering.Graphics
         {
             if (!DoRender)
                 return;
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
 
             if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
                 return;

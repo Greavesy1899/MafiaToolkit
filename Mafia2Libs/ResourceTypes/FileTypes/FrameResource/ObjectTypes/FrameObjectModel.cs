@@ -129,7 +129,7 @@ namespace ResourceTypes.FrameResource
             hitBoxInfo = new HitBoxInfo[other.hitBoxInfo.Length];
             for (int i = 0; i != hitBoxInfo.Length; i++)
             {
-                hitBoxInfo[i] = new HitBoxInfo(hitBoxInfo[i]);
+                hitBoxInfo[i] = new HitBoxInfo(other.hitBoxInfo[i]);
             }
         }
 

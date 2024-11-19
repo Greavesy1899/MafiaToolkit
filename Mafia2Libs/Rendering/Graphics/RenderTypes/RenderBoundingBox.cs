@@ -94,6 +94,8 @@ namespace Rendering.Graphics
             {
                 return;
             }
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
 
             if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
                 return;

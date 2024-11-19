@@ -852,5 +852,17 @@ namespace ResourceTypes.FrameResource
             }
             return false;
         }
+        public T GetObjectByHash<T>(ulong hashname) where T : FrameObjectBase
+        {
+            foreach (FrameObjectBase Object in frameObjects.Values)
+            {
+                if (Object.Name.Hash == hashname)
+                {
+                    return Object as T;
+                }
+            }
+
+            return null;
+        }
     }
 }

@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
+using ResourceTypes.Translokator;
 using Utils.Language;
+using Utils.VorticeUtils;
 using WeifenLuo.WinFormsUI.Docking;
+using Object = ResourceTypes.Translokator.Object;
 
 namespace Forms.Docking
 {
@@ -242,7 +245,11 @@ namespace Forms.Docking
         {
             foreach (TreeNode child in node.Nodes)
             {
-                child.Checked = true;
+                if (child.Tag is not Grid)
+                {
+                    child.Checked = true;
+                }
+
                 ApplyImageIndex(child);
                 RecurseChildren(child);
             }
@@ -287,9 +294,11 @@ namespace Forms.Docking
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
             else if (node.Tag.GetType() == typeof(FrameHeader))
-                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
+                node.SelectedImageIndex = node.ImageIndex = 8;
             else if ((node.Tag is string) && ((node.Tag as string) == "Folder"))
-                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
+                node.SelectedImageIndex = node.ImageIndex = 8;
+            else if (node.Tag.GetType() == typeof(ObjectGroup))
+                node.SelectedImageIndex = node.ImageIndex = 8;
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
@@ -339,6 +348,11 @@ namespace Forms.Docking
                         LinkToActorButton.Visible = true;
                     }
                 }
+
+                if (TreeView_Explorer.SelectedNode.Tag is Instance || TreeView_Explorer.SelectedNode.Tag is Object)
+                {
+                    EntryMenuStrip.Items[0].Visible = true;
+                }
             }
         }
 
@@ -361,6 +375,22 @@ namespace Forms.Docking
             else if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
             {
                 return (data as ResourceTypes.Actors.ActorEntry).Position;
+            }
+            else if (data is Object objectgroup)
+            {
+                List<TreeNode> CurrentNodeMatches = new List<TreeNode>();//intented for object to jump to refframe
+                SearchNodes(objectgroup.Name.String, TreeView_Explorer.Nodes[0], ref CurrentNodeMatches);
+                if (CurrentNodeMatches.Count!=0)//this should look into frames first,if there is none, it doesn't have frame ref
+                {
+                    if (CurrentNodeMatches[0].Tag is FrameObjectBase refframe)
+                    {
+                        return refframe.WorldTransform.Translation; 
+                    }
+                }
+            }
+            else if (data is Instance instance)//jump to instance coords
+            {
+                return instance.Position;
             }
 
             return Vector3.Zero;

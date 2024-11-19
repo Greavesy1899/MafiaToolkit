@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Numerics;
 using Utils.Extensions;
 using Utils.VorticeUtils;
@@ -45,7 +46,6 @@ namespace ResourceTypes.FrameResource
             decompressionFactor = reader.ReadSingle(isBigEndian);
 
             LOD = new FrameLOD[numLods];
-
             for (int i = 0; i < numLods; i++)
             {
                 LOD[i] = new FrameLOD();

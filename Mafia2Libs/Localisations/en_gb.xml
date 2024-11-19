@@ -270,6 +270,7 @@
 	<String ID="$TOGGLE_WIREFRAME">Toggle Wireframe</String>
 	<String ID="$TOGGLE_CULLING">Toggle Culling</String>
 	<String ID="$EDIT_LIGHTING">Edit Lighting</String>
+	<String ID="$TOGGLE_TRANSLOKATOR_TINT">Toggle Translokator Tint</String>
 	<String ID="$POSITION_X">Position X</String>
 	<String ID="$POSITION_Y">Position Y</String>
 	<String ID="$POSITION_Z">Position Z</String>

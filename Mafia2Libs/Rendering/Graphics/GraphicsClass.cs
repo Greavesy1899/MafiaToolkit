@@ -5,12 +5,14 @@ using ResourceTypes.FrameResource;
 using ResourceTypes.Translokator;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Models;
 using Utils.Settings;
 using Utils.VorticeUtils;
+using Vortice.Direct3D11;
 using Vortice.Mathematics;
 
 namespace Rendering.Graphics
@@ -23,6 +25,7 @@ namespace Rendering.Graphics
     public struct PickOutParams
     {
         public int LowestRefID { get; set; }
+        public int LowestInstanceID { get; set; }
         public Vector3 WorldPosition { get; set; }
     }
 
@@ -36,8 +39,9 @@ namespace Rendering.Graphics
 
         public EventHandler<UpdateSelectedEventArgs> OnSelectedObjectUpdated;
 
-        private Dictionary<int, IRenderer> Assets;
+        public Dictionary<int, IRenderer> Assets { get; private set; }
         private int selectedID;
+        private Dictionary<int, int> selectedInstances;//refframe refid, instance refid
         private RenderBoundingBox selectionBox;
         private RenderModel sky;
         private RenderModel clouds;
@@ -164,6 +168,7 @@ namespace Rendering.Graphics
         {
             float lowest = float.MaxValue;
             int lowestRefID = -1;
+            int lowestInstanceID = -1;
             Vector3 WorldPosIntersect = Vector3.Zero;
 
             Ray ray = Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(Width, Height));
@@ -183,10 +188,37 @@ namespace Rendering.Graphics
                     Vector3.TransformNormal(ray.Direction, vWM)
                 );
 
-                if (model.Value is RenderModel)
+                if (model.Value is RenderModel mesh)
                 {
-                    RenderModel mesh = (model.Value as RenderModel);
                     var bbox = mesh.BoundingBox;
+
+                    if (mesh.InstanceTransforms.Count > 0)
+                    {
+                        foreach (var transform in mesh.InstanceTransforms)
+                        {
+                            var transposed = Matrix4x4.Transpose(transform.Value);
+
+                            bbox.Max = Vector3.Transform(bbox.Max, transposed);
+                            bbox.Min = Vector3.Transform(bbox.Min, transposed);
+
+                            if (localRay.Intersects(bbox) == 0.0f) continue;
+
+                            var distance = (bbox.Center - ray.Position).LengthSquared();
+
+                            if (distance < lowest)
+                            {
+                                lowest = distance;
+                                lowestRefID = model.Key;
+                                lowestInstanceID = transform.Key;
+                                WorldPosIntersect = bbox.Center;
+                            }
+
+                            bbox = mesh.BoundingBox;
+                        }
+                        
+                    }
+
+                    bbox = mesh.BoundingBox;
 
                     if (localRay.Intersects(bbox) == 0.0f) continue;
 
@@ -205,13 +237,13 @@ namespace Rendering.Graphics
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
+                            lowestInstanceID = -1;
                             WorldPosIntersect = worldPosition;
                         }
                     }
                 }
-                if (model.Value is RenderInstance)
+                if (model.Value is RenderInstance instance)
                 {
-                    RenderInstance instance = (model.Value as RenderInstance);
                     RenderStaticCollision collision = instance.GetCollision();
                     var bbox = collision.BoundingBox;
 
@@ -242,6 +274,7 @@ namespace Rendering.Graphics
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
+                            lowestInstanceID = -1;
                             WorldPosIntersect = worldPosition;
                         }
                     }
@@ -252,6 +285,7 @@ namespace Rendering.Graphics
 
             PickOutParams OutputParams = new PickOutParams();
             OutputParams.LowestRefID = lowestRefID;
+            OutputParams.LowestInstanceID = lowestInstanceID;
             OutputParams.WorldPosition = WorldPosIntersect;
 
             return OutputParams;
@@ -328,9 +362,9 @@ namespace Rendering.Graphics
             foreach (IRenderer RenderEntry in Assets.Values)
             {
                 RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);
+                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);                
             }
-
+            
             //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);
             foreach (var grid in navigationGrids)
             {
@@ -394,12 +428,59 @@ namespace Rendering.Graphics
                     OldObject.Unselect();
                 }
 
+                if (selectedInstances != null)
+                {
+                    foreach (var selinst in selectedInstances)
+                    {
+                        RenderModel model = Assets[selinst.Key] as RenderModel;
+                        model.UnselectInstance();
+                    }
+                    selectedInstances.Clear();
+                }
+
                 TranslationGizmo.OnSelectEntry(NewObject.Transform, true);
                 NewObject.Select();
                 selectionBox.DoRender = true;
                 selectionBox.SetTransform(NewObject.Transform);
                 selectionBox.Update(NewObject.BoundingBox);
                 selectedID = id;
+            }
+        }
+        
+        public void SelectInstance(int instanceId)
+        {
+            IRenderer SelectedEntry = GetAsset(selectedID);
+            if (SelectedEntry != null)
+            {
+                SelectedEntry.Unselect();
+            }
+
+            if (selectedInstances != null)
+            {
+                foreach (var selinst in selectedInstances)
+                {
+                    RenderModel model = Assets[selinst.Key] as RenderModel;
+                    model.UnselectInstance();
+                }
+                selectedInstances.Clear();
+            }
+
+            selectedInstances = new Dictionary<int, int>();
+            
+            foreach (var asset in Assets)
+            {
+                if (asset.Value is RenderModel model && model.ContainsInstanceTransform(instanceId))
+                {
+                    selectedInstances.Add(asset.Key, instanceId);
+                    model.SelectInstance(instanceId);
+                }
+
+            }
+
+            if (selectedInstances != null)
+            {
+                RenderModel model = Assets[selectedInstances.First().Key] as RenderModel;
+                TranslationGizmo.OnSelectEntry(Matrix4x4.Transpose(model.InstanceTransforms[selectedInstances.First().Value]) , true);
             }
         }
 
@@ -471,6 +552,14 @@ namespace Rendering.Graphics
             }
         }
 
+        public void ToggleInstanceTint()
+        {
+            foreach (RenderModel model in Assets.Values)
+            {
+                model.InstanceTint = !model.InstanceTint;
+            }
+        }
+
         public void Shutdown()
         {
             WorldSettings.Shutdown();
@@ -503,8 +592,22 @@ namespace Rendering.Graphics
             Assets = null;
             D3D?.Shutdown();
             D3D = null;
+            selectedInstances = null;
         }
 
+
+        public void UpdateInstanceBuffers(List<RenderModel> renderModels)
+        {
+            foreach (var model in renderModels)
+            {
+                model.ReloadInstanceBuffer(D3D.Device);
+            }
+        }
+
+        public ID3D11Device GetId3D11Device()
+        {
+            return D3D.Device;
+        }
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();
         public void ToggleD3DCullMode() => D3D.ToggleCullMode();
     }

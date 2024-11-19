@@ -1,8 +1,7 @@
 cbuffer MatrixBuffer
 {
 	matrix worldMatrix;
-	matrix viewMatrix;
-	matrix projectionMatrix;
+	matrix viewProjectionMatrix;
 };
 
 cbuffer CameraBuffer
@@ -37,8 +36,7 @@ VS_OUTPUT CollisionShader(VS_INPUT input)
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
 	output.Position = mul(input.Position, worldMatrix);
-	output.Position = mul(output.Position, viewMatrix);
-	output.Position = mul(output.Position, projectionMatrix);
+	output.Position = mul(output.Position, viewProjectionMatrix);
 
 	// Calculate the normal vector against the world matrix only.
 	output.Normal = mul(input.Normal, (float3x3)worldMatrix);

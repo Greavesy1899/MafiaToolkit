@@ -14,6 +14,10 @@ using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using static Rendering.Graphics.BaseShader;
 using Color = System.Drawing.Color;
+using Rendering.Core;
+using ResourceTypes.Translokator;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Rendering.Graphics
 {
@@ -31,15 +35,27 @@ namespace Rendering.Graphics
         private HashName aoHash;
         public ID3D11ShaderResourceView AOTexture { get; set; }
         public Color SelectionColour { get; private set; }
+        
+        public struct SelectionInstance
+        {
+            public int instanceRefID;
+        }
+
+        public SelectionInstance selectionInstance;
 
         public struct LOD
         {
             public ModelPart[] ModelParts { get; set; }
             public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
             public uint[] Indices { get; set; }
+            public int parentGeomHash { get; set; }
         }
 
         public LOD[] LODs { get; private set; }
+
+        public Dictionary<int, Matrix4x4> InstanceTransforms { get; set; } = new() { };
+
+        public bool InstanceTint;
 
         public RenderModel()
         {
@@ -47,6 +63,11 @@ namespace Rendering.Graphics
             bIsUpdatedNeeded = false;
             Transform = Matrix4x4.Identity;
             SelectionColour = Color.White;
+            selectionInstance = new SelectionInstance()
+            {
+                instanceRefID = 0,
+            };
+            InstanceTint = true;
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -114,7 +135,7 @@ namespace Rendering.Graphics
             BoundingBox = mesh.Boundings;
             LODs = new LOD[geom.NumLods];
 
-            for(int i = 0; i != geom.NumLods; i++)
+            for (int i = 0; i != geom.NumLods; i++)
             {
                 LOD lod = new LOD();
                 lod.Indices = indexBuffers[i].GetData();
@@ -154,7 +175,7 @@ namespace Rendering.Graphics
                         lod.Vertices[x] = vertex;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(string.Format("Error when creating renderable {1}!: \n{0}", ex.Message, mesh.Name.ToString()), "Toolkit");
                     return false;
@@ -241,7 +262,74 @@ namespace Rendering.Graphics
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
 
+            InitInstanceBuffer(d3d);
+
             InitTextures(d3d, d3dContext);
+        }
+
+        public void InitInstanceBuffer(ID3D11Device d3d)
+        {
+            int newSize = InstanceTransforms.Count * Marshal.SizeOf<Matrix4x4>();
+
+            if (InstanceTransforms.Count == 0)
+            {
+                return;
+            }
+
+            // Create or update buffer only if necessary
+            if (instanceBuffer == null || instanceBuffer.Description.SizeInBytes < newSize)
+            {
+                // Buffer description for instance buffer
+                var bufferDescription = new BufferDescription
+                {
+                    SizeInBytes = newSize,
+                    Usage = ResourceUsage.Dynamic,
+                    BindFlags = BindFlags.ShaderResource,
+                    OptionFlags = ResourceOptionFlags.BufferStructured,
+                    CpuAccessFlags = CpuAccessFlags.Write,
+                    StructureByteStride = Marshal.SizeOf<Matrix4x4>(),
+                };
+
+                var viewDescription = new ShaderResourceViewDescription()
+                {
+                    Format = Vortice.DXGI.Format.Unknown,
+                    ViewDimension = ShaderResourceViewDimension.Buffer,
+                };
+
+                viewDescription.Buffer.FirstElement = 0;
+                viewDescription.Buffer.NumElements = InstanceTransforms.Count;
+
+                // Dispose old buffer if necessary
+                instanceBuffer?.Dispose();
+
+                // Convert list to array
+                Matrix4x4[] transformsArray = InstanceTransforms.Values.ToArray();
+
+                // Pin the array in memory
+                GCHandle handle = GCHandle.Alloc(transformsArray, GCHandleType.Pinned);
+                try
+                {
+                    IntPtr pointer = handle.AddrOfPinnedObject();
+                    // Update the instance buffer
+                    instanceBuffer = d3d.CreateBuffer(bufferDescription, pointer);
+
+                    instanceBufferView = d3d.CreateShaderResourceView(instanceBuffer, viewDescription);
+                }
+                finally
+                {
+                    handle.Free();
+                }
+            }
+        }
+
+        public void ReloadInstanceBuffer(ID3D11Device d3d)
+        {
+            instanceBuffer?.Dispose();
+            instanceBuffer = null;
+            instanceBufferView?.Dispose();
+            instanceBufferView = null;
+
+            InitInstanceBuffer(d3d);
         }
 
         public override void SetTransform(Matrix4x4 matrix)
@@ -256,21 +344,82 @@ namespace Rendering.Graphics
                 return;
             }
 
-            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
-                 return;
+            bool BuffersSet = false;
 
-            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
-            deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
-            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
-            deviceContext.PSSetShaderResource(2, AOTexture);
+            if (InstanceTransforms.Count > 0)
+            {
+                VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
+                deviceContext.IASetVertexBuffers(0, VertexBufferView);
+                deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+                deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+                deviceContext.PSSetShaderResource(2, AOTexture);
+
+                BuffersSet = true;
+
+                RenderInstances(deviceContext, camera, device);
+            }
+
+            if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
+                return;
+
+            if (!BuffersSet)
+            {
+                VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
+                deviceContext.IASetVertexBuffers(0, VertexBufferView);
+                deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+                deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+                deviceContext.PSSetShaderResource(2, AOTexture);
+                BuffersSet = true;
+            }
 
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
                 ModelPart Segment = LODs[0].ModelParts[i];
+
+                if (InstanceTransforms.Count == 0)
+                {
+                    Segment.Shader.ResetShaderParameters(device, deviceContext);
+                }
+
                 Segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(Segment.Material, SelectionColour.Normalize()));
                 Segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
                 Segment.Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(Segment.NumFaces * 3), Segment.StartIndex);
+            }
+        }
+
+        private float colorTransitionTime = 0.0f; // timer for distinguishing translokators
+
+        private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
+        {
+            deviceContext.VSSetShaderResource(0, instanceBufferView);
+
+            colorTransitionTime += 0.1f;
+
+
+            float t = (float)(Math.Sin(colorTransitionTime) * 0.5 + 0.5);
+
+            Color startColor = Color.White;
+            Color endColor = Color.Yellow;
+
+            Color tint = Color.FromArgb(
+                (int)(startColor.A + (endColor.A - startColor.A) * t),
+                (int)(startColor.R + (endColor.R - startColor.R) * t),
+                (int)(startColor.G + (endColor.G - startColor.G) * t),
+                (int)(startColor.B + (endColor.B - startColor.B) * t)
+            );
+
+            for (int i = 0; i < LODs[0].ModelParts.Length; i++)
+            {
+                RenderModel.ModelPart segment = LODs[0].ModelParts[i];
+
+                segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, InstanceTint ? tint.Normalize() : startColor.Normalize()));
+                segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
+
+                segment.Shader.setHightLightInstance(deviceContext, (uint)selectionInstance.instanceRefID);
+
+
+                segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
+                Profiler.NumDrawCallsThisFrame++;
             }
         }
 
@@ -284,6 +433,10 @@ namespace Rendering.Graphics
             vertexBuffer = null;
             indexBuffer?.Dispose();
             indexBuffer = null;
+            instanceBuffer?.Dispose();
+            instanceBuffer = null;
+            instanceBufferView?.Dispose();
+            instanceBufferView = null;
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
@@ -299,6 +452,23 @@ namespace Rendering.Graphics
         public override void Select()
         {
             SelectionColour = Color.Red;
+        }
+        public void SelectInstance(int instanceRefID)
+        {
+            List<int> instanceRefIDs = InstanceTransforms.Keys.ToList();
+            for (int i = 0; i < instanceRefIDs.Count; i++)
+            {
+                if (instanceRefIDs[i] == instanceRefID)
+                {
+                    selectionInstance.instanceRefID = i;
+                    return;
+                }
+            }
+        }
+        
+        public void UnselectInstance()
+        {
+            selectionInstance.instanceRefID = 0;
         }
 
         public override void Unselect()
@@ -325,6 +495,11 @@ namespace Rendering.Graphics
                     }
                 }
             }
+        }
+
+        public bool ContainsInstanceTransform(int instanceID)
+        {
+            return InstanceTransforms.ContainsKey(instanceID);
         }
     }
 }

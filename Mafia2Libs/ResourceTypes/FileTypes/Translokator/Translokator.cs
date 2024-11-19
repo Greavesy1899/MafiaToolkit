@@ -1,8 +1,11 @@
 ﻿using ResourceTypes.Actors;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Numerics;
+using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
@@ -55,6 +58,7 @@ namespace ResourceTypes.Translokator
     {
         Vector3 position;
         Vector3 rotation;
+        Quaternion quatRot;
         float scale;
         ushort w0;
         ushort w1;
@@ -62,6 +66,7 @@ namespace ResourceTypes.Translokator
         int d5;
         ushort id;
         ushort d4;
+        public int RefID;
 
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 Position {
@@ -72,7 +77,12 @@ namespace ResourceTypes.Translokator
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 Rotation {
             get { return rotation; }
-            set { rotation = value; }
+            set { rotation = value; UpdateQuaternion(); }
+        }
+
+        public Quaternion Quaternion {
+            get { return quatRot; }
+            private set { quatRot = value; }
         }
 
         public float Scale {
@@ -120,12 +130,45 @@ namespace ResourceTypes.Translokator
             position = other.position;
             rotation = other.rotation;
             scale = other.scale;
+            Quaternion = other.Quaternion;
             w0 = other.w0;
             w1 = other.w1;
             w2 = other.w2;
             id = other.id;
             d4 = other.d4;
             d5 = other.d5;
+        }
+
+        private void UpdateQuaternion()
+        {
+            Quaternion q = Quaternion.Identity;
+
+            float pitch = MathHelper.ToRadians(Rotation.X);
+            float yaw = MathHelper.ToRadians(Rotation.Y);
+            float roll = MathHelper.ToRadians(Rotation.Z);
+
+            float v12 = pitch * 0.5f;
+            float v8 = MathF.Sin(v12);
+            float v11 = v8;
+            float v13 = MathF.Cos(v12);
+            float v10 = v13;
+            float v14 = yaw * 0.5f;
+            float v18 = MathF.Sin(v14);
+            float v15 = MathF.Cos(v14);
+            float v9 = v15;
+            float v16 = roll * 0.5f;
+            float v19 = MathF.Sin(v16);
+            float v17 = MathF.Cos(v16);
+            float v4 = v17 * v9;
+            float v5 = v19 * v18;
+            q.X = v10 * v5 + v11 * v4;
+            float v6 = v17 * v18;
+            float v7 = v9 * v19;
+            q.Y = v11 * v7 + v10 * v6;
+            q.Z = (v7 * v10 - v6 * v11);
+            q.W = -(v4 * v10 - v5 * v11);
+
+            Quaternion = q;
         }
     }
 
@@ -272,6 +315,7 @@ namespace ResourceTypes.Translokator
             Z = MathHelper.ToDegrees((float)Z);
             instance.Rotation = new Vector3((float)X, (float)Y, (float)Z);
         }
+
         private void CompressRotation(Instance instance)
         {
             MathHelper.ToRadians(instance.Rotation.X);

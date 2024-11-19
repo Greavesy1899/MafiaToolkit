@@ -84,6 +84,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Localisations\ar_AR.xml" />
+    <None Remove="Shaders\LightInstanceVS.hlsl" />
+    <None Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
@@ -145,6 +147,7 @@
     <Compile Update="Forms\ATPEditor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <ItemGroup>
     <None Update="build.cmd">
@@ -202,6 +205,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Localisations\sk_SK.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\LightInstanceVS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Update="libs\M2FBX.dll">
@@ -326,6 +332,15 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Shaders\mrdka.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Rendering\Graphics\RenderTypes\Instances\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"
