@@ -130,6 +130,7 @@ namespace ResourceTypes.Translokator
             position = other.position;
             rotation = other.rotation;
             scale = other.scale;
+            Quaternion = other.Quaternion;
             w0 = other.w0;
             w1 = other.w1;
             w2 = other.w2;

@@ -2077,6 +2077,11 @@ namespace Mafia2Tool
                 if (frameref != null)//todo nonframerefs solution once they are managed
                 {
                     InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance,true);
+                    for (int i = 0; i < frameref.Children.Count; i++)
+                    {
+                        var modelsToUpdate = UpdateTranslocatorPart(frameref.Children[i], Matrix4x4.Identity, newInstance);
+                        Graphics.UpdateInstanceBuffers(modelsToUpdate);
+                    }
                 }
                 dSceneTree.AddToTree(instanceNode,node.Parent);
             }
