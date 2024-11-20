@@ -15,7 +15,7 @@ namespace Rendering.Graphics
             DefaultInitParams.Elements = VertexLayouts.NormalLayout.GetLayout();
             DefaultInitParams.PixelShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightPS.hlsl", "LightPixelShader", "ps_4_0");
             DefaultInitParams.VertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightVertexShader", "vs_4_0");
-            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightInstanceVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
+            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
 
             DefaultShader OurDefaultShader = new DefaultShader(device, DefaultInitParams);
 
@@ -24,7 +24,7 @@ namespace Rendering.Graphics
             DebugInitParams.Elements = VertexLayouts.BasicLayout.GetLayout();
             DebugInitParams.PixelShaderFile = new ShaderInitParams.ShaderFileEntryPoint("DebugPS.hlsl", "DebugPixelShader", "ps_4_0");
             DebugInitParams.VertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("DebugVS.hlsl", "DebugVertexShader", "vs_4_0");
-            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightInstanceVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
+            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
 
             DebugShader OurDebugShader = new DebugShader(device, DebugInitParams);
 
@@ -33,7 +33,7 @@ namespace Rendering.Graphics
             CollisionInitParams.Elements = VertexLayouts.CollisionLayout.GetLayout();
             CollisionInitParams.PixelShaderFile = new ShaderInitParams.ShaderFileEntryPoint("CollisionPS.hlsl", "CollisionShader", "ps_4_0");
             CollisionInitParams.VertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("CollisionVS.hlsl", "CollisionShader", "vs_4_0");
-            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightInstanceVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
+            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
 
             CollisionShader OurCollisionShader = new CollisionShader(device, CollisionInitParams);
 
@@ -42,7 +42,7 @@ namespace Rendering.Graphics
             Shader601151254_InitParams.Elements = VertexLayouts.NormalLayout.GetLayout();
             Shader601151254_InitParams.PixelShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightPS.hlsl", "PS_601151254", "ps_4_0");
             Shader601151254_InitParams.VertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightVertexShader", "vs_4_0");
-            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightInstanceVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
+            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
 
             Shader_601151254 OurShader601151254 = new Shader_601151254(device, Shader601151254_InitParams);
 
@@ -51,7 +51,7 @@ namespace Rendering.Graphics
             Shader_50760736_InitParams.Elements = VertexLayouts.NormalLayout.GetLayout();
             Shader_50760736_InitParams.PixelShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightPS.hlsl", "PS_50760736", "ps_4_0");
             Shader_50760736_InitParams.VertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightVertexShader", "vs_4_0");
-            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightInstanceVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
+            DefaultInitParams.InstancedVertexShaderFile = new ShaderInitParams.ShaderFileEntryPoint("LightVS.hlsl", "LightInstanceVertexShader", "vs_4_0");
 
             Shader_50760736 OurShader50760736 = new Shader_50760736(device, Shader_50760736_InitParams);
             

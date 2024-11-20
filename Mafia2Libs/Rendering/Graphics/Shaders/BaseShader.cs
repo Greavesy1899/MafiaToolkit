@@ -150,7 +150,6 @@ namespace Rendering.Graphics
             {
                 Blob VertexBytecode = ConstructBytecode(InitParams.InstancedVertexShaderFile);
                 OurInstanceVertexShader = device.CreateVertexShader(VertexBytecode);
-                Layout = device.CreateInputLayout(InitParams.Elements, VertexBytecode);
                 VertexBytecode.Dispose();
             }
 
