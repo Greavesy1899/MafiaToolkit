@@ -330,9 +330,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Shaders\mrdka.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <ItemGroup>

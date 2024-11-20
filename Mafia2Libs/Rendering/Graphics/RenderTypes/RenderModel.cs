@@ -64,7 +64,7 @@ namespace Rendering.Graphics
             SelectionColour = Color.White;
             selectionInstance = new SelectionInstance()
             {
-                instanceRefID = 0,
+                instanceRefID = -1,
             };
         }
 
@@ -413,7 +413,7 @@ namespace Rendering.Graphics
                 segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, ToolkitSettings.bTranslokator ? tint.Normalize() : startColor.Normalize()));
                 segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
 
-                segment.Shader.setHightLightInstance(deviceContext, (uint)selectionInstance.instanceRefID);
+                segment.Shader.setHightLightInstance(deviceContext, selectionInstance.instanceRefID);
 
 
                 segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
@@ -466,7 +466,7 @@ namespace Rendering.Graphics
         
         public void UnselectInstance()
         {
-            selectionInstance.instanceRefID = 0;
+            selectionInstance.instanceRefID = -1;
         }
 
         public override void Unselect()

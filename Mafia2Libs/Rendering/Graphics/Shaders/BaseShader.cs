@@ -76,7 +76,7 @@ namespace Rendering.Graphics
         [StructLayout(LayoutKind.Sequential)]
         internal struct HighLightBuffer
         {
-            public uint instanceID;
+            public int instanceID;
             public uint s;//this is a placeholder, since shader buffers have to be the size of 16bytes*N
             public uint ss;
             public uint sss;
@@ -210,7 +210,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public void setHightLightInstance(ID3D11DeviceContext context, uint instanceID)
+        public void setHightLightInstance(ID3D11DeviceContext context, int instanceID)
         {
             var hightlight = new HighLightBuffer()
             {

@@ -12,7 +12,7 @@ cbuffer CameraBuffer : register(b1)
 
 cbuffer HighlightBuffer : register(b2)
 {
-	uint highlightedInstanceIndex; // Index of instance we want to be selected
+	int highlightedInstanceIndex; // Index of instance we want to be selected
 	uint s;
 	uint ss;
 	uint sss;
@@ -40,7 +40,7 @@ struct VS_OUTPUT
 	float2 TexCoord0 : TEXCOORD0;
 	float2 TexCoord7 : TEXCOORD1;
 	half3 viewDirection : TEXCOORD2;
-	uint instanceID : INSTANCEID;
+	bool instanceSelected : INSTANCESELECTED;
 };
 
 VS_OUTPUT LightVertexShader(VS_INPUT input)
@@ -77,7 +77,7 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 	// Normalize the viewing direction vector.
 	output.viewDirection = normalize(output.viewDirection);
 
-	output.instanceID = 0;
+	output.instanceSelected = false;
 
 	return output;
 }
@@ -109,10 +109,10 @@ VS_OUTPUT LightInstanceVertexShader(VS_INPUT input, uint InstanceId : SV_Instanc
 	// Calculate the viewing direction
 	output.viewDirection = normalize(cameraPosition - worldPosition.xyz); // Normalize the view direction
 
-	output.instanceID = 0;
-	if (InstanceId == highlightedInstanceIndex)
+	output.instanceSelected = false;
+	if (InstanceId == highlightedInstanceIndex)//since unselected are -1 and highlight is compared to index of instance, this is how we make unselect here
 	{
-		output.instanceID = 1;
+		output.instanceSelected = true;
 	}
 
 	return output;
