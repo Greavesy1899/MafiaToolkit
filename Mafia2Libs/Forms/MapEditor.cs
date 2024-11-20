@@ -2401,7 +2401,8 @@ namespace Mafia2Tool
 
         private void TranslokatorTint_Click(object sender, EventArgs e)
         {
-            Graphics.ToggleInstanceTint();
+            ToolkitSettings.bTranslokator = !ToolkitSettings.bTranslokator;
+            ToolkitSettings.WriteKey("EnableTranslokator", "ModelViewer", ToolkitSettings.bTranslokator.ToString());
         }
 
         private void Button_TestConvert_Click(object sender, EventArgs e)

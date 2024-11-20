@@ -18,6 +18,7 @@ using Rendering.Core;
 using ResourceTypes.Translokator;
 using System.Runtime.InteropServices;
 using System.Linq;
+using Utils.Settings;
 
 namespace Rendering.Graphics
 {
@@ -55,8 +56,6 @@ namespace Rendering.Graphics
 
         public Dictionary<int, Matrix4x4> InstanceTransforms { get; set; } = new() { };
 
-        public bool InstanceTint;
-
         public RenderModel()
         {
             DoRender = true;
@@ -67,7 +66,6 @@ namespace Rendering.Graphics
             {
                 instanceRefID = 0,
             };
-            InstanceTint = true;
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -412,7 +410,7 @@ namespace Rendering.Graphics
             {
                 RenderModel.ModelPart segment = LODs[0].ModelParts[i];
 
-                segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, InstanceTint ? tint.Normalize() : startColor.Normalize()));
+                segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, ToolkitSettings.bTranslokator ? tint.Normalize() : startColor.Normalize()));
                 segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
 
                 segment.Shader.setHightLightInstance(deviceContext, (uint)selectionInstance.instanceRefID);

@@ -552,14 +552,6 @@ namespace Rendering.Graphics
             }
         }
 
-        public void ToggleInstanceTint()
-        {
-            foreach (RenderModel model in Assets.Values)
-            {
-                model.InstanceTint = !model.InstanceTint;
-            }
-        }
-
         public void Shutdown()
         {
             WorldSettings.Shutdown();

@@ -25,6 +25,7 @@ namespace Forms.OptionControls
             TexBrowser.Description = Language.GetString("$SELECT_TEX_FOLDER");
             ExperimentalBox.Text = Language.GetString("$ENABLE_EXPERIMENTAL");
             Checkbox_EnableNavigation.Text = Language.GetString("$ENABLE_NAVIGATION");
+            Checkbox_EnableTranslokatorTint.Text = Language.GetString("$TOGGLE_TRANSLOKATOR_TINT");
         }
 
         private void LoadSettings()
@@ -36,6 +37,7 @@ namespace Forms.OptionControls
             TexDirectoryBox.Text = ToolkitSettings.TexturePath;
             ExperimentalBox.Checked = ToolkitSettings.Experimental;
             Checkbox_EnableNavigation.Checked = ToolkitSettings.bNavigation;
+            Checkbox_EnableTranslokatorTint.Checked = ToolkitSettings.bTranslokator;
             UseMIPsBox.Checked = ToolkitSettings.UseMIPS;
             CheckBox_VSync.Checked = ToolkitSettings.VSync;
         }
@@ -103,6 +105,12 @@ namespace Forms.OptionControls
         {
             ToolkitSettings.bNavigation = Checkbox_EnableNavigation.Checked;
             ToolkitSettings.WriteKey("EnableNavigation", "ModelViewer", ToolkitSettings.bNavigation.ToString());
+        }
+        
+        private void Button_EnableTranslokatorTint_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.bTranslokator = Checkbox_EnableTranslokatorTint.Checked;
+            ToolkitSettings.WriteKey("EnableTranslokator", "ModelViewer", ToolkitSettings.bTranslokator.ToString());
         }
     }
 }
