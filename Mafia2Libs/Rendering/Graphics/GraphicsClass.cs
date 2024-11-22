@@ -477,7 +477,7 @@ namespace Rendering.Graphics
 
             }
 
-            if (selectedInstances != null)
+            if (selectedInstances.Count > 0)
             {
                 RenderModel model = Assets[selectedInstances.First().Key] as RenderModel;
                 TranslationGizmo.OnSelectEntry(Matrix4x4.Transpose(model.InstanceTransforms[selectedInstances.First().Value]) , true);

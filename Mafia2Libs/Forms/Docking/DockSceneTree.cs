@@ -313,6 +313,7 @@ namespace Forms.Docking
             Export3DButton.Visible = false;
             EntryMenuStrip.Items[4].Visible = false;
             FrameActions.DropDownItems[3].Visible = false;
+            EntryMenuStrip.Items[5].Visible = false;
 
             if (TreeView_Explorer.SelectedNode != null && TreeView_Explorer.SelectedNode.Tag != null)
             {
@@ -352,6 +353,11 @@ namespace Forms.Docking
                 if (TreeView_Explorer.SelectedNode.Tag is Instance || TreeView_Explorer.SelectedNode.Tag is Object)
                 {
                     EntryMenuStrip.Items[0].Visible = true;
+                }
+
+                if (TreeView_Explorer.SelectedNode.Tag is Object)
+                {
+                    EntryMenuStrip.Items[5].Visible = true;
                 }
             }
         }

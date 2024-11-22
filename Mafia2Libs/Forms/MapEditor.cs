@@ -151,6 +151,7 @@ namespace Mafia2Tool
             dSceneTree.TreeViewNodeDropped += OnTreeViewNodeDropped;
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
             dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
+            dSceneTree.TranslokatorNewInstanceButton.Click += new EventHandler(TranslokatorNewInstanceButton_Click);
         }
 
         private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -2065,25 +2066,7 @@ namespace Mafia2Tool
             }
             else if (node.Tag is Instance instance)
             {
-                Instance newInstance = new Instance(instance);
-                newInstance.RefID = RefManager.GetNewRefID();
-                TreeNode instanceNode = new TreeNode();
-                instanceNode.Text = node.Parent.Text + " " + node.Parent.Nodes.Count.ToString();
-                instanceNode.Name = newInstance.RefID.ToString();
-                instanceNode.Tag = newInstance;
-                
-                Object parent = node.Parent.Tag as Object;
-                FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
-                if (frameref != null)//todo nonframerefs solution once they are managed
-                {
-                    InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance,true);
-                    for (int i = 0; i < frameref.Children.Count; i++)
-                    {
-                        var modelsToUpdate = UpdateTranslocatorPart(frameref.Children[i], Matrix4x4.Identity, newInstance);
-                        Graphics.UpdateInstanceBuffers(modelsToUpdate);
-                    }
-                }
-                dSceneTree.AddToTree(instanceNode,node.Parent);
+                TranslokatorNewInstance(node.Parent,instance);
             }
         }
 
@@ -2646,6 +2629,41 @@ namespace Mafia2Tool
                     ConstructFrameFromImportedObject(Child, FrameNode);
                 }
             }
+        }
+        private void TranslokatorNewInstanceButton_Click(object sender, EventArgs e)
+        {
+            TranslokatorNewInstance(dSceneTree.SelectedNode,null);
+        }
+
+        private void TranslokatorNewInstance(TreeNode parentObj, Instance old)
+        {
+            Instance newInstance;
+            if (old == null)
+            {
+                newInstance = new Instance();
+            }
+            else
+            {
+                newInstance = new Instance(old);
+            }
+            newInstance.RefID = RefManager.GetNewRefID();
+            TreeNode newInstanceNode = new TreeNode(parentObj.Text + " " + parentObj.Nodes.Count.ToString());
+            newInstanceNode.Tag = newInstance;
+            newInstanceNode.Name = newInstance.RefID.ToString();
+                
+            Object parent = parentObj.Tag as Object;
+            FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
+            if (frameref != null)//todo nonframerefs solution once they are managed
+            {
+                InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance,true);
+                for (int i = 0; i < frameref.Children.Count; i++)
+                {
+                    var modelsToUpdate = UpdateTranslocatorPart(frameref.Children[i], Matrix4x4.Identity, newInstance);
+                    Graphics.UpdateInstanceBuffers(modelsToUpdate);
+                }
+            }
+            
+            dSceneTree.AddToTree(newInstanceNode,parentObj);
         }
     }
 }
