@@ -1,7 +1,5 @@
-﻿using Mafia2Tool;
-using Rendering.Core;
+﻿using Rendering.Core;
 using Rendering.Input;
-using ResourceTypes.FrameResource;
 using ResourceTypes.Translokator;
 using System;
 using System.Collections.Generic;
@@ -198,48 +196,38 @@ namespace Rendering.Graphics
                         {
                             var transposed = Matrix4x4.Transpose(transform.Value);
 
-                            bbox.Max = Vector3.Transform(bbox.Max, transposed);
-                            bbox.Min = Vector3.Transform(bbox.Min, transposed);
+                            Matrix4x4 tvWM = Matrix4x4.Identity;
+                            Matrix4x4.Invert(transposed, out tvWM);
+                            var localInstanceRay = new Ray(
+                                Vector3Utils.TransformCoordinate(ray.Position, tvWM),
+                                Vector3.TransformNormal(ray.Direction, tvWM)
+                            );
 
-                            if (localRay.Intersects(bbox) == 0.0f) continue;
+                            if (localInstanceRay.Intersects(bbox) == 0.0f) continue;
 
-                            var distance = (bbox.Center - ray.Position).LengthSquared();
+                            var bvhInstanceIntersect = mesh.BVH.Intersect(localInstanceRay);
 
-                            if (distance < lowest)
+                            if (bvhInstanceIntersect.distance < lowest)
                             {
-                                lowest = distance;
+                                lowest = bvhInstanceIntersect.distance;
                                 lowestRefID = model.Key;
                                 lowestInstanceID = transform.Key;
-                                WorldPosIntersect = bbox.Center;
+                                WorldPosIntersect = bvhInstanceIntersect.pos;
                             }
-
-                            bbox = mesh.BoundingBox;
                         }
                         
                     }
 
-                    bbox = mesh.BoundingBox;
-
                     if (localRay.Intersects(bbox) == 0.0f) continue;
 
-                    for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
+                    var bvhIntersect = mesh.BVH.Intersect(localRay);
+
+                    if (bvhIntersect.distance < lowest)
                     {
-                        var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
-                        var v1 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position;
-                        var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
-                        float t;
-
-                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
-
-                        var worldPosition = ray.Position + t * ray.Direction;
-                        var distance = (worldPosition - ray.Position).LengthSquared();
-                        if (distance < lowest)
-                        {
-                            lowest = distance;
-                            lowestRefID = model.Key;
-                            lowestInstanceID = -1;
-                            WorldPosIntersect = worldPosition;
-                        }
+                        lowest = bvhIntersect.distance;
+                        lowestRefID = model.Key;
+                        lowestInstanceID = -1;
+                        WorldPosIntersect = bvhIntersect.pos;
                     }
                 }
                 if (model.Value is RenderInstance instance)

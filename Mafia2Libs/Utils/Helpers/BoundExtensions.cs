@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using Vortice.Mathematics;
 using Utils.Models;
-using System;
+using Vortice.Mathematics;
 
 namespace Utils.VorticeUtils
 {
@@ -32,6 +32,21 @@ namespace Utils.VorticeUtils
         public static void SetMaximum(ref this BoundingBox BBox, Vector3 max)
         {
             BBox = new BoundingBox(BBox.Min, max);
+        }
+
+        public static BoundingBox Grow(this BoundingBox BBox, Vector3 pos)
+        {
+            Vector3 Min = Vector3.Zero;
+            Vector3 Max = Vector3.Zero;
+
+            Min.X = MathF.Min(BBox.Min.X, pos.X);
+            Min.Y = MathF.Min(BBox.Min.Y, pos.Y);
+            Min.Z = MathF.Min(BBox.Min.Z, pos.Z);
+            Max.X = MathF.Max(BBox.Max.X, pos.X);
+            Max.Y = MathF.Max(BBox.Max.Y, pos.Y);
+            Max.Z = MathF.Max(BBox.Max.Z, pos.Z);
+
+            return new BoundingBox(Min, Max);
         }
 
         public static BoundingBox ReadFromFile(BinaryReader reader)

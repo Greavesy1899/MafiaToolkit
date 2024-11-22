@@ -1,24 +1,23 @@
-﻿using ResourceTypes.BufferPools;
+﻿using Rendering.Core;
+using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows;
 using Utils.Extensions;
 using Utils.Models;
+using Utils.Settings;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using static Rendering.Graphics.BaseShader;
 using Color = System.Drawing.Color;
-using Rendering.Core;
-using ResourceTypes.Translokator;
-using System.Runtime.InteropServices;
-using System.Linq;
-using Utils.Settings;
 
 namespace Rendering.Graphics
 {
@@ -55,6 +54,7 @@ namespace Rendering.Graphics
         public LOD[] LODs { get; private set; }
 
         public Dictionary<int, Matrix4x4> InstanceTransforms { get; set; } = new() { };
+        public BVH BVH { get; set; } = new();
 
         public RenderModel()
         {
@@ -181,6 +181,11 @@ namespace Rendering.Graphics
                 LODs[i] = lod;
             }
 
+            if (LODs.Length > 0)
+            {
+                BVH.Build(LODs[0].Vertices, LODs[0].Indices);
+            }
+
             SetupShaders();
             return true;
         }
@@ -260,6 +265,11 @@ namespace Rendering.Graphics
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
 
+            //foreach (var node in BVH.Nodes)
+            //{
+            //    node.RenderObject.InitBuffers(d3d, d3dContext); //For debugging, will be deleted later
+            //}
+
             InitInstanceBuffer(d3d);
 
             InitTextures(d3d, d3dContext);
@@ -333,6 +343,11 @@ namespace Rendering.Graphics
         public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
+
+            //foreach (var node in BVH.Nodes)
+            //{
+            //    node.RenderObject.SetTransform(matrix); //For debugging, will be deleted later
+            //}
         }
 
         public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
@@ -383,6 +398,11 @@ namespace Rendering.Graphics
                 Segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
                 Segment.Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(Segment.NumFaces * 3), Segment.StartIndex);
             }
+
+            //foreach (BVHNode node in BVH.Nodes)
+            //{
+            //    node.RenderObject.Render(device, deviceContext, camera); //For debugging, will be deleted later
+            //}
         }
 
         private float colorTransitionTime = 0.0f; // timer for distinguishing translokators
