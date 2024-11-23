@@ -54,6 +54,8 @@ namespace Rendering.Graphics
         // Local batches for objects passed through
         private PrimitiveBatch LineBatch = null;
         private PrimitiveBatch BBoxBatch = null;
+        private int NumBVHToBuild = 0;
+        private int NumBVHToBuilt = 0;
         private int MaxBVHBuildingTasks = 4; // We should detect how many threads the computer has on boot and assign the max task count based on that.
         private List<Task> BVHBuildingTasks = new();
         public PrimitiveManager OurPrimitiveManager { get; private set; }
@@ -348,7 +350,7 @@ namespace Rendering.Graphics
         public bool Render()
         {
             // Clear completed BVH tasks
-            BVHBuildingTasks.RemoveAll(t => t.IsCompleted);
+            NumBVHToBuilt += BVHBuildingTasks.RemoveAll(t => t.IsCompleted);
 
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
@@ -400,6 +402,11 @@ namespace Rendering.Graphics
 
         private void ClearRenderStack()
         {
+            if (InitObjectStack.Count > 0)
+            {
+                NumBVHToBuild = 0;
+            }
+
             foreach (KeyValuePair<int, IRenderer> asset in InitObjectStack)
             {
                 asset.Value.InitBuffers(D3D.Device, D3D.DeviceContext);
@@ -411,6 +418,11 @@ namespace Rendering.Graphics
                 else if (asset.Value is RenderLine)
                 {
                     LineBatch.AddObject(asset.Key, asset.Value);
+                }
+                else if (asset.Value is RenderModel)
+                {
+                    NumBVHToBuild++;
+                    Assets.Add(asset.Key, asset.Value);
                 }
                 else
                 {
@@ -614,7 +626,7 @@ namespace Rendering.Graphics
             }
 
             //return Utils.Language.Language.GetString("$BUILDING_BVH"); //Keeps printing missing text in debug build and slowing things down
-            return "Building BVH";
+            return $"Building BVH: {NumBVHToBuilt}/{NumBVHToBuild}";
         }
 
         public ID3D11Device GetId3D11Device()
