@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using Utils.Extensions;
 using Utils.Models;
@@ -181,10 +182,10 @@ namespace Rendering.Graphics
                 LODs[i] = lod;
             }
 
-            if (LODs.Length > 0)
-            {
-                BVH.Build(LODs[0].Vertices, LODs[0].Indices);
-            }
+            //if (LODs.Length > 0)
+            //{
+            //    BVH.Build(LODs[0].Vertices, LODs[0].Indices);
+            //}
 
             SetupShaders();
             return true;
@@ -518,6 +519,22 @@ namespace Rendering.Graphics
         public bool ContainsInstanceTransform(int instanceID)
         {
             return InstanceTransforms.ContainsKey(instanceID);
+        }
+
+        // Building all BVH structures at once can be slow so we progressively build
+        // them in the background while the map editor is open
+        public Task GetBVHBuildingTask()
+        {
+            // Don't want to rebuild or attempt to build a BVH while it is being built
+            // We will need to rebuild BVH for animations later on though
+            if (LODs.Length == 0 || BVH.FinishedBuilding || BVH.IsBuilding)
+            {
+                return null;
+            }
+
+            BVH.IsBuilding = true;
+
+            return Task.Run(() => BVH.Build(LODs[0].Vertices, LODs[0].Indices));
         }
     }
 }

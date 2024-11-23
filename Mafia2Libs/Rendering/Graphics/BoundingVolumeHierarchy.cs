@@ -28,12 +28,14 @@ namespace Rendering.Graphics
         public BVHNode[] Nodes { get; set; } = new BVHNode[0];
         public int RootNodeID { get; set; }
         public int UsedNodesCount { get; set; }
+        public bool IsBuilding = false;
+        public bool FinishedBuilding = false;
 
         private List<(uint x, uint y, uint z, Vector3 centroid)> Triangles { get; set; } = new();
         private List<int> TriangleIndices { get; set; } = new();
         private VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; } = null;
-        private bool UseBinnedBVH = false; //Slower to compute BVH, but faster for raycasting
-        private int MaxBins = 10;
+        private bool UseBinnedBVH = true; // Slower to compute BVH, but faster for raycasting, enabled because we build BVH structures in the background
+        private int MaxBins = 10;         // We should probably disable Binned BVH building if we detect the computer has 2 or fewer threads, if that can even happen nowadays
 
         public BVH()
         {
@@ -42,6 +44,11 @@ namespace Rendering.Graphics
 
         public void Build(VertexLayouts.NormalLayout.Vertex[] vertices, uint[] indices)
         {
+            if (FinishedBuilding)
+            {
+                return;
+            }
+
             Vertices = vertices;
 
             for (int i = 0; i < indices.Count(); i+=3)
@@ -80,6 +87,9 @@ namespace Rendering.Graphics
             BVHNode[] tempNodes = new BVHNode[UsedNodesCount];
             Array.Copy(Nodes, 0, tempNodes, 0, UsedNodesCount);
             Nodes = tempNodes;
+
+            FinishedBuilding = true;
+            IsBuilding = false;
         }
 
         public void UpdateNodeBounds(BVHNode node)

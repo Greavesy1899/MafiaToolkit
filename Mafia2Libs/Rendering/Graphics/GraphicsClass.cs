@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Models;
@@ -53,6 +54,8 @@ namespace Rendering.Graphics
         // Local batches for objects passed through
         private PrimitiveBatch LineBatch = null;
         private PrimitiveBatch BBoxBatch = null;
+        private int MaxBVHBuildingTasks = 4; // We should detect how many threads the computer has on boot and assign the max task count based on that.
+        private List<Task> BVHBuildingTasks = new();
         public PrimitiveManager OurPrimitiveManager { get; private set; }
 
 
@@ -218,7 +221,7 @@ namespace Rendering.Graphics
                         
                     }
 
-                    if (localRay.Intersects(bbox) == 0.0f) continue;
+                    if (localRay.Intersects(bbox) == 0.0f) continue; // Pick doesn't seem to work when the camera is inside the bounding volume
 
                     var bvhIntersect = mesh.BVH.Intersect(localRay);
 
@@ -339,6 +342,9 @@ namespace Rendering.Graphics
 
         public bool Render()
         {
+            // Clear completed BVH tasks
+            BVHBuildingTasks.RemoveAll(t => t.IsCompleted);
+
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
@@ -350,7 +356,18 @@ namespace Rendering.Graphics
             foreach (IRenderer RenderEntry in Assets.Values)
             {
                 RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);                
+                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);    
+                
+                // A status bar will be added to the map editor later to indicate when it is building BVH structures
+                if (RenderEntry is RenderModel mesh && BVHBuildingTasks.Count < MaxBVHBuildingTasks)
+                {
+                    var task = mesh.GetBVHBuildingTask(); // Maybe this function should be added to the IRenderer class instead?
+
+                    if (task != null)
+                    {
+                        BVHBuildingTasks.Add(task);
+                    }
+                }
             }
             
             //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);
