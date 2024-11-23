@@ -650,6 +650,7 @@ namespace Mafia2Tool
             Process process = Process.GetCurrentProcess();
             Label_MemoryUsage.Text = string.Format("Usage: {0}", process.WorkingSet64.ConvertToMemorySize());
             Label_FPS.Text = Graphics.Profile.ToString();
+            Label_StatusBar.Text = Graphics.GetStatusBarText();
             return true;
         }
 

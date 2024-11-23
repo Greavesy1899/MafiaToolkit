@@ -191,6 +191,11 @@ namespace Rendering.Graphics
 
                 if (model.Value is RenderModel mesh)
                 {
+                    if (!mesh.BVH.FinishedBuilding)
+                    {
+                        continue;
+                    }
+
                     var bbox = mesh.BoundingBox;
 
                     if (mesh.InstanceTransforms.Count > 0)
@@ -599,6 +604,17 @@ namespace Rendering.Graphics
             {
                 model.ReloadInstanceBuffer(D3D.Device);
             }
+        }
+
+        public string GetStatusBarText()
+        {
+            if (BVHBuildingTasks.Count == 0)
+            {
+                return "";
+            }
+
+            //return Utils.Language.Language.GetString("$BUILDING_BVH"); //Keeps printing missing text in debug build and slowing things down
+            return "Building BVH";
         }
 
         public ID3D11Device GetId3D11Device()

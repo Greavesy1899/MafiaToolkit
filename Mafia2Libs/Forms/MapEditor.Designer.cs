@@ -41,6 +41,7 @@ namespace Mafia2Tool
             CameraSpeedTool = new NumericUpDownToolStrip();
             Label_FPS = new System.Windows.Forms.ToolStripStatusLabel();
             Label_MemoryUsage = new System.Windows.Forms.ToolStripStatusLabel();
+            Label_StatusBar = new System.Windows.Forms.ToolStripStatusLabel();
             ToolbarStrip = new System.Windows.Forms.ToolStrip();
             FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             SaveButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,7 +85,7 @@ namespace Mafia2Tool
             // StatusStrip
             // 
             StatusStrip.AutoSize = false;
-            StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { CurrentModeButton, PositionXTool, PositionYTool, PositionZTool, CameraSpeedTool, Label_FPS, Label_MemoryUsage });
+            StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { CurrentModeButton, PositionXTool, PositionYTool, PositionZTool, CameraSpeedTool, Label_FPS, Label_MemoryUsage, Label_StatusBar });
             StatusStrip.Location = new System.Drawing.Point(0, 692);
             StatusStrip.Name = "StatusStrip";
             StatusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
@@ -183,6 +184,15 @@ namespace Mafia2Tool
             Label_MemoryUsage.Name = "Label_MemoryUsage";
             Label_MemoryUsage.Size = new System.Drawing.Size(117, 23);
             Label_MemoryUsage.Text = "Label_MemoryUsage";
+            // 
+            // Label_StatusBar
+            // 
+            Label_StatusBar.Name = "Label_StatusBar";
+            Label_StatusBar.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            Label_StatusBar.Size = new System.Drawing.Size(677, 23);
+            Label_StatusBar.Spring = true;
+            Label_StatusBar.Text = "Label_StatusBar";
+            Label_StatusBar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // ToolbarStrip
             // 
@@ -319,50 +329,50 @@ namespace Mafia2Tool
             // ToggleWireframeButton
             // 
             ToggleWireframeButton.Name = "ToggleWireframeButton";
-            ToggleWireframeButton.Size = new System.Drawing.Size(193, 22);
+            ToggleWireframeButton.Size = new System.Drawing.Size(242, 22);
             ToggleWireframeButton.Text = "$TOGGLE_WIREFRAME";
             ToggleWireframeButton.Click += FillModeButton_Click;
             // 
             // ToggleCullingButton
             // 
             ToggleCullingButton.Name = "ToggleCullingButton";
-            ToggleCullingButton.Size = new System.Drawing.Size(193, 22);
+            ToggleCullingButton.Size = new System.Drawing.Size(242, 22);
             ToggleCullingButton.Text = "$TOGGLE_CULLING";
             ToggleCullingButton.Click += CullModeButton_Click;
             // 
             // EditLighting
             // 
             EditLighting.Name = "EditLighting";
-            EditLighting.Size = new System.Drawing.Size(193, 22);
+            EditLighting.Size = new System.Drawing.Size(242, 22);
             EditLighting.Text = "$EDIT_LIGHTING";
             EditLighting.Click += EditLighting_Click;
             // 
             // ToggleTranslokatorTint
             // 
+            ToggleTranslokatorTint.Enabled = false;
             ToggleTranslokatorTint.Name = "ToggleTranslokatorTint";
-            ToggleTranslokatorTint.Size = new System.Drawing.Size(193, 22);
+            ToggleTranslokatorTint.Size = new System.Drawing.Size(242, 22);
             ToggleTranslokatorTint.Text = "$TOGGLE_TRANSLOKATOR_TINT";
             ToggleTranslokatorTint.Click += TranslokatorTint_Click;
-            ToggleTranslokatorTint.Enabled = false;
             // 
             // Button_TestConvert32
             // 
             Button_TestConvert32.Name = "Button_TestConvert32";
-            Button_TestConvert32.Size = new System.Drawing.Size(193, 22);
+            Button_TestConvert32.Size = new System.Drawing.Size(242, 22);
             Button_TestConvert32.Text = "$TEST_CONVERT_32BIT";
             Button_TestConvert32.Click += Button_TestConvert32_Click;
             // 
             // Button_TestConvert16
             // 
             Button_TestConvert16.Name = "Button_TestConvert16";
-            Button_TestConvert16.Size = new System.Drawing.Size(193, 22);
+            Button_TestConvert16.Size = new System.Drawing.Size(242, 22);
             Button_TestConvert16.Text = "$TEST_CONVERT_16BIT";
             Button_TestConvert16.Click += Button_TestConvert_Click;
             // 
             // Button_DumpTexture
             // 
             Button_DumpTexture.Name = "Button_DumpTexture";
-            Button_DumpTexture.Size = new System.Drawing.Size(193, 22);
+            Button_DumpTexture.Size = new System.Drawing.Size(242, 22);
             Button_DumpTexture.Text = "$DUMP_TEXTURES";
             Button_DumpTexture.Click += Button_DumpTexture_Click;
             // 
@@ -504,5 +514,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem Button_ImportBundle;
         private System.Windows.Forms.SaveFileDialog SaveFileDialog;
         private System.Windows.Forms.OpenFileDialog AnimFileDialog;
+        private System.Windows.Forms.ToolStripStatusLabel Label_StatusBar;
     }
 }
