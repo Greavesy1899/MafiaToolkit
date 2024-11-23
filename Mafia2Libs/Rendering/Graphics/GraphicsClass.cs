@@ -71,6 +71,8 @@ namespace Rendering.Graphics
             navigationGrids = new SpatialGrid[0];
             OurPrimitiveManager = new PrimitiveManager();
 
+            UpdateMaxBVHTasks();
+
             OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
 
             // Create bespoke batches for any lines or boxes passed in via the construct stack
@@ -627,6 +629,19 @@ namespace Rendering.Graphics
 
             //return Utils.Language.Language.GetString("$BUILDING_BVH"); //Keeps printing missing text in debug build and slowing things down
             return $"Building BVH: {NumBVHToBuilt}/{NumBVHToBuild}";
+        }
+
+        private void UpdateMaxBVHTasks()
+        {
+            int processorCount = Environment.ProcessorCount;
+
+            if (processorCount <= 3)
+            {
+                MaxBVHBuildingTasks = 1;
+                return;
+            }
+
+            MaxBVHBuildingTasks = processorCount - 2;
         }
 
         public ID3D11Device GetId3D11Device()
