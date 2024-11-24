@@ -7,6 +7,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ResourceTypes.FrameResource;
 using Toolkit.Core;
 using Utils.Models;
 using Utils.Settings;
@@ -650,5 +651,22 @@ namespace Rendering.Graphics
         }
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();
         public void ToggleD3DCullMode() => D3D.ToggleCullMode();
+        
+        public void DeleteInstance(FrameObjectBase frame,int InstanceRefID)
+        {
+            if (Assets.ContainsKey(frame.RefID))
+            {
+                RenderModel asset = Assets[frame.RefID] as RenderModel;
+                asset.RemoveInstance(InstanceRefID,D3D.Device);
+            }
+
+            if (frame.Children.Count > 0)
+            {
+                foreach (FrameObjectBase child in frame.Children)
+                {
+                    DeleteInstance(child,InstanceRefID);
+                }            
+            }
+        }
     }
 }

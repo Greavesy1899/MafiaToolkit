@@ -49,7 +49,6 @@ namespace Rendering.Graphics
             public ModelPart[] ModelParts { get; set; }
             public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
             public uint[] Indices { get; set; }
-            public int parentGeomHash { get; set; }
         }
 
         public LOD[] LODs { get; private set; }
@@ -535,6 +534,15 @@ namespace Rendering.Graphics
             BVH.IsBuilding = true;
 
             return Task.Run(() => BVH.Build(LODs[0].Vertices, LODs[0].Indices));
+        }
+
+        public void RemoveInstance(int instanceRefId,ID3D11Device d3d)
+        {
+            if (InstanceTransforms.ContainsKey(instanceRefId))
+            {
+                InstanceTransforms.Remove(instanceRefId);
+                ReloadInstanceBuffer(d3d);
+            }
         }
     }
 }

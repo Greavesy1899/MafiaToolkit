@@ -361,7 +361,14 @@ namespace Mafia2Tool
 
                 // Update rendered counterpart
                 int refID = (bIsFrame) ? (node.Tag as FrameEntry).RefID : result;
-                Graphics.SetAssetVisibility(refID, node.Checked && node.CheckIfParentsAreValid());
+                if (!bIsFrame && node.Tag is Instance && node.Parent.Tag is Object trObject)
+                {
+                    UpdateInstanceVisualisation(node,trObject);
+                }
+                else
+                {
+                    Graphics.SetAssetVisibility(refID, node.Checked && node.CheckIfParentsAreValid());                
+                }
             }
 
             foreach (TreeNode child in node.Nodes)
@@ -1093,7 +1100,7 @@ namespace Mafia2Tool
                             Instance instance = obj.Instances[x];
                             instance.RefID = RefManager.GetNewRefID();
 
-                            if (groupRef != null && hasMesh && groupRef.Children.Count > 0 && assets.ContainsKey(groupRef.RefID))
+                            if (groupRef != null && hasMesh)
                             {
                                 for (int i = 0; i < groupRef.Children.Count; i++)
                                 {
@@ -1883,7 +1890,6 @@ namespace Mafia2Tool
                     dSceneTree.RemoveNode(node);
                     Graphics.DeleteAsset(obj.RefID);
                     bool bDidRemove = SceneData.FrameResource.DeleteFrame(obj);
-                    Graphics.DeleteAsset(obj.RefID);
 
                     ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
                 }
@@ -1927,6 +1933,17 @@ namespace Mafia2Tool
                     int iName = Convert.ToInt32(node.Nodes[i].Name);
                     Graphics.DeleteAsset(iName);
                 }
+            }
+            else if (node.Tag is Instance instance)
+            {
+                FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>((dSceneTree.SelectedNode.Parent.Tag as Object).Name.Hash);
+                dSceneTree.RemoveNode(node);
+                if (groupRef == null)//todo: once placeholder is implemented, reword this to work with it
+                {
+                    return;
+                }
+
+                Graphics.DeleteInstance(groupRef, instance.RefID);
             }
         }
 
@@ -2638,15 +2655,8 @@ namespace Mafia2Tool
 
         private void TranslokatorNewInstance(TreeNode parentObj, Instance old)
         {
-            Instance newInstance;
-            if (old == null)
-            {
-                newInstance = new Instance();
-            }
-            else
-            {
-                newInstance = new Instance(old);
-            }
+            Instance newInstance = (old == null) ? new Instance() : new Instance(old);
+
             newInstance.RefID = RefManager.GetNewRefID();
             TreeNode newInstanceNode = new TreeNode(parentObj.Text + " " + parentObj.Nodes.Count.ToString());
             newInstanceNode.Tag = newInstance;
@@ -2654,17 +2664,41 @@ namespace Mafia2Tool
                 
             Object parent = parentObj.Tag as Object;
             FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
-            if (frameref != null)//todo nonframerefs solution once they are managed
+            if (frameref != null && frameref.HasMeshObject())//todo nonframerefs solution once they are managed
             {
-                InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance,true);
                 for (int i = 0; i < frameref.Children.Count; i++)
                 {
-                    var modelsToUpdate = UpdateTranslocatorPart(frameref.Children[i], Matrix4x4.Identity, newInstance);
-                    Graphics.UpdateInstanceBuffers(modelsToUpdate);
+                    InstanceTranslokatorPart(Graphics.Assets, frameref.Children[i], Matrix4x4.Identity, newInstance,true);
                 }
             }
             
             dSceneTree.AddToTree(newInstanceNode,parentObj);
+        }
+        
+        private void UpdateInstanceVisualisation(TreeNode instanceNode, Object trObject)
+        {
+            FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(trObject.Name.Hash);
+            if (groupRef == null)//todo: once placeholder is implemented, reword this to work with it
+            {
+                return;
+            }
+            
+            Instance instance = instanceNode.Tag as Instance;
+            if (instanceNode.Checked)
+            {
+                if (groupRef != null && groupRef.HasMeshObject())
+                {
+                    for (int i = 0; i < groupRef.Children.Count; i++)
+                    {
+                        InstanceTranslokatorPart(Graphics.Assets, groupRef.Children[i], Matrix4x4.Identity, instance,true);
+                    }
+                }
+            }
+            else
+            {
+                Graphics.DeleteInstance(groupRef,instance.RefID);
+            }
+            
         }
     }
 }
