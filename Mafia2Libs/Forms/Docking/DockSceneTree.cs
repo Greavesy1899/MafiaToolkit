@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
+using ResourceTypes.Actors;
 using ResourceTypes.Translokator;
 using Utils.Language;
 using Utils.VorticeUtils;
@@ -28,6 +29,8 @@ namespace Forms.Docking
         private MouseButtons dragButton;
         
         public event EventHandler<TreeViewDragEventArgs> TreeViewNodeDropped;
+
+        public bool hasTranslokatorData = false;//this should be managed better in the future alongside openentrycontext
 
         public DockSceneTree()
         {
@@ -314,6 +317,7 @@ namespace Forms.Docking
             EntryMenuStrip.Items[4].Visible = false;
             FrameActions.DropDownItems[3].Visible = false;
             EntryMenuStrip.Items[5].Visible = false;
+            EntryMenuStrip.Items[6].Visible = false;
 
             if (TreeView_Explorer.SelectedNode != null && TreeView_Explorer.SelectedNode.Tag != null)
             {
@@ -350,7 +354,7 @@ namespace Forms.Docking
                     }
                 }
 
-                if (TreeView_Explorer.SelectedNode.Tag is Instance || TreeView_Explorer.SelectedNode.Tag is Object)
+                if (TreeView_Explorer.SelectedNode.Tag is Instance || TreeView_Explorer.SelectedNode.Tag is Object)//this will need solid cleanup later
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
@@ -358,6 +362,11 @@ namespace Forms.Docking
                 if (TreeView_Explorer.SelectedNode.Tag is Object)
                 {
                     EntryMenuStrip.Items[5].Visible = true;
+                }
+
+                if (TreeView_Explorer.SelectedNode.Tag is ActorEntry && hasTranslokatorData)
+                {
+                    EntryMenuStrip.Items[6].Visible = true;
                 }
             }
         }
@@ -508,6 +517,36 @@ namespace Forms.Docking
             {
                 InternalGotoExplorerNode();
             }
+        }
+
+        public TreeNode GetObjectGroupByActorType(TreeNode translokatorRoot, int ActorTypeID)
+        {
+            foreach (TreeNode ogNode in translokatorRoot.Nodes[0].Nodes)
+            {
+                if (ogNode.Tag is ObjectGroup og)
+                {
+                    if (og.ActorType.ToString().Equals(((ActorTypes)ActorTypeID).ToString()))
+                    {
+                        return ogNode;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public bool ObjectGroupHasObject(TreeNode ogNode, ulong frameRefHash)
+        {
+            foreach (TreeNode objNode in ogNode.Nodes)
+            {
+                if (objNode.Tag is Object obj)
+                {
+                    if (obj.Name.Hash == frameRefHash)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

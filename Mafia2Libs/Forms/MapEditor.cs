@@ -152,6 +152,7 @@ namespace Mafia2Tool
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
             dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
             dSceneTree.TranslokatorNewInstanceButton.Click += new EventHandler(TranslokatorNewInstanceButton_Click);
+            dSceneTree.ActorEntryNewTRObjectButton.Click += new EventHandler(ActorEntryNewTRObjectButton_Click);
         }
 
         private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -1071,6 +1072,7 @@ namespace Mafia2Tool
             if (SceneData.Translokator != null && ToolkitSettings.Experimental)
             {
                 ToggleTranslokatorTint.Enabled = true;
+                dSceneTree.hasTranslokatorData = true;
                 translokatorRoot = new TreeNode("Translokator Items");
                 translokatorRoot.Tag = "Folder";
                 TreeNode ogNode = new TreeNode("Objects Groups");
@@ -2699,6 +2701,48 @@ namespace Mafia2Tool
                 Graphics.DeleteInstance(groupRef,instance.RefID);
             }
             
+        }
+        
+        private void ActorEntryNewTRObjectButton_Click(object sender, EventArgs e)
+        {
+            TreeNode ActorNode = dSceneTree.SelectedNode;
+            ActorEntry actor = ActorNode.Tag as ActorEntry;
+            if (ActorNode == null || actor == null)
+            {
+                return;
+            }
+            FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(actor.FrameNameHash);
+            if (groupRef == null)//todo: once multisds is added, tweak this
+            {
+                ToolkitAssert.Ensure(groupRef!= null,"Error: Actor's FrameName: " + actor.FrameName + "(" + actor.FrameNameHash.ToString() + ")" + " is not included in FrameResource Contents");
+                return;
+            }
+
+            TreeNode ogNode = dSceneTree.GetObjectGroupByActorType(translokatorRoot, actor.ActorTypeID);
+            if (ogNode==null)
+            {
+                //create objectgroup if not present
+                ObjectGroup newOG = new ObjectGroup();
+                newOG.ActorType = (ActorTypes)actor.ActorTypeID;
+                TreeNode newOGNode = new TreeNode(String.Format("Object Group: [{0}]", newOG.ActorType));
+                newOGNode.Tag = newOG;
+                dSceneTree.AddToTree(newOGNode,translokatorRoot.Nodes[0]);
+                ogNode = newOGNode;
+            }
+
+            if (dSceneTree.ObjectGroupHasObject(ogNode, actor.FrameNameHash))
+            {
+                ToolkitAssert.Ensure(!dSceneTree.ObjectGroupHasObject(ogNode, actor.FrameNameHash),"Error: The Object: " + actor.FrameName + " is already present.");
+                return;
+            }
+            else
+            {
+                Object newObj = new Object();
+                newObj.Name.Set(actor.FrameName);
+                TreeNode objNode = new TreeNode(newObj.Name.ToString());
+                objNode.Tag = newObj;
+                dSceneTree.AddToTree(objNode,ogNode);
+            }
         }
     }
 }
