@@ -1938,14 +1938,19 @@ namespace Mafia2Tool
             }
             else if (node.Tag is Instance instance)
             {
-                FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>((dSceneTree.SelectedNode.Parent.Tag as Object).Name.Hash);
-                dSceneTree.RemoveNode(node);
-                if (groupRef == null)//todo: once placeholder is implemented, reword this to work with it
+                DeleteTRInstance(node);
+            }
+            else if (node.Tag is Object obj)
+            {
+                DeleteTRObject(node);
+            }
+            else if (node.Tag is ObjectGroup og)
+            {
+                while (node.Nodes.Count>0)
                 {
-                    return;
+                    DeleteTRObject(node.FirstNode);
                 }
-
-                Graphics.DeleteInstance(groupRef, instance.RefID);
+                dSceneTree.RemoveNode(node);
             }
         }
 
@@ -2728,6 +2733,7 @@ namespace Mafia2Tool
                 newOGNode.Tag = newOG;
                 dSceneTree.AddToTree(newOGNode,translokatorRoot.Nodes[0]);
                 ogNode = newOGNode;
+                Debug.WriteLine("New Translokator ObjectGroup:" + newOG.ActorType);
             }
 
             if (dSceneTree.ObjectGroupHasObject(ogNode, actor.FrameNameHash))
@@ -2742,7 +2748,30 @@ namespace Mafia2Tool
                 TreeNode objNode = new TreeNode(newObj.Name.ToString());
                 objNode.Tag = newObj;
                 dSceneTree.AddToTree(objNode,ogNode);
+                Debug.WriteLine("New Translokator Object:" + newObj.Name.String);
             }
+        }
+
+        private void DeleteTRInstance(TreeNode instanceNode)
+        {
+            Instance instance = instanceNode.Tag as Instance;
+            FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>((instanceNode.Parent.Tag as Object).Name.Hash);
+            dSceneTree.RemoveNode(instanceNode);
+            if (groupRef == null)//todo: once placeholder is implemented, reword this to work with it
+            {
+                return;
+            }
+
+            Graphics.DeleteInstance(groupRef, instance.RefID);
+        }
+
+        private void DeleteTRObject(TreeNode objectNode)
+        {
+            while (objectNode.Nodes.Count>0)
+            {
+                DeleteTRInstance(objectNode.FirstNode);
+            }
+            dSceneTree.RemoveNode(objectNode);
         }
     }
 }
