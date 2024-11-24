@@ -364,7 +364,7 @@ namespace Mafia2Tool
                 int refID = (bIsFrame) ? (node.Tag as FrameEntry).RefID : result;
                 if (!bIsFrame && node.Tag is Instance && node.Parent.Tag is Object trObject)
                 {
-                    UpdateInstanceVisualisation(node,trObject);
+                    UpdateInstanceVisualisation(node,trObject,node.Checked && node.CheckIfParentsAreValid());
                 }
                 else
                 {
@@ -2682,7 +2682,7 @@ namespace Mafia2Tool
             dSceneTree.AddToTree(newInstanceNode,parentObj);
         }
         
-        private void UpdateInstanceVisualisation(TreeNode instanceNode, Object trObject)
+        private void UpdateInstanceVisualisation(TreeNode instanceNode, Object trObject, bool visibility)
         {
             FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(trObject.Name.Hash);
             if (groupRef == null)//todo: once placeholder is implemented, reword this to work with it
@@ -2691,7 +2691,7 @@ namespace Mafia2Tool
             }
             
             Instance instance = instanceNode.Tag as Instance;
-            if (instanceNode.Checked)
+            if (visibility)
             {
                 if (groupRef != null && groupRef.HasMeshObject())
                 {
