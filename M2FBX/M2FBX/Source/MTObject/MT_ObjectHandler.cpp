@@ -81,6 +81,14 @@ void MT_ObjectHandler::WriteBundleToFile(const std::string& FileName, const MT_O
 		WriteObjectToFile(OutStream, *Object);
 	}
 
+	// Write animations
+	const MT_Animation* BundleAnim = Bundle.GetAnimation();
+	FileUtils::Write<uint32_t>(OutStream, (BundleAnim != nullptr ? 1 : 0));
+	if (BundleAnim)
+	{
+		BundleAnim->WriteToFile(OutStream);
+	}
+
 	fclose(OutStream);
 }
 
