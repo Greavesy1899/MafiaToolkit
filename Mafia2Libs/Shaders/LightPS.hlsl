@@ -94,11 +94,10 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     float3 reflection;
     float4 specular;
     float3 normal = input.Normal;//float3(1.0f, 1.0f, 1.0f);
-    float normalMapScale = 5.0f;
     
     if(hasTangentSpace == 1)
     {
-        normal = CalculateFromNormalMap(input) * normalMapScale;
+        normal = CalculateFromNormalMap(input);
     }
 
     // Set the default output color to the ambient light value for all pixels.

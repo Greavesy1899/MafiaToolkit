@@ -20,7 +20,6 @@ namespace Rendering.Graphics
         public int FirstTriangleIndex { get; set; }
         public int TriangleCount { get; set; }
         public bool IsLeaf { get => TriangleCount > 0; }
-        public RenderBoundingBox RenderObject { get; set; } = new(); //TODO: Remove this debugging code
     }
 
     public class BVH
@@ -75,8 +74,6 @@ namespace Rendering.Graphics
             Nodes[RootNodeID].FirstTriangleIndex = 0;
             Nodes[RootNodeID].TriangleCount = Triangles.Count;
             UpdateNodeBounds(Nodes[RootNodeID]);
-
-            Nodes[RootNodeID].RenderObject.Init(Nodes[RootNodeID].Bounds);
 
             // Start recursive splitting
             SubdivideNode(Nodes[RootNodeID]);
@@ -207,9 +204,6 @@ namespace Rendering.Graphics
 
             UpdateNodeBounds(Nodes[LeftChildID]);
             UpdateNodeBounds(Nodes[RightChildID]);
-
-            Nodes[LeftChildID].RenderObject.Init(Nodes[LeftChildID].Bounds);
-            Nodes[RightChildID].RenderObject.Init(Nodes[RightChildID].Bounds);
 
             // Recursively split the child nodes
             SubdivideNode(Nodes[LeftChildID]);

@@ -21,9 +21,9 @@ cbuffer HighlightBuffer : register(b2)
 // Instance transformation matrix buffer
 StructuredBuffer<matrix> InstanceBuffer : register(t0);
 
-struct VS_INPUT
+struct VS_INPUT // Reduced size to fit into a single 64 byte cache line
 {
-	float4 Position : POSITION;
+	float3 Position : POSITION;
 	float3 Normal : NORMAL;
 	float3 Tangent : TANGENT;
 	float3 Binormal : BINORMAL;
@@ -49,12 +49,14 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 	float4 worldPosition;
 
 	// Change the position vector to be 4 units for proper matrix calculations.
-	input.Position.w = 1.0f;
+	float4 position;
+	position.xyz = input.Position.xyz;
+	position.w = 1.0f;
 	input.TexCoord0.y = -input.TexCoord0.y;
 	input.TexCoord7.y = -input.TexCoord7.y;
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
-	worldPosition = mul(input.Position, worldMatrix);
+	worldPosition = mul(position, worldMatrix);
 	output.Position = mul(worldPosition, viewProjectionMatrix);
 
 	// Store the texture coordinates for the pixel shader.
@@ -86,7 +88,9 @@ VS_OUTPUT LightInstanceVertexShader(VS_INPUT input, uint InstanceId : SV_Instanc
 {
 	VS_OUTPUT output;
 
-	input.Position.w = 1.0f;
+	float4 position;
+	position.xyz = input.Position.xyz;
+	position.w = 1.0f;
 	input.TexCoord0.y = -input.TexCoord0.y;
 	input.TexCoord7.y = -input.TexCoord7.y;
 
@@ -94,7 +98,7 @@ VS_OUTPUT LightInstanceVertexShader(VS_INPUT input, uint InstanceId : SV_Instanc
 	matrix instanceMatrix = InstanceBuffer[InstanceId];
 
 	// Transform position by instance matrix
-	float4 worldPosition = mul(input.Position, instanceMatrix);
+	float4 worldPosition = mul(position, instanceMatrix);
 	output.Position = mul(worldPosition, viewProjectionMatrix); // Apply view matrix
 
 	// Store the texture coordinates for the pixel shader

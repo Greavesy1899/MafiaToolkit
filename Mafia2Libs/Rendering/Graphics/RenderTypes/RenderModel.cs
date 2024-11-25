@@ -181,11 +181,6 @@ namespace Rendering.Graphics
                 LODs[i] = lod;
             }
 
-            //if (LODs.Length > 0)
-            //{
-            //    BVH.Build(LODs[0].Vertices, LODs[0].Indices);
-            //}
-
             SetupShaders();
             return true;
         }
@@ -265,11 +260,6 @@ namespace Rendering.Graphics
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
 
-            //foreach (var node in BVH.Nodes)
-            //{
-            //    node.RenderObject.InitBuffers(d3d, d3dContext); //For debugging, will be deleted later
-            //}
-
             InitInstanceBuffer(d3d);
 
             InitTextures(d3d, d3dContext);
@@ -343,11 +333,6 @@ namespace Rendering.Graphics
         public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
-
-            //foreach (var node in BVH.Nodes)
-            //{
-            //    node.RenderObject.SetTransform(matrix); //For debugging, will be deleted later
-            //}
         }
 
         public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
@@ -398,11 +383,6 @@ namespace Rendering.Graphics
                 Segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
                 Segment.Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(Segment.NumFaces * 3), Segment.StartIndex);
             }
-
-            //foreach (BVHNode node in BVH.Nodes)
-            //{
-            //    node.RenderObject.Render(device, deviceContext, camera); //For debugging, will be deleted later
-            //}
         }
 
         private float colorTransitionTime = 0.0f; // timer for distinguishing translokators
