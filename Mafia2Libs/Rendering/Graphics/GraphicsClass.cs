@@ -46,6 +46,7 @@ namespace Rendering.Graphics
         private RenderModel sky;
         private RenderModel clouds;
         private GizmoTool TranslationGizmo;
+        public InstanceGizmo InstanceGizmo;
 
         private DirectX11Class D3D;
 
@@ -119,6 +120,13 @@ namespace Rendering.Graphics
                 clouds.ConvertMTKToRenderModel(structure);
                 clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
                 clouds.DoRender = false;
+
+                RenderModel instancePlaceholder = new RenderModel();
+                structure = new M2TStructure();
+                structure.ReadFromM2T("Resources/Translokator.m2t");
+                instancePlaceholder.ConvertMTKToRenderModel(structure);
+                instancePlaceholder.InitBuffers(D3D.Device,D3D.DeviceContext);
+                InstanceGizmo = new InstanceGizmo(instancePlaceholder);
             }
 
             selectionBox.SetColour(System.Drawing.Color.Red);
@@ -140,6 +148,14 @@ namespace Rendering.Graphics
             sky.InitBuffers(D3D.Device, D3D.DeviceContext);
             sky.DoRender = WorldSettings.RenderSky;
             clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
+            InstanceGizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
+            var task = InstanceGizmo.InstanceModel.GetBVHBuildingTask(); // Maybe this function should be added to the IRenderer class instead? probably
+
+            if (task != null)
+            {
+                BVHBuildingTasks.Add(task);
+            }
+            
             Input = new InputClass();
             Input.Init();
             return true;
@@ -283,6 +299,31 @@ namespace Rendering.Graphics
 
                 index++;
             }
+            
+            foreach (var transform in InstanceGizmo.InstanceModel.InstanceTransforms)
+            {
+                var transposed = Matrix4x4.Transpose(transform.Value);
+
+                Matrix4x4 tvWM = Matrix4x4.Identity;
+                Matrix4x4.Invert(transposed, out tvWM);
+                var localInstanceRay = new Ray(
+                    Vector3Utils.TransformCoordinate(ray.Position, tvWM),
+                    Vector3.TransformNormal(ray.Direction, tvWM)
+                );
+
+                if (localInstanceRay.Intersects(InstanceGizmo.InstanceModel.BoundingBox) == 0.0f) continue;
+
+                var bvhInstanceIntersect = InstanceGizmo.InstanceModel.BVH.Intersect(localInstanceRay);
+
+                if (bvhInstanceIntersect.distance < lowest)
+                {
+                    lowest = bvhInstanceIntersect.distance;
+                    lowestRefID = -2;
+                    lowestInstanceID = transform.Key;
+                    WorldPosIntersect = bvhInstanceIntersect.pos;
+                }
+            }
+            
 
             PickOutParams OutputParams = new PickOutParams();
             OutputParams.LowestRefID = lowestRefID;
@@ -398,6 +439,9 @@ namespace Rendering.Graphics
             sky.DoRender = WorldSettings.RenderSky;
             sky.UpdateBuffers(D3D.Device, D3D.DeviceContext);
             sky.Render(D3D.Device, D3D.DeviceContext, Camera);
+            InstanceGizmo.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            InstanceGizmo.Render(D3D.Device, D3D.DeviceContext, Camera);
+            
 
             D3D.EndScene();
             return true;
@@ -462,6 +506,7 @@ namespace Rendering.Graphics
                     }
                     selectedInstances.Clear();
                 }
+                InstanceGizmo.Unselect();
 
                 TranslationGizmo.OnSelectEntry(NewObject.Transform, true);
                 NewObject.Select();
@@ -489,6 +534,7 @@ namespace Rendering.Graphics
                 }
                 selectedInstances.Clear();
             }
+            InstanceGizmo.Unselect();
 
             selectedInstances = new Dictionary<int, int>();
             
@@ -506,6 +552,11 @@ namespace Rendering.Graphics
             {
                 RenderModel model = Assets[selectedInstances.First().Key] as RenderModel;
                 TranslationGizmo.OnSelectEntry(Matrix4x4.Transpose(model.InstanceTransforms[selectedInstances.First().Value]) , true);
+            }
+            else
+            {
+                InstanceGizmo.Select(instanceId);
+                TranslationGizmo.OnSelectEntry(Matrix4x4.Transpose(InstanceGizmo.InstanceModel.InstanceTransforms[instanceId]) , true);
             }
         }
 
@@ -610,6 +661,7 @@ namespace Rendering.Graphics
             D3D?.Shutdown();
             D3D = null;
             selectedInstances = null;
+            InstanceGizmo.Shutdown();
         }
 
 
@@ -667,6 +719,10 @@ namespace Rendering.Graphics
                     DeleteInstance(child,InstanceRefID);
                 }            
             }
+        }
+        public void DeleteInstance(int InstanceRefID)
+        {
+            InstanceGizmo.InstanceModel.RemoveInstance(InstanceRefID,D3D.Device);
         }
     }
 }

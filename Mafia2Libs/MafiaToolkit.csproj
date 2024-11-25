@@ -85,6 +85,12 @@
   <ItemGroup>
     <None Remove="Localisations\ar_AR.xml" />
     <None Remove="Rendering\Graphics\RenderTypes\Instances\**" />
+    <None Update="Resources\Translokator.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Translokator_Texture.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />

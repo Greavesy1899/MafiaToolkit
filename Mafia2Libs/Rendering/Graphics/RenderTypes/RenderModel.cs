@@ -407,7 +407,7 @@ namespace Rendering.Graphics
 
         private float colorTransitionTime = 0.0f; // timer for distinguishing translokators
 
-        private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
+        public void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
         {
             deviceContext.VSSetShaderResource(0, instanceBufferView);
 
@@ -543,6 +543,15 @@ namespace Rendering.Graphics
                 InstanceTransforms.Remove(instanceRefId);
                 ReloadInstanceBuffer(d3d);
             }
+        }
+
+        public ID3D11Buffer GetVB()
+        {
+            return vertexBuffer;
+        }
+        public ID3D11Buffer GetIB()
+        {
+            return indexBuffer;
         }
     }
 }

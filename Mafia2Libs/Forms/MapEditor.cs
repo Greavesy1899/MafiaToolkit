@@ -1104,10 +1104,14 @@ namespace Mafia2Tool
 
                             if (groupRef != null && hasMesh)
                             {
-                                for (int i = 0; i < groupRef.Children.Count; i++)
+                                for (int i = 0; i < groupRef.Children.Count; i++)//i dont think this for cycle is needed really if done right
                                 {
                                     InstanceTranslokatorPart(assets, groupRef.Children[i], Matrix4x4.Identity, instance);
                                 }
+                            }
+                            else
+                            {
+                                Graphics.InstanceGizmo.InstanceTranslokator(instance);
                             }
 
                             TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
@@ -1431,6 +1435,10 @@ namespace Mafia2Tool
                                 Graphics.UpdateInstanceBuffers(modelsToUpdate);
                             }
                         }
+                        else
+                        {
+                            Graphics.InstanceGizmo.UpdateInstanceBuffer(instance, Graphics.GetId3D11Device());
+                        }
                     }
                 }
             }
@@ -1598,7 +1606,7 @@ namespace Mafia2Tool
                 {
                     dSceneTree.SelectedNode = nodes[0];
                     
-                        if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)//dostat se na instance, ne na ref frame, od toho je jump, když na nějakej instance šáhnu, abych v tree viděl jakej to přesně je
+                        if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)
                         {
                             int Parent1Index = obj.ParentIndex1.Index;
                             int Parent2Index = obj.ParentIndex2.Index;
@@ -1837,6 +1845,10 @@ namespace Mafia2Tool
                         var modelsToUpdate = UpdateTranslocatorPart(groupRef.Children[i], Matrix4x4.Identity, instance);
                         Graphics.UpdateInstanceBuffers(modelsToUpdate);
                     }
+                }
+                else
+                {
+                    Graphics.InstanceGizmo.UpdateInstanceBuffer(instance, Graphics.GetId3D11Device());
                 }
             }
 
@@ -2671,12 +2683,16 @@ namespace Mafia2Tool
                 
             Object parent = parentObj.Tag as Object;
             FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
-            if (frameref != null && frameref.HasMeshObject())//todo nonframerefs solution once they are managed
+            if (frameref != null && frameref.HasMeshObject())
             {
                 for (int i = 0; i < frameref.Children.Count; i++)
                 {
                     InstanceTranslokatorPart(Graphics.Assets, frameref.Children[i], Matrix4x4.Identity, newInstance,true);
                 }
+            }
+            else
+            {
+                Graphics.InstanceGizmo.InstanceTranslokator(newInstance,Graphics.GetId3D11Device());
             }
             
             dSceneTree.AddToTree(newInstanceNode,parentObj);
@@ -2685,10 +2701,6 @@ namespace Mafia2Tool
         private void UpdateInstanceVisualisation(TreeNode instanceNode, Object trObject, bool visibility)
         {
             FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(trObject.Name.Hash);
-            if (groupRef == null)//todo: once placeholder is implemented, reword this to work with it
-            {
-                return;
-            }
             
             Instance instance = instanceNode.Tag as Instance;
             if (visibility)
@@ -2700,10 +2712,21 @@ namespace Mafia2Tool
                         InstanceTranslokatorPart(Graphics.Assets, groupRef.Children[i], Matrix4x4.Identity, instance,true);
                     }
                 }
+                else
+                {
+                    Graphics.InstanceGizmo.InstanceTranslokator(instance,Graphics.GetId3D11Device());
+                }
             }
             else
             {
-                Graphics.DeleteInstance(groupRef,instance.RefID);
+                if (groupRef != null && groupRef.HasMeshObject())
+                {
+                    Graphics.DeleteInstance(groupRef,instance.RefID);
+                }
+                else
+                {
+                    Graphics.DeleteInstance(instance.RefID);
+                }
             }
             
         }
@@ -2757,12 +2780,14 @@ namespace Mafia2Tool
             Instance instance = instanceNode.Tag as Instance;
             FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>((instanceNode.Parent.Tag as Object).Name.Hash);
             dSceneTree.RemoveNode(instanceNode);
-            if (groupRef == null)//todo: once placeholder is implemented, reword this to work with it
+            if (groupRef != null)
             {
-                return;
+                Graphics.DeleteInstance(groupRef, instance.RefID);
             }
-
-            Graphics.DeleteInstance(groupRef, instance.RefID);
+            else
+            {
+                Graphics.DeleteInstance(instance.RefID);
+            }
         }
 
         private void DeleteTRObject(TreeNode objectNode)
