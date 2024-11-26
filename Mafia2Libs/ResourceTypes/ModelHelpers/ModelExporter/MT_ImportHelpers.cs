@@ -350,6 +350,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         private MT_Skeleton OwningObject { get; set; }
         public List<MT_Joint> Joints { get; private set; }
         public List<MT_Animation> Animations { get; private set; }
+        public List<MT_Attachment> Attachments { get; private set; }
 
         public MT_SkeletonHelper(MT_Skeleton SkeletonObject)
         {
@@ -360,12 +361,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             Joints = OwningObject.Joints.ToList();
             Animations = OwningObject.Animations.ToList();
+            Attachments = OwningObject.Attachments.ToList();
         }
 
         public void Store()
         {
             OwningObject.Joints = Joints.ToArray();
             OwningObject.Animations = Animations.ToArray();
+            OwningObject.Attachments = Attachments.ToArray();
         }
 
         public string[] GetContextItems()
