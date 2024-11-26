@@ -212,7 +212,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Logger.WriteInfo("Started on Node: [{0}]", CurrentNode.Name);
 
             int ObjectTypeID = -1;
-            if(!GetValueFromNode<int>(CurrentNode, PROP_OBJECT_TYPE_ID, out ObjectTypeID))
+            if(!GLTFDefines.GetValueFromNode<int>(CurrentNode, PROP_OBJECT_TYPE_ID, out ObjectTypeID))
             {
                 Logger.WriteError("Failed to find property [{0}] on node [{1}] cannot determine type.", PROP_OBJECT_TYPE_ID, CurrentNode.Name);
                 return null;
@@ -227,7 +227,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             // attempt to import from optional node
             string DesiredName = CurrentNode.Name;
-            if(GetValueFromNode<string>(CurrentNode, PROP_OBJECT_NAME, out DesiredName))
+            if(GLTFDefines.GetValueFromNode<string>(CurrentNode, PROP_OBJECT_NAME, out DesiredName))
             {
                 Logger.WriteInfo("Detected [{0}], assigning name [{1}]", PROP_OBJECT_NAME, CurrentNode.Name);
             }
@@ -241,9 +241,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             NewObject.Scale = CurrentNode.LocalTransform.Scale;
 
             // see if we need to store frame name table data
-            if (GetValueFromNode<bool>(CurrentNode, PROP_OBJECT_ON_FRT, out bool bOnTable))
+            if (GLTFDefines.GetValueFromNode<bool>(CurrentNode, PROP_OBJECT_ON_FRT, out bool bOnTable))
             {
-                if (GetValueFromNode<int>(CurrentNode, PROP_OBJECT_FRT_FLAGS, out int Flags))
+                if (GLTFDefines.GetValueFromNode<int>(CurrentNode, PROP_OBJECT_FRT_FLAGS, out int Flags))
                 {
                     // apply flags to this object
                     NewObject.FrameNameTableFlags = Flags;
@@ -717,46 +717,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public override string ToString()
         {
             return ObjectName;
-        }
-
-        private static bool GetValueFromNode<TType>(Node InNode, string InPropertyName, out TType OutValue)
-        {
-            OutValue = default(TType);
-
-            if(InNode == null)
-            {
-                // node is invalid
-                return false;
-            }
-
-            if(InNode.Extras == null)
-            {
-                // node does not have extras
-                return false;
-            }
-
-            JsonNode PropertyNode = InNode.Extras[InPropertyName];
-            if (PropertyNode == null)
-            {
-                // specified property does not exist
-                return false;
-            }
-
-            if(PropertyNode is not JsonValue)
-            {
-                // not a JsonValue type
-                return false;
-            }
-
-            JsonValue PropertyValue = PropertyNode.AsValue();
-            if(PropertyValue.TryGetValue<TType>(out OutValue))
-            {
-                // we got the value
-                return true;
-            }
-
-            // value in node does not match type expected
-            return false;
         }
     }
 }

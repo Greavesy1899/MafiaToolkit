@@ -116,30 +116,28 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 NewJoint.Rotation = Rotation;
                 NewJoint.Scale = Scale;
 
+                // If they have opted for explicit name rather than name on node, we'll use that
+                if (GLTFDefines.GetValueFromNode(CurrentJoint, PROP_OBJECT_JOINT_NAME, out string ExplicitName))
+                {
+                    NewJoint.Name = ExplicitName;
+                }
+
                 // insert into array
                 Joints[i] = NewJoint;
 
                 // check for attachments in the visual children
                 foreach(Node PotentialAttachment in CurrentJoint.VisualChildren)
                 {
-                    if(PotentialAttachment.Extras == null)
+                    // we'll just assume any nodes with our bespoke attachment metadata is for us to use
+                    // Users can sanity check this in the import window
+                    if (GLTFDefines.GetValueFromNode(PotentialAttachment, PROP_OBJECT_ATTACHMENT_NAME, out string AttachmentName))
                     {
-                        continue;
+                        MT_Attachment NewAttachment = new MT_Attachment();
+                        NewAttachment.Name = AttachmentName;
+                        NewAttachment.JointIndex = i;
+
+                        FoundAttachments.Add(NewAttachment);
                     }
-
-                    if (PotentialAttachment.Extras[PROP_OBJECT_ATTACHMENT_NAME] == null)
-                    {
-                        continue;
-                    }
-
-                    // We've got an attachment, create object and push into list
-                    string AttachmentName = PotentialAttachment.Extras[PROP_OBJECT_ATTACHMENT_NAME].GetValue<string>();
-
-                    MT_Attachment NewAttachment = new MT_Attachment();
-                    NewAttachment.Name = AttachmentName;
-                    NewAttachment.JointIndex = i;
-
-                    FoundAttachments.Add(NewAttachment);
                 }
             }
 
