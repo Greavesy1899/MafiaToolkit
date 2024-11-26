@@ -1216,40 +1216,6 @@ namespace Mafia2Tool
             Graphics.OnSelectedObjectUpdated(this, Arguments);
         }
 
-        private ModelWrapper LoadModelFromFile()
-        {
-            ModelWrapper model = new ModelWrapper();
-
-            if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
-            {
-                return null;
-            }
-
-            string FileNameExtension = Path.GetExtension(MeshBrowser.FileName);
-            FileNameExtension = FileNameExtension.ToLower();
-
-            // TODO: Load from GLTF
-
-            // Ensure we do not crash
-            if(model.ModelObject == null)
-            {
-                string ErrorMsg = string.Format("[LoadModelFromFile] Model is NULL, failed to load model from the file we were given:\n{0}", MeshBrowser.FileName);
-                MessageBox.Show(ErrorMsg);
-                return null;
-            }
-
-            // Let users change their import values
-            FrameResourceModelImporter modelForm = new FrameResourceModelImporter(model);
-            if (modelForm.ShowDialog() != DialogResult.OK)
-            {
-                return null;
-            }
-
-            modelForm.Dispose();
-
-            return model;
-        }
-
         private void CreateMeshBuffers(ModelWrapper model)
         {
             // TODO: I want to move this into FrameObjectSingleMesh.
@@ -1282,19 +1248,10 @@ namespace Mafia2Tool
 
             if (frame is FrameObjectSingleMesh)
             {
-                FrameObjectSingleMesh SingleMesh = (frame as FrameObjectSingleMesh);
-                ModelWrapper LoadedModel = LoadModelFromFile();
-
-                if (LoadedModel == null)
-                {
-                    // failed to load model
-                    return;
-                }
-
-                SingleMesh.CreateMeshFromRawModel(LoadedModel);
-
-                // TODO: This will need to live elsewhere one day!
-                CreateMeshBuffers(LoadedModel);
+                // TODO: We need to find an alternative method to creating single meshes
+                // The Bundle system consists of multiple objects, in which one may not even be a single mesh.
+                // Therefore it doesn't make sense to use this method - all users should use bundles.
+                // However there may be some benefit in keeping this, maybe as a way to re-use loaded Single Meshes?
             }
 
             // If everything was succesful, then we would have reached this point.
@@ -2240,19 +2197,22 @@ namespace Mafia2Tool
                 return;
             }
 
-            MT_Logger ImportResults = new MT_Logger();
-
-            MT_ObjectBundle BundleObject = new MT_ObjectBundle();
-            BundleObject.BuildFromGLTF(ModelRoot.Load(MeshBrowser.FileName), ImportResults);
-
-            // Let users change their import values
-            FrameResourceModelImporter modelForm = new FrameResourceModelImporter(BundleObject);
-            DialogResult Result = modelForm.ShowDialog();
-            modelForm.Dispose();
-            if (Result != DialogResult.OK)
+            if(Path.Exists(MeshBrowser.FileName) == false)
             {
                 return;
             }
+
+            // pass to importer
+            FrameResourceModelImporter modelForm = new FrameResourceModelImporter(MeshBrowser.FileName);
+            DialogResult Result = modelForm.ShowDialog();
+            if(Result != DialogResult.OK)
+            {
+                modelForm.Dispose();
+                return;
+            }
+
+            // TODO: In an ideal world this would not live in MapEditor.cs
+            // and probably live within FrameResourceModelImporter.
 
             // Only ask we they want to save the materials if we have some.
             if (modelForm.NewMaterials.Count > 0)
@@ -2265,10 +2225,12 @@ namespace Mafia2Tool
             }
 
             // Continue with the importing of the bundle
-            foreach (MT_Object ModelObject in BundleObject.Objects)
+            foreach (MT_Object ModelObject in modelForm.CurrentBundle.Objects)
             {
                 ConstructFrameFromImportedObject(ModelObject, frameResourceRoot);
             }
+
+            modelForm.Dispose();
         }
 
         private void ConstructFrameFromImportedObject(MT_Object ObjectInfo, TreeNode Parent)

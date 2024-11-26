@@ -2,12 +2,13 @@
 using ResourceTypes.Animation2;
 using ResourceTypes.Materials;
 using ResourceTypes.ModelHelpers.ModelExporter;
+using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Utils.Language;
-using Utils.Models;
 using Utils.Settings;
 
 namespace Forms.EditorControls
@@ -15,9 +16,9 @@ namespace Forms.EditorControls
     public partial class FrameResourceModelImporter : Form
     {
         // Generic Variables (fields)
-        private MT_ObjectBundle CurrentBundle;
-        private MT_ValidationTracker TrackerObject;
-        private IImportHelper CurrentHelper;
+        private string SourceFilename = string.Empty;
+        private MT_ValidationTracker TrackerObject = null;
+        private IImportHelper CurrentHelper = null;
 
         // Material Tab (Fields)
         private string[] ComboBox_LibraryEntries = null;
@@ -31,32 +32,27 @@ namespace Forms.EditorControls
         // Material Tab (Properties)
         public List<MaterialAddRequestParams> NewMaterials { get; private set; }
 
-        public FrameResourceModelImporter(ModelWrapper Wrapper)
+        // Generic Variables (Properties)
+        public MT_ObjectBundle CurrentBundle { get; private set; } = null;
+
+        public FrameResourceModelImporter(string InSourceFilename)
         {
             InitializeComponent();
             InitializeControls();
 
-            MT_Object Model = Wrapper.ModelObject;
-            TreeView_Objects.Nodes.Add(ConvertObjectToNode(Model));
+            SourceFilename = InSourceFilename;
 
-            // Create a bundle to make it easier to validate
-            CurrentBundle = new MT_ObjectBundle();
-            CurrentBundle.Objects = new MT_Object[1];
-            CurrentBundle.Objects[0] = Model;
+            // upon first initialisation the source should ideally be okay.
+            // with regards to whether we've actually been given a filename which exists.
+            if (!LoadSourceAsset())
+            {
+                DialogResult = DialogResult.Cancel;
+                Close();
+                return;
+            }
 
-            InitiateValidation();
-        }
-
-        public FrameResourceModelImporter(MT_ObjectBundle ObjectBundle)
-        {
-            InitializeComponent();
-            InitializeControls();
-
-            CurrentBundle = ObjectBundle;
-
-            InitiateValidation();
-
-            TreeView_Objects.Nodes.Add(ConvertBundleToNode(ObjectBundle));
+            // ready to show
+            PopulateControl();
         }
 
         private void InitializeControls()
@@ -99,6 +95,7 @@ namespace Forms.EditorControls
         private void Localise()
         {
             Button_Validate.Text = Language.GetString("$VALIDATE");
+            Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Continue.Text = Language.GetString("$CONTINUE");
             Button_StopImport.Text = Language.GetString("$STOP");
             TabPage_Model.Text = Language.GetString("$TAB_MODELS");
@@ -240,8 +237,40 @@ namespace Forms.EditorControls
         {
             TrackerObject = new MT_ValidationTracker();
             CurrentBundle.ValidateObject(TrackerObject);
+        }
 
-            Label_DebugMessage.Text = string.Format("[MESSAGE COUNT: {0}]", TrackerObject.GetMessageCount());
+        private bool LoadSourceAsset()
+        {
+            if (SourceFilename == string.Empty)
+            {
+                return false;
+            }
+
+            if (Path.Exists(SourceFilename) == false)
+            {
+                return false;
+            }
+
+            MT_Logger ImportResults = new MT_Logger();
+
+            // TODO: Check whether bundle generated from gltf is good?
+            CurrentBundle = new MT_ObjectBundle();
+            CurrentBundle.BuildFromGLTF(ModelRoot.Load(SourceFilename), ImportResults);
+
+            return true;
+        }
+
+        private void PopulateControl()
+        {
+            if (CurrentBundle == null)
+            {
+                return;
+            }
+
+            InitiateValidation();
+
+            TreeView_Objects.Nodes.Clear();
+            TreeView_Objects.Nodes.Add(ConvertBundleToNode(CurrentBundle));
         }
 
         private void Button_Continue_Click(object sender, EventArgs e)
@@ -545,7 +574,7 @@ namespace Forms.EditorControls
             }
 
             MT_Animation SelectedAnimation = (ListView_Animations.SelectedItems[0].Tag as MT_Animation);
-            if(SelectedAnimation == null)
+            if (SelectedAnimation == null)
             {
                 // Not an animation
                 return;
@@ -562,6 +591,13 @@ namespace Forms.EditorControls
             {
                 NewAnimation.WriteToFile(AnimSaveDialog.FileName);
             }
+        }
+
+        private void Button_Reload_Click(object sender, EventArgs e)
+        {
+            // TODO: Do we consider force closing the window here, if the file has gone?
+            LoadSourceAsset();
+            PopulateControl();
         }
     }
 }

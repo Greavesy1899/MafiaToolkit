@@ -42,9 +42,9 @@
             ComboBox_ChooseLibrary = new System.Windows.Forms.ComboBox();
             toolStrip1 = new System.Windows.Forms.ToolStrip();
             Button_Validate = new System.Windows.Forms.ToolStripButton();
+            Button_Reload = new System.Windows.Forms.ToolStripButton();
             Button_Continue = new System.Windows.Forms.ToolStripButton();
             Button_StopImport = new System.Windows.Forms.ToolStripButton();
-            Label_DebugMessage = new System.Windows.Forms.ToolStripLabel();
             Tab_Root = new System.Windows.Forms.TabControl();
             TabPage_Validation = new System.Windows.Forms.TabPage();
             ListBox_Validation = new System.Windows.Forms.ListBox();
@@ -152,10 +152,12 @@
             imageList1.TransparentColor = System.Drawing.Color.Transparent;
             imageList1.Images.SetKeyName(0, "StatusInvalid_16x.png");
             imageList1.Images.SetKeyName(1, "StatusOK_16x.png");
-            imageList1.Images.SetKeyName(2, "MaterialGroup_16x.png");
-            imageList1.Images.SetKeyName(3, "Model3D_16x.png");
-            imageList1.Images.SetKeyName(4, "Log_16x.png");
-            imageList1.Images.SetKeyName(5, "TestResultFile_16x.png");
+            imageList1.Images.SetKeyName(2, "MaterialDiffuse.png");
+            imageList1.Images.SetKeyName(3, "ModelThreeD.png");
+            imageList1.Images.SetKeyName(4, "Log.png");
+            imageList1.Images.SetKeyName(5, "TestResult.png");
+            imageList1.Images.SetKeyName(6, "Restart.png");
+            imageList1.Images.SetKeyName(7, "Animation.png");
             // 
             // PropertyGrid_Model
             // 
@@ -228,7 +230,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { Button_Validate, Button_Continue, Button_StopImport, Label_DebugMessage });
+            toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { Button_Validate, Button_Reload, Button_Continue, Button_StopImport });
             toolStrip1.Location = new System.Drawing.Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new System.Drawing.Size(728, 25);
@@ -240,9 +242,20 @@
             Button_Validate.Image = (System.Drawing.Image)resources.GetObject("Button_Validate.Image");
             Button_Validate.ImageTransparentColor = System.Drawing.Color.Magenta;
             Button_Validate.Name = "Button_Validate";
-            Button_Validate.Size = new System.Drawing.Size(68, 22);
-            Button_Validate.Text = "Validate";
+            Button_Validate.Size = new System.Drawing.Size(83, 22);
+            Button_Validate.Text = "$VALIDATE";
+            Button_Validate.ToolTipText = "$VALIDATE_TOOLTIP";
             Button_Validate.Click += Button_Validate_Click;
+            // 
+            // Button_Reload
+            // 
+            Button_Reload.Image = (System.Drawing.Image)resources.GetObject("Button_Reload.Image");
+            Button_Reload.ImageTransparentColor = System.Drawing.Color.Magenta;
+            Button_Reload.Name = "Button_Reload";
+            Button_Reload.Size = new System.Drawing.Size(77, 22);
+            Button_Reload.Text = "$RELOAD";
+            Button_Reload.ToolTipText = "$RELOAD_TOOLTIP";
+            Button_Reload.Click += Button_Reload_Click;
             // 
             // Button_Continue
             // 
@@ -261,12 +274,6 @@
             Button_StopImport.Size = new System.Drawing.Size(90, 22);
             Button_StopImport.Text = "Stop Import";
             Button_StopImport.Click += Button_StopImport_Click;
-            // 
-            // Label_DebugMessage
-            // 
-            Label_DebugMessage.Name = "Label_DebugMessage";
-            Label_DebugMessage.Size = new System.Drawing.Size(86, 22);
-            Label_DebugMessage.Text = "toolStripLabel1";
             // 
             // Tab_Root
             // 
@@ -438,7 +445,7 @@
             // TabPage_Animations
             // 
             TabPage_Animations.Controls.Add(splitContainer1);
-            TabPage_Animations.ImageIndex = 2;
+            TabPage_Animations.ImageIndex = 7;
             TabPage_Animations.Location = new System.Drawing.Point(4, 24);
             TabPage_Animations.Name = "TabPage_Animations";
             TabPage_Animations.Padding = new System.Windows.Forms.Padding(3);
@@ -654,10 +661,9 @@
         private System.Windows.Forms.TabPage TabPage_ConvertLogs;
         private System.Windows.Forms.ListBox ListBox_Validation;
         private System.Windows.Forms.ListBox ListBox_ImportLog;
-        private System.Windows.Forms.ToolStripButton Button_Validate;
+        private System.Windows.Forms.ToolStripButton Button_Reload;
         private System.Windows.Forms.ToolStripButton Button_Continue;
         private System.Windows.Forms.ToolStripButton Button_StopImport;
-        private System.Windows.Forms.ToolStripLabel Label_DebugMessage;
         private System.Windows.Forms.TabControl TabControl_Editors;
         private System.Windows.Forms.TabPage TabPage_Model;
         private System.Windows.Forms.TabPage TabPage_Material;
@@ -682,5 +688,6 @@
         private System.Windows.Forms.Label Label_Anim_Stub3;
         private System.Windows.Forms.Label Label_Anim_Stub1;
         private System.Windows.Forms.Button Button_Anim_SaveAN2;
+        private System.Windows.Forms.ToolStripButton Button_Validate;
     }
 }
