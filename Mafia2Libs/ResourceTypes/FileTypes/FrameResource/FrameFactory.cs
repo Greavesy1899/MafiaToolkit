@@ -75,8 +75,8 @@ namespace ResourceTypes.FrameResource
                 //    return OwningResource.ConstructFrameAssetOfType<FrameObjectArea>();
                 //case MT_ObjectType.Target:
                 //    return OwningResource.ConstructFrameAssetOfType<FrameObjectTarget>();
-                //case MT_ObjectType.Model:
-                //    return OwningResource.ConstructFrameAssetOfType<FrameObjectModel>();
+                case MT_ObjectType.RiggedMesh:
+                    return OwningResource.ConstructFrameAssetOfType<FrameObjectModel>();
                 case MT_ObjectType.ItemDesc:
                     return OwningResource.ConstructFrameAssetOfType<FrameObjectCollision>();
                 default:

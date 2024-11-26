@@ -426,89 +426,55 @@ namespace Utils.Models
             FrameSkeletonHierachy HierarchyBlock = ModelFrame.GetSkeletonHierarchyObject();
             FrameBlendInfo BlendInfoBlock = ModelFrame.GetBlendInfoObject();
 
-            HierarchyBlock.LastChildIndices = new byte[255];
-            HierarchyBlock.ParentIndices = new byte[255];
-            HierarchyBlock.UnkData = new byte[255];
-
-            List<int> SkeletonSequence = new List<int>();
-            SkeletonSequence.Add(0);
-
-            int[] JointBoneIDs = new int[SkeletonObject.Joints.Length];
-            int[] IDRemapTable = new int[1024];
-
-            for (int i = 0; i < SkeletonSequence.Count; i++)
+            // Build skeleton hierarchy block
+            HierarchyBlock.LastChildIndices = new byte[SkeletonObject.Joints.Length];
+            HierarchyBlock.ParentIndices = new byte[SkeletonObject.Joints.Length];
+            HierarchyBlock.UnkData = new byte[SkeletonObject.Joints.Length + 1];
+            HierarchyBlock.Unk01 = 0;
+            for (int i = 0; i < SkeletonObject.Joints.Length; i++)
             {
-                MT_Joint JointObject = SkeletonObject.Joints[i];
-
-                // handle last child indices array
-                HierarchyBlock.LastChildIndices[i] = (byte)(i > 0 ? HierarchyBlock.LastChildIndices[i - 1] : 0);
-
-                for (int z = 0; z < SkeletonObject.Joints.Length; z++)
-                {
-                    bool bCheckOne = SkeletonObject.Joints[z].ParentJointIndex == JointBoneIDs[i];
-                    if (bCheckOne)
-                    {
-                        int NewSlot = SkeletonSequence.Count;
-                        HierarchyBlock.ParentIndices[NewSlot] = (byte)i;
-                        HierarchyBlock.LastChildIndices[i] = (byte)NewSlot;
-                        JointBoneIDs[z] = NewSlot;
-
-                        if (JointBoneIDs[z] >= 0)
-                        {
-                            IDRemapTable[JointBoneIDs[z]] = NewSlot;
-                        }
-
-                        SkeletonSequence.Add(z);
-                    }
-                }
-
-                HierarchyBlock.UnkData[i] = (byte)i;
+                MT_Joint CurrentJoint = SkeletonObject.Joints[i];
+                HierarchyBlock.ParentIndices[i] = (CurrentJoint.ParentJointIndex == -1 ? byte.MaxValue : (byte)CurrentJoint.ParentJointIndex);
             }
 
-            /*
-            int NumJoints = SkeletonObject.Joints.Length;
-            SkeletonBlock.BoneNames = new HashName[NumJoints];
+            // Build skeleton block
+            SkeletonBlock.BoneNames = new HashName[SkeletonObject.Joints.Length];
+            SkeletonBlock.JointTransforms = new Matrix4x4[SkeletonObject.Joints.Length];
+            SkeletonBlock.BoneLODUsage = new byte[SkeletonObject.Joints.Length];
+            for (int i = 0; i < SkeletonObject.Joints.Length; i++)
+            {
+                MT_Joint CurrentJoint = SkeletonObject.Joints[i];
+
+                // apply name in array
+                SkeletonBlock.BoneNames[i].Set(CurrentJoint.Name);
+
+                // generate joint transform from MT_Joint
+                Matrix4x4 RotTransform = Matrix4x4.CreateFromQuaternion(CurrentJoint.Rotation);
+                Matrix4x4 LocTransform = Matrix4x4.CreateScale(CurrentJoint.Scale);
+                Matrix4x4 SclTransform = Matrix4x4.CreateTranslation(CurrentJoint.Position);
+                Matrix4x4 XForm = RotTransform * LocTransform * SclTransform;
+                SkeletonBlock.JointTransforms[i] = XForm;
+
+                // create usage list
+                // TODO: Ensure Usage Flags is actually updated when MT_Lods are loaded
+                SkeletonBlock.BoneLODUsage[i] = (byte)CurrentJoint.UsageFlags;
+
+                // TODO: World transform -> how tf do you do this??
+            }
+
+            // Fill in additional data
+            SkeletonBlock.NumLods = ModelObject.Lods.Length;
+            SkeletonBlock.NumUnkCount2 = SkeletonObject.Joints.Length;
+            SkeletonBlock.IDType = 3; // unknown - 3 is typically hashes? For cars and crane.
+
+            // for some reason all slots in this array equal same amount of bones..
             SkeletonBlock.NumBones = new int[4];
-            SkeletonBlock.UnkLodData = new int[1];
-            SkeletonBlock.BoneLODUsage = new byte[NumJoints];
+            SkeletonBlock.NumBones[0] = SkeletonBlock.NumBones[1] = SkeletonBlock.NumBones[2] = SkeletonBlock.NumBones[3] = SkeletonObject.Joints.Length;
 
-            SkeletonBlock.NumBlendIDs = NumJoints;
-            SkeletonBlock.NumUnkCount2 = NumJoints;
-            SkeletonBlock.UnkLodData[0] = NumJoints;
-
-
-            for (int i = 0; i < 4; i++)
-            {
-                SkeletonBlock.NumBones[i] = NumJoints;
-            }
-
-            for (int i = 0; i < NumJoints; i++)
-            {
-                HashName bone = new HashName();
-                bone.Set(SkeletonObject.Joints[i].Name);
-                SkeletonBlock.BoneNames[i] = bone;
-
-                if (ModelObject.Lods.Length == 1)
-                {
-                    SkeletonBlock.BoneLODUsage[i] = 1;
-                }
-            }
-
-            HierarchyBlock.ParentIndices = new byte[NumJoints];
-            HierarchyBlock.LastChildIndices = new byte[NumJoints];
-            HierarchyBlock.UnkData = new byte[NumJoints];
-            SkeletonBlock.JointTransforms = new Matrix[NumJoints];
-
-            HierarchyBlock.UnkData[0] = (byte)(NumJoints + 1);
-
-            for (int i = 0; i < NumJoints; i++)
-            {
-                MT_Joint JointObject = SkeletonObject.Joints[i];
-
-                HierarchyBlock.ParentIndices[i] = (byte)JointObject.ParentJointIndex;
-                HierarchyBlock.UnkData[i] = (byte)(i != NumJoints ? i : 0);
-                SkeletonBlock.JointTransforms[i] = MatrixExtensions.SetMatrix(JointObject.Rotation, JointObject.Scale, JointObject.Position);
-            }*/
+            // TODO: Once BlendInfo is done, there are a few pieces of data which must be stored in Skeleton
+            SkeletonBlock.NumBlendIDs = 0;
+            SkeletonBlock.MappingForBlendingInfos = null; // maybe in here too, one for each lod?
+            SkeletonBlock.UnkLodData = null; // again, one for each lod, number of blend infos?
         }
     }
 }
