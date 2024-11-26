@@ -273,8 +273,13 @@ namespace Utils.Models
             BundleObject.Objects = new MT_Object[1];
             BundleObject.Objects[0] = ModelObject;
 
+            // TODO: Default is ValidationMode.Strict, which faulters on Normals
+            WriteSettings WriteContext = new WriteSettings();
+            WriteContext.Validation = SharpGLTF.Validation.ValidationMode.TryFix;
+            WriteContext.JsonIndented = true;
+
             ModelRoot CompiledModel = BundleObject.BuildGLTF();
-            CompiledModel.SaveGLB(FileToWrite);
+            CompiledModel.SaveGLB(FileToWrite, WriteContext);
         }
 
         public void UpdateObjectsFromModel()

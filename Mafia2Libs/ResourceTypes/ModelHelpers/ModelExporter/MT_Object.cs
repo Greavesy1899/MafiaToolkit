@@ -89,7 +89,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             if (Lods != null)
             {
-                for(int Index = 0; Index < Lods.Length; Index++)
+                // TODO: Fix LODs
+                // It's simply too noisy to debug right now, we need 1 LOD working first.
+                for(int Index = 0; Index < 1; Index++)
                 {
                     NodeBuilder LodNode = ThisNode.CreateNode(string.Format("LOD_{0}", Index));
                     if (Skeleton != null)
@@ -121,7 +123,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
-            // TODO: Collisions
             return ThisNode;
         }
 
@@ -267,17 +268,35 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
                 else
                 {
+                    // TODO: This is a very loose coupling, can we somehow improve this?
+                    // Perhaps within the Extras of a node, we can identify that this is LOD0?
                     if (ChildNode.Name.Contains("LOD_0"))
                     {
                         if (DesiredType == MT_ObjectType.RiggedMesh)
                         {
                             // rigged models have mesh as child in LOD node
                             // This is a limitation in GLTF where the skinned mesh is attached to first node in joint array
+                            // TODO: Fix SharpGLTF export -> Blender export works fine, which is a first tbh
                             if(ChildNode.VisualChildren.Count() > 0)
                             {
                                 foreach (Node SubmeshNode in ChildNode.VisualChildren)
                                 {
-                                    Mesh AssociatedMesh = ChildNode.VisualChildren.ElementAt(0).Mesh;
+                                    Mesh FoundMesh = SubmeshNode.Mesh;
+                                    Skin FoundSkin = SubmeshNode.Skin;
+                                    if(FoundMesh != null && FoundSkin != null)
+                                    {
+                                        // build lod
+                                        MT_Lod NewLod = new MT_Lod();
+                                        NewLod.BuildLodFromGLTFMesh(FoundMesh, FoundSkin);
+                                        ObjectLods.Add(NewLod);
+
+                                        // then build skeleton
+                                        NewObject.Skeleton = new MT_Skeleton();
+                                        NewObject.Skeleton.BuildSkeletonFromGLTF(FoundSkin);
+
+                                        // TODO: Attachments. Remember how they are added into GLTF to begin with
+                                        // Then somehow add them into the MT_Skeleton.
+                                    }
                                 }
                             }
 
@@ -291,7 +310,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                             {
                                 // build lod
                                 MT_Lod NewLod = new MT_Lod();
-                                NewLod.BuildLodFromGLTFMesh(AssociatedMesh);
+                                NewLod.BuildLodFromGLTFMesh(AssociatedMesh, null);
                                 ObjectLods.Add(NewLod);
                             }
                         }
@@ -325,6 +344,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             if(NewObject.Collision != null)
             {
                 NewObject.ObjectFlags |= MT_ObjectFlags.HasCollisions;
+            }
+
+            if(NewObject.Skeleton != null)
+            {
+                NewObject.ObjectFlags |= MT_ObjectFlags.HasSkinning;
             }
 
             Logger.WriteInfo("Created MT_Object [{0}], type [{1}], from node [{2}]", NewObject.ObjectName, NewObject.ObjectType, CurrentNode.Name);

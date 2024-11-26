@@ -119,7 +119,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return new VERTEXSKINNEDBUILDER(VB1, TB1, VertexWeights);
         }
 
-        public void BuildLodFromGLTFMesh(Mesh InMesh)
+        public void BuildLodFromGLTFMesh(Mesh InMesh, Skin InSkin)
         {
             List<Vertex> FinalVertexBuffer = new List<Vertex>();
             List<uint> FinalIndicesBuffer = new List<uint>();
@@ -175,6 +175,32 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     VertexDeclaration |= VertexFlags.TexCoords0;
                 }
 
+                // query whether we are in a good state to support skinned data in vertex buffer
+                IList<Vector4> JointsList = null;
+                IList<Vector4> BlendWeightsList = null;
+                if (InSkin != null)
+                {
+                    Accessor JointsAccessor = Primitive.GetVertexAccessor("JOINTS_0");
+                    if (JointsAccessor != null)
+                    {
+                        JointsList = JointsAccessor.AsVector4Array();
+                        VertexDeclaration |= VertexFlags.Skin;
+                    }
+
+                    Accessor WeightsAccessor = Primitive.GetVertexAccessor("WEIGHTS_0");
+                    if (WeightsAccessor != null)
+                    {
+                        BlendWeightsList = WeightsAccessor.AsVector4Array();
+                        VertexDeclaration |= VertexFlags.Skin;
+                    }
+
+                    // we can consider the fact we have weighted data
+                    if(JointsList.Count > 0 && BlendWeightsList.Count > 0)
+                    {
+                        VertexDeclaration |= VertexFlags.Skin;
+                    }
+                }
+
                 uint CurrentOffset = (uint)FinalVertexBuffer.Count;
                 Vertex[] TempList = new Vertex[PosList.Count];
                 List<uint> IndicesList = new List<uint>();
@@ -205,6 +231,19 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                         if(VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                         {
                             TempList[VertexIdx].UVs[0] = Tex0List[VertexIdx];
+                        }
+
+                        if(VertexDeclaration.HasFlag(VertexFlags.Skin))
+                        {
+                            // TODO: Validation
+
+                            // pack weights
+                            Vector4 VertexWeights = BlendWeightsList[VertexIdx];
+                            TempList[VertexIdx].BoneWeights = new float[4] { VertexWeights.X, VertexWeights.Y, VertexWeights.Z, VertexWeights.W };
+
+                            // pack indices
+                            Vector4 VertexIndices = JointsList[VertexIdx];
+                            TempList[VertexIdx].BoneIDs = new byte[4] { (byte)VertexIndices.X, (byte)VertexIndices.Y, (byte)VertexIndices.Z, (byte)VertexIndices.W };
                         }
                     }
 

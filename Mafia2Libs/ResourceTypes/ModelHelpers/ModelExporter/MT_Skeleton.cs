@@ -1,10 +1,11 @@
 ﻿using SharpGLTF.Animations;
 using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Text.Json.Nodes;
-using UnluacNET;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -84,6 +85,65 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             AddAnimations(JointNodes);
 
             return JointNodes;
+        }
+
+        public void BuildSkeletonFromGLTF(Skin InSkin)
+        {
+            Node SkeletonNode = InSkin.Skeleton;
+            List<Node> SkinJoints = InSkin.Joints.ToList();
+            IReadOnlyList<Matrix4x4> BindMatrix = InSkin.InverseBindMatrices;
+
+            // we have no idea what attachments we mind find; therefore use a list
+            List<MT_Attachment> FoundAttachments = new List<MT_Attachment>();
+
+            Joints = new MT_Joint[SkinJoints.Count];
+            for(int i = 0; i < SkinJoints.Count; i++)
+            {
+                Node CurrentJoint = SkinJoints[i];
+                Matrix4x4 CurrentMatrix = BindMatrix[i];
+
+                Vector3 Scale = Vector3.One;
+                Quaternion Rotation = Quaternion.Identity;
+                Vector3 Position = Vector3.Zero;
+                Matrix4x4.Decompose(BindMatrix[i], out Scale, out Rotation, out Position);
+
+                // TODO: pull name from extras to avoid blender anarchy
+                MT_Joint NewJoint = new MT_Joint();
+                NewJoint.Name = CurrentJoint.Name;
+                NewJoint.UsageFlags = 1;
+                NewJoint.ParentJointIndex = SkinJoints.IndexOf(CurrentJoint.VisualParent);
+                NewJoint.Position = Position;
+                NewJoint.Rotation = Rotation;
+                NewJoint.Scale = Scale;
+
+                // insert into array
+                Joints[i] = NewJoint;
+
+                // check for attachments in the visual children
+                foreach(Node PotentialAttachment in CurrentJoint.VisualChildren)
+                {
+                    if(PotentialAttachment.Extras == null)
+                    {
+                        continue;
+                    }
+
+                    if (PotentialAttachment.Extras[PROP_OBJECT_ATTACHMENT_NAME] == null)
+                    {
+                        continue;
+                    }
+
+                    // We've got an attachment, create object and push into list
+                    string AttachmentName = PotentialAttachment.Extras[PROP_OBJECT_ATTACHMENT_NAME].GetValue<string>();
+
+                    MT_Attachment NewAttachment = new MT_Attachment();
+                    NewAttachment.Name = AttachmentName;
+                    NewAttachment.JointIndex = i;
+
+                    FoundAttachments.Add(NewAttachment);
+                }
+            }
+
+            Attachments = FoundAttachments.ToArray();
         }
 
         private void AddAnimations(NodeBuilder[] JointNodes)
