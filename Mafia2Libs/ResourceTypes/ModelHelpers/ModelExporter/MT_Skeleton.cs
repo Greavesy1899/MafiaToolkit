@@ -100,17 +100,15 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             for(int i = 0; i < SkinJoints.Count; i++)
             {
                 Node CurrentJoint = SkinJoints[i];
+
+                // decompose to joint
+                // TODO: This is inverse - Need to resolve World space / local space / model space?
                 Matrix4x4 CurrentMatrix = BindMatrix[i];
+                Matrix4x4.Decompose(BindMatrix[i], out Vector3 Scale, out Quaternion Rotation, out Vector3 Position);
 
-                Vector3 Scale = Vector3.One;
-                Quaternion Rotation = Quaternion.Identity;
-                Vector3 Position = Vector3.Zero;
-                Matrix4x4.Decompose(BindMatrix[i], out Scale, out Rotation, out Position);
-
-                // TODO: pull name from extras to avoid blender anarchy
                 MT_Joint NewJoint = new MT_Joint();
                 NewJoint.Name = CurrentJoint.Name;
-                NewJoint.UsageFlags = 1;
+                NewJoint.UsageFlags = 1; // TODO: Usage flags, we need to iterate through the mesh
                 NewJoint.ParentJointIndex = SkinJoints.IndexOf(CurrentJoint.VisualParent);
                 NewJoint.Position = Position;
                 NewJoint.Rotation = Rotation;

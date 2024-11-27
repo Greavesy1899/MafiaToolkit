@@ -1,28 +1,23 @@
-﻿using Mafia2Tool;
-using ResourceTypes.BufferPools;
+﻿using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
-using SharpGLTF.Geometry;
-using SharpGLTF.Materials;
 using SharpGLTF.Scenes;
 using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json.Nodes;
+using System.Windows.Media.Media3D;
 using Utils.Models;
-using Utils.StringHelpers;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Collision = ResourceTypes.Collisions.Collision;
+using Quaternion = System.Numerics.Quaternion;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
-    using VERTEX = SharpGLTF.Geometry.VertexTypes.VertexPosition;
-
     [Flags]
     public enum MT_ObjectFlags
     {
@@ -525,11 +520,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 JointObject.ParentJointIndex = SkeletonHierarchy.ParentIndices[i];
                 JointObject.UsageFlags = Skeleton.BoneLODUsage[i];
 
-                Vector3 Scale, Position;
-                Quaternion Rotation;
-
                 Matrix4x4 JointTransform = Skeleton.JointTransforms[i];
-                Matrix4x4.Decompose(JointTransform, out Scale, out Rotation, out Position);
+                Matrix4x4.Decompose(JointTransform, out Vector3 Scale, out Quaternion Rotation, out Vector3 Position);
                 JointObject.Position = Position;
                 JointObject.Scale = Scale;
                 JointObject.Rotation = Rotation;
@@ -546,6 +538,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 ModelSkeleton.Attachments[i] = NewAttachment;
             }
 
+            // Mafia II models do not store direct reference to Bone IDs in vertex buffer.
+            // It's more like an "Index to Direct" model, similar to how FBX sometimes sets up buffers.
+            // With that said, by using the FrameBlendInfo, we can remap the Bone ID to be direct.
+            // I'm assuming it could be to do with 127 limit? But then why could we store [0-255] range in buffers...
+            // FrameBlendInfo explicitly defines number of bones per material.
             for (int i = 0; i < BlendInfo.BoneIndexInfos.Length; i++)
             {
                 var indexInfos = BlendInfo.BoneIndexInfos[i];

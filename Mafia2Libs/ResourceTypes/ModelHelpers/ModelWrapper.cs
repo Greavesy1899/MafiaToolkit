@@ -429,24 +429,24 @@ namespace Utils.Models
             // Build skeleton hierarchy block
             HierarchyBlock.LastChildIndices = new byte[SkeletonObject.Joints.Length];
             HierarchyBlock.ParentIndices = new byte[SkeletonObject.Joints.Length];
-            HierarchyBlock.UnkData = new byte[SkeletonObject.Joints.Length + 1];
             HierarchyBlock.Unk01 = 0;
-            for (int i = 0; i < SkeletonObject.Joints.Length; i++)
-            {
-                MT_Joint CurrentJoint = SkeletonObject.Joints[i];
-                HierarchyBlock.ParentIndices[i] = (CurrentJoint.ParentJointIndex == -1 ? byte.MaxValue : (byte)CurrentJoint.ParentJointIndex);
-            }
 
-            // Build skeleton block
+            // Skeleton block - allocate enough for all joints
             SkeletonBlock.BoneNames = new HashName[SkeletonObject.Joints.Length];
             SkeletonBlock.JointTransforms = new Matrix4x4[SkeletonObject.Joints.Length];
             SkeletonBlock.BoneLODUsage = new byte[SkeletonObject.Joints.Length];
+
+            // Not sure what UnkData is - but the assumption is that the first slot has number of bones
+            // Then a list from 1 - N Bones. Last slot in the array is 0.
+            HierarchyBlock.UnkData = new byte[SkeletonObject.Joints.Length + 1];
+            byte UnkDataItr = 1;
+
             for (int i = 0; i < SkeletonObject.Joints.Length; i++)
             {
                 MT_Joint CurrentJoint = SkeletonObject.Joints[i];
 
-                // apply name in array
-                SkeletonBlock.BoneNames[i].Set(CurrentJoint.Name);
+                // Work on Skeleton Block
+                SkeletonBlock.BoneNames[i] = new HashName(CurrentJoint.Name);
 
                 // generate joint transform from MT_Joint
                 Matrix4x4 RotTransform = Matrix4x4.CreateFromQuaternion(CurrentJoint.Rotation);
@@ -460,8 +460,17 @@ namespace Utils.Models
                 SkeletonBlock.BoneLODUsage[i] = (byte)CurrentJoint.UsageFlags;
 
                 // TODO: World transform -> how tf do you do this??
+
+                // Work on Hierarchy Block
+                HierarchyBlock.ParentIndices[i] = (CurrentJoint.ParentJointIndex == -1 ? byte.MaxValue : (byte)CurrentJoint.ParentJointIndex);
+                HierarchyBlock.UnkData[i + 1] = UnkDataItr++;
             }
 
+            // Hierarchy Block - Finish off UnkData by assigning first and last slot
+            HierarchyBlock.UnkData[0] = (byte)SkeletonObject.Joints.Length;
+            HierarchyBlock.UnkData[SkeletonObject.Joints.Length] = 0;
+
+            // Skeleton Block - Finalise remaining data
             // Fill in additional data
             SkeletonBlock.NumLods = ModelObject.Lods.Length;
             SkeletonBlock.NumUnkCount2 = SkeletonObject.Joints.Length;
