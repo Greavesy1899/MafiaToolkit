@@ -12,6 +12,7 @@ using System.Text.Json.Nodes;
 using Utils.Models;
 using Utils.Types;
 using Utils.VorticeUtils;
+using Vortice.Mathematics;
 using Collision = ResourceTypes.Collisions.Collision;
 using Quaternion = System.Numerics.Quaternion;
 
@@ -347,8 +348,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             for(int i = 0; i < 1; i++)
             {
                 MT_Lod CurrentLod = NewObject.Lods[i];
-                CurrentLod.CalculateMaterialBounds();
-
                 NewObject.Skeleton.GenerateRuntimeDataFromLod(i, CurrentLod);
             }
 
@@ -500,6 +499,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     FaceGroupObject.StartIndex = (uint)FaceGroups[v].StartIndex;
                     FaceGroupObject.NumFaces = (uint)FaceGroups[v].NumFaces;
                     FaceGroupObject.Material = MaterialInstanceObject;
+                    LodObject.GenerateFaceGroupBounds(FaceGroupObject);
                     Groups.Add(FaceGroupObject);
                 }
 
@@ -715,6 +715,19 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
 
             Children = TempChildren.ToArray();
+        }
+
+        public BoundingBox GetLODBounds()
+        {
+            // inverse the initial bounds so as we iterate through the face group, they'll shrink
+            BoundingBox LodBounds = new BoundingBox(new Vector3(float.MaxValue), new Vector3(float.MinValue));
+
+            foreach (MT_Lod CurrentLod in Lods)
+            {
+                LodBounds = BoundingBox.CreateMerged(LodBounds, CurrentLod.GetBoundingBox());
+            }
+
+            return LodBounds;
         }
 
         public override string ToString()

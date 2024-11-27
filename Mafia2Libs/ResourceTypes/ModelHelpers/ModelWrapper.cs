@@ -382,14 +382,11 @@ namespace Utils.Models
             indexBuffers = new IndexBuffer[ModelObject.Lods.Length];
             vertexBuffers = new VertexBuffer[ModelObject.Lods.Length];
 
-            List<Vertex[]> vertData = new List<Vertex[]>();
-            for (int i = 0; i != ModelObject.Lods.Length; i++)
-            {
-                vertData.Add(ModelObject.Lods[i].Vertices);
-            }
+            // Apply bounding box for FrameGeometry and FrameMaterial
+            BoundingBox NewBounds = ModelObject.GetLODBounds();
+            frameMesh.Boundings = NewBounds;
+            frameMaterial.Bounds = NewBounds;
 
-            frameMesh.Boundings = BoundingBoxExtenders.CalculateBounds(vertData);
-            frameMaterial.Bounds = frameMesh.Boundings;
             CalculateDecompression();
             UpdateObjectsFromModel();
             BuildIndexBuffer();

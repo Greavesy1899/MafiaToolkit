@@ -267,6 +267,13 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             Vertices = FinalVertexBuffer.ToArray();
             Indices = FinalIndicesBuffer.ToArray();
+
+            // post load functions
+            // TODO: This will be slightly more expensive as we iterate through FaceGroups twice
+            for (int Idx = 0; Idx < FaceGroups.Count(); Idx++)
+            {
+                GenerateFaceGroupBounds(FaceGroups[Idx]);
+            }
         }
 
 
@@ -276,29 +283,40 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return (Vertices.Length > ushort.MaxValue);
         }
 
-        public void CalculateMaterialBounds()
+        // TODO: Would prefer this to be private, not public
+        public void GenerateFaceGroupBounds(MT_FaceGroup FaceGroup)
         {
+            Vector3 MinBounds = new(float.MaxValue);
+            Vector3 MaxBounds = new(float.MinValue);
+
+            // iterate through all vertices assigned to this material
+            uint StartIndex = FaceGroup.StartIndex;
+            uint EndIndex = StartIndex + (FaceGroup.NumFaces * 3);
+            for (uint Idx = StartIndex; Idx < EndIndex; Idx++)
+            {
+                // grab position from vertex buffer
+                Vector3 Position = Vertices[Indices[Idx]].Position;
+
+                // update min and max.
+                MinBounds = Vector3.Min(MinBounds, Position);
+                MaxBounds = Vector3.Max(MaxBounds, Position);
+            }
+
+            // assign as new bounds for face group
+            FaceGroup.Bounds = new BoundingBox(MinBounds, MaxBounds);
+        }
+
+        public BoundingBox GetBoundingBox()
+        {
+            // inverse the initial bounds so as we iterate through the face group, they'll shrink
+            BoundingBox LodBounds = new BoundingBox(new Vector3(float.MaxValue), new Vector3(float.MinValue));
+
             foreach (MT_FaceGroup FaceGroup in FaceGroups)
             {
-                Vector3 MinBounds = new(float.MaxValue);
-                Vector3 MaxBounds = new(float.MinValue);
-
-                // iterate through all vertices assigned to this material
-                uint StartIndex = FaceGroup.StartIndex;
-                uint EndIndex = StartIndex + (FaceGroup.NumFaces * 3);
-                for (uint Idx = StartIndex; Idx < EndIndex; Idx++)
-                {
-                    // grab position from vertex buffer
-                    Vector3 Position = Vertices[Indices[Idx]].Position;
-
-                    // update min and max.
-                    MinBounds = Vector3.Min(MinBounds, Position);
-                    MaxBounds = Vector3.Max(MaxBounds, Position);
-                }
-
-                // assign as new bounds for face group
-                FaceGroup.Bounds = new BoundingBox(MinBounds, MaxBounds);
+                LodBounds = BoundingBox.CreateMerged(LodBounds, FaceGroup.Bounds);
             }
+
+            return LodBounds;
         }
 
         protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
