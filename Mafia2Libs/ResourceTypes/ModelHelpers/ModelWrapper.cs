@@ -480,6 +480,30 @@ namespace Utils.Models
             SkeletonBlock.NumBlendIDs = 0;
             SkeletonBlock.MappingForBlendingInfos = null; // maybe in here too, one for each lod?
             SkeletonBlock.UnkLodData = null; // again, one for each lod, number of blend infos?
+
+            // now lets begin generating skinned data for each LOD
+            BlendInfoBlock.BoneIndexInfos = new FrameBlendInfo.BoneIndexInfo[ModelObject.Lods.Length];
+            
+            for(int Idx = 0; Idx < ModelObject.Lods.Length; Idx++)
+            {
+                MT_Lod CurrentLod = ModelObject.Lods[Idx];
+                FrameBlendInfo.BoneIndexInfo LodIndexInfo = new FrameBlendInfo.BoneIndexInfo();
+
+                // generate each weighted info for each facegroup found in the LOD
+                LodIndexInfo.SkinnedMaterialInfo = new FrameBlendInfo.SkinnedMaterialInfo[CurrentLod.FaceGroups.Length];
+                for (int MatIdx = 0; MatIdx < LodIndexInfo.SkinnedMaterialInfo.Length; MatIdx++)
+                {
+                    MT_FaceGroup CurrentFaceGroup = CurrentLod.FaceGroups[MatIdx];
+
+                    FrameBlendInfo.SkinnedMaterialInfo SkinnedMatInfo = new FrameBlendInfo.SkinnedMaterialInfo();
+                    SkinnedMatInfo.NumWeightsPerVertex = CurrentFaceGroup.WeightsPerVertex;
+
+                    // TODO: We currently do not understand BoneSlot mappings therefore default to zero
+                    SkinnedMatInfo.AssignedPoolIndex = 0;
+
+                    LodIndexInfo.SkinnedMaterialInfo[MatIdx] = SkinnedMatInfo;
+                }
+            }
         }
     }
 }
