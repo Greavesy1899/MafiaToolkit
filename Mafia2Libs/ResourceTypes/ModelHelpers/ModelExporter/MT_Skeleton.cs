@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json.Nodes;
+using Utils.Models;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -108,7 +109,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
                 MT_Joint NewJoint = new MT_Joint();
                 NewJoint.Name = CurrentJoint.Name;
-                NewJoint.UsageFlags = 1; // TODO: Usage flags, we need to iterate through the mesh
+                NewJoint.UsageFlags = 0; // NB: Usage flags are generated later, when we iterate through the LODs
                 NewJoint.ParentJointIndex = SkinJoints.IndexOf(CurrentJoint.VisualParent);
                 NewJoint.Position = Position;
                 NewJoint.Rotation = Rotation;
@@ -140,6 +141,65 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
 
             Attachments = FoundAttachments.ToArray();
+        }
+
+        public void GenerateRuntimeDataFromLod(int LodIndex, MT_Lod InLod)
+        {
+            // NB: This is a fairly unoptimised function;
+            // The idea is that we just get it working to begin with, then optimize later.
+            if (InLod.VertexDeclaration.HasFlag(VertexFlags.Skin) == false)
+            {
+                return;
+            }
+
+            uint[] UseCountPerBone = new uint[Joints.Length];
+
+            // we will iterate through each material of the LOD.
+            // That way we can also identify number of influences per vertex
+            foreach(MT_FaceGroup FaceGroup in InLod.FaceGroups)
+            {
+                uint[] SlotUsage = new uint[4];
+
+                uint StartIndex = FaceGroup.StartIndex;
+                uint EndIndex = StartIndex + (FaceGroup.NumFaces * 3);
+                for (uint Idx = StartIndex; Idx < EndIndex; Idx++)
+                {
+                    Vertex V0 = InLod.Vertices[InLod.Indices[Idx]];
+
+                    // iterate to determine usage
+                    for (int u = 0; u < 4; u++)
+                    {
+                        if (V0.BoneWeights[u] > 0.0f)
+                        {
+                            // used by lod
+                            byte BoneID = V0.BoneIDs[u];
+                            UseCountPerBone[BoneID]++;
+
+                            SlotUsage[u]++;
+                        }
+                    }
+                }
+
+                // iterate through each slot and increment on facegroup
+                for (int u = 0; u < 4; u++)
+                {
+                    if (SlotUsage[u] > 0)
+                    {
+                        FaceGroup.WeightsPerVertex++;
+                    }
+                }
+            }
+
+            // now that we know usage count for this lod, we can apply to the Joint
+            for(int i = 0; i <  UseCountPerBone.Length; i++)
+            {
+                if(UseCountPerBone[i] > 0)
+                {
+                    Joints[i].UsageFlags |= (byte)(0x1 << LodIndex);
+                }
+            }
+
+            UseCountPerBone = null;
         }
 
         private void AddAnimations(NodeBuilder[] JointNodes)

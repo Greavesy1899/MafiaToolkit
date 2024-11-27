@@ -455,8 +455,7 @@ namespace Utils.Models
                 Matrix4x4 XForm = RotTransform * LocTransform * SclTransform;
                 SkeletonBlock.JointTransforms[i] = XForm;
 
-                // create usage list
-                // TODO: Ensure Usage Flags is actually updated when MT_Lods are loaded
+                // Create usage list. UsageFlags should automatically be generated upon loading the GLTF.
                 SkeletonBlock.BoneLODUsage[i] = (byte)CurrentJoint.UsageFlags;
 
                 // TODO: World transform -> how tf do you do this??

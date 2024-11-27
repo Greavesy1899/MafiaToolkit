@@ -289,8 +289,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                                         NewObject.Skeleton = new MT_Skeleton();
                                         NewObject.Skeleton.BuildSkeletonFromGLTF(FoundSkin);
 
-                                        // TODO: Attachments. Remember how they are added into GLTF to begin with
-                                        // Then somehow add them into the MT_Skeleton.
+                                        // TODO: As a test we're only running on LOD0
+                                        NewObject.Skeleton.GenerateRuntimeDataFromLod(0, NewLod);
                                     }
                                 }
                             }
