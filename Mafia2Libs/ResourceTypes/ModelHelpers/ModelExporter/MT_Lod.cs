@@ -276,17 +276,28 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             return (Vertices.Length > ushort.MaxValue);
         }
 
-        public void CalculatePartBounds()
+        public void CalculateMaterialBounds()
         {
-            for (int i = 0; i < FaceGroups.Length; i++)
+            foreach (MT_FaceGroup FaceGroup in FaceGroups)
             {
-                List<Vector3> partVerts = new List<Vector3>();
-                for (int x = 0; x < Indices.Length; x++)
+                Vector3 MinBounds = new(float.MaxValue);
+                Vector3 MaxBounds = new(float.MinValue);
+
+                // iterate through all vertices assigned to this material
+                uint StartIndex = FaceGroup.StartIndex;
+                uint EndIndex = StartIndex + (FaceGroup.NumFaces * 3);
+                for (uint Idx = StartIndex; Idx < EndIndex; Idx++)
                 {
-                    partVerts.Add(Vertices[Indices[i]].Position);
+                    // grab position from vertex buffer
+                    Vector3 Position = Vertices[Indices[Idx]].Position;
+
+                    // update min and max.
+                    MinBounds = Vector3.Min(MinBounds, Position);
+                    MaxBounds = Vector3.Max(MaxBounds, Position);
                 }
 
-                FaceGroups[i].Bounds = BoundingBox.CreateFromPoints(partVerts.ToArray());
+                // assign as new bounds for face group
+                FaceGroup.Bounds = new BoundingBox(MinBounds, MaxBounds);
             }
         }
 

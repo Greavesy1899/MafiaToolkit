@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json.Nodes;
-using System.Windows.Media.Media3D;
 using Utils.Models;
 using Utils.Types;
 using Utils.VorticeUtils;
@@ -288,9 +287,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                                         // then build skeleton
                                         NewObject.Skeleton = new MT_Skeleton();
                                         NewObject.Skeleton.BuildSkeletonFromGLTF(FoundSkin);
-
-                                        // TODO: As a test we're only running on LOD0
-                                        NewObject.Skeleton.GenerateRuntimeDataFromLod(0, NewLod);
                                     }
                                 }
                             }
@@ -344,6 +340,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             if(NewObject.Skeleton != null)
             {
                 NewObject.ObjectFlags |= MT_ObjectFlags.HasSkinning;
+            }
+
+            // do some sort of "post loading" pass on all the LODs
+            // TODO: as a test we're only doing 1 LOD
+            for(int i = 0; i < 1; i++)
+            {
+                MT_Lod CurrentLod = NewObject.Lods[i];
+                CurrentLod.CalculateMaterialBounds();
+
+                NewObject.Skeleton.GenerateRuntimeDataFromLod(i, CurrentLod);
             }
 
             Logger.WriteInfo("Created MT_Object [{0}], type [{1}], from node [{2}]", NewObject.ObjectName, NewObject.ObjectType, CurrentNode.Name);
