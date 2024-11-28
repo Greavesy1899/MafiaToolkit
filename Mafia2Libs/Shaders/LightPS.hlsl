@@ -48,7 +48,7 @@ struct VS_OUTPUT
     float2 TexCoord0 : TEXCOORD0;
     float2 TexCoord7 : TEXCOORD1;
     half3 viewDirection : TEXCOORD2;
-    uint instanceID : INSTANCEID;
+    bool instanceSelected : INSTANCESELECTED;
 };
 
 float4 GetDiffuseColour(VS_OUTPUT input)
@@ -94,11 +94,10 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     float3 reflection;
     float4 specular;
     float3 normal = input.Normal;//float3(1.0f, 1.0f, 1.0f);
-    float normalMapScale = 5.0f;
     
     if(hasTangentSpace == 1)
     {
-        normal = CalculateFromNormalMap(input) * normalMapScale;
+        normal = CalculateFromNormalMap(input);
     }
 
     // Set the default output color to the ambient light value for all pixels.
@@ -136,7 +135,7 @@ float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
     float4 aoTextureColor = GetAOColour(input);
     
     color = CalculateColor(input, color);
-    if(input.instanceID==0)
+    if(input.instanceSelected==false)
     {
         color *= float4(selectionColour.xyz, 1.0f);
     }
@@ -176,7 +175,7 @@ float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
     
     color = CalculateColor(input, color);
     color *= float4(selectionColour.xyz, 1.0f);
-    if(input.instanceID==0)
+    if(input.instanceSelected==false)
     {
         color *= float4(selectionColour.xyz, 1.0f);
     }

@@ -36,6 +36,8 @@ namespace Forms.Docking
             this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
             this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.TranslokatorNewInstanceButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ActorEntryNewTRObjectButton = new System.Windows.Forms.ToolStripMenuItem();
             this.FrameActions = new System.Windows.Forms.ToolStripMenuItem();
             this.UpdateParent1Button = new System.Windows.Forms.ToolStripMenuItem();
             this.UpdateParent2Button = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,7 +77,9 @@ namespace Forms.Docking
             this.DeleteButton,
             this.DuplicateButton,
             this.Export3DButton,
-            this.FrameActions});
+            this.FrameActions,
+            this.TranslokatorNewInstanceButton,
+            this.ActorEntryNewTRObjectButton });
             this.EntryMenuStrip.Name = "EntryMenuStrip";
             this.EntryMenuStrip.Size = new System.Drawing.Size(165, 114);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
@@ -103,6 +107,18 @@ namespace Forms.Docking
             this.Export3DButton.Name = "Export3DButton";
             this.Export3DButton.Size = new System.Drawing.Size(164, 22);
             this.Export3DButton.Text = "Export 3D";
+            // 
+            // TranslokatorNewInstanceButton
+            // 
+            this.TranslokatorNewInstanceButton.Name = "TranslokatorNewInstanceButton";
+            this.TranslokatorNewInstanceButton.Size = new System.Drawing.Size(164, 22);
+            this.TranslokatorNewInstanceButton.Text = "New Instance";
+            // 
+            // ActorEntryNewTRObjectButton
+            // 
+            this.ActorEntryNewTRObjectButton.Name = "ActorEntryNewTRObjectButton";
+            this.ActorEntryNewTRObjectButton.Size = new System.Drawing.Size(164, 22);
+            this.ActorEntryNewTRObjectButton.Text = "New Translokator Object";
             // 
             // FrameActions
             // 
@@ -366,5 +382,7 @@ namespace Forms.Docking
         private System.Windows.Forms.SplitContainer Split_Searcher_TextButton;
         private System.Windows.Forms.Panel tooltipPanel;
         private System.Windows.Forms.Label tooltipText;
+        public System.Windows.Forms.ToolStripMenuItem TranslokatorNewInstanceButton;
+        public System.Windows.Forms.ToolStripMenuItem ActorEntryNewTRObjectButton;
     }
 }

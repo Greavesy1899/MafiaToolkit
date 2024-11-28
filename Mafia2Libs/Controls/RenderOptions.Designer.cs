@@ -30,6 +30,7 @@
         {
             RenderGroup = new System.Windows.Forms.GroupBox();
             Checkbox_EnableNavigation = new System.Windows.Forms.CheckBox();
+            Checkbox_EnableTranslokatorTint = new System.Windows.Forms.CheckBox();
             CheckBox_VSync = new System.Windows.Forms.CheckBox();
             FieldOfViewNumDown = new System.Windows.Forms.NumericUpDown();
             RenderFieldOfView = new System.Windows.Forms.Label();
@@ -55,6 +56,7 @@
             // RenderGroup
             // 
             RenderGroup.Controls.Add(Checkbox_EnableNavigation);
+            RenderGroup.Controls.Add(Checkbox_EnableTranslokatorTint);
             RenderGroup.Controls.Add(CheckBox_VSync);
             RenderGroup.Controls.Add(FieldOfViewNumDown);
             RenderGroup.Controls.Add(RenderFieldOfView);
@@ -90,6 +92,18 @@
             Checkbox_EnableNavigation.Text = "$ENABLE_NAVIGATION";
             Checkbox_EnableNavigation.UseVisualStyleBackColor = true;
             Checkbox_EnableNavigation.CheckedChanged += Button_EnableNavigation_CheckedChanged;
+            // 
+            // Checkbox_EnableTranslokatorTint
+            // 
+            Checkbox_EnableTranslokatorTint.AutoSize = true;
+            Checkbox_EnableTranslokatorTint.Location = new System.Drawing.Point(274, 124);
+            Checkbox_EnableTranslokatorTint.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Checkbox_EnableTranslokatorTint.Name = "Checkbox_EnableTranslokatorTint";
+            Checkbox_EnableTranslokatorTint.Size = new System.Drawing.Size(147, 19);
+            Checkbox_EnableTranslokatorTint.TabIndex = 16;
+            Checkbox_EnableTranslokatorTint.Text = "$TOGGLE_TRANSLOKATOR_TINT";
+            Checkbox_EnableTranslokatorTint.UseVisualStyleBackColor = true;
+            Checkbox_EnableTranslokatorTint.CheckedChanged += Button_EnableTranslokatorTint_CheckedChanged;
             // 
             // CheckBox_VSync
             // 
@@ -288,5 +302,6 @@
         private System.Windows.Forms.Label RenderFieldOfView;
         private System.Windows.Forms.CheckBox CheckBox_VSync;
         private System.Windows.Forms.CheckBox Checkbox_EnableNavigation;
+        private System.Windows.Forms.CheckBox Checkbox_EnableTranslokatorTint;
     }
 }

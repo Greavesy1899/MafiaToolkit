@@ -84,8 +84,13 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Localisations\ar_AR.xml" />
-    <None Remove="Shaders\LightInstanceVS.hlsl" />
     <None Remove="Rendering\Graphics\RenderTypes\Instances\**" />
+    <None Update="Resources\Translokator.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Translokator_Texture.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
@@ -205,9 +210,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Localisations\sk_SK.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\LightInstanceVS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Update="libs\M2FBX.dll">
@@ -332,9 +334,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Shaders\mrdka.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="Rendering\Graphics\RenderTypes\Instances\**" />

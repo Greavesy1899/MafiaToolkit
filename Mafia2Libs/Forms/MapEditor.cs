@@ -151,6 +151,8 @@ namespace Mafia2Tool
             dSceneTree.TreeViewNodeDropped += OnTreeViewNodeDropped;
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
             dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
+            dSceneTree.TranslokatorNewInstanceButton.Click += new EventHandler(TranslokatorNewInstanceButton_Click);
+            dSceneTree.ActorEntryNewTRObjectButton.Click += new EventHandler(ActorEntryNewTRObjectButton_Click);
         }
 
         private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -360,7 +362,14 @@ namespace Mafia2Tool
 
                 // Update rendered counterpart
                 int refID = (bIsFrame) ? (node.Tag as FrameEntry).RefID : result;
-                Graphics.SetAssetVisibility(refID, node.Checked && node.CheckIfParentsAreValid());
+                if (!bIsFrame && node.Tag is Instance && node.Parent.Tag is Object trObject)
+                {
+                    UpdateInstanceVisualisation(node,trObject,node.Checked && node.CheckIfParentsAreValid());
+                }
+                else
+                {
+                    Graphics.SetAssetVisibility(refID, node.Checked && node.CheckIfParentsAreValid());                
+                }
             }
 
             foreach (TreeNode child in node.Nodes)
@@ -649,6 +658,7 @@ namespace Mafia2Tool
             Process process = Process.GetCurrentProcess();
             Label_MemoryUsage.Text = string.Format("Usage: {0}", process.WorkingSet64.ConvertToMemorySize());
             Label_FPS.Text = Graphics.Profile.ToString();
+            Label_StatusBar.Text = Graphics.GetStatusBarText();
             return true;
         }
 
@@ -1062,6 +1072,7 @@ namespace Mafia2Tool
             if (SceneData.Translokator != null && ToolkitSettings.Experimental)
             {
                 ToggleTranslokatorTint.Enabled = true;
+                dSceneTree.hasTranslokatorData = true;
                 translokatorRoot = new TreeNode("Translokator Items");
                 translokatorRoot.Tag = "Folder";
                 TreeNode ogNode = new TreeNode("Objects Groups");
@@ -1091,12 +1102,16 @@ namespace Mafia2Tool
                             Instance instance = obj.Instances[x];
                             instance.RefID = RefManager.GetNewRefID();
 
-                            if (groupRef != null && hasMesh && groupRef.Children.Count > 0 && assets.ContainsKey(groupRef.RefID))
+                            if (groupRef != null && hasMesh)
                             {
-                                for (int i = 0; i < groupRef.Children.Count; i++)
+                                for (int i = 0; i < groupRef.Children.Count; i++)//i dont think this for cycle is needed really if done right
                                 {
                                     InstanceTranslokatorPart(assets, groupRef.Children[i], Matrix4x4.Identity, instance);
                                 }
+                            }
+                            else
+                            {
+                                Graphics.InstanceGizmo.InstanceTranslokator(instance);
                             }
 
                             TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
@@ -1420,6 +1435,10 @@ namespace Mafia2Tool
                                 Graphics.UpdateInstanceBuffers(modelsToUpdate);
                             }
                         }
+                        else
+                        {
+                            Graphics.InstanceGizmo.UpdateInstanceBuffer(instance, Graphics.GetId3D11Device());
+                        }
                     }
                 }
             }
@@ -1587,7 +1606,7 @@ namespace Mafia2Tool
                 {
                     dSceneTree.SelectedNode = nodes[0];
                     
-                        if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)//dostat se na instance, ne na ref frame, od toho je jump, když na nějakej instance šáhnu, abych v tree viděl jakej to přesně je
+                        if (dSceneTree.SelectedNode.Tag is FrameObjectBase obj)
                         {
                             int Parent1Index = obj.ParentIndex1.Index;
                             int Parent2Index = obj.ParentIndex2.Index;
@@ -1827,6 +1846,10 @@ namespace Mafia2Tool
                         Graphics.UpdateInstanceBuffers(modelsToUpdate);
                     }
                 }
+                else
+                {
+                    Graphics.InstanceGizmo.UpdateInstanceBuffer(instance, Graphics.GetId3D11Device());
+                }
             }
 
             pGrid.Refresh();
@@ -1881,7 +1904,6 @@ namespace Mafia2Tool
                     dSceneTree.RemoveNode(node);
                     Graphics.DeleteAsset(obj.RefID);
                     bool bDidRemove = SceneData.FrameResource.DeleteFrame(obj);
-                    Graphics.DeleteAsset(obj.RefID);
 
                     ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
                 }
@@ -1925,6 +1947,22 @@ namespace Mafia2Tool
                     int iName = Convert.ToInt32(node.Nodes[i].Name);
                     Graphics.DeleteAsset(iName);
                 }
+            }
+            else if (node.Tag is Instance instance)
+            {
+                DeleteTRInstance(node);
+            }
+            else if (node.Tag is Object obj)
+            {
+                DeleteTRObject(node);
+            }
+            else if (node.Tag is ObjectGroup og)
+            {
+                while (node.Nodes.Count>0)
+                {
+                    DeleteTRObject(node.FirstNode);
+                }
+                dSceneTree.RemoveNode(node);
             }
         }
 
@@ -2065,25 +2103,7 @@ namespace Mafia2Tool
             }
             else if (node.Tag is Instance instance)
             {
-                Instance newInstance = new Instance(instance);
-                newInstance.RefID = RefManager.GetNewRefID();
-                TreeNode instanceNode = new TreeNode();
-                instanceNode.Text = node.Parent.Text + " " + node.Parent.Nodes.Count.ToString();
-                instanceNode.Name = newInstance.RefID.ToString();
-                instanceNode.Tag = newInstance;
-                
-                Object parent = node.Parent.Tag as Object;
-                FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
-                if (frameref != null)//todo nonframerefs solution once they are managed
-                {
-                    InstanceTranslokatorPart(Graphics.Assets,frameref,Matrix4x4.Identity,newInstance,true);
-                    for (int i = 0; i < frameref.Children.Count; i++)
-                    {
-                        var modelsToUpdate = UpdateTranslocatorPart(frameref.Children[i], Matrix4x4.Identity, newInstance);
-                        Graphics.UpdateInstanceBuffers(modelsToUpdate);
-                    }
-                }
-                dSceneTree.AddToTree(instanceNode,node.Parent);
+                TranslokatorNewInstance(node.Parent,instance);
             }
         }
 
@@ -2401,7 +2421,8 @@ namespace Mafia2Tool
 
         private void TranslokatorTint_Click(object sender, EventArgs e)
         {
-            Graphics.ToggleInstanceTint();
+            ToolkitSettings.bTranslokatorTint = !ToolkitSettings.bTranslokatorTint;
+            ToolkitSettings.WriteKey("EnableTranslokator", "ModelViewer", ToolkitSettings.bTranslokatorTint.ToString());
         }
 
         private void Button_TestConvert_Click(object sender, EventArgs e)
@@ -2645,6 +2666,139 @@ namespace Mafia2Tool
                     ConstructFrameFromImportedObject(Child, FrameNode);
                 }
             }
+        }
+        private void TranslokatorNewInstanceButton_Click(object sender, EventArgs e)
+        {
+            TranslokatorNewInstance(dSceneTree.SelectedNode,null);
+        }
+
+        private void TranslokatorNewInstance(TreeNode parentObj, Instance old)
+        {
+            Instance newInstance = (old == null) ? new Instance() : new Instance(old);
+
+            newInstance.RefID = RefManager.GetNewRefID();
+            TreeNode newInstanceNode = new TreeNode(parentObj.Text + " " + parentObj.Nodes.Count.ToString());
+            newInstanceNode.Tag = newInstance;
+            newInstanceNode.Name = newInstance.RefID.ToString();
+                
+            Object parent = parentObj.Tag as Object;
+            FrameObjectBase frameref = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(parent.Name.Hash);
+            if (frameref != null && frameref.HasMeshObject())
+            {
+                for (int i = 0; i < frameref.Children.Count; i++)
+                {
+                    InstanceTranslokatorPart(Graphics.Assets, frameref.Children[i], Matrix4x4.Identity, newInstance,true);
+                }
+            }
+            else
+            {
+                Graphics.InstanceGizmo.InstanceTranslokator(newInstance,Graphics.GetId3D11Device());
+            }
+            
+            dSceneTree.AddToTree(newInstanceNode,parentObj);
+        }
+        
+        private void UpdateInstanceVisualisation(TreeNode instanceNode, Object trObject, bool visibility)
+        {
+            FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(trObject.Name.Hash);
+            
+            Instance instance = instanceNode.Tag as Instance;
+            if (visibility)
+            {
+                if (groupRef != null && groupRef.HasMeshObject())
+                {
+                    for (int i = 0; i < groupRef.Children.Count; i++)
+                    {
+                        InstanceTranslokatorPart(Graphics.Assets, groupRef.Children[i], Matrix4x4.Identity, instance,true);
+                    }
+                }
+                else
+                {
+                    Graphics.InstanceGizmo.InstanceTranslokator(instance,Graphics.GetId3D11Device());
+                }
+            }
+            else
+            {
+                if (groupRef != null && groupRef.HasMeshObject())
+                {
+                    Graphics.DeleteInstance(groupRef,instance.RefID);
+                }
+                else
+                {
+                    Graphics.DeleteInstance(instance.RefID);
+                }
+            }
+            
+        }
+        
+        private void ActorEntryNewTRObjectButton_Click(object sender, EventArgs e)
+        {
+            TreeNode ActorNode = dSceneTree.SelectedNode;
+            ActorEntry actor = ActorNode.Tag as ActorEntry;
+            if (ActorNode == null || actor == null)
+            {
+                return;
+            }
+            FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(actor.FrameNameHash);
+            if (groupRef == null)//todo: once multisds is added, tweak this
+            {
+                if (MessageBox.Show("There is no matching Frame: " + actor.FrameName + " in FrameResource contents. If you intend to reference Frame of this name, it is not present. Do you want to continue?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+            TreeNode ogNode = dSceneTree.GetObjectGroupByActorType(translokatorRoot, actor.ActorTypeID);
+            if (ogNode==null)
+            {
+                //create objectgroup if not present
+                ObjectGroup newOG = new ObjectGroup();
+                newOG.ActorType = (ActorTypes)actor.ActorTypeID;
+                TreeNode newOGNode = new TreeNode(String.Format("Object Group: [{0}]", newOG.ActorType));
+                newOGNode.Tag = newOG;
+                dSceneTree.AddToTree(newOGNode,translokatorRoot.Nodes[0]);
+                ogNode = newOGNode;
+                Log.WriteLine("New Translokator ObjectGroup:" + newOG.ActorType,LoggingTypes.MESSAGE,LogCategoryTypes.FUNCTION);
+            }
+
+            if (dSceneTree.ObjectGroupHasObject(ogNode, actor.FrameNameHash))
+            {
+                ToolkitAssert.Ensure(!dSceneTree.ObjectGroupHasObject(ogNode, actor.FrameNameHash),"Error: The Object: " + actor.FrameName + " is already present.");
+                return;
+            }
+            else
+            {
+                Object newObj = new Object();
+                newObj.Name.Set(actor.FrameName);
+                TreeNode objNode = new TreeNode(newObj.Name.ToString());
+                objNode.Tag = newObj;
+                dSceneTree.AddToTree(objNode,ogNode);
+                Log.WriteLine("New Translokator Object:" + newObj.Name.String,LoggingTypes.MESSAGE,LogCategoryTypes.FUNCTION);
+            }
+        }
+
+        private void DeleteTRInstance(TreeNode instanceNode)
+        {
+            Instance instance = instanceNode.Tag as Instance;
+            FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>((instanceNode.Parent.Tag as Object).Name.Hash);
+            dSceneTree.RemoveNode(instanceNode);
+            if (groupRef != null)
+            {
+                Graphics.DeleteInstance(groupRef, instance.RefID);
+            }
+            else
+            {
+                Graphics.DeleteInstance(instance.RefID);
+            }
+        }
+
+        private void DeleteTRObject(TreeNode objectNode)
+        {
+            while (objectNode.Nodes.Count>0)
+            {
+                DeleteTRInstance(objectNode.FirstNode);
+            }
+            dSceneTree.RemoveNode(objectNode);
         }
     }
 }

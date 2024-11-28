@@ -1,23 +1,24 @@
-﻿using ResourceTypes.BufferPools;
+﻿using Rendering.Core;
+using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using Utils.Extensions;
 using Utils.Models;
+using Utils.Settings;
 using Utils.Types;
 using Utils.VorticeUtils;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using static Rendering.Graphics.BaseShader;
 using Color = System.Drawing.Color;
-using Rendering.Core;
-using ResourceTypes.Translokator;
-using System.Runtime.InteropServices;
-using System.Linq;
 
 namespace Rendering.Graphics
 {
@@ -48,14 +49,12 @@ namespace Rendering.Graphics
             public ModelPart[] ModelParts { get; set; }
             public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
             public uint[] Indices { get; set; }
-            public int parentGeomHash { get; set; }
         }
 
         public LOD[] LODs { get; private set; }
 
         public Dictionary<int, Matrix4x4> InstanceTransforms { get; set; } = new() { };
-
-        public bool InstanceTint;
+        public BVH BVH { get; set; } = new();
 
         public RenderModel()
         {
@@ -65,9 +64,8 @@ namespace Rendering.Graphics
             SelectionColour = Color.White;
             selectionInstance = new SelectionInstance()
             {
-                instanceRefID = 0,
+                instanceRefID = -1,
             };
-            InstanceTint = true;
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -389,7 +387,7 @@ namespace Rendering.Graphics
 
         private float colorTransitionTime = 0.0f; // timer for distinguishing translokators
 
-        private void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
+        public void RenderInstances(ID3D11DeviceContext deviceContext, Camera camera, ID3D11Device device)
         {
             deviceContext.VSSetShaderResource(0, instanceBufferView);
 
@@ -412,10 +410,10 @@ namespace Rendering.Graphics
             {
                 RenderModel.ModelPart segment = LODs[0].ModelParts[i];
 
-                segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, InstanceTint ? tint.Normalize() : startColor.Normalize()));
+                segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, ToolkitSettings.bTranslokatorTint ? tint.Normalize() : startColor.Normalize()));
                 segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
 
-                segment.Shader.setHightLightInstance(deviceContext, (uint)selectionInstance.instanceRefID);
+                segment.Shader.setHightLightInstance(deviceContext, selectionInstance.instanceRefID);
 
 
                 segment.Shader.RenderInstanced(deviceContext, PrimitiveTopology.TriangleList, (int)segment.NumFaces * 3, (int)segment.StartIndex, InstanceTransforms.Count);
@@ -468,7 +466,7 @@ namespace Rendering.Graphics
         
         public void UnselectInstance()
         {
-            selectionInstance.instanceRefID = 0;
+            selectionInstance.instanceRefID = -1;
         }
 
         public override void Unselect()
@@ -500,6 +498,40 @@ namespace Rendering.Graphics
         public bool ContainsInstanceTransform(int instanceID)
         {
             return InstanceTransforms.ContainsKey(instanceID);
+        }
+
+        // Building all BVH structures at once can be slow so we progressively build
+        // them in the background while the map editor is open
+        public Task GetBVHBuildingTask()
+        {
+            // Don't want to rebuild or attempt to build a BVH while it is being built
+            // We will need to rebuild BVH for animations later on though
+            if (LODs.Length == 0 || BVH.FinishedBuilding || BVH.IsBuilding)
+            {
+                return null;
+            }
+
+            BVH.IsBuilding = true;
+
+            return Task.Run(() => BVH.Build(LODs[0].Vertices, LODs[0].Indices));
+        }
+
+        public void RemoveInstance(int instanceRefId,ID3D11Device d3d)
+        {
+            if (InstanceTransforms.ContainsKey(instanceRefId))
+            {
+                InstanceTransforms.Remove(instanceRefId);
+                ReloadInstanceBuffer(d3d);
+            }
+        }
+
+        public ID3D11Buffer GetVB()
+        {
+            return vertexBuffer;
+        }
+        public ID3D11Buffer GetIB()
+        {
+            return indexBuffer;
         }
     }
 }
