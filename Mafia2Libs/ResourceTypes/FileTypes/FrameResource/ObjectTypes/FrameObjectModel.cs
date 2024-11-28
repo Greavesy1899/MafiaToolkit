@@ -298,8 +298,6 @@ namespace ResourceTypes.FrameResource
             ConstructSkeletonObject();
 
             base.CreateMeshFromRawModel(NewModel);
-
-            NewModel.CreateObjectsFromModel();
         }
 
         public override string ToString()

@@ -7,6 +7,7 @@ using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Numerics;
 using System.Text.Json.Nodes;
 using Utils.Models;
@@ -732,6 +733,187 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
 
             return LodBounds;
+        }
+
+        public FrameBlendInfo.BoneIndexInfo[] TestGenerateBoneRemappings()
+        {
+            // NOTE: This is a very experimental function, which aims to remap the joints of a skeleton prior to converting to game ready format.
+            // Some things we (likely) need to adhere to is the re-ordering of the joints by parent index.
+            // Since the joints have been reordered at this point, we need to update all attachments and also apply remapping to vertex buffer.
+            // This isn't *not* a revertable change. Once it's done, it's done.
+
+            // NOTE2: The way the remapping system works is very exhaustive to ensure that it actually works first of all.
+            // It might be slow, but our primary focus is just to get the skeletal models ingame and working.
+            // Once we're clear that its working, we can consider optimising.
+
+            // NOTE3: For a brief description on how the remapping works:
+            // Inside the vertex buffer, the maximum bone index is 255. In Mafia II, this is never reached.
+            // However as an optimisation method to allow more than 255 bones in a Skeletal Mesh, they use some sort of remapping function.
+            // What essentially happens is that a Material is assigned a pool of remapped IDs, which point to the bone ID.
+            // This remapped ID is stored within the vertex buffer, instead of the bone ID.
+            // This effectively allows more bones within a skeletal mesh.
+
+            // HOWEVER - One really odd thing is that the Remap ID array is a byte buffer, which also is limited between 0 - 255.
+            // So is this really remapping to expand beyond the 255 limit? Unsure. But we follow what the game does to minimise cause of crash
+
+            // First we should re-order the Joints of the Skeleton so it goes in ascending order using ParentJointIndex
+            // But remember that we should probably keep track of the *original* order, because things will still be referencing that
+            MT_Joint[] UnsortedJoints = Skeleton.Joints;
+
+            MT_Joint[] SortedJoints = UnsortedJoints.OrderBy(x => x.ParentJointIndex).ToArray();
+
+            // Key = The *original* index
+            // Value = The *remapped* index after sorting
+            // TODO: This is fairly expensive. The whole idea of sorting and *then* populating the dictionary.
+            // It's fine for first MVP though.
+            Dictionary<int, int> RemappedDictionary = new Dictionary<int, int>();
+            for(int JointIdx = 0; JointIdx < UnsortedJoints.Length; JointIdx++)
+            {
+                for (int OrderedIdx = 0; OrderedIdx < SortedJoints.Length; OrderedIdx++)
+                {
+                    if (UnsortedJoints[JointIdx] == SortedJoints[OrderedIdx])
+                    {
+                        // match
+                        RemappedDictionary.Add(JointIdx, OrderedIdx);
+                    }
+                }
+            }
+
+            // Now that we have a remapped Joint order, we can start updating existing data such as attachments.
+            // These are not affected by the Joint ID remapping feature stored on FrameBlendInfos, so we can do this now
+            foreach(MT_Attachment Attachment in Skeleton.Attachments)
+            {
+                // This will remap old index to new index
+                Attachment.JointIndex = RemappedDictionary[Attachment.JointIndex];
+            }
+
+            // we can commit the sorted joints to the skeleton:
+            Skeleton.Joints = SortedJoints;
+
+            // Now lets begin creating the weighted info for each lod within the mesh.
+            FrameBlendInfo.BoneIndexInfo[] OutLodIndexInfos = new FrameBlendInfo.BoneIndexInfo[Lods.Length];
+
+            // Next we need to iterate through every LOD and every FaceGroup, finding bones to remap for the FrameBlendInfo system.
+            for (int LodIdx = 0; LodIdx < Lods.Length; LodIdx++)
+            {
+                MT_Lod CurrentLod = Lods[LodIdx];
+
+                // create new BoneIndexInfo for this LOD
+                // We won't fill in its entirety, but rather update IDs.
+                OutLodIndexInfos[LodIdx] = new FrameBlendInfo.BoneIndexInfo();
+                FrameBlendInfo.BoneIndexInfo LodBlendInfo = OutLodIndexInfos[LodIdx];
+                LodBlendInfo.SkinnedMaterialInfo = new FrameBlendInfo.SkinnedMaterialInfo[CurrentLod.FaceGroups.Length];
+
+                // first iteration is to find how many bones are stored within each material
+                List<HashSet<int>> BonesPerMaterial = new List<HashSet<int>>();
+                for(int MatIdx = 0; MatIdx < CurrentLod.FaceGroups.Length; MatIdx++)
+                {
+                    MT_FaceGroup CurrentFaceGroup = CurrentLod.FaceGroups[MatIdx];
+
+                    // Assign for 2nd time around
+                    LodBlendInfo.SkinnedMaterialInfo[MatIdx] = new FrameBlendInfo.SkinnedMaterialInfo();
+
+                    HashSet<int> FoundBoneIDs = new HashSet<int>();
+
+                    // iterate through all vertices assigned to this material
+                    uint StartIndex = CurrentFaceGroup.StartIndex;
+                    uint EndIndex = StartIndex + (CurrentFaceGroup.NumFaces * 3);
+                    for (uint Idx = StartIndex; Idx < EndIndex; Idx++)
+                    {
+                        byte[] VtxBoneIDs = CurrentLod.Vertices[CurrentLod.Indices[Idx]].BoneIDs;
+                        for (uint BoneIdx = 0; BoneIdx < CurrentFaceGroup.WeightsPerVertex; BoneIdx++)
+                        {
+                            // first remap to ordered index
+                            int OrderedIndex = RemappedDictionary[VtxBoneIDs[BoneIdx]];
+                            FoundBoneIDs.Add(OrderedIndex);
+                        }
+                    }
+
+                    BonesPerMaterial.Add(FoundBoneIDs);
+                }
+
+                // second iteration is to then generate the remap pools
+                List<Dictionary<int, int>> RemapPools = new List<Dictionary<int, int>>();
+                RemapPools.Add(new Dictionary<int, int>());
+
+                // Each pool starts from 0, so we avoid hitting that 255 limit
+                int PoolRemapCounter = 0;
+
+                for (int MatIdx = 0; MatIdx < CurrentLod.FaceGroups.Length; MatIdx++)
+                {
+                    MT_FaceGroup CurrentFaceGroup = CurrentLod.FaceGroups[MatIdx];
+
+                    if (RemapPools[0].Count + BonesPerMaterial[MatIdx].Count > 60)
+                    {
+                        // we've exceeded the current pool, so we need to create another
+                        RemapPools.Insert(0, new Dictionary<int, int>());
+
+                        // if we're starting a new pool we need to update remap counter
+                        PoolRemapCounter = 0;
+                    }
+
+                    // assign their pool index
+                    LodBlendInfo.SkinnedMaterialInfo[MatIdx].AssignedPoolIndex = (byte)(RemapPools.Count - 1);
+
+                    HashSet<uint> RemappedVertices = new HashSet<uint>();
+
+                    // iterate through all vertices assigned to this material
+                    uint StartIndex = CurrentFaceGroup.StartIndex;
+                    uint EndIndex = StartIndex + (CurrentFaceGroup.NumFaces * 3);
+                    for (uint Idx = StartIndex; Idx < EndIndex; Idx++)
+                    {
+                        uint VertexIndex = CurrentLod.Indices[Idx];
+                        if (RemappedVertices.Contains(VertexIndex))
+                        {
+                            continue;
+                        }
+
+                        byte[] VtxBoneIDs = CurrentLod.Vertices[VertexIndex].BoneIDs;
+                        for (uint BoneIdx = 0; BoneIdx < CurrentFaceGroup.WeightsPerVertex; BoneIdx++)
+                        {
+                            // first remap to ordered index
+                            int OrderedIndex = RemappedDictionary[VtxBoneIDs[BoneIdx]];
+
+                            if (RemapPools[0].ContainsKey(OrderedIndex) == false)
+                            {
+                                RemapPools[0].Add(OrderedIndex, PoolRemapCounter++);
+                            }
+
+                            // now that it has been re-ordered and remapped, we can apply to vertex
+                            VtxBoneIDs[BoneIdx] = (byte)RemapPools[0][OrderedIndex];
+                        }
+
+                        // we've remapped this and don't want to do so again
+                        RemappedVertices.Add(VertexIndex);
+                    }
+                }
+
+                List<byte> IDArray = new List<byte>();
+
+                LodBlendInfo.BonesPerPool = new byte[8];
+
+                // generate IDs and Bones Per Pool
+                RemapPools.Reverse();
+                for(int PoolIdx = 0; PoolIdx < RemapPools.Count; PoolIdx++)
+                {
+                    // we add the bone to the ID remap array.
+                    Dictionary<int, int> RemapPool = RemapPools[PoolIdx];
+                    foreach (var Pair in RemapPool)
+                    {
+                        IDArray.Add((byte)Pair.Key);
+                    }
+
+                    LodBlendInfo.BonesPerPool[PoolIdx] = (byte)RemapPool.Count;
+                }
+
+                // assign IDs into blend info
+                LodBlendInfo.IDs = IDArray.ToArray();
+                LodBlendInfo.NumIDs = IDArray.Count;
+
+                OutLodIndexInfos[LodIdx] = LodBlendInfo;
+            }
+
+            return OutLodIndexInfos;
         }
 
         public override string ToString()

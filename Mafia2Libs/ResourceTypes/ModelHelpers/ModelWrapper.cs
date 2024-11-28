@@ -414,6 +414,9 @@ namespace Utils.Models
 
         public void CreateSkinnedObjectsFromModel()
         {
+            // TEMP - generate remappings and apply to all LODs + Skinned mesh
+            var RemappedBlendInfos = ModelObject.TestGenerateBoneRemappings();
+
             // MT_Object data
             MT_Skeleton SkeletonObject = ModelObject.Skeleton;
 
@@ -482,12 +485,14 @@ namespace Utils.Models
             SkeletonBlock.UnkLodData = null; // again, one for each lod, number of blend infos?
 
             // now lets begin generating skinned data for each LOD
-            BlendInfoBlock.BoneIndexInfos = new FrameBlendInfo.BoneIndexInfo[ModelObject.Lods.Length];
-            
+            BlendInfoBlock.BoneIndexInfos = new FrameBlendInfo.BoneIndexInfo[ModelObject.Lods.Length];         
             for(int Idx = 0; Idx < ModelObject.Lods.Length; Idx++)
             {
                 MT_Lod CurrentLod = ModelObject.Lods[Idx];
                 FrameBlendInfo.BoneIndexInfo LodIndexInfo = new FrameBlendInfo.BoneIndexInfo();
+                LodIndexInfo.IDs = RemappedBlendInfos[Idx].IDs;
+                LodIndexInfo.NumIDs = RemappedBlendInfos[Idx].NumIDs;
+                LodIndexInfo.BonesPerPool = RemappedBlendInfos[Idx].BonesPerPool;
 
                 // generate each weighted info for each facegroup found in the LOD
                 LodIndexInfo.SkinnedMaterialInfo = new FrameBlendInfo.SkinnedMaterialInfo[CurrentLod.FaceGroups.Length];
@@ -499,10 +504,13 @@ namespace Utils.Models
                     SkinnedMatInfo.NumWeightsPerVertex = CurrentFaceGroup.WeightsPerVertex;
 
                     // TODO: We currently do not understand BoneSlot mappings therefore default to zero
-                    SkinnedMatInfo.AssignedPoolIndex = 0;
+                    SkinnedMatInfo.AssignedPoolIndex = RemappedBlendInfos[Idx].SkinnedMaterialInfo[MatIdx].AssignedPoolIndex;
 
                     LodIndexInfo.SkinnedMaterialInfo[MatIdx] = SkinnedMatInfo;
                 }
+
+                // assign
+                BlendInfoBlock.BoneIndexInfos[Idx] = LodIndexInfo;
             }
         }
     }
