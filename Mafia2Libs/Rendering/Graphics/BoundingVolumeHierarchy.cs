@@ -302,7 +302,7 @@ namespace Rendering.Graphics
             return (axis, splitPos, bestCost);
         }
 
-        public (float distance, Vector3 pos) Intersect(Ray ray)
+        public (float distance, Vector3 pos) Intersect(Ray ray, Ray localRay)
         {
             BVHNode node = Nodes[RootNodeID]; 
             BVHNode[] stack = new BVHNode[64];
@@ -321,7 +321,7 @@ namespace Rendering.Graphics
 
                         float t;
 
-                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref ray, ref Vertices[triangle.x].Position, ref Vertices[triangle.y].Position, ref Vertices[triangle.z].Position, out t))
+                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref Vertices[triangle.x].Position, ref Vertices[triangle.y].Position, ref Vertices[triangle.z].Position, out t))
                         {
                             continue;
                         }
@@ -352,8 +352,8 @@ namespace Rendering.Graphics
                 BVHNode child1 = Nodes[node.LeftChild];
                 BVHNode child2 = Nodes[node.LeftChild + 1];
 
-                float? dist1 = ray.Intersects(child1.Bounds);
-                float? dist2 = ray.Intersects(child2.Bounds);
+                float? dist1 = localRay.Intersects(child1.Bounds);
+                float? dist2 = localRay.Intersects(child2.Bounds);
 
                 dist1 = dist1 == null ? 0.0f : dist1;
                 dist2 = dist2 == null ? 0.0f : dist2;

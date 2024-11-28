@@ -204,15 +204,18 @@ namespace Rendering.Graphics
 
                 if (model.Value is RenderModel mesh)
                 {
-                    if (!mesh.BVH.FinishedBuilding)
-                    {
-                        continue;
-                    }
-
                     var bbox = mesh.BoundingBox;
 
                     if (mesh.InstanceTransforms.Count > 0)
                     {
+                        // We cannot use the per triangle picking method on instances as
+                        // it can take several minutes to complete even on good hardware.
+                        // We just have to deal with the potential picking ray miss.
+                        if (!mesh.BVH.FinishedBuilding)
+                        {
+                            continue;
+                        }
+
                         foreach (var transform in mesh.InstanceTransforms)
                         {
                             var transposed = Matrix4x4.Transpose(transform.Value);
@@ -226,7 +229,7 @@ namespace Rendering.Graphics
 
                             if (localInstanceRay.Intersects(bbox) == 0.0f) continue;
 
-                            var bvhInstanceIntersect = mesh.BVH.Intersect(localInstanceRay);
+                            var bvhInstanceIntersect = mesh.BVH.Intersect(ray, localInstanceRay);
 
                             if (bvhInstanceIntersect.distance < lowest)
                             {
@@ -241,7 +244,22 @@ namespace Rendering.Graphics
 
                     if (localRay.Intersects(bbox) == 0.0f) continue; // Pick doesn't seem to work when the camera is inside the bounding volume
 
-                    var bvhIntersect = mesh.BVH.Intersect(localRay);
+                    if (!mesh.BVH.FinishedBuilding)
+                    {
+                        var triangleIntersect = PerTriangleRayIntersect(ray, localRay, mesh);
+
+                        if (triangleIntersect.distance < lowest)
+                        {
+                            lowest = triangleIntersect.distance;
+                            lowestRefID = model.Key;
+                            lowestInstanceID = -1;
+                            WorldPosIntersect = triangleIntersect.pos;
+                        }
+
+                        continue;
+                    }
+
+                    var bvhIntersect = mesh.BVH.Intersect(ray, localRay);
 
                     if (bvhIntersect.distance < lowest)
                     {
@@ -305,7 +323,7 @@ namespace Rendering.Graphics
 
                 if (localInstanceRay.Intersects(InstanceGizmo.InstanceModel.BoundingBox) == 0.0f) continue;
 
-                var bvhInstanceIntersect = InstanceGizmo.InstanceModel.BVH.Intersect(localInstanceRay);
+                var bvhInstanceIntersect = InstanceGizmo.InstanceModel.BVH.Intersect(ray, localInstanceRay);
 
                 if (bvhInstanceIntersect.distance < lowest)
                 {
@@ -323,6 +341,32 @@ namespace Rendering.Graphics
             OutputParams.WorldPosition = WorldPosIntersect;
 
             return OutputParams;
+        }
+
+        private (float distance, Vector3 pos) PerTriangleRayIntersect(Ray ray, Ray localRay, RenderModel mesh)
+        {
+            (float distance, Vector3 pos) val = (float.MaxValue, Vector3.Zero);
+
+            for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
+            {
+                var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
+                var v1 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position;
+                var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
+                float t;
+
+                if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
+
+                var worldPosition = ray.Position + t * ray.Direction;
+                var distance = (worldPosition - ray.Position).LengthSquared();
+
+                if (distance < val.distance)
+                {
+                    val.distance = distance;
+                    val.pos = worldPosition;
+                }
+            }
+
+            return val;
         }
 
         public void Frame()
