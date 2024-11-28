@@ -11,7 +11,7 @@ namespace Rendering.Core
 {
     public class InstanceGizmo
     {
-        private float ModelScale = 0.015f;
+        private Vector3 ModelScale = new Vector3(0.015f);
         // Variable for rendering
         public RenderModel InstanceModel;
 
@@ -45,7 +45,7 @@ namespace Rendering.Core
 
         public void UpdateInstanceBuffer(Instance instance, ID3D11Device d3d)
         {
-            Matrix4x4 newtransform = MatrixUtils.SetMatrix(instance.Quaternion, new Vector3(ModelScale), instance.Position);
+            Matrix4x4 newtransform = MatrixUtils.SetMatrix(instance.Quaternion, ModelScale, instance.Position);
 
             if (!InstanceModel.InstanceTransforms.ContainsKey(instance.RefID))
             {
