@@ -52,8 +52,6 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 	float4 position;
 	position.xyz = input.Position.xyz;
 	position.w = 1.0f;
-	input.TexCoord0.y = -input.TexCoord0.y;
-	input.TexCoord7.y = -input.TexCoord7.y;
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
 	worldPosition = mul(position, worldMatrix);
@@ -91,8 +89,6 @@ VS_OUTPUT LightInstanceVertexShader(VS_INPUT input, uint InstanceId : SV_Instanc
 	float4 position;
 	position.xyz = input.Position.xyz;
 	position.w = 1.0f;
-	input.TexCoord0.y = -input.TexCoord0.y;
-	input.TexCoord7.y = -input.TexCoord7.y;
 
 	// Fetch the instance transformation matrix using InstanceID
 	matrix instanceMatrix = InstanceBuffer[InstanceId];
