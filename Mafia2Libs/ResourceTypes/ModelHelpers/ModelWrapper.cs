@@ -490,9 +490,8 @@ namespace Utils.Models
             {
                 MT_Lod CurrentLod = ModelObject.Lods[Idx];
                 FrameBlendInfo.BoneIndexInfo LodIndexInfo = new FrameBlendInfo.BoneIndexInfo();
-                LodIndexInfo.IDs = RemappedBlendInfos[Idx].IDs;
-                LodIndexInfo.NumIDs = RemappedBlendInfos[Idx].NumIDs;
-                LodIndexInfo.BonesPerPool = RemappedBlendInfos[Idx].BonesPerPool;
+                LodIndexInfo.BoneRemapIDs = RemappedBlendInfos[Idx].BoneRemapIDs;
+                LodIndexInfo.BonesPerRemapPool = RemappedBlendInfos[Idx].BonesPerRemapPool;
 
                 // generate each weighted info for each facegroup found in the LOD
                 LodIndexInfo.SkinnedMaterialInfo = new FrameBlendInfo.SkinnedMaterialInfo[CurrentLod.FaceGroups.Length];

@@ -565,7 +565,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     byte offset = 0;
                     for (int s = 0; s < SkinnedMatInfo.AssignedPoolIndex; s++)
                     {
-                        offset += indexInfos.BonesPerPool[s];
+                        offset += indexInfos.BonesPerRemapPool[s];
                     }
 
                     for (uint z = part.StartIndex; z < part.StartIndex + (part.NumFaces * 3); z++)
@@ -576,7 +576,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                             for (uint f = 0; f < SkinnedMatInfo.NumWeightsPerVertex; f++)
                             {
                                 var previousBoneID = lod.Vertices[index].BoneIDs[f];
-                                lod.Vertices[index].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
+                                lod.Vertices[index].BoneIDs[f] = indexInfos.BoneRemapIDs[offset + previousBoneID];
                             }
                             remapped[index] = true;
                         }
@@ -890,7 +890,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
                 List<byte> IDArray = new List<byte>();
 
-                LodBlendInfo.BonesPerPool = new byte[8];
+                LodBlendInfo.BonesPerRemapPool = new byte[8];
 
                 // generate IDs and Bones Per Pool
                 RemapPools.Reverse();
@@ -903,12 +903,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                         IDArray.Add((byte)Pair.Key);
                     }
 
-                    LodBlendInfo.BonesPerPool[PoolIdx] = (byte)RemapPool.Count;
+                    LodBlendInfo.BonesPerRemapPool[PoolIdx] = (byte)RemapPool.Count;
                 }
 
                 // assign IDs into blend info
-                LodBlendInfo.IDs = IDArray.ToArray();
-                LodBlendInfo.NumIDs = IDArray.Count;
+                LodBlendInfo.BoneRemapIDs = IDArray.ToArray();
 
                 OutLodIndexInfos[LodIdx] = LodBlendInfo;
             }

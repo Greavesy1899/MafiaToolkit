@@ -140,7 +140,7 @@ namespace Utils.Models
                     byte offset = 0;
                     for (int s = 0; s < SkinnedMatInfo.AssignedPoolIndex; s++)
                     {
-                        offset += indexInfos.BonesPerPool[s];
+                        offset += indexInfos.BonesPerRemapPool[s];
                     }
 
                     for (uint z = part.StartIndex; z < part.StartIndex + (part.NumFaces * 3); z++)
@@ -151,7 +151,7 @@ namespace Utils.Models
                             for (uint f = 0; f < SkinnedMatInfo.NumWeightsPerVertex; f++)
                             {
                                 var previousBoneID = lod.Vertices[index].BoneIDs[f];
-                                lod.Vertices[index].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
+                                lod.Vertices[index].BoneIDs[f] = indexInfos.BoneRemapIDs[offset + previousBoneID];
                             }
                             remapped[index] = true;                      
                         }

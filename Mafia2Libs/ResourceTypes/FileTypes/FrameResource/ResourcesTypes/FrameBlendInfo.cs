@@ -42,7 +42,8 @@ namespace ResourceTypes.FrameResource
             boneIndexInfos = new BoneIndexInfo[numLods];
             for (int i = 0; i < boneIndexInfos.Length; i++)
             {
-                boneIndexInfos[i].NumIDs = reader.ReadInt32(isBigEndian);
+                uint NumberRemapIDs = reader.ReadUInt32(isBigEndian);
+                boneIndexInfos[i].BoneRemapIDs = new byte[NumberRemapIDs];
 
                 uint NumMaterials = reader.ReadUInt32(isBigEndian);
                 boneIndexInfos[i].SkinnedMaterialInfo = new SkinnedMaterialInfo[NumMaterials];
@@ -61,10 +62,12 @@ namespace ResourceTypes.FrameResource
 
             for (int i = 0; i < boneIndexInfos.Length; i++)
             {
-                boneIndexInfos[i].BonesPerPool = reader.ReadBytes(8);
+                boneIndexInfos[i].BonesPerRemapPool = reader.ReadBytes(8);
 
-                //IDs..
-                boneIndexInfos[i].IDs = reader.ReadBytes(boneIndexInfos[i].NumIDs);
+                // This is actually creating the array again and could be fairly costly
+                // I won't tell if you don't
+                int NumberOfRemapIDs = boneIndexInfos[i].BoneRemapIDs.Length;
+                boneIndexInfos[i].BoneRemapIDs = reader.ReadBytes(NumberOfRemapIDs);
 
                 // Read additional weighted info
                 for (int x = 0; x < boneIndexInfos[i].SkinnedMaterialInfo.Length; x++)
@@ -85,7 +88,7 @@ namespace ResourceTypes.FrameResource
             //index infos
             for (int i = 0; i < boneIndexInfos.Length; i++)
             {
-                writer.Write(boneIndexInfos[i].NumIDs);
+                writer.Write(boneIndexInfos[i].BoneRemapIDs.Length);
                 writer.Write(boneIndexInfos[i].SkinnedMaterialInfo.Length);
             }
 
@@ -100,10 +103,8 @@ namespace ResourceTypes.FrameResource
 
             for (int i = 0; i < boneIndexInfos.Length; i++)
             {
-                writer.Write(boneIndexInfos[i].BonesPerPool);
-
-                //IDs..
-                writer.Write(boneIndexInfos[i].IDs);
+                writer.Write(boneIndexInfos[i].BonesPerRemapPool);
+                writer.Write(boneIndexInfos[i].BoneRemapIDs);
 
                 // Write additional data for Materials
                 foreach (SkinnedMaterialInfo MaterialInfo in boneIndexInfos[i].SkinnedMaterialInfo)
@@ -132,22 +133,12 @@ namespace ResourceTypes.FrameResource
 
         public struct BoneIndexInfo
         {
-            int numIDs;
-            byte[] bonesPerPool;
-            byte[] ids;
+            // Number of bones within each Remap Pool, SkinnedMaterialInfo will refer to this.
+            public byte[] BonesPerRemapPool { get; set; }
 
-            public int NumIDs {
-                get { return numIDs; }
-                set { numIDs = value; }
-            }
-            public byte[] BonesPerPool {
-                get { return bonesPerPool; }
-                set { bonesPerPool = value; }
-            }
-            public byte[] IDs {
-                get { return ids; }
-                set { ids = value; }
-            }
+            // Remapping IDs for bones within the Skeletal Mesh for this LOD
+            // Refer to @BonesPerPool to determine which range of bones is within each pool
+            public byte[] BoneRemapIDs { get; set; }
 
             // Skinned Material data for this LOD
             public SkinnedMaterialInfo[] SkinnedMaterialInfo { get; set; }
