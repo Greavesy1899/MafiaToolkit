@@ -37,7 +37,7 @@ namespace Forms.OptionControls
             TexDirectoryBox.Text = ToolkitSettings.TexturePath;
             ExperimentalBox.Checked = ToolkitSettings.Experimental;
             Checkbox_EnableNavigation.Checked = ToolkitSettings.bNavigation;
-            Checkbox_EnableTranslokatorTint.Checked = ToolkitSettings.bTranslokator;
+            Checkbox_EnableTranslokatorTint.Checked = ToolkitSettings.bTranslokatorTint;
             UseMIPsBox.Checked = ToolkitSettings.UseMIPS;
             CheckBox_VSync.Checked = ToolkitSettings.VSync;
         }
@@ -109,8 +109,8 @@ namespace Forms.OptionControls
         
         private void Button_EnableTranslokatorTint_CheckedChanged(object sender, EventArgs e)
         {
-            ToolkitSettings.bTranslokator = Checkbox_EnableTranslokatorTint.Checked;
-            ToolkitSettings.WriteKey("EnableTranslokator", "ModelViewer", ToolkitSettings.bTranslokator.ToString());
+            ToolkitSettings.bTranslokatorTint = Checkbox_EnableTranslokatorTint.Checked;
+            ToolkitSettings.WriteKey("EnableTranslokator", "ModelViewer", ToolkitSettings.bTranslokatorTint.ToString());
         }
     }
 }

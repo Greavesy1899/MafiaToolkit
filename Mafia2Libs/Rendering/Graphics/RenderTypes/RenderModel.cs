@@ -410,7 +410,7 @@ namespace Rendering.Graphics
             {
                 RenderModel.ModelPart segment = LODs[0].ModelParts[i];
 
-                segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, ToolkitSettings.bTranslokator ? tint.Normalize() : startColor.Normalize()));
+                segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(segment.Material, ToolkitSettings.bTranslokatorTint ? tint.Normalize() : startColor.Normalize()));
                 segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
 
                 segment.Shader.setHightLightInstance(deviceContext, selectionInstance.instanceRefID);

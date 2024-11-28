@@ -2421,8 +2421,8 @@ namespace Mafia2Tool
 
         private void TranslokatorTint_Click(object sender, EventArgs e)
         {
-            ToolkitSettings.bTranslokator = !ToolkitSettings.bTranslokator;
-            ToolkitSettings.WriteKey("EnableTranslokator", "ModelViewer", ToolkitSettings.bTranslokator.ToString());
+            ToolkitSettings.bTranslokatorTint = !ToolkitSettings.bTranslokatorTint;
+            ToolkitSettings.WriteKey("EnableTranslokator", "ModelViewer", ToolkitSettings.bTranslokatorTint.ToString());
         }
 
         private void Button_TestConvert_Click(object sender, EventArgs e)
@@ -2742,8 +2742,10 @@ namespace Mafia2Tool
             FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(actor.FrameNameHash);
             if (groupRef == null)//todo: once multisds is added, tweak this
             {
-                ToolkitAssert.Ensure(groupRef!= null,"Error: Actor's FrameName: " + actor.FrameName + "(" + actor.FrameNameHash.ToString() + ")" + " is not included in FrameResource Contents");
-                return;
+                if (MessageBox.Show("There is no matching Frame: " + actor.FrameName + " in FrameResource contents. If you intend to reference Frame of this name, it is not present. Do you want to continue?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    return;
+                }
             }
 
             TreeNode ogNode = dSceneTree.GetObjectGroupByActorType(translokatorRoot, actor.ActorTypeID);
@@ -2756,7 +2758,7 @@ namespace Mafia2Tool
                 newOGNode.Tag = newOG;
                 dSceneTree.AddToTree(newOGNode,translokatorRoot.Nodes[0]);
                 ogNode = newOGNode;
-                Debug.WriteLine("New Translokator ObjectGroup:" + newOG.ActorType);
+                Log.WriteLine("New Translokator ObjectGroup:" + newOG.ActorType,LoggingTypes.MESSAGE,LogCategoryTypes.FUNCTION);
             }
 
             if (dSceneTree.ObjectGroupHasObject(ogNode, actor.FrameNameHash))
@@ -2771,7 +2773,7 @@ namespace Mafia2Tool
                 TreeNode objNode = new TreeNode(newObj.Name.ToString());
                 objNode.Tag = newObj;
                 dSceneTree.AddToTree(objNode,ogNode);
-                Debug.WriteLine("New Translokator Object:" + newObj.Name.String);
+                Log.WriteLine("New Translokator Object:" + newObj.Name.String,LoggingTypes.MESSAGE,LogCategoryTypes.FUNCTION);
             }
         }
 
