@@ -471,7 +471,6 @@ namespace Utils.Models
 
             // Skeleton Block - Finalise remaining data
             // Fill in additional data
-            SkeletonBlock.NumLods = ModelObject.Lods.Length;
             SkeletonBlock.NumUnkCount2 = SkeletonObject.Joints.Length;
             SkeletonBlock.IDType = 3; // unknown - 3 is typically hashes? For cars and crane.
 
@@ -482,7 +481,7 @@ namespace Utils.Models
             // TODO: Once BlendInfo is done, there are a few pieces of data which must be stored in Skeleton
             SkeletonBlock.NumBlendIDs = 0;
             SkeletonBlock.MappingForBlendingInfos = null; // maybe in here too, one for each lod?
-            SkeletonBlock.UnkLodData = null; // again, one for each lod, number of blend infos?
+            SkeletonBlock.LodRemapIDCount = new int[ModelObject.Lods.Length];
 
             // now lets begin generating skinned data for each LOD
             BlendInfoBlock.BoneIndexInfos = new FrameBlendInfo.BoneIndexInfo[ModelObject.Lods.Length];         
@@ -510,6 +509,11 @@ namespace Utils.Models
 
                 // assign
                 BlendInfoBlock.BoneIndexInfos[Idx] = LodIndexInfo;
+
+                // Work on Skeleton Block as it has some overlap with Blend Info;
+
+                // Skeleton block needs to reflect ID Remapping data
+                SkeletonBlock.LodRemapIDCount[Idx] = LodIndexInfo.BoneRemapIDs.Length;
             }
         }
     }
