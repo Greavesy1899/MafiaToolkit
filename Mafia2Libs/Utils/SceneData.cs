@@ -47,7 +47,7 @@ namespace Mafia2Tool
         public PrefabLoader Prefabs;
         public string ScenePath = "";
 
-        private SDSContentFile sdsContent;
+        public SDSContentFile sdsContent;
         private bool isBigEndian;
 
         private FileInfo BuildFileInfo(string name)
@@ -188,15 +188,13 @@ namespace Mafia2Tool
             //    }
             //}
 #endif // DEBUG
-
-            //~ENABLE THIS SECTION AT YOUR OWN RISK
+            
             //Translokator
-            //if (!isBigEndian && sdsContent.HasResource("Translokator"))
-            //{
-            //    var name = sdsContent.GetResourceFiles("Translokator", true)[0];
-            //    Translokator = new TranslokatorLoader(new FileInfo(name));
-            //}
-            //~ENABLE THIS SECTION AT YOUR OWN RISK
+            if (!isBigEndian && sdsContent.HasResource("Translokator"))
+            {
+                var name = sdsContent.GetResourceFiles("Translokator", true)[0];
+                Translokator = new TranslokatorLoader(new FileInfo(name));
+            }
 
             // Kynapse Navigation
             if (ToolkitSettings.bNavigation)

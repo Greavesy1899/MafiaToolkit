@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
-    Microsoft ResX Schema 
+    Microsoft ResX Schema
 
     Version 2.0
 
@@ -48,7 +48,7 @@
     value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
     value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
@@ -122,9 +122,6 @@
   </metadata>
   <metadata name="StatusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>122, 17</value>
-  </metadata>
-  <metadata name="StatusStrip.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="CurrentModeButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -225,19 +222,19 @@
   </metadata>
   <data name="imageList1.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
-        AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
-        LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAmU3lzdGVtLldpbmRvd3MuRm9ybXMu
-        SW1hZ2VMaXN0U3RyZWFtZXIBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAACgIAAAJNU0Z0AUkBTAIBAQIB
-        AAFIAQMBSAEDARABAAEQAQAE/wEhAQAI/wFCAU0BNgcAATYDAAEoAwABQAMAARADAAEBAQABIAYAARD/
-        AP8ALgAC/wIAAv8CAAL/AgAC/y4AAv8CAAL/AgAC/wIAAv8CAAL/AgAC/wIAAv+mAAL/AgAC/woAAv8C
-        AAL/KgAC/wIAAv/OAAL/AgAC/yYAAv8CAAL/zgAC/wIAAv8mAAL/AgAC/8oAAv8CAAL/AgAC/yYAAv8C
-        AAL/xgAC/wIAAv8CAAL/KgAC/wIAAv++AAL/AgAC/wIAAv8CAAL/LgAC/wIAAv+6AAL/AgAC/wIAAv82
-        AAL/AgAC/7oAAv8CAAL/OgAC/wIAAv+6AAL/AgAC/zoAAv8CAAL/vgAC/wIAAv8KAAL/AgAC/yYAAv8C
-        AAL/wgAC/wIAAv8CAAL/AgAC/yoAAv8CAAL//wD/AKYAAUIBTQE+BwABPgMAASgDAAFAAwABEAMAAQEB
-        AAEBBQABgBcAA/8BAAT/BAAE/wQAAfwBPwH4AQ8EAAH5AZ8B+QH/BAAB/wHPAfkB/wQAAf8BzwH5Af8E
-        AAH/AY8B+QH/BAAB/wEfAfkB/wQAAfwBPwH5Af8EAAH4Af8B+QH/BAAB+QH/AfkB/wQAAfkB/wH5Af8E
-        AAH8Ac8B+QH/BAAB/gEfAfkB/wQABP8EAAT/BAAL
-</value>
+		AAEAAAD/////AQAAAAAAAAAMAgAAAEZTeXN0ZW0uV2luZG93cy5Gb3JtcywgQ3VsdHVyZT1uZXV0cmFs
+		LCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5BQEAAAAmU3lzdGVtLldpbmRvd3MuRm9ybXMu
+		SW1hZ2VMaXN0U3RyZWFtZXIBAAAABERhdGEHAgIAAAAJAwAAAA8DAAAACgIAAAJNU0Z0AUkBTAIBAQIB
+		AAFQAQMBUAEDARABAAEQAQAE/wEhAQAI/wFCAU0BNgcAATYDAAEoAwABQAMAARADAAEBAQABIAYAARD/
+		AP8ALgAC/wIAAv8CAAL/AgAC/y4AAv8CAAL/AgAC/wIAAv8CAAL/AgAC/wIAAv+mAAL/AgAC/woAAv8C
+		AAL/KgAC/wIAAv/OAAL/AgAC/yYAAv8CAAL/zgAC/wIAAv8mAAL/AgAC/8oAAv8CAAL/AgAC/yYAAv8C
+		AAL/xgAC/wIAAv8CAAL/KgAC/wIAAv++AAL/AgAC/wIAAv8CAAL/LgAC/wIAAv+6AAL/AgAC/wIAAv82
+		AAL/AgAC/7oAAv8CAAL/OgAC/wIAAv+6AAL/AgAC/zoAAv8CAAL/vgAC/wIAAv8KAAL/AgAC/yYAAv8C
+		AAL/wgAC/wIAAv8CAAL/AgAC/yoAAv8CAAL//wD/AKYAAUIBTQE+BwABPgMAASgDAAFAAwABEAMAAQEB
+		AAEBBQABgBcAA/8BAAT/BAAE/wQAAfwBPwH4AQ8EAAH5AZ8B+QH/BAAB/wHPAfkB/wQAAf8BzwH5Af8E
+		AAH/AY8B+QH/BAAB/wEfAfkB/wQAAfwBPwH5Af8EAAH4Af8B+QH/BAAB+QH/AfkB/wQAAfkB/wH5Af8E
+		AAH8Ac8B+QH/BAAB/gEfAfkB/wQABP8EAAT/BAAL
+	</value>
   </data>
   <metadata name="MeshBrowser.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>223, 15</value>

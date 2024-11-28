@@ -263,6 +263,8 @@
 	<String ID="$PROPERTY_GRID">Síť vlastností</String>
 	<String ID="$TOGGLE_WIREFRAME">Aktivovat/deaktivovat drátový model (wireframe)</String>
 	<String ID="$TOGGLE_CULLING">Aktivovat/deaktivovat culling</String>
+	<String ID="$EDIT_LIGHTING">Upravit Osvětlení</String>
+	<String ID="$TOGGLE_TRANSLOKATOR_TINT">Přepnout Zbarvení Translokátorů</String>
 	<String ID="$POSITION_X">Pozice X</String>
 	<String ID="$POSITION_Y">Pozice Y</String>
 	<String ID="$POSITION_Z">Pozice Z</String>

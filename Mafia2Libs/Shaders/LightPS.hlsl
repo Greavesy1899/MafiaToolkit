@@ -41,13 +41,14 @@ cbuffer Shader_50760736Params
 //////////////////////
 struct VS_OUTPUT
 {
-	float4 Position : SV_POSITION;
-    float3 Normal : NORMAL;
-	float3 Tangent : TANGENT;
-	float3 Binormal : BINORMAL;
-	float2 TexCoord0 : TEXCOORD0;
-	float2 TexCoord7 : TEXCOORD1;
-	float3 viewDirection : TEXCOORD2;
+    float4 Position : SV_POSITION;
+    half3 Normal : NORMAL;
+    half3 Tangent : TANGENT;
+    half3 Binormal : BINORMAL;
+    float2 TexCoord0 : TEXCOORD0;
+    float2 TexCoord7 : TEXCOORD1;
+    half3 viewDirection : TEXCOORD2;
+    bool instanceSelected : INSTANCESELECTED;
 };
 
 float4 GetDiffuseColour(VS_OUTPUT input)
@@ -69,18 +70,21 @@ float4 GetAOColour(VS_OUTPUT input)
 float3 CalculateFromNormalMap(VS_OUTPUT input)
 {
 	//Load normal from normal map
-	float4 normalMap = textures[1].Sample(SampleType, input.TexCoord0);
+	float3 normalMap = textures[1].Sample(SampleType, input.TexCoord0).xyz;
 
-	//Change normal map range from [0, 1] to [-1, 1]
-	normalMap = (2.0f * normalMap) - 1.0f;
+    normalMap = 2.0f * normalMap - 1.0f;
 
-	//Make sure tangent is completely orthogonal to normal
-	input.Tangent = normalize(input.Tangent - dot(input.Tangent, input.Normal) * input.Normal);
+    // Ensure the tangent and binormal are perfectly orthonormal to the normal vector
+    float3 Normal = input.Normal;
+    float3 Tangent = normalize(input.Tangent - dot(input.Tangent, input.Normal) * input.Normal);
+    float3 Binormal = cross(Normal, Tangent);
 
-	//Convert normal from normal map to texture space and store in input.normal
-    float3 bumpNormal = (normalMap.x * input.Tangent) + (normalMap.y * input.Binormal)/* + (normalMap.z * input.Normal)*/;
-    bumpNormal = normalize(bumpNormal);
-    return bumpNormal;
+    float3x3 NormalTransform = float3x3(Tangent, Binormal, Normal);
+
+    // Transform from tangent space to world space.
+    float3 bump = mul(normalMap, NormalTransform);
+
+    return bump;
 }
 
 float4 CalculateColor(VS_OUTPUT input, float4 color)
@@ -89,7 +93,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     float lightIntensity;
     float3 reflection;
     float4 specular;
-    float3 normal = float3(1.0f, 1.0f, 1.0f);
+    float3 normal = input.Normal;//float3(1.0f, 1.0f, 1.0f);
     
     if(hasTangentSpace == 1)
     {
@@ -106,7 +110,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     lightDir = -lightDirection;
 
 	// Calculate the amount of the light on this pixel.
-    lightIntensity = saturate(dot(input.Normal * normal, lightDir));
+    lightIntensity = saturate(dot(normal, lightDir));
 
     // Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
     color += (diffuseColor * lightIntensity);
@@ -114,7 +118,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     color = saturate(color);
 
 	// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
-	reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
+	reflection = normalize(2 * lightIntensity * normal - lightDir);
 
 	// Determine the amount of the specular light based on the reflection vector, viewing direction, and specular power.
 	specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
@@ -131,7 +135,14 @@ float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
     float4 aoTextureColor = GetAOColour(input);
     
     color = CalculateColor(input, color);
-    color *= float4(selectionColour.xyz, 1.0f);
+    if(input.instanceSelected==false)
+    {
+        color *= float4(selectionColour.xyz, 1.0f);
+    }
+    else
+    {
+        color *= float4(1.0f, 0.0f, 0.0f, 1.0f);
+    }
     
     //if(renderMode == 2)
     //{
@@ -147,7 +158,6 @@ float4 PS_601151254(VS_OUTPUT input) : SV_TARGET
 
     color = CalculateColor(input, color);
     color *= float4(selectionColour.xyz, 1.0f);
-    
     //if(renderMode == 2)
     //{
         color *= C002MaterialColour;
@@ -165,6 +175,14 @@ float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
     
     color = CalculateColor(input, color);
     color *= float4(selectionColour.xyz, 1.0f);
+    if(input.instanceSelected==false)
+    {
+        color *= float4(selectionColour.xyz, 1.0f);
+    }
+    else
+    {
+        color *= float4(1.0f, 0.0f, 0.0f, 1.0f);
+    }
     
     //if (renderMode == 2)
     //{

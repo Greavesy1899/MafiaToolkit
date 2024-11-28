@@ -38,7 +38,6 @@ namespace Rendering.Core
                 return m;
             }
         }
-
         public SpatialGrid()
         {
             cells = new SpatialCell[0];

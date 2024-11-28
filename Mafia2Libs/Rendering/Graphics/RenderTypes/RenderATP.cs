@@ -39,7 +39,6 @@ namespace Rendering.Graphics
             {
                 if (!camera.CheckBBoxFrustum(Transform, BoundingBox))
                     return;
-
                 BBox.Render(device, deviceContext, camera);
                 Path.Render(device, deviceContext, camera);
             }

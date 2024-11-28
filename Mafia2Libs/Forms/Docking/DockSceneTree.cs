@@ -4,8 +4,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
+using ResourceTypes.Actors;
+using ResourceTypes.Translokator;
 using Utils.Language;
+using Utils.VorticeUtils;
 using WeifenLuo.WinFormsUI.Docking;
+using Object = ResourceTypes.Translokator.Object;
 
 namespace Forms.Docking
 {
@@ -25,6 +29,8 @@ namespace Forms.Docking
         private MouseButtons dragButton;
         
         public event EventHandler<TreeViewDragEventArgs> TreeViewNodeDropped;
+
+        public bool hasTranslokatorData = false;//this should be managed better in the future alongside openentrycontext
 
         public DockSceneTree()
         {
@@ -242,7 +248,11 @@ namespace Forms.Docking
         {
             foreach (TreeNode child in node.Nodes)
             {
-                child.Checked = true;
+                if (child.Tag is not Grid)
+                {
+                    child.Checked = true;
+                }
+
                 ApplyImageIndex(child);
                 RecurseChildren(child);
             }
@@ -287,9 +297,11 @@ namespace Forms.Docking
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
             else if (node.Tag.GetType() == typeof(FrameHeader))
-                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
+                node.SelectedImageIndex = node.ImageIndex = 8;
             else if ((node.Tag is string) && ((node.Tag as string) == "Folder"))
-                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
+                node.SelectedImageIndex = node.ImageIndex = 8;
+            else if (node.Tag.GetType() == typeof(ObjectGroup))
+                node.SelectedImageIndex = node.ImageIndex = 8;
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
@@ -304,6 +316,8 @@ namespace Forms.Docking
             Export3DButton.Visible = false;
             EntryMenuStrip.Items[4].Visible = false;
             FrameActions.DropDownItems[3].Visible = false;
+            EntryMenuStrip.Items[5].Visible = false;
+            EntryMenuStrip.Items[6].Visible = false;
 
             if (TreeView_Explorer.SelectedNode != null && TreeView_Explorer.SelectedNode.Tag != null)
             {
@@ -339,6 +353,21 @@ namespace Forms.Docking
                         LinkToActorButton.Visible = true;
                     }
                 }
+
+                if (TreeView_Explorer.SelectedNode.Tag is Instance || TreeView_Explorer.SelectedNode.Tag is Object)//this will need solid cleanup later
+                {
+                    EntryMenuStrip.Items[0].Visible = true;
+                }
+
+                if (TreeView_Explorer.SelectedNode.Tag is Object)
+                {
+                    EntryMenuStrip.Items[5].Visible = true;
+                }
+
+                if (TreeView_Explorer.SelectedNode.Tag is ActorEntry && hasTranslokatorData)
+                {
+                    EntryMenuStrip.Items[6].Visible = true;
+                }
             }
         }
 
@@ -361,6 +390,22 @@ namespace Forms.Docking
             else if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
             {
                 return (data as ResourceTypes.Actors.ActorEntry).Position;
+            }
+            else if (data is Object objectgroup)
+            {
+                List<TreeNode> CurrentNodeMatches = new List<TreeNode>();//intented for object to jump to refframe
+                SearchNodes(objectgroup.Name.String, TreeView_Explorer.Nodes[0], ref CurrentNodeMatches);
+                if (CurrentNodeMatches.Count!=0)//this should look into frames first,if there is none, it doesn't have frame ref
+                {
+                    if (CurrentNodeMatches[0].Tag is FrameObjectBase refframe)
+                    {
+                        return refframe.WorldTransform.Translation; 
+                    }
+                }
+            }
+            else if (data is Instance instance)//jump to instance coords
+            {
+                return instance.Position;
             }
 
             return Vector3.Zero;
@@ -472,6 +517,36 @@ namespace Forms.Docking
             {
                 InternalGotoExplorerNode();
             }
+        }
+
+        public TreeNode GetObjectGroupByActorType(TreeNode translokatorRoot, int ActorTypeID)
+        {
+            foreach (TreeNode ogNode in translokatorRoot.Nodes[0].Nodes)
+            {
+                if (ogNode.Tag is ObjectGroup og)
+                {
+                    if (og.ActorType.ToString().Equals(((ActorTypes)ActorTypeID).ToString()))
+                    {
+                        return ogNode;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public bool ObjectGroupHasObject(TreeNode ogNode, ulong frameRefHash)
+        {
+            foreach (TreeNode objNode in ogNode.Nodes)
+            {
+                if (objNode.Tag is Object obj)
+                {
+                    if (obj.Name.Hash == frameRefHash)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

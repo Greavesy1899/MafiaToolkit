@@ -1,5 +1,4 @@
-﻿using Rendering.Factories;
-using Rendering.Graphics;
+﻿using Rendering.Graphics;
 using ResourceTypes.ItemDesc;
 using System.IO;
 using Utils.Extensions;

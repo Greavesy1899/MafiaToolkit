@@ -51,11 +51,11 @@ namespace Rendering.Core
 
         public void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
-            /*foreach (KeyValuePair<int, IRenderer> entry in assets)
+            foreach (KeyValuePair<int, IRenderer> entry in assets)
             {
                 entry.Value.UpdateBuffers(device, deviceContext);
                 entry.Value.Render(device, deviceContext, camera);
-            }*/
+            }
         }
 
         public virtual void SetVisibility(bool bNewVisiblity) { }

@@ -10,6 +10,9 @@ namespace Rendering.Graphics
         protected bool bIsUpdatedNeeded;
         protected ID3D11Buffer indexBuffer;
         protected ID3D11Buffer vertexBuffer;
+        protected ID3D11Buffer instanceBuffer;
+        protected ID3D11Buffer highlightBuffer;
+        protected ID3D11ShaderResourceView instanceBufferView;
 
         public bool DoRender { get; set; }
         public Matrix4x4 Transform { get; protected set; }

@@ -84,6 +84,13 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Localisations\ar_AR.xml" />
+    <None Remove="Rendering\Graphics\RenderTypes\Instances\**" />
+    <None Update="Resources\Translokator.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Translokator_Texture.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
@@ -148,6 +155,7 @@
     <Compile Update="Forms\ATPEditor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <ItemGroup>
     <None Update="build.cmd">
@@ -336,6 +344,10 @@
     <EmbeddedResource Update="Controls\FrameResourceModelExporter.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Remove="Rendering\Graphics\RenderTypes\Instances\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"

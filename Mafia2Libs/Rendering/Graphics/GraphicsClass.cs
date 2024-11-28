@@ -1,16 +1,18 @@
-﻿using Mafia2Tool;
-using Rendering.Core;
+﻿using Rendering.Core;
 using Rendering.Input;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Translokator;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Models;
 using Utils.Settings;
 using Utils.VorticeUtils;
+using Vortice.Direct3D11;
 using Vortice.Mathematics;
 
 namespace Rendering.Graphics
@@ -23,6 +25,7 @@ namespace Rendering.Graphics
     public struct PickOutParams
     {
         public int LowestRefID { get; set; }
+        public int LowestInstanceID { get; set; }
         public Vector3 WorldPosition { get; set; }
     }
 
@@ -36,12 +39,14 @@ namespace Rendering.Graphics
 
         public EventHandler<UpdateSelectedEventArgs> OnSelectedObjectUpdated;
 
-        private Dictionary<int, IRenderer> Assets;
+        public Dictionary<int, IRenderer> Assets { get; private set; }
         private int selectedID;
+        private Dictionary<int, int> selectedInstances;//refframe refid, instance refid
         private RenderBoundingBox selectionBox;
         private RenderModel sky;
         private RenderModel clouds;
         private GizmoTool TranslationGizmo;
+        public InstanceGizmo InstanceGizmo;
 
         private DirectX11Class D3D;
 
@@ -51,6 +56,9 @@ namespace Rendering.Graphics
         // Local batches for objects passed through
         private PrimitiveBatch LineBatch = null;
         private PrimitiveBatch BBoxBatch = null;
+        private int NumBVHToBuild = 0;
+        private int NumBVHBuilt = 0;
+        private List<Task> BVHBuildingTasks = new();
         public PrimitiveManager OurPrimitiveManager { get; private set; }
 
 
@@ -109,6 +117,13 @@ namespace Rendering.Graphics
                 clouds.ConvertMTKToRenderModel(structure);
                 clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
                 clouds.DoRender = false;
+
+                RenderModel instancePlaceholder = new RenderModel();
+                structure = new M2TStructure();
+                structure.ReadFromM2T("Resources/Translokator.m2t");
+                instancePlaceholder.ConvertMTKToRenderModel(structure);
+                instancePlaceholder.InitBuffers(D3D.Device,D3D.DeviceContext);
+                InstanceGizmo = new InstanceGizmo(instancePlaceholder);
             }
 
             selectionBox.SetColour(System.Drawing.Color.Red);
@@ -130,6 +145,9 @@ namespace Rendering.Graphics
             sky.InitBuffers(D3D.Device, D3D.DeviceContext);
             sky.DoRender = WorldSettings.RenderSky;
             clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
+            InstanceGizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
+            InstanceGizmo.InstanceModel.GetBVHBuildingTask(); // Maybe this function should be added to the IRenderer class instead? probably
+            
             Input = new InputClass();
             Input.Init();
             return true;
@@ -164,6 +182,7 @@ namespace Rendering.Graphics
         {
             float lowest = float.MaxValue;
             int lowestRefID = -1;
+            int lowestInstanceID = -1;
             Vector3 WorldPosIntersect = Vector3.Zero;
 
             Ray ray = Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(Width, Height));
@@ -183,35 +202,75 @@ namespace Rendering.Graphics
                     Vector3.TransformNormal(ray.Direction, vWM)
                 );
 
-                if (model.Value is RenderModel)
+                if (model.Value is RenderModel mesh)
                 {
-                    RenderModel mesh = (model.Value as RenderModel);
                     var bbox = mesh.BoundingBox;
 
-                    if (localRay.Intersects(bbox) == 0.0f) continue;
-
-                    for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
+                    if (mesh.InstanceTransforms.Count > 0)
                     {
-                        var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
-                        var v1 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position;
-                        var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
-                        float t;
-
-                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
-
-                        var worldPosition = ray.Position + t * ray.Direction;
-                        var distance = (worldPosition - ray.Position).LengthSquared();
-                        if (distance < lowest)
+                        // We cannot use the per triangle picking method on instances as
+                        // it can take several minutes to complete even on good hardware.
+                        // We just have to deal with the potential picking ray miss.
+                        if (!mesh.BVH.FinishedBuilding)
                         {
-                            lowest = distance;
-                            lowestRefID = model.Key;
-                            WorldPosIntersect = worldPosition;
+                            continue;
                         }
+
+                        foreach (var transform in mesh.InstanceTransforms)
+                        {
+                            var transposed = Matrix4x4.Transpose(transform.Value);
+
+                            Matrix4x4 tvWM = Matrix4x4.Identity;
+                            Matrix4x4.Invert(transposed, out tvWM);
+                            var localInstanceRay = new Ray(
+                                Vector3Utils.TransformCoordinate(ray.Position, tvWM),
+                                Vector3.TransformNormal(ray.Direction, tvWM)
+                            );
+
+                            if (localInstanceRay.Intersects(bbox) == 0.0f) continue;
+
+                            var bvhInstanceIntersect = mesh.BVH.Intersect(ray, localInstanceRay);
+
+                            if (bvhInstanceIntersect.distance < lowest)
+                            {
+                                lowest = bvhInstanceIntersect.distance;
+                                lowestRefID = model.Key;
+                                lowestInstanceID = transform.Key;
+                                WorldPosIntersect = bvhInstanceIntersect.pos;
+                            }
+                        }
+                        
+                    }
+
+                    if (localRay.Intersects(bbox) == 0.0f) continue; // Pick doesn't seem to work when the camera is inside the bounding volume
+
+                    if (!mesh.BVH.FinishedBuilding)
+                    {
+                        var triangleIntersect = PerTriangleRayIntersect(ray, localRay, mesh);
+
+                        if (triangleIntersect.distance < lowest)
+                        {
+                            lowest = triangleIntersect.distance;
+                            lowestRefID = model.Key;
+                            lowestInstanceID = -1;
+                            WorldPosIntersect = triangleIntersect.pos;
+                        }
+
+                        continue;
+                    }
+
+                    var bvhIntersect = mesh.BVH.Intersect(ray, localRay);
+
+                    if (bvhIntersect.distance < lowest)
+                    {
+                        lowest = bvhIntersect.distance;
+                        lowestRefID = model.Key;
+                        lowestInstanceID = -1;
+                        WorldPosIntersect = bvhIntersect.pos;
                     }
                 }
-                if (model.Value is RenderInstance)
+                if (model.Value is RenderInstance instance)
                 {
-                    RenderInstance instance = (model.Value as RenderInstance);
                     RenderStaticCollision collision = instance.GetCollision();
                     var bbox = collision.BoundingBox;
 
@@ -242,6 +301,7 @@ namespace Rendering.Graphics
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
+                            lowestInstanceID = -1;
                             WorldPosIntersect = worldPosition;
                         }
                     }
@@ -249,12 +309,64 @@ namespace Rendering.Graphics
 
                 index++;
             }
+            
+            foreach (var transform in InstanceGizmo.InstanceModel.InstanceTransforms)
+            {
+                var transposed = Matrix4x4.Transpose(transform.Value);
+
+                Matrix4x4 tvWM = Matrix4x4.Identity;
+                Matrix4x4.Invert(transposed, out tvWM);
+                var localInstanceRay = new Ray(
+                    Vector3Utils.TransformCoordinate(ray.Position, tvWM),
+                    Vector3.TransformNormal(ray.Direction, tvWM)
+                );
+
+                if (localInstanceRay.Intersects(InstanceGizmo.InstanceModel.BoundingBox) == 0.0f) continue;
+
+                var bvhInstanceIntersect = InstanceGizmo.InstanceModel.BVH.Intersect(ray, localInstanceRay);
+
+                if (bvhInstanceIntersect.distance < lowest)
+                {
+                    lowest = bvhInstanceIntersect.distance;
+                    lowestRefID = -2;
+                    lowestInstanceID = transform.Key;
+                    WorldPosIntersect = bvhInstanceIntersect.pos;
+                }
+            }
+            
 
             PickOutParams OutputParams = new PickOutParams();
             OutputParams.LowestRefID = lowestRefID;
+            OutputParams.LowestInstanceID = lowestInstanceID;
             OutputParams.WorldPosition = WorldPosIntersect;
 
             return OutputParams;
+        }
+
+        private (float distance, Vector3 pos) PerTriangleRayIntersect(Ray ray, Ray localRay, RenderModel mesh)
+        {
+            (float distance, Vector3 pos) val = (float.MaxValue, Vector3.Zero);
+
+            for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
+            {
+                var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
+                var v1 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position;
+                var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
+                float t;
+
+                if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
+
+                var worldPosition = ray.Position + t * ray.Direction;
+                var distance = (worldPosition - ray.Position).LengthSquared();
+
+                if (distance < val.distance)
+                {
+                    val.distance = distance;
+                    val.pos = worldPosition;
+                }
+            }
+
+            return val;
         }
 
         public void Frame()
@@ -317,6 +429,11 @@ namespace Rendering.Graphics
 
         public bool Render()
         {
+            if (NumBVHBuilt < NumBVHToBuild)
+            {
+                UpdateBVHQueue();
+            }
+
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
@@ -328,9 +445,9 @@ namespace Rendering.Graphics
             foreach (IRenderer RenderEntry in Assets.Values)
             {
                 RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);
+                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);    
             }
-
+            
             //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);
             foreach (var grid in navigationGrids)
             {
@@ -349,6 +466,9 @@ namespace Rendering.Graphics
             sky.DoRender = WorldSettings.RenderSky;
             sky.UpdateBuffers(D3D.Device, D3D.DeviceContext);
             sky.Render(D3D.Device, D3D.DeviceContext, Camera);
+            InstanceGizmo.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            InstanceGizmo.Render(D3D.Device, D3D.DeviceContext, Camera);
+            
 
             D3D.EndScene();
             return true;
@@ -368,6 +488,13 @@ namespace Rendering.Graphics
                 {
                     LineBatch.AddObject(asset.Key, asset.Value);
                 }
+                else if (asset.Value is RenderModel)
+                {
+                    BVHBuildingTasks.Add(((RenderModel)asset.Value).GetBVHBuildingTask());
+                    NumBVHToBuild++;
+
+                    Assets.Add(asset.Key, asset.Value);
+                }
                 else
                 {
                     Assets.Add(asset.Key, asset.Value);
@@ -375,6 +502,12 @@ namespace Rendering.Graphics
             }
 
             InitObjectStack.Clear();
+        }
+
+        private void UpdateBVHQueue()
+        {
+            // Clear completed BVH tasks
+            NumBVHBuilt += BVHBuildingTasks.RemoveAll(t => t.IsCompleted);
         }
 
         public void SelectEntry(int id)
@@ -394,12 +527,66 @@ namespace Rendering.Graphics
                     OldObject.Unselect();
                 }
 
+                if (selectedInstances != null)
+                {
+                    foreach (var selinst in selectedInstances)
+                    {
+                        RenderModel model = Assets[selinst.Key] as RenderModel;
+                        model.UnselectInstance();
+                    }
+                    selectedInstances.Clear();
+                }
+                InstanceGizmo.Unselect();
+
                 TranslationGizmo.OnSelectEntry(NewObject.Transform, true);
                 NewObject.Select();
                 selectionBox.DoRender = true;
                 selectionBox.SetTransform(NewObject.Transform);
                 selectionBox.Update(NewObject.BoundingBox);
                 selectedID = id;
+            }
+        }
+        
+        public void SelectInstance(int instanceId)
+        {
+            IRenderer SelectedEntry = GetAsset(selectedID);
+            if (SelectedEntry != null)
+            {
+                SelectedEntry.Unselect();
+            }
+
+            if (selectedInstances != null)
+            {
+                foreach (var selinst in selectedInstances)
+                {
+                    RenderModel model = Assets[selinst.Key] as RenderModel;
+                    model.UnselectInstance();
+                }
+                selectedInstances.Clear();
+            }
+            InstanceGizmo.Unselect();
+
+            selectedInstances = new Dictionary<int, int>();
+            
+            foreach (var asset in Assets)
+            {
+                if (asset.Value is RenderModel model && model.ContainsInstanceTransform(instanceId))
+                {
+                    selectedInstances.Add(asset.Key, instanceId);
+                    model.SelectInstance(instanceId);
+                }
+
+            }
+
+            if (selectedInstances.Count > 0)
+            {
+                RenderModel model = Assets[selectedInstances.First().Key] as RenderModel;
+                TranslationGizmo.OnSelectEntry(Matrix4x4.Transpose(model.InstanceTransforms[selectedInstances.First().Value]) , true);
+            }
+            else
+            {
+                InstanceGizmo.Select(instanceId);
+                TranslationGizmo.OnSelectEntry(Matrix4x4.Transpose(InstanceGizmo.InstanceModel.InstanceTransforms[instanceId]) , true);
             }
         }
 
@@ -507,9 +694,56 @@ namespace Rendering.Graphics
             Assets = null;
             D3D?.Shutdown();
             D3D = null;
+            selectedInstances = null;
+            InstanceGizmo.Shutdown();
         }
 
+
+        public void UpdateInstanceBuffers(List<RenderModel> renderModels)
+        {
+            foreach (var model in renderModels)
+            {
+                model.ReloadInstanceBuffer(D3D.Device);
+            }
+        }
+
+        public string GetStatusBarText()
+        {
+            if (BVHBuildingTasks.Count == 0)
+            {
+                return "";
+            }
+
+            //return Utils.Language.Language.GetString("$BUILDING_BVH"); //Keeps printing missing text in debug build and slowing things down
+            return $"Building BVH: {NumBVHBuilt}/{NumBVHToBuild}";
+        }
+
+        public ID3D11Device GetId3D11Device()
+        {
+            return D3D.Device;
+        }
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();
         public void ToggleD3DCullMode() => D3D.ToggleCullMode();
+        
+        public void DeleteInstance(FrameObjectBase frame,int InstanceRefID)
+        {
+            if (Assets.ContainsKey(frame.RefID))
+            {
+                RenderModel asset = Assets[frame.RefID] as RenderModel;
+                asset.RemoveInstance(InstanceRefID,D3D.Device);
+            }
+
+            if (frame.Children.Count > 0)
+            {
+                foreach (FrameObjectBase child in frame.Children)
+                {
+                    DeleteInstance(child,InstanceRefID);
+                }            
+            }
+        }
+        public void DeleteInstance(int InstanceRefID)
+        {
+            InstanceGizmo.InstanceModel.RemoveInstance(InstanceRefID,D3D.Device);
+        }
     }
 }
