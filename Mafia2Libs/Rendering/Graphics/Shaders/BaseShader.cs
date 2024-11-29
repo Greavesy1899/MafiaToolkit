@@ -1,10 +1,9 @@
-﻿using System;
-using Rendering.Core;
+﻿using Rendering.Core;
 using ResourceTypes.Materials;
-using System.Drawing;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows;
+using Utils.Logging;
 using Vortice.D3DCompiler;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -378,6 +377,7 @@ namespace Rendering.Graphics
             if(OurErrorcode != null)
             {
                 Error = OurErrorcode.ConvertToString();
+                Log.WriteLine(string.Format("DX11 Compiler Error: {0}", Error), LoggingTypes.ERROR, LogCategoryTypes.APPLICATION);
             }
 
             return OurBytecode;
