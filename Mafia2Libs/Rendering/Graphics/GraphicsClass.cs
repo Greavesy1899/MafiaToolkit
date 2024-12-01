@@ -50,7 +50,7 @@ namespace Rendering.Graphics
 
         private DirectX11Class D3D;
 
-        private SpatialGrid translokatorGrid;
+        private TranslokatorSpatialGrid translokatorGrid;
         private SpatialGrid[] navigationGrids;
 
         // Local batches for objects passed through
@@ -68,7 +68,7 @@ namespace Rendering.Graphics
             Profile = new Profiler();
             Assets = new Dictionary<int, IRenderer>();
             selectionBox = new RenderBoundingBox();
-            translokatorGrid = new SpatialGrid();
+            translokatorGrid = new TranslokatorSpatialGrid();
             navigationGrids = new SpatialGrid[0];
             OurPrimitiveManager = new PrimitiveManager();
 
@@ -153,11 +153,11 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public TreeNode SetTranslokatorGrid(TranslokatorLoader translokator)
+        public void SetTranslokatorGrid(TranslokatorLoader translokator)
         {
-            translokatorGrid = new SpatialGrid(this, translokator);
+            translokatorGrid = new TranslokatorSpatialGrid(translokator);
             translokatorGrid.Initialise(D3D.Device, D3D.DeviceContext);
-            return translokatorGrid.GetTreeNodes();
+            //return translokatorGrid.GetTreeNodes();
         }
 
         public TreeNode SetNavigationGrid(ResourceTypes.Navigation.OBJData[] data)

@@ -1138,7 +1138,7 @@ namespace Mafia2Tool
                 translokatorRoot.Nodes.Add(gridNode);
 
                 dSceneTree.AddToTree(translokatorRoot);
-                //Graphics.SetTranslokatorGrid(SceneData.Translokator);
+                Graphics.SetTranslokatorGrid(SceneData.Translokator);
             }
         }
 
