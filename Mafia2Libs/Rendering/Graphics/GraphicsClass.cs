@@ -741,5 +741,10 @@ namespace Rendering.Graphics
         {
             InstanceGizmo.InstanceModel.RemoveInstance(InstanceRefID,D3D.Device);
         }
+
+        public void SetTranslokatorGridEnabled(int index, bool enabled)
+        {
+            translokatorGrid.SetGridEnabled(index, enabled);
+        }
     }
 }

@@ -362,9 +362,18 @@ namespace Mafia2Tool
 
                 // Update rendered counterpart
                 int refID = (bIsFrame) ? (node.Tag as FrameEntry).RefID : result;
-                if (!bIsFrame && node.Tag is Instance && node.Parent.Tag is Object trObject)
+
+                if (!bIsFrame)
                 {
-                    UpdateInstanceVisualisation(node,trObject,node.Checked && node.CheckIfParentsAreValid());
+                    if (node.Tag is Instance && node.Parent.Tag is Object trObject)
+                    {
+                        UpdateInstanceVisualisation(node, trObject, node.Checked && node.CheckIfParentsAreValid());
+                    }
+                    else if (node.Tag is Grid trGrid)
+                    {
+                        int trGridIndex = Array.IndexOf(SceneData.Translokator.Grids, trGrid);
+                        Graphics.SetTranslokatorGridEnabled(trGridIndex, node.Checked && node.CheckIfParentsAreValid());
+                    }
                 }
                 else
                 {
@@ -1132,6 +1141,7 @@ namespace Mafia2Tool
                     Grid grid = SceneData.Translokator.Grids[i];
                     TreeNode child = new TreeNode("Grid " + i);
                     child.Tag = grid;
+                    child.Checked = false;
                     gridNode.Nodes.Add(child);
                 }
 

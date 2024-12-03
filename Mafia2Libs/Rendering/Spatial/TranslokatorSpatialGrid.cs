@@ -90,6 +90,7 @@ namespace Rendering.Core
                 boundingBox.SetColour(System.Drawing.Color.Red, true);
                 boundingBox.Init(gridBounds);
                 boundingBox.InitBuffers(device, deviceContext);
+                boundingBox.DoRender = false;
 
 
                 for (int i = 0; i < cellBoundingBox.Length; i++)
@@ -98,12 +99,18 @@ namespace Rendering.Core
                     cellBoundingBox[i].Init(cellBounds[i]);
                     cellBoundingBox[i].InitBuffers(device, deviceContext);
                     cellBoundingBox[i].DoRenderInstancesOnly = true;
+                    cellBoundingBox[i].DoRender = false;
                 }
             }
         }
 
         public void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
+            if (!bIsReady)
+            {
+                return;
+            }
+
             foreach (var cell in cellBoundingBox)
             {
                 cell.Render(device, deviceContext, camera);
@@ -159,5 +166,25 @@ namespace Rendering.Core
         //
         //    return Parent;
         //}
+
+        public void SetGridEnabled(int index, bool enabled)
+        {
+            if (index < cellBoundingBox.Length)
+            {
+                cellBoundingBox[index].DoRender = enabled;
+            }
+
+            // We want to render the general bounding box only if one or more grids is enabled
+            boundingBox.DoRender = false;
+
+            foreach (var cell in cellBoundingBox)
+            {
+                if (cell.DoRender)
+                {
+                    boundingBox.DoRender = true;
+                    break;
+                }
+            }
+        }
     }
 }
