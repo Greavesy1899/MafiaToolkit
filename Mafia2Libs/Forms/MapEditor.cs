@@ -371,8 +371,17 @@ namespace Mafia2Tool
                     }
                     else if (node.Tag is Grid trGrid)
                     {
-                        int trGridIndex = Array.IndexOf(SceneData.Translokator.Grids, trGrid);
-                        Graphics.SetTranslokatorGridEnabled(trGridIndex, node.Checked && node.CheckIfParentsAreValid());
+                        bool enabled = node.Checked && node.CheckIfParentsAreValid();
+
+                        if (enabled)
+                        {
+                            RebuildTranslokatorGrids();
+                        }
+                        else
+                        {
+                            int trGridIndex = Array.IndexOf(SceneData.Translokator.Grids, trGrid);
+                            Graphics.SetTranslokatorGridEnabled(trGridIndex, enabled);
+                        }
                     }
                 }
                 else
@@ -1148,7 +1157,7 @@ namespace Mafia2Tool
                 translokatorRoot.Nodes.Add(gridNode);
 
                 dSceneTree.AddToTree(translokatorRoot);
-                Graphics.SetTranslokatorGrid(SceneData.Translokator);
+                Graphics.BuildTranslokatorGrid(SceneData.Translokator);
             }
         }
 
@@ -1860,6 +1869,10 @@ namespace Mafia2Tool
                 {
                     Graphics.InstanceGizmo.UpdateInstanceBuffer(instance, Graphics.GetId3D11Device());
                 }
+            }
+            if (pGrid.SelectedObject is Grid trGrid)
+            {
+                RebuildTranslokatorGrids();
             }
 
             pGrid.Refresh();
@@ -2809,6 +2822,33 @@ namespace Mafia2Tool
                 DeleteTRInstance(objectNode.FirstNode);
             }
             dSceneTree.RemoveNode(objectNode);
+        }
+
+        private void RebuildTranslokatorGrids()
+        {
+            SceneData.Translokator.RebuildGridData();
+            Graphics.BuildTranslokatorGrid(SceneData.Translokator);
+
+            TreeNode gridsNode = null;
+
+            foreach (TreeNode node in translokatorRoot.Nodes)
+            {
+                if (node.Text.Equals("Grids", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    gridsNode = node;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < gridsNode.Nodes.Count; i++)
+            {
+                TreeNode child = gridsNode.Nodes[i];
+
+                if (child.Tag is Grid)
+                {
+                    Graphics.SetTranslokatorGridEnabled(i, child.Checked && child.CheckIfParentsAreValid());
+                }
+            }
         }
     }
 }

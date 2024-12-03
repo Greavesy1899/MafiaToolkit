@@ -24,6 +24,11 @@ namespace Rendering.Core
 
         public TranslokatorSpatialGrid(TranslokatorLoader translokator)
         {
+            Build(translokator);   
+        }
+
+        public void Build(TranslokatorLoader translokator)
+        {
             bIsReady = true;
 
             gridBounds = translokator.Bounds;
@@ -59,27 +64,6 @@ namespace Rendering.Core
 
                 cellBoundingBox[k].SetInstanceTransforms(CellTransforms);
             }
-
-
-            /*for (int i = 0; i != translokator.ObjectGroups.Length; i++)
-            {
-                ObjectGroup objectGroup = translokator.ObjectGroups[i];
-
-                for (int x = 0; x != objectGroup.NumObjects; x++)
-                {
-                    ResourceTypes.Translokator.Object obj = objectGroup.Objects[x];
-
-                    for (int y = 0; y != obj.NumInstances; y++)
-                    {
-                        Instance instance = obj.Instances[y];
-                        var cell = GetCell(instance.Position);
-                        RenderBoundingBox box = new RenderBoundingBox();
-                        box.SetTransform(Matrix4x4.CreateTranslation(instance.Position));
-                        box.Init(new BoundingBox(-Vector3.One, Vector3.One));
-                        cells[cell].AddAsset(box, RefManager.GetNewRefID());
-                    }
-                }
-            }*/
         }
 
         public void Initialise(ID3D11Device device, ID3D11DeviceContext deviceContext)

@@ -153,11 +153,10 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public void SetTranslokatorGrid(TranslokatorLoader translokator)
+        public void BuildTranslokatorGrid(TranslokatorLoader translokator)
         {
-            translokatorGrid = new TranslokatorSpatialGrid(translokator);
+            translokatorGrid.Build(translokator);
             translokatorGrid.Initialise(D3D.Device, D3D.DeviceContext);
-            //return translokatorGrid.GetTreeNodes();
         }
 
         public TreeNode SetNavigationGrid(ResourceTypes.Navigation.OBJData[] data)
