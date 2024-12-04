@@ -9,9 +9,6 @@ namespace Rendering.Core
 {
     public class TranslokatorSpatialGrid
     {
-        // TODO: Make cells selectable and toggleable
-        // Right now all cells render at once and you can't see anything
-
         private BoundingBox gridBounds;
         private BoundingBox[] cellBounds = new BoundingBox[0];
         private RenderBoundingBox boundingBox;
@@ -98,7 +95,6 @@ namespace Rendering.Core
             foreach (var cell in cellBoundingBox)
             {
                 cell.Render(device, deviceContext, camera);
-                //break;
             }
 
             boundingBox.Render(device, deviceContext, camera);
@@ -113,43 +109,6 @@ namespace Rendering.Core
                 cell?.Shutdown();
             }
         }
-
-        //private int GetCell(Vector3 position)
-        //{
-        //    var offsetX = position.X - origin.X;
-        //    var offsetY = position.Y - origin.Y;
-        //    var gridX = Math.Abs(Math.Floor(offsetX / cellSize.X));
-        //    var gridY = Math.Abs(Math.Floor(offsetY / cellSize.Y));
-        //    var intX = Convert.ToUInt32(Math.Min(gridX, width - 1));
-        //    var intY = Convert.ToUInt32(Math.Min(gridY, height - 1));
-        //    return (int)(intX + (int)(intY * width));
-        //}
-
-        //public void SetSelectedCell(int index)
-        //{
-        //    currentCell = index;
-        //}
-
-        //public TreeNode GetTreeNodes()
-        //{
-        //    TreeNode[] ChildCells = new TreeNode[cells.Length];
-        //
-        //    for (int i = 0; i < cells.Length; i++)
-        //    {
-        //        TreeNode Child = new TreeNode();
-        //        Child.Text = string.Format("CELL {0}", i);
-        //        Child.Name = cells[i].GetRefID().ToString();
-        //        Child.Tag = cells[i];
-        //        ChildCells[i] = Child;
-        //    }
-        //
-        //    TreeNode Parent = new TreeNode();
-        //    Parent.Text = string.Format("Parent");
-        //    Parent.Tag = this;
-        //    Parent.Nodes.AddRange(ChildCells);
-        //
-        //    return Parent;
-        //}
 
         public void SetGridEnabled(int index, bool enabled)
         {
