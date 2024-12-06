@@ -302,6 +302,12 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 8;
             else if (node.Tag.GetType() == typeof(ObjectGroup))
                 node.SelectedImageIndex = node.ImageIndex = 8;
+            else if (node.Tag.GetType() == typeof(Grid))
+                node.SelectedImageIndex = node.ImageIndex = 11;
+            else if (node.Tag.GetType() == typeof(Instance))
+                node.SelectedImageIndex = node.ImageIndex = 12;
+            else if (node.Tag.GetType() == typeof(Object))
+                node.SelectedImageIndex = node.ImageIndex = 13;
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
