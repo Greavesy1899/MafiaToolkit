@@ -362,9 +362,27 @@ namespace Mafia2Tool
 
                 // Update rendered counterpart
                 int refID = (bIsFrame) ? (node.Tag as FrameEntry).RefID : result;
-                if (!bIsFrame && node.Tag is Instance && node.Parent.Tag is Object trObject)
+
+                if (!bIsFrame)
                 {
-                    UpdateInstanceVisualisation(node,trObject,node.Checked && node.CheckIfParentsAreValid());
+                    if (node.Tag is Instance && node.Parent.Tag is Object trObject)
+                    {
+                        UpdateInstanceVisualisation(node, trObject, node.Checked && node.CheckIfParentsAreValid());
+                    }
+                    else if (node.Tag is Grid trGrid)
+                    {
+                        bool enabled = node.Checked && node.CheckIfParentsAreValid();
+
+                        if (enabled)
+                        {
+                            RebuildTranslokatorGrids();
+                        }
+                        else
+                        {
+                            int trGridIndex = Array.IndexOf(SceneData.Translokator.Grids, trGrid);
+                            Graphics.SetTranslokatorGridEnabled(trGridIndex, enabled);
+                        }
+                    }
                 }
                 else
                 {
@@ -1132,13 +1150,14 @@ namespace Mafia2Tool
                     Grid grid = SceneData.Translokator.Grids[i];
                     TreeNode child = new TreeNode("Grid " + i);
                     child.Tag = grid;
+                    child.Checked = false;
                     gridNode.Nodes.Add(child);
                 }
 
                 translokatorRoot.Nodes.Add(gridNode);
 
                 dSceneTree.AddToTree(translokatorRoot);
-                //Graphics.SetTranslokatorGrid(SceneData.Translokator);
+                Graphics.BuildTranslokatorGrid(SceneData.Translokator);
             }
         }
 
@@ -1850,6 +1869,10 @@ namespace Mafia2Tool
                 {
                     Graphics.InstanceGizmo.UpdateInstanceBuffer(instance, Graphics.GetId3D11Device());
                 }
+            }
+            if (pGrid.SelectedObject is Grid trGrid)
+            {
+                RebuildTranslokatorGrids();
             }
 
             pGrid.Refresh();
@@ -2799,6 +2822,33 @@ namespace Mafia2Tool
                 DeleteTRInstance(objectNode.FirstNode);
             }
             dSceneTree.RemoveNode(objectNode);
+        }
+
+        private void RebuildTranslokatorGrids()
+        {
+            SceneData.Translokator.RebuildGridData();
+            Graphics.BuildTranslokatorGrid(SceneData.Translokator);
+
+            TreeNode gridsNode = null;
+
+            foreach (TreeNode node in translokatorRoot.Nodes)
+            {
+                if (node.Text.Equals("Grids", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    gridsNode = node;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < gridsNode.Nodes.Count; i++)
+            {
+                TreeNode child = gridsNode.Nodes[i];
+
+                if (child.Tag is Grid)
+                {
+                    Graphics.SetTranslokatorGridEnabled(i, child.Checked && child.CheckIfParentsAreValid());
+                }
+            }
         }
     }
 }
