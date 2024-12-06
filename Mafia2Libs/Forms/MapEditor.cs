@@ -1850,6 +1850,7 @@ namespace Mafia2Tool
                 {
                     Graphics.InstanceGizmo.UpdateInstanceBuffer(instance, Graphics.GetId3D11Device());
                 }
+                dPropertyGrid.SetObject(instance);//this is done so edit transforms tab updates as it didnt happen before
             }
 
             pGrid.Refresh();
