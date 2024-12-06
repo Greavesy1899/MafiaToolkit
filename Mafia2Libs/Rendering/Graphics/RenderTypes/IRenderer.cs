@@ -15,6 +15,7 @@ namespace Rendering.Graphics
         protected ID3D11ShaderResourceView instanceBufferView;
 
         public bool DoRender { get; set; }
+        public bool DoRenderInstancesOnly { get; set; }
         public Matrix4x4 Transform { get; protected set; }
         public BoundingBox BoundingBox { get; protected set; }
 

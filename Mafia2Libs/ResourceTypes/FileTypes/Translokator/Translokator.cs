@@ -30,12 +30,12 @@ namespace ResourceTypes.Translokator
             get { return key; }
             set { key = value; }
         }
-        [TypeConverter(typeof(Vector3Converter))]
+        [TypeConverter(typeof(Vector3Converter)), ReadOnly(true)]
         public Vector3 Origin {
             get { return origin; }
             set { origin = value; }
         }
-        [TypeConverter(typeof(Vector2Converter))]
+        [TypeConverter(typeof(Vector2Converter)), ReadOnly(true)]
         public Vector2 CellSize {
             get { return cellSize; }
             set { cellSize = value; }
@@ -571,6 +571,49 @@ namespace ResourceTypes.Translokator
                 }
             }
             #endregion encode instance data / build grid
+        }
+
+        public void RebuildGridData()
+        {
+            for (int i = 0; i < Grids.Length; i++)
+            {
+                var grid = Grids[i];
+                grid.CellSize = new Vector2(bounds.GetWidth() / grid.Width, bounds.GetHeight() / grid.Height);
+                grid.Data = new ushort[grid.Width * grid.Height];
+                grid.Origin = bounds.Min;
+            }
+
+            for (int i = 0; i < ObjectGroups.Length; i++)
+            {
+                ObjectGroup objectGroup = ObjectGroups[i];
+
+                for (int x = 0; x < objectGroup.Objects.Length; x++)
+                {
+                    Object obj = objectGroup.Objects[x];
+
+                    for (int y = 0; y < obj.Instances.Length; y++)
+                    {
+                        Instance instance = obj.Instances[y];
+
+                        for (int a = 0; a < Grids.Length; a++)
+                        {
+                            var grid = Grids[a];
+
+                            if (obj.GridMax == grid.Key)
+                            {
+                                var offsetX = instance.Position.X - grid.Origin.X;
+                                var offsetY = instance.Position.Y - grid.Origin.Y;
+
+                                var gridX = (ushort)Math.Abs(Math.Floor(offsetX / grid.CellSize.X));
+                                var gridY = (ushort)Math.Abs(Math.Floor(offsetY / grid.CellSize.Y));
+                                gridX = (ushort)Math.Min(gridX, grid.Width - 1);
+                                gridY = (ushort)Math.Min(gridY, grid.Height - 1);
+                                grid.Data[gridX + (gridY * grid.Width)]++;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
 

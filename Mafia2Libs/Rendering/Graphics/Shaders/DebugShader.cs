@@ -35,6 +35,37 @@ namespace Rendering.Graphics
             Profiler.NumDrawCallsThisFrame++;
         }
 
+        public override void RenderInstanced(ID3D11DeviceContext context, PrimitiveTopology type, int size, int offset, int count)
+        {
+            context.IASetInputLayout(Layout);
+
+            // set shaders only if available
+            if (OurInstanceVertexShader != null)
+            {
+                context.VSSetShader(OurInstanceVertexShader);
+            }
+
+            if (OurInstanceVertexShader != null)
+            {
+                context.PSSetShader(OurPixelShader);
+            }
+
+            switch (type)
+            {
+                case PrimitiveTopology.LineList:
+                case PrimitiveTopology.TriangleList:
+                    context.DrawIndexedInstanced(size, count, offset, 0, 0);
+                    break;
+                case PrimitiveTopology.LineStrip:
+                    //context.Draw(size, 0);
+                    break;
+                default:
+                    break;
+            }
+
+            Profiler.NumDrawCallsThisFrame++;
+        }
+
         public override void SetShaderParameters(ID3D11Device device, ID3D11DeviceContext context, MaterialParameters material)
         {
             //empty
