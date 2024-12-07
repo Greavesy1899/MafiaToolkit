@@ -2868,6 +2868,7 @@ namespace Mafia2Tool
                 Instance instance = instanceNode.Tag as Instance;
                 if (groupRef != null && groupRef.HasMeshObject())
                 {
+                    Graphics.DeleteInstance(instance.RefID);//in case the object didnt have mesh before, so there are no duplicates
                     Graphics.DeleteInstance(groupRef,instance.RefID);//maybe add optionable bool to delete in rendermodel so it doesnt reload every instance here
                     for (int i = 0; i < groupRef.Children.Count; i++)
                     {
