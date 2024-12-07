@@ -43,6 +43,7 @@ namespace Forms.Docking
             LinkToActorButton = new System.Windows.Forms.ToolStripMenuItem();
             TranslokatorNewInstanceButton = new System.Windows.Forms.ToolStripMenuItem();
             ActorEntryNewTRObjectButton = new System.Windows.Forms.ToolStripMenuItem();
+            TRRebuildObjectButton = new System.Windows.Forms.ToolStripMenuItem();
             imageList1 = new System.Windows.Forms.ImageList(components);
             TreeView_Explorer = new Mafia2Tool.Controls.MTreeView();
             Tab_Explorer = new System.Windows.Forms.TabControl();
@@ -72,7 +73,7 @@ namespace Forms.Docking
             // 
             // EntryMenuStrip
             // 
-            EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { JumpToButton, DeleteButton, DuplicateButton, Export3DButton, FrameActions, TranslokatorNewInstanceButton, ActorEntryNewTRObjectButton });
+            EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { JumpToButton, DeleteButton, DuplicateButton, Export3DButton, FrameActions, TranslokatorNewInstanceButton, ActorEntryNewTRObjectButton,TRRebuildObjectButton });
             EntryMenuStrip.Name = "EntryMenuStrip";
             EntryMenuStrip.Size = new System.Drawing.Size(204, 158);
             EntryMenuStrip.Opening += OpenEntryContext;
@@ -137,6 +138,12 @@ namespace Forms.Docking
             TranslokatorNewInstanceButton.Name = "TranslokatorNewInstanceButton";
             TranslokatorNewInstanceButton.Size = new System.Drawing.Size(203, 22);
             TranslokatorNewInstanceButton.Text = "New Instance";
+            // 
+            // TRRebuildObjectButton
+            // 
+            TRRebuildObjectButton.Name = "TRRebuildObjectButton";
+            TRRebuildObjectButton.Size = new System.Drawing.Size(203, 22);
+            TRRebuildObjectButton.Text = "Rebuild Object";
             // 
             // ActorEntryNewTRObjectButton
             // 
@@ -377,5 +384,6 @@ namespace Forms.Docking
         private System.Windows.Forms.Label tooltipText;
         public System.Windows.Forms.ToolStripMenuItem TranslokatorNewInstanceButton;
         public System.Windows.Forms.ToolStripMenuItem ActorEntryNewTRObjectButton;
+        public System.Windows.Forms.ToolStripMenuItem TRRebuildObjectButton;
     }
 }

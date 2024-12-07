@@ -153,6 +153,7 @@ namespace Mafia2Tool
             dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
             dSceneTree.TranslokatorNewInstanceButton.Click += new EventHandler(TranslokatorNewInstanceButton_Click);
             dSceneTree.ActorEntryNewTRObjectButton.Click += new EventHandler(ActorEntryNewTRObjectButton_Click);
+            dSceneTree.TRRebuildObjectButton.Click += new EventHandler(TRRebuildObjectButton_Click);
         }
 
         private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -2848,6 +2849,35 @@ namespace Mafia2Tool
                 if (child.Tag is Grid)
                 {
                     Graphics.SetTranslokatorGridEnabled(i, child.Checked && child.CheckIfParentsAreValid());
+                }
+            }
+        }
+        
+        private void TRRebuildObjectButton_Click(object sender, EventArgs e)
+        {
+            TreeNode ObjectNode = dSceneTree.SelectedNode;
+            Object obj = ObjectNode.Tag as Object;
+            if (ObjectNode == null || obj == null || ObjectNode.Nodes.Count == 0)
+            {
+                return;
+            }
+            FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(obj.Name.Hash);
+
+            foreach (TreeNode instanceNode in ObjectNode.Nodes)//deleting all instances under selected object and rebuilding them
+            {
+                Instance instance = instanceNode.Tag as Instance;
+                if (groupRef != null && groupRef.HasMeshObject())
+                {
+                    Graphics.DeleteInstance(groupRef,instance.RefID);//maybe add optionable bool to delete in rendermodel so it doesnt reload every instance here
+                    for (int i = 0; i < groupRef.Children.Count; i++)
+                    {
+                        InstanceTranslokatorPart(Graphics.Assets, groupRef.Children[i], Matrix4x4.Identity, instance,true);
+                    }
+                }
+                else
+                {
+                    Graphics.DeleteInstance(instance.RefID);
+                    Graphics.InstanceGizmo.InstanceTranslokator(instance,Graphics.GetId3D11Device());
                 }
             }
         }

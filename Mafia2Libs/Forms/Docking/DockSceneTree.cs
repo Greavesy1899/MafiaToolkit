@@ -324,6 +324,7 @@ namespace Forms.Docking
             FrameActions.DropDownItems[3].Visible = false;
             EntryMenuStrip.Items[5].Visible = false;
             EntryMenuStrip.Items[6].Visible = false;
+            EntryMenuStrip.Items[7].Visible = false;
 
             if (TreeView_Explorer.SelectedNode != null && TreeView_Explorer.SelectedNode.Tag != null)
             {
@@ -368,6 +369,7 @@ namespace Forms.Docking
                 if (TreeView_Explorer.SelectedNode.Tag is Object)
                 {
                     EntryMenuStrip.Items[5].Visible = true;
+                    EntryMenuStrip.Items[7].Visible = true;
                 }
 
                 if (TreeView_Explorer.SelectedNode.Tag is ActorEntry && hasTranslokatorData)
