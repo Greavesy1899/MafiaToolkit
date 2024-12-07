@@ -302,6 +302,12 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 8;
             else if (node.Tag.GetType() == typeof(ObjectGroup))
                 node.SelectedImageIndex = node.ImageIndex = 8;
+            else if (node.Tag.GetType() == typeof(Grid))
+                node.SelectedImageIndex = node.ImageIndex = 11;
+            else if (node.Tag.GetType() == typeof(Instance))
+                node.SelectedImageIndex = node.ImageIndex = 12;
+            else if (node.Tag.GetType() == typeof(Object))
+                node.SelectedImageIndex = node.ImageIndex = 13;
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
@@ -318,6 +324,7 @@ namespace Forms.Docking
             FrameActions.DropDownItems[3].Visible = false;
             EntryMenuStrip.Items[5].Visible = false;
             EntryMenuStrip.Items[6].Visible = false;
+            EntryMenuStrip.Items[7].Visible = false;
 
             if (TreeView_Explorer.SelectedNode != null && TreeView_Explorer.SelectedNode.Tag != null)
             {
@@ -362,6 +369,7 @@ namespace Forms.Docking
                 if (TreeView_Explorer.SelectedNode.Tag is Object)
                 {
                     EntryMenuStrip.Items[5].Visible = true;
+                    EntryMenuStrip.Items[7].Visible = true;
                 }
 
                 if (TreeView_Explorer.SelectedNode.Tag is ActorEntry && hasTranslokatorData)
