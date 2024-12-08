@@ -81,7 +81,7 @@ namespace ResourceTypes.FrameNameTable
                 object block = resource.FrameObjects.ElementAt(i).Value;
 
                 //possible types to save? might change in the future however.
-                if (block.GetType().BaseType == typeof(FrameObjectBase) || block.GetType().BaseType == typeof(FrameObjectJoint) || block.GetType().BaseType == typeof(FrameObjectSingleMesh))
+                if (block.GetType().BaseType == typeof(FrameObjectBase) || block.GetType().BaseType == typeof(FrameObjectPoint) || block.GetType().BaseType == typeof(FrameObjectSingleMesh))
                 {
                     if ((block as FrameObjectBase).IsOnFrameTable)
                     {

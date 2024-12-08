@@ -1954,8 +1954,8 @@ namespace Mafia2Tool
                     newEntry = new FrameObjectDeflector((FrameObjectDeflector)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectFrame))
                     newEntry = new FrameObjectFrame((FrameObjectFrame)node.Tag);
-                else if (node.Tag.GetType() == typeof(FrameObjectJoint))
-                    newEntry = new FrameObjectJoint((FrameObjectJoint)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectPoint))
+                    newEntry = new FrameObjectPoint((FrameObjectPoint)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectLight))
                     newEntry = new FrameObjectLight((FrameObjectLight)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectModel))

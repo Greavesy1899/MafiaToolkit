@@ -826,7 +826,7 @@ namespace ResourceTypes.FrameResource
 
         public static bool IsFrameType(object entry)
         {
-            if (entry.GetType() == typeof(FrameObjectJoint) ||
+            if (entry.GetType() == typeof(FrameObjectPoint) ||
                 entry.GetType() == typeof(FrameObjectSingleMesh) ||
                 entry.GetType() == typeof(FrameObjectFrame) ||
                 entry.GetType() == typeof(FrameObjectLight) ||
