@@ -74,6 +74,9 @@ float3 CalculateFromNormalMap(VS_OUTPUT input)
 
     normalMap = 2.0f * normalMap - 1.0f;
 
+    // sometimes specular is in blue channel, need to ignore this value for calculating bump
+    normalMap.z = 1.0f - normalMap.x * normalMap.x - normalMap.y * normalMap.y;
+
     // Ensure the tangent and binormal are perfectly orthonormal to the normal vector
     float3 Normal = input.Normal;
     float3 Tangent = normalize(input.Tangent - dot(input.Tangent, input.Normal) * input.Normal);
