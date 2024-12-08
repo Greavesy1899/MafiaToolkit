@@ -1,22 +1,24 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Animation2;
 using ResourceTypes.Materials;
 using ResourceTypes.ModelHelpers.ModelExporter;
+using SharpGLTF.Schema2;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Utils.Language;
-using Utils.Models;
 using Utils.Settings;
 
 namespace Forms.EditorControls
 {
-    public partial class FrameResourceModelOptions : Form
+    public partial class FrameResourceModelImporter : Form
     {
         // Generic Variables (fields)
-        private MT_ObjectBundle CurrentBundle;
-        private MT_ValidationTracker TrackerObject;
-        private IImportHelper CurrentHelper;
+        private string SourceFilename = string.Empty;
+        private MT_ValidationTracker TrackerObject = null;
+        private IImportHelper CurrentHelper = null;
 
         // Material Tab (Fields)
         private string[] ComboBox_LibraryEntries = null;
@@ -24,35 +26,33 @@ namespace Forms.EditorControls
         private Dictionary<ulong, bool> CachedMaterialsExistence = null;
         private Dictionary<ulong, MT_MaterialHelper> ModifiedMatHelpers = null;
 
+        // Animation Tab (Fields)
+        private List<MT_Animation> Animations = new List<MT_Animation>();
+
         // Material Tab (Properties)
         public List<MaterialAddRequestParams> NewMaterials { get; private set; }
 
-        public FrameResourceModelOptions(ModelWrapper Wrapper)
+        // Generic Variables (Properties)
+        public MT_ObjectBundle CurrentBundle { get; private set; } = null;
+
+        public FrameResourceModelImporter(string InSourceFilename)
         {
             InitializeComponent();
             InitializeControls();
 
-            MT_Object Model = Wrapper.ModelObject;
-            TreeView_Objects.Nodes.Add(ConvertObjectToNode(Model));
+            SourceFilename = InSourceFilename;
 
-            // Create a bundle to make it easier to validate
-            CurrentBundle = new MT_ObjectBundle();
-            CurrentBundle.Objects = new MT_Object[1];
-            CurrentBundle.Objects[0] = Model;
+            // upon first initialisation the source should ideally be okay.
+            // with regards to whether we've actually been given a filename which exists.
+            if (!LoadSourceAsset())
+            {
+                DialogResult = DialogResult.Cancel;
+                Close();
+                return;
+            }
 
-            InitiateValidation();
-        }
-
-        public FrameResourceModelOptions(MT_ObjectBundle ObjectBundle)
-        {
-            InitializeComponent();
-            InitializeControls();
-
-            CurrentBundle = ObjectBundle;
-
-            InitiateValidation();
-
-            TreeView_Objects.Nodes.Add(ConvertBundleToNode(ObjectBundle));
+            // ready to show
+            PopulateControl();
         }
 
         private void InitializeControls()
@@ -69,10 +69,10 @@ namespace Forms.EditorControls
 
             // Generate array for ComboBox_ChooseLibrary
             List<string> ComboEntries = new List<string>();
-            for(int i = 0; i < SplitList.Length; i++)
+            for (int i = 0; i < SplitList.Length; i++)
             {
                 // Should 'fingers crossed' be the last entry
-                if(string.IsNullOrEmpty(SplitList[i]))
+                if (string.IsNullOrEmpty(SplitList[i]))
                 {
                     continue;
                 }
@@ -95,6 +95,7 @@ namespace Forms.EditorControls
         private void Localise()
         {
             Button_Validate.Text = Language.GetString("$VALIDATE");
+            Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Continue.Text = Language.GetString("$CONTINUE");
             Button_StopImport.Text = Language.GetString("$STOP");
             TabPage_Model.Text = Language.GetString("$TAB_MODELS");
@@ -120,6 +121,21 @@ namespace Forms.EditorControls
                     LodNode.Tag = Object.Lods[i];
                     ValidateObject(LodNode);
                     Root.Nodes.Add(LodNode);
+                }
+            }
+
+            if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
+            {
+                if (Object.Skeleton != null)
+                {
+                    TreeNode SkeletonNode = new TreeNode("Skeleton");
+                    SkeletonNode.Tag = Object.Skeleton;
+                    ValidateObject(SkeletonNode);
+                    Root.Nodes.Add(SkeletonNode);
+
+                    // See if we need to push animations into exclusive array
+                    // The Animation Tab is how we import Anims, not by using usual import method
+                    Animations.AddRange(Object.Skeleton.Animations);
                 }
             }
 
@@ -174,6 +190,10 @@ namespace Forms.EditorControls
             {
                 NewHelper = new MT_CollisionHelper((MT_Collision)e.Node.Tag);
             }
+            else if (e.Node.Tag is MT_Skeleton)
+            {
+                NewHelper = new MT_SkeletonHelper((MT_Skeleton)e.Node.Tag);
+            }
 
             // Then set it up from the object we pass into the helper,
             // and continue by caching it and assigning onto the property grid.
@@ -217,8 +237,40 @@ namespace Forms.EditorControls
         {
             TrackerObject = new MT_ValidationTracker();
             CurrentBundle.ValidateObject(TrackerObject);
+        }
 
-            Label_DebugMessage.Text = string.Format("[MESSAGE COUNT: {0}]", TrackerObject.GetMessageCount());
+        private bool LoadSourceAsset()
+        {
+            if (SourceFilename == string.Empty)
+            {
+                return false;
+            }
+
+            if (Path.Exists(SourceFilename) == false)
+            {
+                return false;
+            }
+
+            MT_Logger ImportResults = new MT_Logger();
+
+            // TODO: Check whether bundle generated from gltf is good?
+            CurrentBundle = new MT_ObjectBundle();
+            CurrentBundle.BuildFromGLTF(ModelRoot.Load(SourceFilename), ImportResults);
+
+            return true;
+        }
+
+        private void PopulateControl()
+        {
+            if (CurrentBundle == null)
+            {
+                return;
+            }
+
+            InitiateValidation();
+
+            TreeView_Objects.Nodes.Clear();
+            TreeView_Objects.Nodes.Add(ConvertBundleToNode(CurrentBundle));
         }
 
         private void Button_Continue_Click(object sender, EventArgs e)
@@ -245,7 +297,7 @@ namespace Forms.EditorControls
                 CurrentHelper.Store();
             }
 
-            if(CurrentMatHelper != null)
+            if (CurrentMatHelper != null)
             {
                 SaveMaterialChanges(CurrentMatHelper);
             }
@@ -274,7 +326,7 @@ namespace Forms.EditorControls
             // This will essentially move all properties from the helper
             // directly into the object. This is used to avoid bloat on the 
             // property grid.
-            if(CurrentHelper != null)
+            if (CurrentHelper != null)
             {
                 CurrentHelper.Store();
             }
@@ -338,13 +390,13 @@ namespace Forms.EditorControls
             foreach (KeyValuePair<ulong, MT_MaterialInstance> MatPair in MatCollectionVisitor.Materials)
             {
                 // 1. ....
-                if(DoesMaterialExistAlready(MatPair.Value))
+                if (DoesMaterialExistAlready(MatPair.Value))
                 {
                     continue;
                 }
 
                 // 2. ....
-                if(ModifiedMatHelpers.ContainsKey(MatPair.Key))
+                if (ModifiedMatHelpers.ContainsKey(MatPair.Key))
                 {
                     MT_MaterialHelper Helper = ModifiedMatHelpers[MatPair.Key];
                     MaterialAddRequestParams NewParams = new MaterialAddRequestParams(Helper.Material, ComboBox_LibraryEntries[Helper.LibraryIndex]);
@@ -373,7 +425,7 @@ namespace Forms.EditorControls
 
         private void TabControl_Editors_TabIndexChanged(object sender, EventArgs e)
         {
-            if(TabControl_Editors.SelectedTab == TabPage_Material)
+            if (TabControl_Editors.SelectedTab == TabPage_Material)
             {
                 // Make sure to clear the list.
                 ListView_Materials.Items.Clear();
@@ -386,17 +438,17 @@ namespace Forms.EditorControls
                 // Iterate through all collected materials.
                 // If we find a valid Material, then we can add it to the list as valid.
                 // Otherwise it's added as missing.
-                foreach(KeyValuePair<ulong, MT_MaterialInstance> MatPair in MatCollectionVisitor.Materials)
+                foreach (KeyValuePair<ulong, MT_MaterialInstance> MatPair in MatCollectionVisitor.Materials)
                 {
                     MT_MaterialInstance MatInstance = MatPair.Value;
-                    if(MatInstance.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
+                    if (MatInstance.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
                     {
                         // Skip Collisions
                         continue;
                     }
 
                     // If material exists then skip - we shouldn't allow any edits
-                    if(DoesMaterialExistAlready(MatPair.Value))
+                    if (DoesMaterialExistAlready(MatPair.Value))
                     {
                         // skip, not allowed to edit
                         continue;
@@ -425,12 +477,30 @@ namespace Forms.EditorControls
                     ListView_Materials.Items.Add(NewListItem);
                 }
             }
+            else if (TabControl_Editors.SelectedTab == TabPage_Animations)
+            {
+                // Make sure to clear the list.
+                ListView_Animations.Items.Clear();
+
+                foreach (MT_Animation Animation in Animations)
+                {
+                    // Make the new List Entry and push into list control
+                    ListViewItem NewListItem = new ListViewItem();
+                    NewListItem.Text = Animation.AnimName;
+                    NewListItem.ImageIndex = 0;
+                    NewListItem.Checked = true;
+                    NewListItem.Name = Animation.AnimName;
+                    NewListItem.Tag = Animation;
+
+                    ListView_Animations.Items.Add(NewListItem);
+                }
+            }
         }
 
         private void ListView_Materials_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Store current values for the current helper
-            if(CurrentMatHelper != null)
+            if (CurrentMatHelper != null)
             {
                 // Save changes and clear
                 SaveMaterialChanges(CurrentMatHelper);
@@ -451,7 +521,7 @@ namespace Forms.EditorControls
 
             // Then update the controls with the recently selected Item.
             ListViewItem Item = ListView_Materials.SelectedItems[0];
-            if(Item.Tag != null)
+            if (Item.Tag != null)
             {
                 MT_MaterialHelper MatHelper = Item.Tag as MT_MaterialHelper;
                 ComboBox_ChoosePreset.SelectedIndex = MatHelper.LibraryIndex;
@@ -462,6 +532,23 @@ namespace Forms.EditorControls
             }
         }
 
+        private void ListView_Animations_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (TabControl_Editors.SelectedTab != TabPage_Animations)
+            {
+                // Skip if not on this control, we need to avoid any uneccessary changes for performance
+                return;
+            }
+
+            if (ListView_Animations.SelectedItems.Count == 0)
+            {
+                // Skip if nothing is selected
+                return;
+            }
+
+            PropertyGrid_Anim.SelectedObject = ListView_Animations.SelectedItems[0].Tag;
+        }
+
         private void ComboBox_Preset_SelectionChangeCommitted(object sender, EventArgs e)
         {
             MaterialPreset NewPreset = (MaterialPreset)ComboBox_ChoosePreset.SelectedIndex;
@@ -469,6 +556,48 @@ namespace Forms.EditorControls
             // Check is guarded, will handle if we need to update material.
             CurrentMatHelper.SetPreset(NewPreset);
             PropertyGrid_Material.SelectedObject = CurrentMatHelper.Material;
+        }
+
+        private void Button_Anim_SaveAN2_OnClick(object sender, EventArgs e)
+        {
+            // export selected Animation as AN2
+            if (TabControl_Editors.SelectedTab != TabPage_Animations)
+            {
+                // Skip if not on this control, we need to avoid any uneccessary changes for performance
+                return;
+            }
+
+            if (ListView_Animations.SelectedItems.Count == 0)
+            {
+                // Skip if nothing is selected
+                return;
+            }
+
+            MT_Animation SelectedAnimation = (ListView_Animations.SelectedItems[0].Tag as MT_Animation);
+            if (SelectedAnimation == null)
+            {
+                // Not an animation
+                return;
+            }
+
+            Animation2 NewAnimation = new Animation2();
+            NewAnimation.ConvertFromAnimation(SelectedAnimation);
+
+            SaveFileDialog AnimSaveDialog = new SaveFileDialog();
+            AnimSaveDialog.Title = "$SAVE_ANIMATION";
+            AnimSaveDialog.Filter = "Animation2 File (*.an2)|*.an2*";
+
+            if (AnimSaveDialog.ShowDialog() == DialogResult.OK)
+            {
+                NewAnimation.WriteToFile(AnimSaveDialog.FileName);
+            }
+        }
+
+        private void Button_Reload_Click(object sender, EventArgs e)
+        {
+            // TODO: Do we consider force closing the window here, if the file has gone?
+            LoadSourceAsset();
+            PopulateControl();
         }
     }
 }

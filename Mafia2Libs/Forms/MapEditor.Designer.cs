@@ -76,7 +76,6 @@ namespace Mafia2Tool
             dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             FrameBrowser = new System.Windows.Forms.OpenFileDialog();
             SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            AnimFileDialog = new System.Windows.Forms.OpenFileDialog();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
             ToolbarStrip.SuspendLayout();
@@ -426,7 +425,7 @@ namespace Mafia2Tool
             // 
             // MeshBrowser
             // 
-            MeshBrowser.Filter = "Bundle|*.mtb|FBX|*.fbx";
+            MeshBrowser.Filter = "GLTF File (Binary) (*.glb)|*.glb|GLTF File (ASCII) (*.gltf)|*.gltf*";
             // 
             // TxtBrowser
             // 
@@ -444,10 +443,6 @@ namespace Mafia2Tool
             // FrameBrowser
             // 
             FrameBrowser.Filter = "FrameResource|*.fr|Toolkit Frame Data|*.framedata";
-            // 
-            // AnimFileDialog
-            // 
-            AnimFileDialog.Filter = "Animation2|*an2";
             // 
             // MapEditor
             // 

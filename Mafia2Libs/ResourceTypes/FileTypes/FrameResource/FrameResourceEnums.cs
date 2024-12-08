@@ -5,7 +5,7 @@ namespace ResourceTypes.FrameResource
     public enum FrameResourceObjectType
     {
         NULL = -1,
-        Joint = 0,
+        Point = 0,
         SingleMesh,
         Frame,
         Light,

@@ -1,92 +1,166 @@
-﻿using System.IO;
+﻿using SharpGLTF.Geometry;
+using SharpGLTF.Geometry.VertexTypes;
+using SharpGLTF.Materials;
+using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Numerics;
+using Utils.Models;
 using Utils.StringHelpers;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
+    using VERTEXCOLLISION = SharpGLTF.Geometry.VertexTypes.VertexPosition;
+    using VERTEXCOLLISIONBUILDER = VertexBuilder<VertexPosition, VertexEmpty, VertexEmpty>;
+
+    using CollisionMeshBuilder = MeshBuilder<VertexPosition, VertexEmpty, VertexEmpty>;
+
+    public class MT_CollisionInstance
+    {
+        public Vector3 Position { get; set; } = Vector3.Zero;
+        public Quaternion Rotation { get; set; } = Quaternion.Identity;
+        public Vector3 Scale { get; set; } = Vector3.One;
+    }
+
     public class MT_Collision : IValidator
     {
         public Vector3[] Vertices { get; set; }
         public uint[] Indices { get; set; }
         public MT_FaceGroup[] FaceGroups { get; set; }
+        public MT_CollisionInstance[] Instances { get; set; }
 
-        /** IO Functions */
-        public bool ReadFromFile(BinaryReader reader)
+        public MT_Collision()
         {
-            // Attempt to read Vertices
-            uint NumVertices = reader.ReadUInt32();
-            Vertices = new Vector3[NumVertices];
-            for (int i = 0; i < NumVertices; i++)
-            {
-                Vertices[i] = Vector3Utils.ReadFromFile(reader);
-            }
-
-            // Read FaceGroups
-            uint NumFaceGroups = reader.ReadUInt32();
-            FaceGroups = new MT_FaceGroup[NumFaceGroups];
-            for (int i = 0; i < NumFaceGroups; i++)
-            {
-                // Attempt to read FaceGroup
-                MT_FaceGroup NewFaceGroup = new MT_FaceGroup();
-                NewFaceGroup.StartIndex = reader.ReadUInt32();
-                NewFaceGroup.NumFaces = reader.ReadUInt32();
-
-                // Read FaceGroup Material
-                MT_MaterialInstance NewMaterial = new MT_MaterialInstance();
-                NewMaterial.MaterialFlags = (MT_MaterialInstanceFlags)reader.ReadInt32();
-                NewMaterial.Name = StringHelpers.ReadString8(reader);
-                NewFaceGroup.Material = NewMaterial;
-                FaceGroups[i] = NewFaceGroup;
-            }
-
-            // Read Indices
-            uint NumIndices = reader.ReadUInt32();
-            Indices = new uint[NumIndices];
-            for (int i = 0; i < NumIndices; i++)
-            {
-                Indices[i] = reader.ReadUInt32();
-            }
-
-            return true;
+            Vertices = new Vector3[0];
+            Indices = new uint[0];
+            FaceGroups = new MT_FaceGroup[0];
+            Instances = new MT_CollisionInstance[0];
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void BuildGLTF(SceneBuilder InScene, NodeBuilder RootNode)
         {
-            // Attempt to write vertices
-            writer.Write(Vertices.Length);
-            for (int i = 0; i < Vertices.Length; i++)
+            CollisionMeshBuilder LodMesh = new CollisionMeshBuilder();
+
+            foreach (MT_FaceGroup FaceGroup in FaceGroups)
             {
-                Vector3 Vertex = Vertices[i];
-                Vertex.WriteToFile(writer);
-            }
+                var material1 = new MaterialBuilder(FaceGroup.Material.Name)
+                    .WithDoubleSide(true)
+                    .WithMetallicRoughnessShader()
+                    .WithChannelParam(KnownChannel.BaseColor, KnownProperty.RGBA, new Vector4(1, 0, 0, 1));
 
-            // Attempt to write FaceGroups
-            writer.Write(FaceGroups.Length);
-            for (int i = 0; i < FaceGroups.Length; i++)
-            {
-                // Write FaceGroup
-                MT_FaceGroup FaceGroup = FaceGroups[i];
-                writer.Write(FaceGroup.StartIndex);
-                writer.Write(FaceGroup.NumFaces);
+                var CurFaceGroup = LodMesh.UsePrimitive(material1);
 
-                // Write Material Instance
-                MT_MaterialInstance MaterialInstance = FaceGroup.Material;
-                writer.Write((int)MaterialInstance.MaterialFlags);
-                StringHelpers.WriteString8(writer, MaterialInstance.Name);
+                uint StartIndex = FaceGroup.StartIndex;
+                uint EndIndex = StartIndex + (FaceGroup.NumFaces * 3);
 
-                if (MaterialInstance.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.HasDiffuse))
+                for (uint Idx = StartIndex; Idx < EndIndex; Idx += 3)
                 {
-                    StringHelpers.WriteString8(writer, MaterialInstance.DiffuseTexture);
+                    Vector3 V1 = Vertices[Indices[Idx]];
+                    Vector3 V2 = Vertices[Indices[Idx + 1]];
+                    Vector3 V3 = Vertices[Indices[Idx + 2]];
+
+                    CurFaceGroup.AddTriangle(BuildRidgedVertex(V1), BuildRidgedVertex(V2), BuildRidgedVertex(V3));
                 }
             }
 
-            // Attempt to write Indices
-            writer.Write(Indices.Length);
-            for (int i = 0; i < Indices.Length; i++)
+            int InstanceIdx = 0;
+            foreach(MT_CollisionInstance Instance in Instances)
             {
-                writer.Write(Indices[i]);
+                NodeBuilder InstanceNode = new NodeBuilder().WithLocalTranslation(Instance.Position).WithLocalScale(Instance.Scale).WithLocalRotation(Instance.Rotation);
+                InstanceNode.Name = string.Format("COLINSTANCE_{0}", InstanceIdx);
+                RootNode.AddNode(InstanceNode);
+
+                InScene.AddRigidMesh(LodMesh, InstanceNode);
+
+                InstanceIdx++;
             }
+        }
+
+        public void BuildCollisionFromNode(Node InstanceNode)
+        {
+            Mesh CollisionMesh = InstanceNode.Mesh;
+            if(CollisionMesh == null)
+            {
+                // failure!
+                return;
+            }
+
+            // load mesh from instances
+            List<Vector3> FinalVertexBuffer = new List<Vector3>();
+            List<uint> FinalIndicesBuffer = new List<uint>();
+
+            FaceGroups = new MT_FaceGroup[CollisionMesh.Primitives.Count];
+            for (int Idx = 0; Idx < FaceGroups.Count(); Idx++)
+            {
+                MeshPrimitive Primitive = CollisionMesh.Primitives[Idx];
+                if (Primitive.DrawPrimitiveType != PrimitiveType.TRIANGLES)
+                {
+                    // must be triangles
+                    return;
+                }
+
+                MT_FaceGroup NewFaceGroup = new MT_FaceGroup();
+                FaceGroups[Idx] = NewFaceGroup;
+
+                // convert material (TODO: Could we use this to determine vertex semantics)
+                Material SelectedMaterial = Primitive.Material;
+                NewFaceGroup.Material = new MT_MaterialInstance();
+                NewFaceGroup.Material.Name = SelectedMaterial.Name;
+
+                IList<Vector3> PosList = null;
+                Accessor PositionBuffer = Primitive.GetVertexAccessor("POSITION");
+                if (PositionBuffer != null)
+                {
+                    PosList = PositionBuffer.AsVector3Array();
+                }
+
+                uint CurrentOffset = (uint)FinalVertexBuffer.Count;
+                Vector3[] TempList = new Vector3[PosList.Count];
+                List<uint> IndicesList = new List<uint>();
+
+                // now generate vertex buffer using triangle list
+                var TriangleList = Primitive.GetTriangleIndices();
+                foreach (var Triangle in TriangleList)
+                {
+                    TempList[Triangle.A] = PosList[Triangle.A];
+                    TempList[Triangle.B] = PosList[Triangle.B];
+                    TempList[Triangle.C] = PosList[Triangle.C];
+
+                    IndicesList.Add((uint)(CurrentOffset + Triangle.A));
+                    IndicesList.Add((uint)(CurrentOffset + Triangle.B));
+                    IndicesList.Add((uint)(CurrentOffset + Triangle.C));
+                }
+
+                // complete facegroup
+                NewFaceGroup.StartIndex = (uint)FinalIndicesBuffer.Count;
+                NewFaceGroup.NumFaces = (uint)TriangleList.Count();
+
+                // push facegroup data into mesh buffers
+                FinalVertexBuffer.AddRange(TempList);
+                FinalIndicesBuffer.AddRange(IndicesList);
+            }
+
+            Vertices = FinalVertexBuffer.ToArray();
+            Indices = FinalIndicesBuffer.ToArray();
+
+            // add as instance
+            MT_CollisionInstance ColInstance = new MT_CollisionInstance();
+            ColInstance.Position = InstanceNode.LocalTransform.Translation;
+            ColInstance.Scale = InstanceNode.LocalTransform.Scale;
+            ColInstance.Rotation = InstanceNode.LocalTransform.Rotation;
+
+            Instances = new MT_CollisionInstance[1];
+            Instances[0] = ColInstance;
+        }
+
+        private VERTEXCOLLISIONBUILDER BuildRidgedVertex(Vector3 InPosition)
+        {
+            VERTEXCOLLISION VB1 = new VERTEXCOLLISION(InPosition);
+
+            return new VERTEXCOLLISIONBUILDER(VB1);
         }
 
         //~ IValidator Interface
@@ -110,6 +184,13 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 AddMessage(MT_MessageType.Error, "This collision object has no face groups.");
                 bValidity = false;
+            }
+
+            if(Instances.Length == 0)
+            {
+                AddMessage(
+                    MT_MessageType.Warning, 
+                    "This collision object has no instances! The Mesh will be added into the file. Create an instance for it to be interactable in the game world.");
             }
 
             foreach(var FaceGroup in FaceGroups)

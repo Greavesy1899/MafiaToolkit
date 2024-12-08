@@ -5,7 +5,6 @@ using Rendering.Factories;
 using Rendering.Graphics;
 using Rendering.Input;
 using ResourceTypes.Actors;
-using ResourceTypes.Animation2;
 using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
 using ResourceTypes.FrameNameTable;
@@ -14,6 +13,7 @@ using ResourceTypes.Materials;
 using ResourceTypes.ModelHelpers.ModelExporter;
 using ResourceTypes.Navigation;
 using ResourceTypes.Navigation.Traffic;
+using SharpGLTF.Schema2;
 using ResourceTypes.Translokator;
 using System;
 using System.Collections.Generic;
@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Extensions;
@@ -31,6 +32,8 @@ using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
+using static ResourceTypes.Collisions.Collision;
+using static UnluacNET.TableLiteral;
 using Collision = ResourceTypes.Collisions.Collision;
 using Object = ResourceTypes.Translokator.Object;
 
@@ -79,6 +82,8 @@ namespace Mafia2Tool
             TextureLoader.ScenePath = SceneData.ScenePath;
             InitializeComponent();
             Localise();
+
+            sceneData.FrameResource.OnFrameRemoved += OnFrameRemoved;
 
             if (MaterialsManager.MaterialLibraries.Count == 0)
             {
@@ -286,25 +291,6 @@ namespace Mafia2Tool
 
                 objectForm.Dispose();
             }
-        }
-
-        private void InternalSaveModelWrapper(ModelWrapper Model)
-        {
-            if (SaveFileDialog != null)
-            {
-                SaveFileDialog.Reset();
-            }
-            SaveFileDialog.FileName = Model.ModelObject.ObjectName;
-            SaveFileDialog.RestoreDirectory = true;
-            SaveFileDialog.Filter = "FBX File (Binary) (*.fbx)|*.fbx|FBX File (ASCII) (*.fbx)|*.fbx|MTB File(*.mtb)|*.mtb*";
-            SaveFileDialog.FilterIndex = ToolkitSettings.Format + 1;
-
-            if (SaveFileDialog.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            Model.ExportObject(SaveFileDialog.FileName, SaveFileDialog.FilterIndex);
         }
 
         private void ExportFrame_Click(object sender, EventArgs e)
@@ -1507,47 +1493,6 @@ namespace Mafia2Tool
             Graphics.OnSelectedObjectUpdated(this, Arguments);
         }
 
-        private ModelWrapper LoadModelFromFile()
-        {
-            ModelWrapper model = new ModelWrapper();
-
-            if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
-            {
-                return null;
-            }
-
-            string FileNameExtension = Path.GetExtension(MeshBrowser.FileName);
-            FileNameExtension = FileNameExtension.ToLower();
-
-            if (FileNameExtension.Equals(".fbx"))
-            {
-                model.ReadObjectFromFbx(MeshBrowser.FileName);
-            }
-            else if (FileNameExtension.Equals(".mto"))
-            {
-                model.ReadObjectFromM2T(MeshBrowser.FileName);
-            }
-
-            // Ensure we do not crash
-            if(model.ModelObject == null)
-            {
-                string ErrorMsg = string.Format("[LoadModelFromFile] Model is NULL, failed to load model from the file we were given:\n{0}", MeshBrowser.FileName);
-                MessageBox.Show(ErrorMsg);
-                return null;
-            }
-
-            // Let users change their import values
-            FrameResourceModelOptions modelForm = new FrameResourceModelOptions(model);
-            if (modelForm.ShowDialog() != DialogResult.OK)
-            {
-                return null;
-            }
-
-            modelForm.Dispose();
-
-            return model;
-        }
-
         private void CreateMeshBuffers(ModelWrapper model)
         {
             // TODO: I want to move this into FrameObjectSingleMesh.
@@ -1580,19 +1525,10 @@ namespace Mafia2Tool
 
             if (frame is FrameObjectSingleMesh)
             {
-                FrameObjectSingleMesh SingleMesh = (frame as FrameObjectSingleMesh);
-                ModelWrapper LoadedModel = LoadModelFromFile();
-
-                if (LoadedModel == null)
-                {
-                    // failed to load model
-                    return;
-                }
-
-                SingleMesh.CreateMeshFromRawModel(LoadedModel);
-
-                // TODO: This will need to live elsewhere one day!
-                CreateMeshBuffers(LoadedModel);
+                // TODO: We need to find an alternative method to creating single meshes
+                // The Bundle system consists of multiple objects, in which one may not even be a single mesh.
+                // Therefore it doesn't make sense to use this method - all users should use bundles.
+                // However there may be some benefit in keeping this, maybe as a way to re-use loaded Single Meshes?
             }
 
             // If everything was succesful, then we would have reached this point.
@@ -1901,46 +1837,29 @@ namespace Mafia2Tool
             ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
         }
 
-        private void DeleteFrames(TreeNode node)
-        {
-            for (int i = 0; i < node.Nodes.Count; i++)
-            {
-                if (FrameResource.IsFrameType(node.Nodes[i].Tag))
-                {
-                    FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                    bool bDidRemove = SceneData.FrameResource.DeleteFrame(entry);
-                    Graphics.DeleteAsset(entry.RefID);
-                    DeleteFrames(node.Nodes[i]);
-
-                    ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
-                }
-            }
-        }
         private void DeleteButton_Click(object sender, EventArgs e)
         {
             TreeNode node = dSceneTree.SelectedNode;
 
             if (FrameResource.IsFrameType(node.Tag))
             {
-                FrameEntry obj = node.Tag as FrameEntry;
+                FrameEntry entry = node.Tag as FrameEntry;
+                bool bDidRemove = SceneData.FrameResource.DeleteFrame(entry);
 
-                if (obj != null)
-                {
-                    dSceneTree.RemoveNode(node);
-                    Graphics.DeleteAsset(obj.RefID);
-                    bool bDidRemove = SceneData.FrameResource.DeleteFrame(obj);
+                ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
 
-                    ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
-                }
-
-                DeleteFrames(node);
+                // we can just delete root node here, all children are vanquished
+                dSceneTree.RemoveNode(node);
             }
             else if(node.Tag.GetType() == typeof(FrameHeaderScene))
             {
-                var scene = (node.Tag as FrameHeaderScene);
+                FrameHeaderScene scene = (node.Tag as FrameHeaderScene);
+                bool bDidRemove = SceneData.FrameResource.DeleteScene(scene);
+
+                ToolkitAssert.Ensure(bDidRemove == true, "Failed to remove!");
+
+                // we can just delete root node here, all children are vanquished
                 dSceneTree.RemoveNode(node);
-                SceneData.FrameResource.FrameScenes.Remove(scene.RefID);
-                DeleteFrames(node);
             }
             else if (node.Tag.GetType() == typeof(Collision.Placement))
             {
@@ -2149,50 +2068,107 @@ namespace Mafia2Tool
 
         private void Export3DButton_Click(object sender, EventArgs e)
         {
+            ModelWrapper WrapperObject = null;
             if (dSceneTree.SelectedNode.Tag.GetType() == typeof(Collision.CollisionModel))
             {
-                ExportCollision(dSceneTree.SelectedNode.Tag as Collision.CollisionModel);
+                WrapperObject = ExportCollision(dSceneTree.SelectedNode.Tag as Collision.CollisionModel);
             }
             else if (dSceneTree.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
             {
-                ExportScene(dSceneTree.SelectedNode.Tag as FrameHeaderScene);
+                WrapperObject = ExportScene(dSceneTree.SelectedNode.Tag as FrameHeaderScene);
             }
             else if (dSceneTree.SelectedNode.Text == "Collision Data")
             {
-                ExportCollisions(dSceneTree.SelectedNode);
+                WrapperObject = ExportCollisions(dSceneTree.SelectedNode);
             }
             else
             {
-                Export3DFrame();
+                WrapperObject = Export3DFrame();
             }
+
+            // Create a bundle to make it easier to validate
+            MT_ObjectBundle CurrentBundle = new MT_ObjectBundle();
+            CurrentBundle.Objects = new MT_Object[1];
+            CurrentBundle.Objects[0] = WrapperObject.ModelObject;
+
+            FrameResourceModelExporter ModelExporter = new FrameResourceModelExporter(CurrentBundle);
+            if (ModelExporter.ShowDialog() != DialogResult.OK)
+            {
+                ModelExporter.Dispose();
+                return;
+            }
+
+            // Now we should choose on a name
+            if (SaveFileDialog != null)
+            {
+                SaveFileDialog.Reset();
+            }
+            SaveFileDialog.FileName = CurrentBundle.Objects[0].ObjectName;
+            SaveFileDialog.RestoreDirectory = true;
+            SaveFileDialog.Filter = "GLTF File (Binary) (*.glb)|*.glb|GLTF File (ASCII) (*.gltf)|*.gltf*";
+
+            if (SaveFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            WrapperObject.ExportObject(SaveFileDialog.FileName, 0);
         }
 
-        private void ExportCollision(Collision.CollisionModel data)
+        private ModelWrapper ExportCollision(Collision.CollisionModel data)
         {
-            MT_Object CollisionObject = new MT_Object();
-            CollisionObject.BuildFromCollision(data);
+            Collision.Placement[] TempPlacements = new Collision.Placement[1];
+            TempPlacements[0] = new Collision.Placement();
+
+            MT_Object CollisionObject = MT_Object.TryBuildObject(data, TempPlacements);
 
             ModelWrapper WrapperObject = new ModelWrapper();
             WrapperObject.ModelObject = CollisionObject;
 
-            InternalSaveModelWrapper(WrapperObject);
+            return WrapperObject;
         }
 
-        private void ExportCollisions(TreeNode CollisionRoot)
+        private ModelWrapper ExportCollisions(TreeNode CollisionRoot)
         {
-            foreach(TreeNode CollisionNode in CollisionRoot.Nodes)
+            MT_Object RootObject = new MT_Object();
+            RootObject.ObjectName = "COLLISION_ROOT";
+            RootObject.ObjectType = MT_ObjectType.Dummy;
+
+            List<MT_Object> ChildObjects = new List<MT_Object>();
+
+            foreach (TreeNode CollisionNode in CollisionRoot.Nodes)
             {
                 // Skip non collision models
-                if (CollisionNode.Tag.GetType() != typeof(Collision.CollisionModel))
+                Collision.CollisionModel CurrentModel = (CollisionNode.Tag as Collision.CollisionModel);
+                if(CurrentModel == null)
                 {
                     continue;
                 }
 
+                List<Collision.Placement> Placements = new List<Collision.Placement>();
+                foreach(TreeNode PlacementNode in CollisionNode.Nodes)
+                {
+                    if (PlacementNode.Tag.GetType() == typeof(Collision.Placement))
+                    {
+                        Placements.Add(PlacementNode.Tag as Collision.Placement);
+                    }
+                }
 
+                // construct collision using model and placements
+                MT_Object NewCollisionObject = MT_Object.TryBuildObject(CurrentModel, Placements.ToArray());
+                ChildObjects.Add(NewCollisionObject);
             }
+
+            RootObject.Children = ChildObjects.ToArray();
+            RootObject.ObjectFlags |= MT_ObjectFlags.HasChildren;
+
+            ModelWrapper WrapperObject = new ModelWrapper();
+            WrapperObject.ModelObject = RootObject;
+
+            return WrapperObject;
         }
 
-        private void Export3DFrame()
+        private ModelWrapper Export3DFrame()
         {
             FrameObjectBase FrameObject = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
             ModelWrapper ModelWrapperObject = null;
@@ -2214,13 +2190,6 @@ namespace Mafia2Tool
                 if (FrameObject is FrameObjectModel)
                 {
                     ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectModel, indexBuffers, vertexBuffers);
-
-                    if(AnimFileDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        string Filename = AnimFileDialog.FileName;
-                        Animation2 TempAn2 = new Animation2(Filename);
-                        ModelWrapperObject.AnimationObject = TempAn2.ConvertToAnimation();
-                    }
                 }
                 else
                 {
@@ -2232,17 +2201,13 @@ namespace Mafia2Tool
                 ModelWrapperObject = new ModelWrapper(FrameObject);
             }
 
-            // Make sure it's actually valid
-            if (ModelWrapperObject != null)
-            {
-                InternalSaveModelWrapper(ModelWrapperObject);
-            }
+            return ModelWrapperObject;
         }
 
-        private void ExportScene(FrameHeaderScene Scene)
+        private ModelWrapper ExportScene(FrameHeaderScene Scene)
         {
             ModelWrapper ModelWrapperObject = new ModelWrapper(Scene);
-            InternalSaveModelWrapper(ModelWrapperObject);
+            return ModelWrapperObject;
         }
 
         private void AddButtonOnClick(object sender, EventArgs e)
@@ -2269,8 +2234,7 @@ namespace Mafia2Tool
         }
 
         // TODO: Need to cleanup this function, it's atrocious.
-        // TODO: This function is no longer used, I need to find a new home for this SceneData.Collisions construction.
-        private void AddCollisionButton_Click(object sender, EventArgs e)
+        private void ValidateCollisionFile()
         {
             // Check if we need to create a collisions folder
             if (SceneData.Collisions == null)
@@ -2294,8 +2258,7 @@ namespace Mafia2Tool
             }
         }
 
-        // TODO: Cleanup this function, it's atrocious.
-        private Collision.Placement AddCollision(Collision.CollisionModel collisionModel, Vector3 InstancePos, Vector3 InstanceRot)
+        private Collision.CollisionModel CreateCollision(Collision.CollisionModel collisionModel)
         {
             ulong CollisionHash = collisionModel.Hash;
             Collision.CollisionModel CollisionModel = null;
@@ -2323,21 +2286,26 @@ namespace Mafia2Tool
                 CollisionModel = SceneData.Collisions.Models[CollisionHash];
             }
 
+            return CollisionModel;
+        }
+
+        private Collision.Placement CreatePlacement(Collision.CollisionModel ColModel, Vector3 Position, Quaternion Rotation)
+        {
             // Create a new placement for this mesh
             Collision.Placement placement = new Collision.Placement();
-            placement.Hash = CollisionHash;
-            placement.Position = InstancePos;
-            placement.RotationDegrees = InstanceRot;
+            placement.Hash = ColModel.Hash;
+            placement.Position = Position;
+            placement.RotationDegrees = Vector3.Zero;
 
             // Try and find the collision node
-            TreeNode ExistingCollisionNode = dSceneTree.GetTreeNode(CollisionHash.ToString(), collisionRoot, true);
+            TreeNode ExistingCollisionNode = dSceneTree.GetTreeNode(ColModel.Hash.ToString(), collisionRoot, true);
             if (ExistingCollisionNode == null)
             {
                 // Create a new TreeNode for the CollisionModel
-                TreeNode CollisionNode = new TreeNode(CollisionHash.ToString());
-                CollisionNode.Text = CollisionHash.ToString();
-                CollisionNode.Name = CollisionHash.ToString();
-                CollisionNode.Tag = CollisionModel;
+                TreeNode CollisionNode = new TreeNode(ColModel.Hash.ToString());
+                CollisionNode.Text = ColModel.Hash.ToString();
+                CollisionNode.Name = ColModel.Hash.ToString();
+                CollisionNode.Tag = ColModel;
                 ExistingCollisionNode = CollisionNode;
                 dSceneTree.AddToTree(CollisionNode, collisionRoot);
             }
@@ -2593,20 +2561,22 @@ namespace Mafia2Tool
                 return;
             }
 
-            MT_ObjectBundle BundleObject = MT_ObjectHandler.ReadBundleFromFile(MeshBrowser.FileName);
-            if (BundleObject == null)
+            if(Path.Exists(MeshBrowser.FileName) == false)
             {
                 return;
             }
 
-            // Let users change their import values
-            FrameResourceModelOptions modelForm = new FrameResourceModelOptions(BundleObject);
+            // pass to importer
+            FrameResourceModelImporter modelForm = new FrameResourceModelImporter(MeshBrowser.FileName);
             DialogResult Result = modelForm.ShowDialog();
-            modelForm.Dispose();
-            if (Result != DialogResult.OK)
+            if(Result != DialogResult.OK)
             {
+                modelForm.Dispose();
                 return;
             }
+
+            // TODO: In an ideal world this would not live in MapEditor.cs
+            // and probably live within FrameResourceModelImporter.
 
             // Only ask we they want to save the materials if we have some.
             if (modelForm.NewMaterials.Count > 0)
@@ -2619,10 +2589,12 @@ namespace Mafia2Tool
             }
 
             // Continue with the importing of the bundle
-            foreach (MT_Object ModelObject in BundleObject.Objects)
+            foreach (MT_Object ModelObject in modelForm.CurrentBundle.Objects)
             {
                 ConstructFrameFromImportedObject(ModelObject, frameResourceRoot);
             }
+
+            modelForm.Dispose();
         }
 
         private void ConstructFrameFromImportedObject(MT_Object ObjectInfo, TreeNode Parent)
@@ -2663,13 +2635,18 @@ namespace Mafia2Tool
                 FrameNode.Name = NewFrame.RefID.ToString();
                 dSceneTree.AddToTree(FrameNode, Parent);
 
-                FrameEntry ParentEntry = (Parent.Tag as FrameEntry);
-                if (ParentEntry != null)
+                if (Parent.Tag is FrameHeaderScene)
                 {
+                    FrameHeaderScene SceneEntry = (Parent.Tag as FrameHeaderScene);
+                    SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, SceneEntry);
+                }
+                else if (Parent.Tag is FrameEntry)
+                {
+                    FrameEntry ParentEntry = (Parent.Tag as FrameEntry);
                     SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, ParentEntry);
                     SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex1, NewFrame, ParentEntry);
                 }
-
+               
                 // Construct renderer and add to stack
                 IRenderer Renderer = BuildRenderObjectFromFrame(NewFrame,null);
                 if (Renderer != null)
@@ -2678,10 +2655,29 @@ namespace Mafia2Tool
                 }
             }
 
+            // object is a scene so it has an alternative import route
+            if(ObjectInfo.ObjectType == MT_ObjectType.Scene)
+            {
+                var scene = SceneData.FrameResource.AddSceneFolder(ObjectInfo.ObjectName);
+                FrameNode = new TreeNode(scene.ToString());
+                FrameNode.Tag = scene;
+                FrameNode.Name = scene.RefID.ToString();
+
+                dSceneTree.AddToTree(FrameNode, frameResourceRoot);
+            }
+
             if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
+                ValidateCollisionFile();
+
                 Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromMTCollision(ObjectInfo.ObjectName, ObjectInfo.Collision);
-                AddCollision(collisionModel, ObjectInfo.Position, ObjectInfo.Rotation);
+                CreateCollision(collisionModel);
+
+                // now add instances
+                foreach(MT_CollisionInstance ColInstance in ObjectInfo.Collision.Instances)
+                {
+                    CreatePlacement(collisionModel, ColInstance.Position, ColInstance.Rotation);
+                }
             }
 
             if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))
@@ -2881,6 +2877,11 @@ namespace Mafia2Tool
                     Graphics.InstanceGizmo.InstanceTranslokator(instance,Graphics.GetId3D11Device());
                 }
             }
+		}
+
+        private void OnFrameRemoved(object sender, OnFrameRemovedArgs e)
+        {
+            Graphics.DeleteAsset(e.FrameRefID);
         }
     }
 }

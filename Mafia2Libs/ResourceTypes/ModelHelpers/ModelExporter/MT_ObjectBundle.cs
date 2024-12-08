@@ -1,78 +1,82 @@
-﻿using System.IO;
-using Utils.StringHelpers;
+﻿using SharpGLTF.Scenes;
+using SharpGLTF.Schema2;
+using System.Collections.Generic;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
     public class MT_ObjectBundle : IValidator
     {
-        private const string FileHeader = "MTB";
-        private const int FileVersion = 0;
-
         public MT_Object[] Objects { get; set; }
-        public MT_Animation Animation { get; set; }
 
-        public bool ReadFromFile(BinaryReader reader)
+        public MT_ObjectBundle()
         {
-            string TempHeader = new string(reader.ReadChars(3));
-            if(!TempHeader.Equals(FileHeader))
-            {
-                return false;
-            }
-
-            int TempFileVersion = reader.ReadByte();
-            if(TempFileVersion != FileVersion)
-            {
-                return false;
-            }
-
-            uint NumObjects = reader.ReadUInt32();
-            Objects = new MT_Object[NumObjects];
-
-            for(int i = 0; i < NumObjects; i++)
-            {
-                MT_Object NewObject = new MT_Object();
-                bool bIsValid = NewObject.ReadFromFile(reader);
-                Objects[i] = NewObject;
-
-                // Failed to read Object, return
-                if(!bIsValid)
-                {
-                    return false;
-                }
-            }
-
-            uint HasAnimation = reader.ReadUInt32();
-            if(HasAnimation == 1)
-            {
-                Animation = new MT_Animation();
-                Animation.ReadFromFile(reader);
-            }
-
-            return true;
+            Objects = new MT_Object[0];
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public ModelRoot BuildGLTF()
         {
-            StringHelpers.WriteString(writer, "MTB", false);
-            writer.Write((byte)FileVersion);
+            // TODO: Find a name
+            SceneBuilder Scene = new SceneBuilder("MAFIA TOOLKIT BUNDLE");
 
-            // Write Models to file
-            int NumObjects = (Objects != null ?  Objects.Length : 0);
-            writer.Write(NumObjects);
             if (Objects != null)
             {
-                foreach (MT_Object ModelObject in Objects)
+                foreach(MT_Object ModelObject in Objects)
                 {
-                    ModelObject.WriteToFile(writer);
+                    NodeBuilder ModelNode = ModelObject.BuildGLTF(Scene, null);
+                    Scene.AddNode(ModelNode);
                 }
             }
 
-            int HasAnimation = (Animation != null ? 1 : 0);
-            writer.Write(HasAnimation);
-            if (Animation != null)
+            return Scene.ToGltf2();
+        }
+
+        public void BuildFromGLTF(ModelRoot InRoot, MT_Logger Logger)
+        {
+            if(InRoot == null)
             {
-                Animation.WriteToFile(writer);
+                // no root, no point in continuing this
+                return;
             }
+
+            // Access the scene, as it has logical root
+            List<MT_Object> ImportedObjects = new List<MT_Object>();
+            Scene CurrentScene = InRoot.DefaultScene;
+            foreach(Node CurNode in CurrentScene.VisualChildren)
+            {
+                MT_Object PotentialChildObject = MT_Object.TryBuildFromNode(CurNode, Logger);
+                if (PotentialChildObject != null)
+                {
+                    ImportedObjects.Add(PotentialChildObject);
+                }
+            }
+
+            // Problem with reimporting is the fact that we cannot associate an animation with a mesh
+            // Which is fine, because we only did that so we can attach the animation when writing the mesh
+            // Instead we can just dump them into a new MT_Object, which won't be imported as a Frame.
+            if(InRoot.LogicalAnimations.Count > 0)
+            {
+                MT_Object AnimationObject = new MT_Object();
+                AnimationObject.ObjectName = "ANIMATION_OBJECT";
+                AnimationObject.ObjectType = MT_ObjectType.Null;
+                AnimationObject.ObjectFlags |= MT_ObjectFlags.HasSkinning;
+
+                // Skeleton is theoretically empty for joints, but this should be okay.
+                MT_Skeleton NewSkeleton = new MT_Skeleton();
+                AnimationObject.Skeleton = NewSkeleton;
+                NewSkeleton.Animations = new MT_Animation[InRoot.LogicalAnimations.Count];
+
+                for(int i = 0; i < NewSkeleton.Animations.Length; i++)
+                {
+                    Animation CurrentAnim = InRoot.LogicalAnimations[i];
+
+                    NewSkeleton.Animations[i] = new MT_Animation();
+                    NewSkeleton.Animations[i].BuildAnimation(CurrentAnim);
+                }
+
+                ImportedObjects.Add(AnimationObject);
+            }
+
+            Objects = ImportedObjects.ToArray();
         }
 
         public void Accept(IVisitor InVisitor)
@@ -91,11 +95,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 bool bIsObjectValid = ModelObject.ValidateObject(TrackerObject);
                 bIsValid &= bIsObjectValid;
-            }
-
-            if(Animation != null)
-            {
-                bIsValid &= Animation.ValidateObject(TrackerObject);
             }
 
             return bIsValid;

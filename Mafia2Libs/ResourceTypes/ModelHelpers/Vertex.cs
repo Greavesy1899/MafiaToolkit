@@ -85,7 +85,7 @@ namespace Utils.Models
         {
             position = new Vector3(0);
             normal = new Vector3(0);
-            tangent = new Vector3(0);
+            tangent = new Vector3(1.0f, 0.0f, 0.0f);
             color0 = new byte[4];
             color1 = new byte[4];
             boneWeights = new float[4];
@@ -100,7 +100,7 @@ namespace Utils.Models
 
         private ushort ConvertFloatToUInt16(float Factorised)
         {
-            float Rounded = MathF.Floor(Factorised);
+            float Rounded = MathF.Round(Factorised);
             ushort Value = Convert.ToUInt16(Rounded);
             return Value;
         }
@@ -111,6 +111,7 @@ namespace Utils.Models
             float tempBinormal = 0.0f;
             Vector3 MinusOffset = PosToWrite - offset;
             Vector3 Factorised = MinusOffset / factor;
+
             byte[] tempPosData;
 
             //Do X

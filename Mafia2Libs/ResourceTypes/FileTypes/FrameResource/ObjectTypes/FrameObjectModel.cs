@@ -292,13 +292,12 @@ namespace ResourceTypes.FrameResource
 
         public override void CreateMeshFromRawModel(ModelWrapper NewModel)
         {
-            base.CreateMeshFromRawModel(NewModel);
-
+            // create prior to generating mesh
             ConstructBlendInfoObject();
-            ConstructGeometryObject();
-            ConstructMaterialObject();
+            ConstructSkeletonHierarchyObject();
+            ConstructSkeletonObject();
 
-            NewModel.CreateObjectsFromModel();
+            base.CreateMeshFromRawModel(NewModel);
         }
 
         public override string ToString()

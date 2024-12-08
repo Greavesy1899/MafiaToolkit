@@ -130,24 +130,28 @@ namespace Utils.Models
                 var indexInfos = model.BlendInfo.BoneIndexInfos[i];
                 var lod = lods[i];
                 bool[] remapped = new bool[lod.Vertices.Length];
-                for(int x = 0; x < indexInfos.NumMaterials; x++)
+                for(int x = 0; x < indexInfos.SkinnedMaterialInfo.Length; x++)
                 {
+                    var SkinnedMatInfo = indexInfos.SkinnedMaterialInfo[x];
+
                     var part = lod.Parts[x];
+
+                    // need to find the offset for this particular material
                     byte offset = 0;
-                    for(int s = 0; s < indexInfos.BonesSlot[x]; s++)
+                    for (int s = 0; s < SkinnedMatInfo.AssignedPoolIndex; s++)
                     {
-                        offset += indexInfos.BonesPerPool[s];
+                        offset += indexInfos.BonesPerRemapPool[s];
                     }
 
-                    for(uint z = part.StartIndex; z < part.StartIndex+(part.NumFaces*3); z++)
+                    for (uint z = part.StartIndex; z < part.StartIndex + (part.NumFaces * 3); z++)
                     {
                         uint index = lod.Indices[z];
                         if (!remapped[index])
                         {
-                            for (uint f = 0; f < indexInfos.NumWeightsPerVertex[x]; f++)
+                            for (uint f = 0; f < SkinnedMatInfo.NumWeightsPerVertex; f++)
                             {
                                 var previousBoneID = lod.Vertices[index].BoneIDs[f];
-                                lod.Vertices[index].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
+                                lod.Vertices[index].BoneIDs[f] = indexInfos.BoneRemapIDs[offset + previousBoneID];
                             }
                             remapped[index] = true;                      
                         }
@@ -539,7 +543,7 @@ namespace Utils.Models
             name = reader.ReadString();
 
             isSkinned = reader.ReadBoolean();
-            if(isSkinned)
+            if (isSkinned)
             {
                 byte size = reader.ReadByte();
                 skeleton = new Skeleton();
@@ -655,21 +659,6 @@ namespace Utils.Models
                 Lods[i].CalculatePartBounds();
 
             }
-        }
-
-        public bool ReadFromFbx(string file)
-        {
-            string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
-            int result = FBXHelper.ConvertFBX(file, m2tFile);
-            using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
-            {
-                ReadFromM2T(reader);
-            }
-            if (File.Exists(m2tFile))
-            {
-                File.Delete(m2tFile);
-            }
-            return true;
         }
 
         public void ExportCollisionToM2T(string directory, string name)

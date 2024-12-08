@@ -40,10 +40,13 @@ namespace ResourceTypes.FrameResource
 
             //index infos
             boneIndexInfos = new BoneIndexInfo[numLods];
-            for (int i = 0; i != boneIndexInfos.Length; i++)
+            for (int i = 0; i < boneIndexInfos.Length; i++)
             {
-                boneIndexInfos[i].NumIDs = reader.ReadInt32(isBigEndian);
-                boneIndexInfos[i].NumMaterials = reader.ReadInt32(isBigEndian);
+                uint NumberRemapIDs = reader.ReadUInt32(isBigEndian);
+                boneIndexInfos[i].BoneRemapIDs = new byte[NumberRemapIDs];
+
+                uint NumMaterials = reader.ReadUInt32(isBigEndian);
+                boneIndexInfos[i].SkinnedMaterialInfo = new SkinnedMaterialInfo[NumMaterials];
             }
 
             //bounds for all bones together?
@@ -51,29 +54,28 @@ namespace ResourceTypes.FrameResource
 
             //Bone Transforms
             boneTransforms = new BoneTransform[numBones];
-            for (int i = 0; i != boneTransforms.Length; i++)
+            for (int i = 0; i < boneTransforms.Length; i++)
             {
                 boneTransforms[i] = new BoneTransform();
                 boneTransforms[i].ReadFromFile(reader, isBigEndian);
             }
 
-            for (int i = 0; i != boneIndexInfos.Length; i++)
+            for (int i = 0; i < boneIndexInfos.Length; i++)
             {
-                boneIndexInfos[i].BonesPerPool = reader.ReadBytes(8);
+                boneIndexInfos[i].BonesPerRemapPool = reader.ReadBytes(8);
 
-                //IDs..
-                boneIndexInfos[i].IDs = reader.ReadBytes(boneIndexInfos[i].NumIDs);
+                // This is actually creating the array again and could be fairly costly
+                // I won't tell if you don't
+                int NumberOfRemapIDs = boneIndexInfos[i].BoneRemapIDs.Length;
+                boneIndexInfos[i].BoneRemapIDs = reader.ReadBytes(NumberOfRemapIDs);
 
-                //Material blendings..
-                boneIndexInfos[i].MatBlends = new ushort[boneIndexInfos[i].NumMaterials];
-                boneIndexInfos[i].BonesSlot = new byte[boneIndexInfos[i].NumMaterials];
-                boneIndexInfos[i].NumWeightsPerVertex = new int[boneIndexInfos[i].NumMaterials];
-                for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
+                // Read additional weighted info
+                for (int x = 0; x < boneIndexInfos[i].SkinnedMaterialInfo.Length; x++)
                 {
-                    boneIndexInfos[i].MatBlends[x] = reader.ReadUInt16(isBigEndian);
-                    ushort value = boneIndexInfos[i].MatBlends[x];
-                    boneIndexInfos[i].BonesSlot[x] = (byte)(value & 0xFF);
-                    boneIndexInfos[i].NumWeightsPerVertex[x] = (value >> 8);
+                    SkinnedMaterialInfo NewWeightedInfo = new SkinnedMaterialInfo();
+                    NewWeightedInfo.AssignedPoolIndex = reader.ReadByte8();
+                    NewWeightedInfo.NumWeightsPerVertex = reader.ReadByte8();
+                    boneIndexInfos[i].SkinnedMaterialInfo[x] = NewWeightedInfo;
                 }
             }
         }
@@ -84,29 +86,32 @@ namespace ResourceTypes.FrameResource
             writer.Write((byte)boneIndexInfos.Length);
 
             //index infos
-            for (int i = 0; i != boneIndexInfos.Length; i++)
+            for (int i = 0; i < boneIndexInfos.Length; i++)
             {
-                writer.Write(boneIndexInfos[i].NumIDs);
-                writer.Write(boneIndexInfos[i].NumMaterials);
+                writer.Write(boneIndexInfos[i].BoneRemapIDs.Length);
+                writer.Write(boneIndexInfos[i].SkinnedMaterialInfo.Length);
             }
 
             //bounds for all bones together?
             bounds.WriteToFile(writer);
 
             //Bone Transforms
-            for (int i = 0; i != boneTransforms.Length; i++)
-                boneTransforms[i].WriteToFile(writer);
-
-            for (int i = 0; i != boneIndexInfos.Length; i++)
+            for (int i = 0; i < boneTransforms.Length; i++)
             {
-                writer.Write(boneIndexInfos[i].BonesPerPool);
+                boneTransforms[i].WriteToFile(writer);
+            }
 
-                //IDs..
-                writer.Write(boneIndexInfos[i].IDs);
+            for (int i = 0; i < boneIndexInfos.Length; i++)
+            {
+                writer.Write(boneIndexInfos[i].BonesPerRemapPool);
+                writer.Write(boneIndexInfos[i].BoneRemapIDs);
 
-                //Material blendings..
-                for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
-                    writer.Write(boneIndexInfos[i].MatBlends[x]);
+                // Write additional data for Materials
+                foreach (SkinnedMaterialInfo MaterialInfo in boneIndexInfos[i].SkinnedMaterialInfo)
+                {
+                    writer.Write(MaterialInfo.AssignedPoolIndex);
+                    writer.Write(MaterialInfo.NumWeightsPerVertex);
+                }
             }
         }
 
@@ -115,46 +120,28 @@ namespace ResourceTypes.FrameResource
             return "Blend Info Block";
         }
 
+        public struct SkinnedMaterialInfo
+        {
+            // Stores the number of weights influencing the vertex within a facegroup.
+            // Max number of weights per vertex is 4.
+            public byte AssignedPoolIndex { get; set; }
+
+            // Stores which pool of bones the material has been assigned to.
+            // Each slot in the array is for a facegroup within the LOD
+            public byte NumWeightsPerVertex { get; set; }
+        }
+
         public struct BoneIndexInfo
         {
-            int numIDs;
-            int numMaterials;
-            byte[] bonesPerPool;
-            byte[] ids;
-            ushort[] matBlends;
+            // Number of bones within each Remap Pool, SkinnedMaterialInfo will refer to this.
+            public byte[] BonesPerRemapPool { get; set; }
 
-            byte[] bBonesSlot;
-            int[] numWeightsPerVertex;
+            // Remapping IDs for bones within the Skeletal Mesh for this LOD
+            // Refer to @BonesPerPool to determine which range of bones is within each pool
+            public byte[] BoneRemapIDs { get; set; }
 
-            public byte[] BonesSlot {
-                get { return bBonesSlot; }
-                set { bBonesSlot = value; }
-            }
-            public int[] NumWeightsPerVertex {
-                get { return numWeightsPerVertex; }
-                set { numWeightsPerVertex = value; }
-            }
-
-            public int NumIDs {
-                get { return numIDs; }
-                set { numIDs = value; }
-            }
-            public int NumMaterials {
-                get { return numMaterials; }
-                set { numMaterials = value; }
-            }
-            public byte[] BonesPerPool {
-                get { return bonesPerPool; }
-                set { bonesPerPool = value; }
-            }
-            public byte[] IDs {
-                get { return ids; }
-                set { ids = value; }
-            }
-            public ushort[] MatBlends {
-                get { return matBlends; }
-                set { matBlends = value; }
-            }
+            // Skinned Material data for this LOD
+            public SkinnedMaterialInfo[] SkinnedMaterialInfo { get; set; }
         }
 
         public struct BoneTransform

@@ -1,7 +1,9 @@
-﻿using System.IO;
-using Utils.StringHelpers;
-using Utils.Models;
+﻿using SharpGLTF.Schema2;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using Utils.Models;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -10,30 +12,26 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public float Time { get; set; }
         public Quaternion Value { get; set; }
 
-        public bool ReadFromFile(BinaryReader Reader)
+        public MT_RotKey()
         {
-            Time = Reader.ReadSingle();
-
-            Quaternion TempQuat = Quaternion.Identity;
-            TempQuat[0] = Reader.ReadSingle();
-            TempQuat[1] = Reader.ReadSingle();
-            TempQuat[2] = Reader.ReadSingle();
-            TempQuat[3] = Reader.ReadSingle();
-            Value = TempQuat;
-
-            return true;
+            Time = 0.0f;
+            Value = Quaternion.Identity;
         }
 
-        public bool WriteToFile(BinaryWriter Writer)
+        public MT_RotKey((float, Quaternion) InValue)
         {
-            Writer.Write(Time);
+            Time = InValue.Item1;
+            Value = InValue.Item2;
+        }
 
-            Writer.Write(Value[0]);
-            Writer.Write(Value[1]);
-            Writer.Write(Value[2]);
-            Writer.Write(Value[3]);
+        public (float, Quaternion) AsPair()
+        {
+            return (Time, Value);
+        }
 
-            return true;
+        public override string ToString()
+        {
+            return string.Format("[{0}] - [{1}]", Time, Value.ToString());
         }
     }
 
@@ -42,27 +40,26 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public float Time { get; set; }
         public Vector3 Value { get; set; }
 
-        public bool ReadFromFile(BinaryReader Reader)
+        public MT_PosKey()
         {
-            Time = Reader.ReadSingle();
-            
-            Vector3 TempPos = Vector3.Zero;
-            TempPos[0] = Reader.ReadSingle();
-            TempPos[1] = Reader.ReadSingle();
-            TempPos[2] = Reader.ReadSingle();
-
-            return true;
+            Time = 0.0f;
+            Value = Vector3.Zero;
         }
 
-        public bool WriteToFile(BinaryWriter Writer)
+        public MT_PosKey((float, Vector3) InValue)
         {
-            Writer.Write(Time);
+            Time = InValue.Item1;
+            Value = InValue.Item2;
+        }
 
-            Writer.Write(Value[0]);
-            Writer.Write(Value[1]);
-            Writer.Write(Value[2]);
+        public (float, Vector3) AsPair()
+        {
+            return (Time, Value);
+        }
 
-            return true;
+        public override string ToString()
+        {
+            return string.Format("[{0}] - [{1}]", Time, Value.ToString());
         }
     }
 
@@ -83,61 +80,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             PosKeyFrames = new MT_PosKey[0];
         }
 
-        public bool ReadFromFile(BinaryReader Reader)
+        public override string ToString()
         {
-            bool bValid = true;
-
-            BoneID = (SkeletonBoneIDs)Reader.ReadInt16();
-            BoneName = Reader.ReadString8();
-            Duration = Reader.ReadSingle();
-
-            ushort NumRotKeys = Reader.ReadUInt16();
-            ushort NumPosKeys = Reader.ReadUInt16();
-            RotKeyFrames = new MT_RotKey[(ushort)NumRotKeys];
-            PosKeyFrames = new MT_PosKey[(ushort)NumPosKeys];
-
-            for(ushort i = 0; i < NumRotKeys; i++)
-            {
-                MT_RotKey KeyFrame = new MT_RotKey();
-                bValid &= KeyFrame.ReadFromFile(Reader);
-                RotKeyFrames[i] = KeyFrame;
-            }
-
-            for (ushort i = 0; i < NumPosKeys; i++)
-            {
-                MT_PosKey KeyFrame = new MT_PosKey();
-                bValid &= KeyFrame.ReadFromFile(Reader);
-                PosKeyFrames[i] = KeyFrame;
-            }
-
-            return bValid;
-        }
-
-        public bool WriteToFile(BinaryWriter Writer)
-        {
-            Writer.Write((ushort)BoneID);
-            Writer.WriteString8(BoneName);
-            Writer.Write(Duration);
-
-            Writer.Write((ushort)PosKeyFrames.Length);
-            Writer.Write((ushort)RotKeyFrames.Length);
-            
-            foreach(MT_RotKey KeyFrame in RotKeyFrames)
-            {
-                KeyFrame.WriteToFile(Writer);
-            }
-
-            foreach (MT_PosKey KeyFrame in PosKeyFrames)
-            {
-                KeyFrame.WriteToFile(Writer);
-            }
-
-            return true;
+            return string.Format("[Name: {0}] [Duration: {1}]", BoneID, Duration);
         }
     }
 
     public class MT_Animation : IValidator
     {
+        public string AnimName { get; set; }
+        public float Duration { get; set; }
         public MT_AnimTrack[] Tracks { get; set; }
 
         public MT_Animation()
@@ -145,32 +97,62 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Tracks = new MT_AnimTrack[0];
         }
 
-        public bool ReadFromFile(BinaryReader Reader)
+        public void BuildAnimation(Animation InAnimation)
         {
-            bool bValid = true;
+            // start porting data
+            AnimName = InAnimation.Name;
+            Duration = InAnimation.Duration;
 
-            ushort NumTracks = Reader.ReadUInt16();
-            Tracks = new MT_AnimTrack[(ushort)NumTracks];
+            //Tracks = new MT_AnimTrack[InAnimation.Channels.Count];
 
-            for (ushort i = 0; i < NumTracks; i++)
+            Dictionary<SkeletonBoneIDs, MT_AnimTrack> tracks = new();
+
+            for (int z = 0; z < InAnimation.Channels.Count; z++)
             {
-                MT_AnimTrack Track = new MT_AnimTrack();
-                bValid &= Track.ReadFromFile(Reader);
-                Tracks[i] = Track;
+                // New channel (or track for Mafia II) and cache in local obj
+                AnimationChannel CurrentChannel = InAnimation.Channels[z];
+                
+                // TODO: Need to resolve issue with missing bones!
+                SkeletonBoneIDs BoneID = SkeletonBoneIDs.BaseRef;
+                Enum.TryParse<SkeletonBoneIDs>(CurrentChannel.TargetNode.Name, out BoneID);
+
+                if (!tracks.ContainsKey(BoneID))
+                {
+                    tracks.Add(BoneID, new MT_AnimTrack());
+                }
+
+                MT_AnimTrack NewAnimTrack = tracks[BoneID];
+
+                NewAnimTrack.Duration = InAnimation.Duration;
+                NewAnimTrack.BoneName = CurrentChannel.TargetNode.Name;
+                NewAnimTrack.BoneID = BoneID;
+
+                // Convert Position
+                IAnimationSampler<Vector3> PosSampler = CurrentChannel.GetTranslationSampler();
+                if (PosSampler != null)
+                {
+                    List<MT_PosKey> PositionKeyList = new List<MT_PosKey>();
+
+                    IEnumerable<(float, Vector3)> PosKeys = PosSampler.GetLinearKeys();
+                    Array.ForEach<(float, Vector3)>(PosKeys.ToArray(), (delegate ((float, Vector3) Item) { PositionKeyList.Add(new MT_PosKey(Item)); }));
+
+                    NewAnimTrack.PosKeyFrames = PositionKeyList.ToArray();
+                }
+
+                // Convert Rotation
+                IAnimationSampler<Quaternion> RotSampler = CurrentChannel.GetRotationSampler();
+                if (RotSampler != null)
+                {
+                    List<MT_RotKey> RotationKeyList = new List<MT_RotKey>();
+
+                    IEnumerable<(float, Quaternion)> RotKeys = RotSampler.GetLinearKeys();
+                    Array.ForEach<(float, Quaternion)>(RotKeys.ToArray(), (delegate ((float, Quaternion) Item) { RotationKeyList.Add(new MT_RotKey(Item)); }));
+
+                    NewAnimTrack.RotKeyFrames = RotationKeyList.ToArray();
+                }
             }
 
-            return bValid;
-        }
-
-        public bool WriteToFile(BinaryWriter Writer)
-        {
-            Writer.Write((ushort)Tracks.Length);
-            foreach(MT_AnimTrack Track in Tracks)
-            {
-                Track.WriteToFile(Writer);
-            }
-
-            return true;
+            Tracks = tracks.Values.ToArray();
         }
 
         protected override bool InternalValidate(MT_ValidationTracker TrackerObject)

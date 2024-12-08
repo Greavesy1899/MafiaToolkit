@@ -12,15 +12,15 @@ namespace ResourceTypes.Animation2
         public static byte TargetComponentSize = 24; //Max 63
         public bool TrackDataChanged = true;
         public Utils.Models.SkeletonBoneIDs BoneID { get; set; }
-        public byte Flags { get; set; } = 0x23;
+        public byte Flags { get; set; } = 0x20;
         public bool IsDataPresent { get; set; } = true;
-        public byte DataFlags { get; set; } = 0x0B;
+        public byte DataFlags { get; set; } = 0x08;
         public short NumKeyFrames { get; set; }
         public byte ComponentSize { get; set; } = TargetComponentSize;
         public byte TimeSize { get; set; } = TargetTimeSize;
         public uint PackedReferenceQuat { get; set; }
         public float Scale { get; set; } = 1.0f;
-        public float Duration { get; set; }
+        public float Duration { get; set; } = 0.0f;
         public byte[] KeyFrameData { get; set; } = new byte[0];
         public (float time, Quaternion value)[] KeyFrames { get; set; } = new (float time, Quaternion value)[0];
         public PositionData Positions { get; set; } = new();
@@ -110,6 +110,8 @@ namespace ResourceTypes.Animation2
             {
                 Positions.Write(bw);
             }
+
+            TrackDataChanged = false;
         }
 
         public int GetKeyframeSize(int ComponentSize, int TimeSize)
@@ -141,10 +143,12 @@ namespace ResourceTypes.Animation2
             {
                 var dataCurrent = data >> (i * chunkSize);
 
-                var time = (((int)((dataCurrent) & ((1 << TimeSize) - 1))) / (float)((1 << TimeSize) - 1)) * Duration;
+                var time = (double)((((int)((dataCurrent) & ((1 << TimeSize) - 1))) / (float)((1 << TimeSize) - 1)) * Duration);
                 var rawData = dataCurrent >> TimeSize;
 
-                quats.Add((time, Quaternion.Inverse(refQuat * UnpackQuaternion(ComponentSize, Scale, rawData))));
+                time = Math.Round(time * 25.0) / 25.0;
+
+                quats.Add(((float)time, Quaternion.Inverse(refQuat * UnpackQuaternion(ComponentSize, Scale, rawData))));
             }
 
             KeyFrames = quats.ToArray();
@@ -174,7 +178,7 @@ namespace ResourceTypes.Animation2
                 int timeMask = ((1 << TimeSize) - 1);
 
                 int offset = chunkSize * i;
-                int time = ((int)Math.Round((frame.time / Duration) * timeMask)) & timeMask;
+                int time = ((int)Math.Round(((Math.Round(frame.time * 25.0) / 25.0) / Duration) * timeMask)) & timeMask;
                 var packedQuaternion = PackQuaternion(ComponentSize, Scale, Quaternion.Inverse(frame.value), invRefQuat);
                 var bigTime = new BigInteger(time);
                 var bigVal0 = new BigInteger(packedQuaternion.iVal0);
@@ -266,6 +270,11 @@ namespace ResourceTypes.Animation2
                     maxValue = Math.Abs(values[i]);
                     omittedComponent = i;
                 }
+            }
+
+            if (values[omittedComponent] < 0.0f)
+            {
+                q *= -1.0f;
             }
 
             double fRatio = 1.0 / (Math.Sqrt(2.0) / 1023.0);
@@ -399,18 +408,23 @@ namespace ResourceTypes.Animation2
                 }
             }
 
+            if (values[omittedComponent] < 0.0f)
+            {
+                q *= -1.0f;
+            }
+
             long iValue0 = 0;
             long iValue1 = 0;
             long iValue2 = 0;
-            long iSign0 = Math.Sign(values[0]) < 0 ? 1 << (componentSize - 1) : 0;
-            long iSign1 = Math.Sign(values[1]) < 0 ? 1 << (componentSize - 1) : 0;
-            long iSign2 = Math.Sign(values[2]) < 0 ? 1 << (componentSize - 1) : 0;
-            long iSign3 = Math.Sign(values[3]) < 0 ? 1 << (componentSize - 1) : 0;
+            long iSign0 = Math.Sign(q.X) < 0 ? 1 << (componentSize - 1) : 0;
+            long iSign1 = Math.Sign(q.Y) < 0 ? 1 << (componentSize - 1) : 0;
+            long iSign2 = Math.Sign(q.Z) < 0 ? 1 << (componentSize - 1) : 0;
+            long iSign3 = Math.Sign(q.W) < 0 ? 1 << (componentSize - 1) : 0;
 
-            var i0 = (((long)((Math.Abs(values[0]) / scale) * (componentBitMask - 1))) & mask) | iSign0;
-            var i1 = (((long)((Math.Abs(values[1]) / scale) * (componentBitMask - 1))) & mask) | iSign1;
-            var i2 = (((long)((Math.Abs(values[2]) / scale) * (componentBitMask - 1))) & mask) | iSign2;
-            var i3 = (((long)((Math.Abs(values[3]) / scale) * (componentBitMask - 1))) & mask) | iSign3;
+            var i0 = (((long)((Math.Abs(q.X) / scale) * (componentBitMask - 1))) & mask) | iSign0;
+            var i1 = (((long)((Math.Abs(q.Y) / scale) * (componentBitMask - 1))) & mask) | iSign1;
+            var i2 = (((long)((Math.Abs(q.Z) / scale) * (componentBitMask - 1))) & mask) | iSign2;
+            var i3 = (((long)((Math.Abs(q.W) / scale) * (componentBitMask - 1))) & mask) | iSign3;
 
             switch (omittedComponent)
             {
@@ -604,7 +618,7 @@ namespace ResourceTypes.Animation2
     public class PositionData
     {
         public bool TrackDataChanged = true;
-        public float Scale { get; set; }
+        public float Scale { get; set; } = 1.0f;
         public byte[] Data { get; set; } = new byte[0];
         public (float time, Vector3 value)[] KeyFrames { get; set; } = new (float time, Vector3 value)[0];
         public PositionData()
@@ -643,9 +657,16 @@ namespace ResourceTypes.Animation2
 
         public void Write(BinaryWriter bw)
         {
+            if (TrackDataChanged)
+            {
+                Quantize();
+            }
+
             bw.Write((short)(Data.Length / 12));
             bw.Write(Scale);
             bw.Write(Data);
+
+            TrackDataChanged = false;
         }
 
         public void Dequantize()
@@ -678,7 +699,7 @@ namespace ResourceTypes.Animation2
                 var Y = BitConverter.ToSingle(BitConverter.GetBytes(iSign1 | BitConverter.ToInt32(BitConverter.GetBytes(fValue1), 0)), 0);
                 var Z = BitConverter.ToSingle(BitConverter.GetBytes(iSign2 | BitConverter.ToInt32(BitConverter.GetBytes(fValue2), 0)), 0);
 
-                frames.Add(((float)(time / (582.0 + 4.0 / 7.0)), new(X, Y, Z)));
+                frames.Add(((float)(Math.Round((time / (582.0 + 4.0 / 7.0)) * 25.0) / 25.0), new(X, Y, Z)));
             }
 
             KeyFrames = frames.ToArray();
@@ -703,7 +724,7 @@ namespace ResourceTypes.Animation2
                 long iSign1 = Math.Sign(KeyFrame.value.Y) < 0 ? 1 << 23 : 0;
                 long iSign2 = Math.Sign(KeyFrame.value.Z) < 0 ? 1 << 23 : 0;
 
-                var iTime = new BigInteger((uint)Math.Round(KeyFrame.time * (582.0 + 4.0 / 7.0)));
+                var iTime = new BigInteger((uint)Math.Round((Math.Round(KeyFrame.time * 25.0) / 25.0) * (582.0 + 4.0 / 7.0)));
                 var iValue0 = new BigInteger((((uint)Math.Round(Math.Abs(KeyFrame.value.X) * QuantizationFactor)) & 0x7FFFFF) | iSign0);
                 var iValue1 = new BigInteger((((uint)Math.Round(Math.Abs(KeyFrame.value.Y) * QuantizationFactor)) & 0x7FFFFF) | iSign1);
                 var iValue2 = new BigInteger((((uint)Math.Round(Math.Abs(KeyFrame.value.Z) * QuantizationFactor)) & 0x7FFFFF) | iSign2);
@@ -714,7 +735,17 @@ namespace ResourceTypes.Animation2
                 data |= iValue2 << (offset + 72);
             }
 
-            Data = data.ToByteArray();
+            var tempData = data.ToByteArray();
+            Data = new byte[KeyFrames.Length * 12];
+
+            if (tempData.Length > Data.Length)
+            {
+                Array.Copy(tempData, 0, Data, 0, Data.Length);
+            }
+            else
+            {
+                Array.Copy(tempData, 0, Data, 0, tempData.Length);
+            }
         }
 
         public float GetOptimalScale()
@@ -730,7 +761,7 @@ namespace ResourceTypes.Animation2
                 scale = temp > scale ? temp : scale;
             }
 
-            return scale;
+            return (float)(Math.Ceiling(scale * 10000.0f) / 10000.0f);
         }
     }
 }

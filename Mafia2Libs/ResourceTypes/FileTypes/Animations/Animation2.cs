@@ -1,6 +1,10 @@
-﻿using ResourceTypes.ModelHelpers.ModelExporter;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.ModelHelpers.ModelExporter;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Numerics;
 using Utils.Logging;
 
 namespace ResourceTypes.Animation2
@@ -8,7 +12,7 @@ namespace ResourceTypes.Animation2
     public class Animation2
     {
         public Header Header { get; set; } = new();
-        public bool IsDataPresent { get; set; } //Not confirmed?
+        public bool IsDataPresent { get; set; } = false; //Not confirmed? //If true, UnkShorts00 can't be empty
         public Event[] PrimaryEvents { get; set; } = new Event[0];
         public Event[] SecondaryEvents { get; set; } = new Event[0];
         public ushort Unk00 { get; set; }
@@ -101,8 +105,6 @@ namespace ResourceTypes.Animation2
                 UnkShorts01[i] = br.ReadInt16();
             }
 
-            ConvertToMTB();
-
             ToolkitAssert.Ensure(br.BaseStream.Position == br.BaseStream.Length, "Animation2: Failed to reach EOF.");
         }
 
@@ -162,26 +164,14 @@ namespace ResourceTypes.Animation2
                 UnkShorts01 = newUnk01Shorts;
             }
 
-            foreach (var val in UnkShorts00)
+            for (int i = 0; i < Unk01; i++)
             {
-                bw.Write(val);
+                bw.Write(UnkShorts00[i]);
             }
 
-            foreach (var val in UnkShorts01)
+            for (int i = 0; i < Count; i++)
             {
-                bw.Write(val);
-            }
-        }
-
-        private void ConvertToMTB()
-        {
-            MT_ObjectBundle NewBundle = new MT_ObjectBundle();
-            NewBundle.Animation = ConvertToAnimation();
-
-            using(BinaryWriter FileWriter = new BinaryWriter(File.Open("Test.mtb", FileMode.Create)))
-            {
-                NewBundle.WriteToFile(FileWriter);
-                FileWriter.Close();
+                bw.Write(UnkShorts01[i]);
             }
         }
 
@@ -204,23 +194,66 @@ namespace ResourceTypes.Animation2
                 NewTrack.RotKeyFrames = new MT_RotKey[Track.KeyFrames.Length];
                 for (int i = 0; i < Track.KeyFrames.Length; i++)
                 {
-                    MT_RotKey KeyFrame = new MT_RotKey();
-                    KeyFrame.Time = Track.KeyFrames[i].time;
-                    KeyFrame.Value = Track.KeyFrames[i].value;
-                    NewTrack.RotKeyFrames[i] = KeyFrame;
+                    NewTrack.RotKeyFrames[i] = new MT_RotKey(Track.KeyFrames[i]);
                 }
 
                 NewTrack.PosKeyFrames = new MT_PosKey[Track.Positions.KeyFrames.Length];
                 for (int i = 0; i < Track.Positions.KeyFrames.Length; i++)
                 {
-                    MT_PosKey KeyFrame = new MT_PosKey();
-                    KeyFrame.Time = Track.Positions.KeyFrames[i].time;
-                    KeyFrame.Value = Track.Positions.KeyFrames[i].value;
-                    NewTrack.PosKeyFrames[i] = KeyFrame;
+                    NewTrack.PosKeyFrames[i] = new MT_PosKey(Track.Positions.KeyFrames[i]);
                 }
             }
 
             return NewAnimation;
+        }
+
+        public void ConvertFromAnimation(MT_Animation InAnimation)
+        {
+            Header.Hash = FNV64.Hash(InAnimation.AnimName);
+            Header.Duration = InAnimation.Duration;
+            List<short >UnkShorts01List = new();
+            short UnkShort01 = 0;
+
+            List<AnimTrack> NewTracks = new List<AnimTrack>();
+            foreach (MT_AnimTrack Track in InAnimation.Tracks)
+            {
+                AnimTrack NewTrack = new AnimTrack();
+
+                List<(float, Quaternion)> RotKeys = new List<(float, Quaternion)>();
+                Array.ForEach(Track.RotKeyFrames, delegate (MT_RotKey key) { RotKeys.Add(key.AsPair()); });
+
+                List<(float, Vector3)> PosKeys = new List<(float, Vector3)>();
+                Array.ForEach(Track.PosKeyFrames, delegate (MT_PosKey key) { PosKeys.Add(key.AsPair()); });
+
+                NewTrack.KeyFrames = RotKeys.ToArray();
+                NewTrack.Positions.KeyFrames = PosKeys.ToArray();
+                NewTrack.TrackDataChanged = true;
+                NewTrack.Positions.TrackDataChanged = true;
+
+                int PositionFlags = NewTrack.Positions.KeyFrames.Length > 0 ? 1 : 0;
+                int RotationFlags = NewTrack.KeyFrames.Length > 0 ? 2 : 0;
+                int PositionDataFlags = NewTrack.Positions.KeyFrames.Length > 0 ? 2 : 0;
+                int RotationDataFlags = NewTrack.KeyFrames.Length > 0 ? 1 : 0;
+                int Flags = PositionFlags | RotationFlags;
+                int DataFlags = PositionDataFlags | RotationDataFlags;
+
+                NewTrack.Flags = (byte)(0x20 | Flags);
+                NewTrack.DataFlags = (byte)(0x8 | DataFlags);
+                NewTrack.BoneID = Track.BoneID;
+                NewTrack.Duration = Track.Duration;
+
+                if (Flags != 0)
+                {
+                    NewTracks.Add(NewTrack);
+
+                    UnkShorts01List.Add(UnkShort01);
+                    UnkShort01++;
+                }
+            }
+
+            Tracks = NewTracks.OrderBy(x => (long)x.BoneID).ToArray();
+
+            UnkShorts01 = UnkShorts01List.ToArray();
         }
     }
 }

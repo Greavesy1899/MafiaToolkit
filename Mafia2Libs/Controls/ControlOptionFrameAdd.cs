@@ -66,7 +66,7 @@ namespace Forms.EditorControls
                     SelectedType = FrameResourceObjectType.Collision;
                     break;
                 case 12:
-                    SelectedType = FrameResourceObjectType.Joint;
+                    SelectedType = FrameResourceObjectType.Point;
                     break;
                 default:
                     SelectedType = FrameResourceObjectType.NULL;

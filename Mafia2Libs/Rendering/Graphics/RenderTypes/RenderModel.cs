@@ -33,7 +33,8 @@ namespace Rendering.Graphics
             public BaseShader Shader;
         }
 
-        private HashName aoHash;
+        private HashName aoHash { get; set; }
+        private bool bFoundAOTexture { get; set; }
         public ID3D11ShaderResourceView AOTexture { get; set; }
         public Color SelectionColour { get; private set; }
         
@@ -229,6 +230,8 @@ namespace Rendering.Graphics
                     {
                         texture = TextureLoader.LoadTexture(d3d, d3dContext, aoHash.String);
                         RenderStorageSingleton.Instance.TextureCache.Add(aoHash.Hash, texture);
+
+                        bFoundAOTexture = true;
                     }
                 }
 
@@ -425,16 +428,26 @@ namespace Rendering.Graphics
         {
             LODs[0].Vertices = null;
             LODs[0].Indices = null;
-            AOTexture?.Dispose();
-            AOTexture = null;
             vertexBuffer?.Dispose();
             vertexBuffer = null;
             indexBuffer?.Dispose();
             indexBuffer = null;
-            instanceBuffer?.Dispose();
+			instanceBuffer?.Dispose();
             instanceBuffer = null;
             instanceBufferView?.Dispose();
             instanceBufferView = null;
+
+            // only attempt to discard if AO Texture was actually loaded
+            // In theory this should probably be a sort of Handle system
+            // where each use increments the use count, and only when use == 0
+            // its removed from memory.
+            if(bFoundAOTexture)
+            {
+                AOTexture?.Dispose();
+                AOTexture = null;
+
+                bFoundAOTexture = false;
+            }
         }
 
         public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)

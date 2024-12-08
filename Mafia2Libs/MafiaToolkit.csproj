@@ -122,6 +122,9 @@
     <Compile Update="Controls\ControlGameEntry.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Controls\FrameResourceModelExporter.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Controls\MListView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -317,6 +320,8 @@
   <ItemGroup>
     <PackageReference Include="DockPanelSuite" Version="3.1.0" />
     <PackageReference Include="Octokit" Version="8.0.1" />
+    <PackageReference Include="SharpGLTF.Core" Version="1.0.3" />
+    <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
     <PackageReference Include="Vortice.D3DCompiler" Version="1.9.143" />
     <PackageReference Include="Vortice.Direct3D11" Version="1.9.143" />
@@ -336,6 +341,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="Controls\FrameResourceModelExporter.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Remove="Rendering\Graphics\RenderTypes\Instances\**" />
   </ItemGroup>
   <ItemGroup>

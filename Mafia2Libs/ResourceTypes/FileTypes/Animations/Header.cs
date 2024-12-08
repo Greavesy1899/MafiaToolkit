@@ -7,24 +7,24 @@ namespace ResourceTypes.Animation2
 {
     public class Header
     {
-        public int SkeletonID { get; set; }
-        public byte Version { get; set; }
+        public int SkeletonID { get; set; } = -1;
+        public byte Version { get; set; } = 2;
         public static readonly uint Magic = 0xFA5612BC;
-        public short NumPrimaryEvents { get; set; }
-        public short NumSecondaryEvents { get; set; }
+        public short NumPrimaryEvents { get; set; } = 0;
+        public short NumSecondaryEvents { get; set; } = 0;
         public Vector4 Unk01 { get; set; } = new(0,0,0,1);
-        public uint Unk02 { get; set; }
-        public uint Unk03 { get; set; }
-        public uint Unk04 { get; set; }
-        public uint Unk05 { get; set; }
-        public uint Unk06 { get; set; }
-        public uint Unk07 { get; set; }
-        public ulong Hash { get; set; }
-        public byte Unk08 { get; set; }
-        public float Duration { get; set; }
-        public short Count { get; set; }
-        public byte Unk09 { get; set; }
-        public ulong RootBoneID { get; set; }
+        public uint Unk02 { get; set; } = 0;
+        public uint Unk03 { get; set; } = 0;
+        public uint Unk04 { get; set; } = 0;
+        public uint Unk05 { get; set; } = 0xFF7FFF8B;
+        public uint Unk06 { get; set; } = 0;
+        public uint Unk07 { get; set; } = 0;
+        public ulong Hash { get; set; } = 0;
+        public byte Unk08 { get; set; } = 0;
+        public float Duration { get; set; } = 0.0f;
+        public short Count { get; set; } = 0;
+        public byte Unk09 { get; set; } = 3;
+        public ulong RootBoneID { get; set; } = 0;
         public Header()
         {
 

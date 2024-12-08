@@ -13,15 +13,25 @@ namespace ResourceTypes.FrameResource
     {
         int[] numBones = new int[4];
         int numBlendIDs;
-        int numLods;
-        int[] unkLodData;
         byte idType;
+
+        // Name of bones
         HashName[] boneNames;
-        Matrix4x4[] jointTransforms; //maybe joint space
+
+        // maybe joint space
+        Matrix4x4[] jointTransforms; 
         int numUnkCount2;
+
+        // This stores if the LOD vertices use the bone - does not mean exclude bone from skeleton.
+        // We'd only add whether or not the bone is used if the models vertices has any weight to the bone
         byte[] boneLODUsage;
-        Matrix4x4[] worldTransforms; //world space = extract position matrix, extract rotation matrix, multiply -position * rotation
+
+        //world space = extract position matrix, extract rotation matrix, multiply -position * rotation
+        Matrix4x4[] worldTransforms; 
+
         MappingForBlendingInfo[] mappingForBlendingInfos;
+
+        // TODO: boneNames, boneLODUsage and jointTransforms all could be stored as same class
 
         public int[] NumBones {
             get { return numBones; }
@@ -31,14 +41,10 @@ namespace ResourceTypes.FrameResource
             get { return numBlendIDs; }
             set { numBlendIDs = value; }
         }
-        public int NumLods {
-            get { return numLods; }
-            set { numLods = value; }
-        }
-        public int[] UnkLodData {
-            get { return unkLodData; }
-            set { unkLodData = value; }
-        }
+
+        // How many Remap IDs are present for the LOD. This must match LOD count.
+        public int[] LodRemapIDCount { get; set; }
+
         public byte IDType {
             get { return idType; }
             set { idType = value; }
@@ -71,7 +77,7 @@ namespace ResourceTypes.FrameResource
         public FrameSkeleton(FrameResource OwningResource) : base(OwningResource)
         {
             numBones = new int[4];
-            unkLodData = new int[0];
+            LodRemapIDCount = new int[0];
             boneNames = new HashName[0];
             jointTransforms = new Matrix4x4[0];
             worldTransforms = new Matrix4x4[0];
@@ -87,13 +93,13 @@ namespace ResourceTypes.FrameResource
             }
 
             numBlendIDs = stream.ReadInt32(isBigEndian);
-            numLods = stream.ReadInt32(isBigEndian);
 
-            //unknown lod data; 
-            unkLodData = new int[numLods];
-            for (int i = 0; i != unkLodData.Length; i++)
+            // Need to load how many Remap IDs are present for each LOD
+            int NumLODs = stream.ReadInt32(isBigEndian);
+            LodRemapIDCount = new int[NumLODs];
+            for (int i = 0; i < LodRemapIDCount.Length; i++)
             {
-                unkLodData[i] = stream.ReadInt32(isBigEndian);
+                LodRemapIDCount[i] = stream.ReadInt32(isBigEndian);
             }
 
             idType = stream.ReadByte8();
@@ -123,7 +129,7 @@ namespace ResourceTypes.FrameResource
             }
 
             //BoneMappings.
-            mappingForBlendingInfos = new MappingForBlendingInfo[numLods];
+            mappingForBlendingInfos = new MappingForBlendingInfo[NumLODs];
             for (int i = 0; i != mappingForBlendingInfos.Length; i++)
             {
                 mappingForBlendingInfos[i].Bounds = new BoundingBox[numBones[2]];
@@ -136,7 +142,7 @@ namespace ResourceTypes.FrameResource
                     throw new System.Exception("oops");
 
                 mappingForBlendingInfos[i].RefToUsageArray = stream.ReadBytes(numBones[2]);
-                mappingForBlendingInfos[i].UsageArray = stream.ReadBytes(unkLodData[i]);
+                mappingForBlendingInfos[i].UsageArray = stream.ReadBytes(LodRemapIDCount[i]);
             }
         }
 
@@ -147,11 +153,13 @@ namespace ResourceTypes.FrameResource
                 writer.Write(numBones[i]);
 
             writer.Write(numBlendIDs);
-            writer.Write(numLods);
 
-            //unknown lod data; 
-            for (int i = 0; i != unkLodData.Length; i++)
-                writer.Write(unkLodData[i]);
+            // Write Remap ID counts for each LOD
+            writer.Write(LodRemapIDCount.Length);
+            foreach(int RemapCount in LodRemapIDCount)
+            {
+                writer.Write(RemapCount);
+            }
 
             writer.Write(idType);
 
@@ -199,10 +207,18 @@ namespace ResourceTypes.FrameResource
                 get { return bounds; }
                 set { bounds = value; }
             }
+
+            // TODO: This is loaded using Bone Count in Skeleton
+            // Can we determine what this is? My suspicion is an easy lookup between Bone -> Remapped ID.
+            // This may be a code side of finding the remapped vertices using the bone ID.
             public byte[] RefToUsageArray {
                 get { return refToUsageArray; }
                 set { refToUsageArray = value; }
             }
+
+            // TODO: This is loaded using Remap Count for each LOD.
+            // Can we determine what this is? My suspicion is how many times the Remap ID is used.
+            // But does that mean across Materials, or per vertex? And does it cross Material boundaries?
             public byte[] UsageArray {
                 get { return usageArray; }
                 set { usageArray = value; }

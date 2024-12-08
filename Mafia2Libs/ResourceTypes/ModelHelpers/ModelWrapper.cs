@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.FrameResource;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.BufferPools;
-using Utils.Types;
-using ResourceTypes.ModelHelpers.ModelExporter;
-using System.IO;
-using Utils.Settings;
-using System.Windows.Forms;
+using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
+using ResourceTypes.ModelHelpers.ModelExporter;
+using SharpGLTF.Schema2;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
-using Vortice.Mathematics;
+using Utils.Types;
 using Utils.VorticeUtils;
-using System.Diagnostics;
+using Vortice.Mathematics;
 
 namespace Utils.Models
 {
@@ -48,17 +46,13 @@ namespace Utils.Models
             set { modelObject = value; }
         }
 
-        public MT_Animation AnimationObject { get; set; }
-
         public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            modelObject = new MT_Object();
-            modelObject.ObjectName = frameMesh.Name.ToString();
-            //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
-            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers);
+
+            modelObject = MT_Object.TryBuildObject(frameMesh);
         }
 
         public ModelWrapper(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
@@ -66,24 +60,18 @@ namespace Utils.Models
             this.frameModel = frameModel;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            modelObject = new MT_Object();
-            modelObject.ObjectName = frameModel.Name.ToString();
-            //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
-            modelObject.BuildFromCooked(frameModel, vertexBuffers, indexBuffers);
+
+            modelObject = MT_Object.TryBuildObject(frameModel);
         }
 
         public ModelWrapper(FrameObjectBase FrameObject)
         {
-            modelObject = new MT_Object();
-            modelObject.ObjectName = FrameObject.Name.ToString();
-            modelObject.BuildStandardObject(FrameObject);
+            modelObject = MT_Object.TryBuildObject(FrameObject);
         }
 
         public ModelWrapper(FrameHeaderScene FrameScene)
         {
-            modelObject = new MT_Object();
-            modelObject.ObjectName = FrameScene.Name.ToString();
-            ModelObject.BuildFromScene(FrameScene);
+            modelObject = MT_Object.TryBuildObject(FrameScene);
         }
 
         /// <summary>
@@ -106,34 +94,58 @@ namespace Utils.Models
             return -MathF.Max(AbsVal1, AbsVal2);
         }
 
+        public (float DecompressionFactor, Vector3 DecompressionOffset) GetDecompFactor(BoundingBox boundingBox)
+        {
+            float Size = boundingBox.Depth * 2.0f;
+
+            float decompressionFactor = Size / 65520.0f;
+            float offset = 8 * decompressionFactor;
+
+            Vector3 decompressionOffset = new Vector3(boundingBox.Min.X - offset, boundingBox.Min.Y - offset, boundingBox.Min.Z - offset / 2.0f);
+
+            Vector3 MinusOffset = boundingBox.Max - decompressionOffset;
+            Vector3 Factorised = MinusOffset / decompressionFactor;
+
+            if (Factorised.X > ushort.MaxValue || Factorised.Y > ushort.MaxValue || Factorised.Z > ushort.MaxValue)
+            {
+                decompressionFactor = 256.0f / 65536.0f;
+                offset = 4 * decompressionFactor;
+            }
+
+            MinusOffset = boundingBox.Max - decompressionOffset;
+            Factorised = MinusOffset / decompressionFactor;
+
+            if (Factorised.X > ushort.MaxValue || Factorised.Y > ushort.MaxValue || Factorised.Z > ushort.MaxValue)
+            {
+                List<float> values = new() { boundingBox.Height, boundingBox.Width, boundingBox.Depth };
+
+                Size = values.Max();
+
+                decompressionFactor = Size / 65520.0f;
+                offset = 8 * decompressionFactor;
+            }
+
+            decompressionOffset = new Vector3(boundingBox.Min.X - offset, boundingBox.Min.Y - offset, boundingBox.Min.Z - offset / 2.0f);
+
+            return (decompressionFactor, decompressionOffset);
+        }
+
         /// <summary>
         /// Update decompression offset and position.
         /// </summary>
         public void CalculateDecompression()
         {
             FrameGeometry frameGeometry = frameMesh.Geometry;
+            frameGeometry.DecompressionFactor = 1.525879E-05f;
+            frameGeometry.DecompressionOffset = Vector3.Zero;
 
             BoundingBox bounds = new BoundingBox();
             bounds.SetMinimum(frameMesh.Boundings.Min);
             bounds.SetMaximum(frameMesh.Boundings.Max);
-            frameGeometry.DecompressionOffset = new Vector3(bounds.Min.X, bounds.Min.Y, bounds.Min.Z);
 
-            double MaxX = bounds.Max.X - bounds.Min.X;
-            double MaxY = bounds.Max.Y - bounds.Min.Y;
-            double MaxZ = bounds.Max.Z - bounds.Min.Z;
-
-            float Max = (float)Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
-            frameGeometry.DecompressionFactor = Max / 0xFFFF;
-
-            double fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
-            Console.WriteLine("Decompress value before: " + fMaxSize);
-            double result = Math.Log(fMaxSize) / Math.Log(2.0f);
-            double pow = Math.Ceiling(result);
-            double factor = Math.Pow(2.0f, pow);
-            float OldOutput = (float)(factor / 0x10000);
-            float NewOutput = frameGeometry.DecompressionFactor;
-
-            Debug.WriteLine(string.Format("{0} => {1}", OldOutput, NewOutput));
+            (float, Vector3) Values = GetDecompFactor(bounds);
+            frameGeometry.DecompressionFactor = Values.Item1;
+            frameGeometry.DecompressionOffset = Values.Item2;
         }
 
         public void BuildIndexBuffer()
@@ -236,6 +248,10 @@ namespace Utils.Models
                         vert.WriteUvData(vBuffer, startIndex, 3);
                     }
 
+                    // TODO: delete once validation is complete
+                    byte[] data = new byte[vertexSize];
+                    Array.Copy(vBuffer, (v * vertexSize), data, 0, vertexSize);
+                    Vertex TestVertex = VertexTranslator.DecompressVertex(data, frameLod.VertexDeclaration, frameGeometry.DecompressionOffset, frameGeometry.DecompressionFactor, vertexOffsets);
                 }
 
                 VertexBuffers[i] = new VertexBuffer(FNV64.Hash("M2TK." + ModelObject.ObjectName + ".VB" + i));
@@ -243,52 +259,12 @@ namespace Utils.Models
             }
         }
 
-        public void ReadObjectFromFbx(string file)
-        {
-            // Change extension, pass to M2FBX
-            string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
-            int result = FBXHelper.ConvertFBX(file, m2tFile);
-
-            // Read the MT object.
-            ModelObject = MT_ObjectHandler.ReadObjectFromFile(file);
-
-            // Delete the recently-created MT file.
-            if (File.Exists(m2tFile))
-            {
-                File.Delete(m2tFile);
-            }
-        }
-
-        public void ReadObjectFromM2T(string file)
-        {
-            ModelObject = MT_ObjectHandler.ReadObjectFromFile(file);
-        }
-
         public void ExportObject(string SavePath, int FilterIndex)
         {          
-            switch(FilterIndex)
+            if(ModelObject != null)
             {
-                case 1:
-                    ExportBundle(SavePath);
-                    ExportObjectToFbx(SavePath, true);
-                    File.Delete(SavePath + ".mtb");
-                    break;
-                case 2:
-                    ExportBundle(SavePath);
-                    ExportObjectToFbx(SavePath, false);
-                    File.Delete(SavePath + ".mtb");
-                    break;
-                case 3:
-                    ExportBundle(SavePath);
-                    break;
-                default:
-                    break;
+                ExportBundle(SavePath);
             }
-        }
-
-        private void ExportObjectToFbx(string File, bool bIsBinary)
-        {
-            FBXHelper.ConvertMTB(File + ".mtb", File);
         }
 
         private void ExportBundle(string FileToWrite)
@@ -296,12 +272,14 @@ namespace Utils.Models
             MT_ObjectBundle BundleObject = new MT_ObjectBundle();
             BundleObject.Objects = new MT_Object[1];
             BundleObject.Objects[0] = ModelObject;
-            BundleObject.Animation = AnimationObject;
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileToWrite + ".mtb", FileMode.Create)))
-            {
-                MT_ObjectHandler.WriteBundleToFile(writer, BundleObject);
-            }
+            // TODO: Default is ValidationMode.Strict, which faulters on Normals
+            WriteSettings WriteContext = new WriteSettings();
+            WriteContext.Validation = SharpGLTF.Validation.ValidationMode.TryFix;
+            WriteContext.JsonIndented = true;
+
+            ModelRoot CompiledModel = BundleObject.BuildGLTF();
+            CompiledModel.SaveGLB(FileToWrite, WriteContext);
         }
 
         public void UpdateObjectsFromModel()
@@ -404,14 +382,11 @@ namespace Utils.Models
             indexBuffers = new IndexBuffer[ModelObject.Lods.Length];
             vertexBuffers = new VertexBuffer[ModelObject.Lods.Length];
 
-            List<Vertex[]> vertData = new List<Vertex[]>();
-            for (int i = 0; i != ModelObject.Lods.Length; i++)
-            {
-                vertData.Add(ModelObject.Lods[i].Vertices);
-            }
+            // Apply bounding box for FrameGeometry and FrameMaterial
+            BoundingBox NewBounds = ModelObject.GetLODBounds();
+            frameMesh.Boundings = NewBounds;
+            frameMaterial.Bounds = NewBounds;
 
-            frameMesh.Boundings = BoundingBoxExtenders.CalculateBounds(vertData);
-            frameMaterial.Bounds = frameMesh.Boundings;
             CalculateDecompression();
             UpdateObjectsFromModel();
             BuildIndexBuffer();
@@ -439,6 +414,9 @@ namespace Utils.Models
 
         public void CreateSkinnedObjectsFromModel()
         {
+            // TEMP - generate remappings and apply to all LODs + Skinned mesh
+            var RemappedBlendInfos = ModelObject.TestGenerateBoneRemappings();
+
             // MT_Object data
             MT_Skeleton SkeletonObject = ModelObject.Skeleton;
 
@@ -448,89 +426,95 @@ namespace Utils.Models
             FrameSkeletonHierachy HierarchyBlock = ModelFrame.GetSkeletonHierarchyObject();
             FrameBlendInfo BlendInfoBlock = ModelFrame.GetBlendInfoObject();
 
-            HierarchyBlock.LastChildIndices = new byte[255];
-            HierarchyBlock.ParentIndices = new byte[255];
-            HierarchyBlock.UnkData = new byte[255];
+            // Build skeleton hierarchy block
+            HierarchyBlock.LastChildIndices = new byte[SkeletonObject.Joints.Length];
+            HierarchyBlock.ParentIndices = new byte[SkeletonObject.Joints.Length];
+            HierarchyBlock.Unk01 = 0;
 
-            List<int> SkeletonSequence = new List<int>();
-            SkeletonSequence.Add(0);
+            // Skeleton block - allocate enough for all joints
+            SkeletonBlock.BoneNames = new HashName[SkeletonObject.Joints.Length];
+            SkeletonBlock.JointTransforms = new Matrix4x4[SkeletonObject.Joints.Length];
+            SkeletonBlock.BoneLODUsage = new byte[SkeletonObject.Joints.Length];
 
-            int[] JointBoneIDs = new int[SkeletonObject.Joints.Length];
-            int[] IDRemapTable = new int[1024];
+            // Not sure what UnkData is - but the assumption is that the first slot has number of bones
+            // Then a list from 1 - N Bones. Last slot in the array is 0.
+            HierarchyBlock.UnkData = new byte[SkeletonObject.Joints.Length + 1];
+            byte UnkDataItr = 1;
 
-            for (int i = 0; i < SkeletonSequence.Count; i++)
+            for (int i = 0; i < SkeletonObject.Joints.Length; i++)
             {
-                MT_Joint JointObject = SkeletonObject.Joints[i];
+                MT_Joint CurrentJoint = SkeletonObject.Joints[i];
 
-                // handle last child indices array
-                HierarchyBlock.LastChildIndices[i] = (byte)(i > 0 ? HierarchyBlock.LastChildIndices[i - 1] : 0);
+                // Work on Skeleton Block
+                SkeletonBlock.BoneNames[i] = new HashName(CurrentJoint.Name);
 
-                for (int z = 0; z < SkeletonObject.Joints.Length; z++)
-                {
-                    bool bCheckOne = SkeletonObject.Joints[z].ParentJointIndex == JointBoneIDs[i];
-                    if (bCheckOne)
-                    {
-                        int NewSlot = SkeletonSequence.Count;
-                        HierarchyBlock.ParentIndices[NewSlot] = (byte)i;
-                        HierarchyBlock.LastChildIndices[i] = (byte)NewSlot;
-                        JointBoneIDs[z] = NewSlot;
+                // generate joint transform from MT_Joint
+                Matrix4x4 RotTransform = Matrix4x4.CreateFromQuaternion(CurrentJoint.Rotation);
+                Matrix4x4 LocTransform = Matrix4x4.CreateScale(CurrentJoint.Scale);
+                Matrix4x4 SclTransform = Matrix4x4.CreateTranslation(CurrentJoint.Position);
+                Matrix4x4 XForm = RotTransform * LocTransform * SclTransform;
+                SkeletonBlock.JointTransforms[i] = XForm;
 
-                        if (JointBoneIDs[z] >= 0)
-                        {
-                            IDRemapTable[JointBoneIDs[z]] = NewSlot;
-                        }
+                // Create usage list. UsageFlags should automatically be generated upon loading the GLTF.
+                SkeletonBlock.BoneLODUsage[i] = (byte)CurrentJoint.UsageFlags;
 
-                        SkeletonSequence.Add(z);
-                    }
-                }
+                // TODO: World transform -> how tf do you do this??
 
-                HierarchyBlock.UnkData[i] = (byte)i;
+                // Work on Hierarchy Block
+                HierarchyBlock.ParentIndices[i] = (CurrentJoint.ParentJointIndex == -1 ? byte.MaxValue : (byte)CurrentJoint.ParentJointIndex);
+                HierarchyBlock.UnkData[i + 1] = UnkDataItr++;
             }
 
-            /*
-            int NumJoints = SkeletonObject.Joints.Length;
-            SkeletonBlock.BoneNames = new HashName[NumJoints];
+            // Hierarchy Block - Finish off UnkData by assigning first and last slot
+            HierarchyBlock.UnkData[0] = (byte)SkeletonObject.Joints.Length;
+            HierarchyBlock.UnkData[SkeletonObject.Joints.Length] = 0;
+
+            // Skeleton Block - Finalise remaining data
+            // Fill in additional data
+            SkeletonBlock.NumUnkCount2 = SkeletonObject.Joints.Length;
+            SkeletonBlock.IDType = 3; // unknown - 3 is typically hashes? For cars and crane.
+
+            // for some reason all slots in this array equal same amount of bones..
             SkeletonBlock.NumBones = new int[4];
-            SkeletonBlock.UnkLodData = new int[1];
-            SkeletonBlock.BoneLODUsage = new byte[NumJoints];
+            SkeletonBlock.NumBones[0] = SkeletonBlock.NumBones[1] = SkeletonBlock.NumBones[2] = SkeletonBlock.NumBones[3] = SkeletonObject.Joints.Length;
 
-            SkeletonBlock.NumBlendIDs = NumJoints;
-            SkeletonBlock.NumUnkCount2 = NumJoints;
-            SkeletonBlock.UnkLodData[0] = NumJoints;
+            // TODO: Once BlendInfo is done, there are a few pieces of data which must be stored in Skeleton
+            SkeletonBlock.NumBlendIDs = 0;
+            SkeletonBlock.MappingForBlendingInfos = null; // maybe in here too, one for each lod?
+            SkeletonBlock.LodRemapIDCount = new int[ModelObject.Lods.Length];
 
-
-            for (int i = 0; i < 4; i++)
+            // now lets begin generating skinned data for each LOD
+            BlendInfoBlock.BoneIndexInfos = new FrameBlendInfo.BoneIndexInfo[ModelObject.Lods.Length];         
+            for(int Idx = 0; Idx < ModelObject.Lods.Length; Idx++)
             {
-                SkeletonBlock.NumBones[i] = NumJoints;
-            }
+                MT_Lod CurrentLod = ModelObject.Lods[Idx];
+                FrameBlendInfo.BoneIndexInfo LodIndexInfo = new FrameBlendInfo.BoneIndexInfo();
+                LodIndexInfo.BoneRemapIDs = RemappedBlendInfos[Idx].BoneRemapIDs;
+                LodIndexInfo.BonesPerRemapPool = RemappedBlendInfos[Idx].BonesPerRemapPool;
 
-            for (int i = 0; i < NumJoints; i++)
-            {
-                HashName bone = new HashName();
-                bone.Set(SkeletonObject.Joints[i].Name);
-                SkeletonBlock.BoneNames[i] = bone;
-
-                if (ModelObject.Lods.Length == 1)
+                // generate each weighted info for each facegroup found in the LOD
+                LodIndexInfo.SkinnedMaterialInfo = new FrameBlendInfo.SkinnedMaterialInfo[CurrentLod.FaceGroups.Length];
+                for (int MatIdx = 0; MatIdx < LodIndexInfo.SkinnedMaterialInfo.Length; MatIdx++)
                 {
-                    SkeletonBlock.BoneLODUsage[i] = 1;
+                    MT_FaceGroup CurrentFaceGroup = CurrentLod.FaceGroups[MatIdx];
+
+                    FrameBlendInfo.SkinnedMaterialInfo SkinnedMatInfo = new FrameBlendInfo.SkinnedMaterialInfo();
+                    SkinnedMatInfo.NumWeightsPerVertex = CurrentFaceGroup.WeightsPerVertex;
+
+                    // TODO: We currently do not understand BoneSlot mappings therefore default to zero
+                    SkinnedMatInfo.AssignedPoolIndex = RemappedBlendInfos[Idx].SkinnedMaterialInfo[MatIdx].AssignedPoolIndex;
+
+                    LodIndexInfo.SkinnedMaterialInfo[MatIdx] = SkinnedMatInfo;
                 }
+
+                // assign
+                BlendInfoBlock.BoneIndexInfos[Idx] = LodIndexInfo;
+
+                // Work on Skeleton Block as it has some overlap with Blend Info;
+
+                // Skeleton block needs to reflect ID Remapping data
+                SkeletonBlock.LodRemapIDCount[Idx] = LodIndexInfo.BoneRemapIDs.Length;
             }
-
-            HierarchyBlock.ParentIndices = new byte[NumJoints];
-            HierarchyBlock.LastChildIndices = new byte[NumJoints];
-            HierarchyBlock.UnkData = new byte[NumJoints];
-            SkeletonBlock.JointTransforms = new Matrix[NumJoints];
-
-            HierarchyBlock.UnkData[0] = (byte)(NumJoints + 1);
-
-            for (int i = 0; i < NumJoints; i++)
-            {
-                MT_Joint JointObject = SkeletonObject.Joints[i];
-
-                HierarchyBlock.ParentIndices[i] = (byte)JointObject.ParentJointIndex;
-                HierarchyBlock.UnkData[i] = (byte)(i != NumJoints ? i : 0);
-                SkeletonBlock.JointTransforms[i] = MatrixExtensions.SetMatrix(JointObject.Rotation, JointObject.Scale, JointObject.Position);
-            }*/
         }
     }
 }
