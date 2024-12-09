@@ -556,6 +556,21 @@ namespace Forms.Docking
             }
             return false;
         }
+        
+        public TreeNode GetSceneDataTreeNode(string ScenePath)
+        {
+
+            for (int i = 0; i < TreeView_Explorer.Nodes.Count; i++)
+            {
+                if (TreeView_Explorer.Nodes[i].Text.Equals(ScenePath))
+                {
+                    return TreeView_Explorer.Nodes[i];
+                }
+            }
+
+            // We have failed, return null.
+            return null;
+        }
     }
 }
 public class TreeViewDragEventArgs : EventArgs

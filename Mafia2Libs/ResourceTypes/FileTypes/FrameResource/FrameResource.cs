@@ -471,7 +471,7 @@ namespace ResourceTypes.FrameResource
         }
         public TreeNode BuildTree(FrameNameTable.FrameNameTable table)
         {
-            TreeNode root = new TreeNode("FrameResource Contents: "+SceneData.ScenePath.Substring(SceneData.ScenePath.LastIndexOf('\\') + 1));
+            TreeNode root = new TreeNode("FrameResource Contents");
             root.Tag = header;
             
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
