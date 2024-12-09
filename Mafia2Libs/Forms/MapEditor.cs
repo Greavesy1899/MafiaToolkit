@@ -2949,9 +2949,11 @@ namespace Mafia2Tool
 
         private void LoadFrameResource_Click(object sender, EventArgs e)
         {
-            if (FrameResourceBrowser.ShowDialog() == DialogResult.OK)
+            var Browser = new System.Windows.Forms.OpenFileDialog();
+            Browser.Filter = "FrameResource|*.fr";
+            if (Browser.ShowDialog() == DialogResult.OK)
             {
-                string Filename = FrameResourceBrowser.FileName;
+                string Filename = Browser.FileName;
                 LoadFrameResourceFilename(Filename);
             }
         }
@@ -3018,7 +3020,7 @@ namespace Mafia2Tool
                     writer.Write(scenePath.Length);
 
                     // Zápis samotného stringu
-                    writer.Write(scenePath.ToCharArray());
+                    writer.Write(scenePath.ToCharArray());//todo reword for russians
                 }
             }     
         }

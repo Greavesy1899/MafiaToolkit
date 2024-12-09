@@ -77,7 +77,6 @@ namespace Mafia2Tool
             TxtBrowser = new System.Windows.Forms.OpenFileDialog();
             dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             FrameBrowser = new System.Windows.Forms.OpenFileDialog();
-            FrameResourceBrowser = new System.Windows.Forms.OpenFileDialog();
             SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
@@ -461,10 +460,6 @@ namespace Mafia2Tool
             // 
             FrameBrowser.Filter = "FrameResource|*.fr|Toolkit Frame Data|*.framedata";
             // 
-            // FrameResourceBrowser
-            // 
-            FrameResourceBrowser.Filter = "FrameResource|*.fr";
-            // 
             // MapEditor
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -528,7 +523,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripStatusLabel Label_MemoryUsage;
         private System.Windows.Forms.ToolStripMenuItem Button_ImportFrame;
         private System.Windows.Forms.OpenFileDialog FrameBrowser;
-        private System.Windows.Forms.OpenFileDialog FrameResourceBrowser;
         private System.Windows.Forms.ToolStripMenuItem Button_DumpTexture;
         private System.Windows.Forms.ToolStripMenuItem Button_ImportBundle;
         private System.Windows.Forms.SaveFileDialog SaveFileDialog;
