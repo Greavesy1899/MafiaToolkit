@@ -370,6 +370,10 @@ namespace Mafia2Tool
                             Graphics.SetTranslokatorGridEnabled(trGridIndex, enabled);
                         }
                     }
+                    else
+                    {
+                        Graphics.SetAssetVisibility(refID, node.Checked && node.CheckIfParentsAreValid());
+                    }
                 }
                 else
                 {
