@@ -2,6 +2,7 @@
 using Mafia2Tool;
 using ResourceTypes.Materials;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -14,7 +15,7 @@ namespace Rendering.Graphics
 {
     public static class TextureLoader
     {
-        public static string ScenePath;
+        public static List<string> ScenePaths = new List<string>();
         private static bool ThumbnailCallback()
         {
             return false;
@@ -25,25 +26,30 @@ namespace Rendering.Graphics
             string path = "";
             bool bUseMIPs = bAllowMIPs && ToolkitSettings.UseMIPS;
 
-            if (!fileName.Contains(".ifl"))
+            for (int i = 0; i < ScenePaths.Count; i++)
             {
-                path = Path.Combine(ScenePath, fileName);
-                if (File.Exists(path))
+                string ScenePath = ScenePaths[i];
+                if (!fileName.Contains(".ifl"))
                 {
-                    string mip = Path.Combine(ScenePath, "MIP_" + fileName);
-                    return (File.Exists(mip) && bUseMIPs ? mip : path);
-                }
-
-                if (!string.IsNullOrEmpty(ToolkitSettings.TexturePath) || Directory.Exists(ToolkitSettings.TexturePath))
-                {
-                    path = Path.Combine(ToolkitSettings.TexturePath, fileName);
+                    path = Path.Combine(ScenePath, fileName);
                     if (File.Exists(path))
                     {
-                        string mip = Path.Combine(ToolkitSettings.TexturePath, "MIP_" + fileName);
+                        string mip = Path.Combine(ScenePath, "MIP_" + fileName);
                         return (File.Exists(mip) && bUseMIPs ? mip : path);
                     }
-                }
+    
+                    if (!string.IsNullOrEmpty(ToolkitSettings.TexturePath) || Directory.Exists(ToolkitSettings.TexturePath))
+                    {
+                        path = Path.Combine(ToolkitSettings.TexturePath, fileName);
+                        if (File.Exists(path))
+                        {
+                            string mip = Path.Combine(ToolkitSettings.TexturePath, "MIP_" + fileName);
+                            return (File.Exists(mip) && bUseMIPs ? mip : path);
+                        }
+                    }
+                }            
             }
+
             path = Path.Combine("Resources", "texture.dds");
             if (File.Exists(path))
             {

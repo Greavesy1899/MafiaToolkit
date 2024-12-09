@@ -81,7 +81,7 @@ namespace Mafia2Tool
         public MapEditor(FileInfo info,SceneData sceneData)
         {
             SceneData = sceneData;
-            TextureLoader.ScenePath = SceneData.ScenePath;//todo: probably make list of scenepaths there
+            TextureLoader.ScenePaths.Add(SceneData.ScenePath);//todo: probably make list of scenepaths there
             SceneDataContainer sdc = new SceneDataContainer();
             sdc.SceneData = sceneData;
             sceneDatas.Add(sdc);
@@ -105,6 +105,30 @@ namespace Mafia2Tool
             Text += " -" + info.Directory.Name;
             SwitchMode(true);
             StartD3DPanel();
+        }
+        
+        public MapEditor(FileInfo info,String[] ScenePaths)
+        {
+
+            InitializeComponent();
+            Localise();
+            
+            //sceneData.FrameResource.OnFrameRemoved += OnFrameRemoved;  ???
+
+            if (MaterialsManager.MaterialLibraries.Count == 0)
+            {
+                MessageBox.Show("No material libraries have loaded, make sure they are set up correctly in the options window!", "Warning!", MessageBoxButtons.OK);
+            }
+
+            ToolkitSettings.UpdateRichPresence(string.Format("Editing '{0}'", info.Directory.Name));
+            fileLocation = info;
+            InitDockingControls();
+            NamesAndDuplicationStore = new Dictionary<string, int>();
+            CameraSpeedTool.Value = (decimal)ToolkitSettings.CameraSpeed;
+            KeyPreview = true;
+            Text += " -" + info.Directory.Name;
+            SwitchMode(true);
+            StartD3DPanel(ScenePaths);
         }
 
         private void Localise()
@@ -405,7 +429,7 @@ namespace Mafia2Tool
             scenetree.Text = sdc.SceneData.ScenePath;
             scenetree.Tag = sdc;
             TreeNode tree = sdc.SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
-            tree.Tag = SceneData.FrameResource.Header;
+            tree.Tag = sdc.SceneData.FrameResource.Header;
             frameResourceRoot = tree;
             dSceneTree.AddToTree(scenetree);
             dSceneTree.AddToTree(tree,scenetree);
@@ -435,11 +459,20 @@ namespace Mafia2Tool
 
         public void StartD3DPanel()
         {
-            Init(RenderPanel.Handle);
+            Init(RenderPanel.Handle,false);
+            Run();
+        }
+        public void StartD3DPanel(string[] scenePaths)
+        {
+            Init(RenderPanel.Handle,true);
+            for (int i = 0; i < scenePaths.Length; i++)
+            {
+                LoadFrameResourceFilename(scenePaths[i]);
+            }  
             Run();
         }
 
-        public bool Init(IntPtr handle)
+        public bool Init(IntPtr handle, bool session)
         {
             bool result = false;
 
@@ -447,7 +480,10 @@ namespace Mafia2Tool
             {
                 Graphics = new GraphicsClass();
                 Graphics.PreInit(handle);
-                BuildRenderObjects();
+                if (!session)
+                {
+                    BuildRenderObjects();
+                }
                 result = Graphics.InitScene(RenderPanel.Width, RenderPanel.Height);
             }
 
@@ -1092,7 +1128,7 @@ namespace Mafia2Tool
                 }
             }
 
-            Graphics.InitObjectStack = assets;
+            Graphics.InitObjectStack.AddRange(assets);
 
             if (sceneData.Translokator != null && ToolkitSettings.Experimental)
             {
@@ -2912,20 +2948,79 @@ namespace Mafia2Tool
             if (FrameResourceBrowser.ShowDialog() == DialogResult.OK)
             {
                 string Filename = FrameResourceBrowser.FileName;
-                
-                SceneData sceneData = new SceneData();
-                sceneData.ScenePath = Path.GetDirectoryName(Filename);
-                sceneData.BuildData(false);
-                SceneDataContainer sdc = new SceneDataContainer();
-                sdc.SceneData = sceneData;
-                sceneDatas.Add(sdc);
-
-                TextureLoader.ScenePath = sceneData.ScenePath;
-                PopulateList();
-                BuildRenderObjects();
+                LoadFrameResourceFilename(Filename);
             }
         }
+        
+        private void LoadFrameResourceFilename(string Filename)
+        {
+            SceneData sceneData = new SceneData();
+            if (Path.GetExtension(Filename).Equals(".fr", StringComparison.OrdinalIgnoreCase))
+            {
+                // loading from map
+                sceneData.ScenePath = Path.GetDirectoryName(Filename);
+            }
+            else
+            {
+                // loading from session
+                sceneData.ScenePath = Filename;
+            }
+            sceneData.BuildData(false);
+            SceneDataContainer sdc = new SceneDataContainer();
+            sdc.SceneData = sceneData;
+            sceneDatas.Add(sdc);
+
+            TextureLoader.ScenePaths.Add(sceneData.ScenePath);
+
+            SceneData = sceneData;//todo wip
+            
+            PopulateList();
+            BuildRenderObjects();
+        }
+        
+        private void SaveMapEditorSessionButton_Click(object sender, EventArgs e)
+        {
+            if (SaveFileDialog != null)
+            {
+                SaveFileDialog.Reset();
+            }
+            //SaveFileDialog.FileName = CurrentBundle.Objects[0].ObjectName;
+            SaveFileDialog.RestoreDirectory = true;
+            SaveFileDialog.Filter = "Map Editor Session (*.mes)|*.mes";
+
+            if (SaveFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            // Uložení do zvoleného souboru
+            using (var fs = new FileStream(SaveFileDialog.FileName, FileMode.Create, FileAccess.Write))
+            using (var writer = new BinaryWriter(fs))
+            {
+                // Verze souboru (4 byty)
+                int version = 1;
+                writer.Write(version);
+
+                // Počet scén (4 byty)
+                int scenesCount = sceneDatas.Count;
+                writer.Write(scenesCount);
+
+                // Zápis jednotlivých cest
+                for (int i = 0; i < scenesCount; i++)
+                {
+                    string scenePath = sceneDatas[i].SceneData.ScenePath;
+
+                    // Zápis délky stringu (4 byty)
+                    writer.Write(scenePath.Length);
+
+                    // Zápis samotného stringu
+                    writer.Write(scenePath.ToCharArray());
+                }
+            }     
+        }
     }
+    
+    
     public class SceneDataContainer
     {
         public SceneData SceneData;

@@ -45,6 +45,7 @@ namespace Mafia2Tool
             ToolbarStrip = new System.Windows.Forms.ToolStrip();
             FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             SaveButton = new System.Windows.Forms.ToolStripMenuItem();
+            SaveMapEditorSessionButton = new System.Windows.Forms.ToolStripMenuItem();
             ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             AddButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -207,7 +208,7 @@ namespace Mafia2Tool
             // FileButton
             // 
             FileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            FileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { SaveButton, ExitButton });
+            FileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { SaveButton,SaveMapEditorSessionButton, ExitButton });
             FileButton.Image = (System.Drawing.Image)resources.GetObject("FileButton.Image");
             FileButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             FileButton.Name = "FileButton";
@@ -220,6 +221,13 @@ namespace Mafia2Tool
             SaveButton.Size = new System.Drawing.Size(106, 22);
             SaveButton.Text = "$SAVE";
             SaveButton.Click += SaveButton_Click;
+            // 
+            // SaveMapEditorSessionButton
+            // 
+            SaveMapEditorSessionButton.Name = "SaveMapEditorSessionButton";
+            SaveMapEditorSessionButton.Size = new System.Drawing.Size(106, 22);
+            SaveMapEditorSessionButton.Text = "Save Map Editor Session";
+            SaveMapEditorSessionButton.Click += SaveMapEditorSessionButton_Click;
             // 
             // ExitButton
             // 
@@ -483,6 +491,7 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStrip ToolbarStrip;
         private System.Windows.Forms.ToolStripDropDownButton FileButton;
         private System.Windows.Forms.ToolStripMenuItem SaveButton;
+        private System.Windows.Forms.ToolStripMenuItem SaveMapEditorSessionButton;
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
         private System.Windows.Forms.ToolStripDropDownButton WindowButton;
         private System.Windows.Forms.ToolStripDropDownButton OptionsButton;

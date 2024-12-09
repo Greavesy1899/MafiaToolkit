@@ -35,6 +35,8 @@ namespace Core.IO
                     break;
                 case "FR":
                     return new FileFrameResource(info);
+                case "MES":
+                    return new MapEditorSession(info);
                 case "MTL":
                     return new FileMaterialLibrary(info);
                 case "LUA":
