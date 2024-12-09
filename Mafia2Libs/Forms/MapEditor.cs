@@ -1053,7 +1053,7 @@ namespace Mafia2Tool
                     Collision.CollisionModel data = sceneData.Collisions.Models.ElementAt(i).Value;
                     RenderStaticCollision collision = new RenderStaticCollision();
                     collision.ConvertCollisionToRender(data.Hash, data.Mesh);
-                    RenderStorageSingleton.Instance.StaticCollisions.Add(sceneData.Collisions.Models.ElementAt(i).Key | (uint)sdc.GetHashCode(), collision);
+                    RenderStorageSingleton.Instance.StaticCollisions.Add((sceneData.Collisions.Hash, sceneData.Collisions.Models.ElementAt(i).Key), collision);
                     TreeNode treeNode = new TreeNode(data.Hash.ToString());
                     treeNode.Text = data.Hash.ToString();
                     treeNode.Name = data.Hash.ToString();
@@ -1070,7 +1070,7 @@ namespace Mafia2Tool
                     {
                         int refID = RefManager.GetNewRefID();
                         RenderInstance instance = new RenderInstance();
-                        instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash | (uint)sdc.GetHashCode()]);
+                        instance.Init(RenderStorageSingleton.Instance.StaticCollisions[(placement.ParentHash, placement.Hash)]);
                         instance.SetTransform(placement.Transform);
                         TreeNode child = new TreeNode();
                         child.Text = nodes[0].Nodes.Count.ToString();
@@ -1947,7 +1947,7 @@ namespace Mafia2Tool
 
                 Collision.CollisionModel data = (node.Tag as Collision.CollisionModel);
                 SceneData.Collisions.RemoveModel(data);
-                RenderStorageSingleton.Instance.StaticCollisions.TryRemove(data.Hash); //TODO: Need to get the sceneDataContainer for this
+                RenderStorageSingleton.Instance.StaticCollisions.TryRemove((data.ParentHash, data.Hash)); //TODO: Need to get the sceneDataContainer for this
 
                 for (int i = 0; i != node.Nodes.Count; i++)
                 {
@@ -2104,7 +2104,7 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(child, node.Parent);
 
                 RenderInstance instance = new RenderInstance();
-                instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]); //TODO: Need to get the sceneDataContainer for this
+                instance.Init(RenderStorageSingleton.Instance.StaticCollisions[(placement.ParentHash, placement.Hash)]);
                 instance.SetTransform(placement.Transform);
                 Graphics.InitObjectStack.Add(refID, instance);
             }
@@ -2330,7 +2330,7 @@ namespace Mafia2Tool
                 // Create a new renderable for collision object
                 RenderStaticCollision collision = new RenderStaticCollision();
                 collision.ConvertCollisionToRender(collisionModel.Hash, collisionModel.Mesh);
-                RenderStorageSingleton.Instance.StaticCollisions.TryAdd(collisionModel.Hash, collision); //TODO: Need to get the sceneDataContainer for this
+                //RenderStorageSingleton.Instance.StaticCollisions.TryAdd(collisionModel.Hash, collision); //TODO: Need to get the sceneDataContainer for this
 
                 // Push it onto the collisions dictionary
                 SceneData.Collisions.Models.Add(collisionModel.Hash, collisionModel);
@@ -2384,7 +2384,7 @@ namespace Mafia2Tool
 
             // Complete it
             RenderInstance instance = new RenderInstance();
-            instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]); //TODO: Need to get the sceneDataContainer for this
+            instance.Init(RenderStorageSingleton.Instance.StaticCollisions[(placement.ParentHash, placement.Hash)]);
             instance.SetTransform(placement.Transform);
             Graphics.InitObjectStack.Add(refID, instance);
             SceneData.Collisions.Placements.Add(placement);

@@ -8,7 +8,7 @@ namespace Rendering.Graphics
     public sealed class RenderStorageSingleton
     {
         public List<RenderLine> SplineStorage;
-        public Dictionary<ulong, RenderStaticCollision> StaticCollisions;
+        public Dictionary<(ulong colFileHash, ulong colHash), RenderStaticCollision> StaticCollisions;
         public Dictionary<ulong, ID3D11ShaderResourceView> TextureCache;
         public Dictionary<ulong, Image> TextureThumbnails;
         public ShaderManager ShaderManager;
@@ -18,7 +18,7 @@ namespace Rendering.Graphics
         RenderStorageSingleton()
         {
             SplineStorage = new List<RenderLine>();
-            StaticCollisions = new Dictionary<ulong, RenderStaticCollision>();
+            StaticCollisions = new();
             TextureCache = new Dictionary<ulong, ID3D11ShaderResourceView>();
             TextureThumbnails = new Dictionary<ulong, Image>();
             ShaderManager = new ShaderManager();
@@ -61,7 +61,7 @@ namespace Rendering.Graphics
                 line.Shutdown();
             }
 
-            foreach (KeyValuePair<ulong, RenderStaticCollision> col in StaticCollisions)
+            foreach (var col in StaticCollisions)
             {
                 col.Value.Shutdown();
             }

@@ -1,10 +1,12 @@
-﻿using ResourceTypes.Collisions;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Collisions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using UnluacNET;
 using Utils.Helpers;
 using Utils.Logging;
 using Utils.VorticeUtils;
@@ -17,6 +19,7 @@ namespace ResourceTypes.Collisions
         private const int Version = 0x11; // 17
  
         public string Name { get; set; }
+        public ulong Hash { get => FNV32.Hash(Name) | (((ulong)GetHashCode()) << 32); }
         /// <summary>
         /// Platform (== 0 on PC/Mac, == 1 on XBox360, == 2 on PS3)
         /// </summary>
@@ -55,14 +58,14 @@ namespace ResourceTypes.Collisions
             int numPlacements = reader.ReadInt32();
             Placements = new List<Placement>(numPlacements);
             for (int i = 0; i < numPlacements; i++)
-                Placements.Add(new Placement(reader));
+                Placements.Add(new Placement(reader, Hash));
 
             int numModels = reader.ReadInt32();
 
             Models = new SortedDictionary<ulong, CollisionModel>();
             for (int i = 0; i < numModels; i++)
             {
-                CollisionModel model = new CollisionModel(reader);
+                CollisionModel model = new CollisionModel(reader, Hash);
                 Models.Add(model.Hash, model);
             }
         }
@@ -186,6 +189,7 @@ namespace ResourceTypes.Collisions
 
             public Vector3 Rotation { get; set; }
 
+            public ulong ParentHash { get; set; }
             public ulong Hash { get; set; }
             public int Unk4 { get; set; }
             public byte Unk5 { get; set; }
@@ -231,13 +235,15 @@ namespace ResourceTypes.Collisions
             }
 
 
-            public Placement(BinaryReader reader)
+            public Placement(BinaryReader reader, ulong _ParentHash)
             {
+                ParentHash = _ParentHash;
                 ReadFromFile(reader);
             }
 
             public Placement()
             {
+                ParentHash = 0;
                 Unk5 = 128;
                 Unk4 = -1;
                 Position = new Vector3(0, 0, 0);
@@ -246,6 +252,7 @@ namespace ResourceTypes.Collisions
 
             public Placement(Placement other)
             {
+                ParentHash = other.ParentHash;
                 Position = other.Position;
                 Rotation = other.Rotation;
                 Hash = other.Hash;
@@ -279,17 +286,20 @@ namespace ResourceTypes.Collisions
 
         public class CollisionModel
         {
+            public ulong ParentHash { get; set; }
             public ulong Hash { get; set; }
             public TriangleMesh Mesh { get; set; }
             public IList<Section> Sections { get; set; } 
 
-            public CollisionModel(BinaryReader reader)
+            public CollisionModel(BinaryReader reader, ulong _ParentHash)
             {
+                ParentHash = _ParentHash;
                 ReadFromFile(reader);
             }
 
             public CollisionModel()
             {
+                ParentHash = 0;
                 Hash = 0;
                 Mesh = new TriangleMesh();
                 Sections = new List<Section>();
