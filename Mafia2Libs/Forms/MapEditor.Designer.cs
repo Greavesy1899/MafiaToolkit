@@ -48,6 +48,7 @@ namespace Mafia2Tool
             ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             AddButton = new System.Windows.Forms.ToolStripMenuItem();
+            LoadFrameResource = new System.Windows.Forms.ToolStripMenuItem();
             Button_ImportFrame = new System.Windows.Forms.ToolStripMenuItem();
             Button_ImportBundle = new System.Windows.Forms.ToolStripMenuItem();
             AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,6 +76,7 @@ namespace Mafia2Tool
             TxtBrowser = new System.Windows.Forms.OpenFileDialog();
             dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             FrameBrowser = new System.Windows.Forms.OpenFileDialog();
+            FrameResourceBrowser = new System.Windows.Forms.OpenFileDialog();
             SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
@@ -229,7 +231,7 @@ namespace Mafia2Tool
             // EditButton
             // 
             EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { AddButton, Button_ImportFrame, Button_ImportBundle, AddSceneFolderButton });
+            EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { LoadFrameResource,AddButton, Button_ImportFrame, Button_ImportBundle, AddSceneFolderButton });
             EditButton.Image = (System.Drawing.Image)resources.GetObject("EditButton.Image");
             EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             EditButton.Name = "EditButton";
@@ -242,6 +244,13 @@ namespace Mafia2Tool
             AddButton.Size = new System.Drawing.Size(191, 22);
             AddButton.Text = "$ADD";
             AddButton.Click += AddButtonOnClick;
+            // 
+            // LoadFrameResource
+            // 
+            LoadFrameResource.Name = "LoadFrameResource";
+            LoadFrameResource.Size = new System.Drawing.Size(191, 22);
+            LoadFrameResource.Text = "Load FrameResource";
+            LoadFrameResource.Click += LoadFrameResource_Click;
             // 
             // Button_ImportFrame
             // 
@@ -444,6 +453,10 @@ namespace Mafia2Tool
             // 
             FrameBrowser.Filter = "FrameResource|*.fr|Toolkit Frame Data|*.framedata";
             // 
+            // FrameResourceBrowser
+            // 
+            FrameResourceBrowser.Filter = "FrameResource|*.fr";
+            // 
             // MapEditor
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -476,6 +489,7 @@ namespace Mafia2Tool
         private System.Windows.Forms.Panel RenderPanel;
         private System.Windows.Forms.ToolStripDropDownButton EditButton;
         private System.Windows.Forms.ToolStripMenuItem AddButton;
+        private System.Windows.Forms.ToolStripMenuItem LoadFrameResource;
         private System.Windows.Forms.OpenFileDialog MeshBrowser;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ToolStripMenuItem SceneTreeButton;
@@ -505,6 +519,7 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripStatusLabel Label_MemoryUsage;
         private System.Windows.Forms.ToolStripMenuItem Button_ImportFrame;
         private System.Windows.Forms.OpenFileDialog FrameBrowser;
+        private System.Windows.Forms.OpenFileDialog FrameResourceBrowser;
         private System.Windows.Forms.ToolStripMenuItem Button_DumpTexture;
         private System.Windows.Forms.ToolStripMenuItem Button_ImportBundle;
         private System.Windows.Forms.SaveFileDialog SaveFileDialog;

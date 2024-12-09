@@ -32,6 +32,7 @@ using Utils.Settings;
 using Utils.VorticeUtils;
 using Vortice.Mathematics;
 using WeifenLuo.WinFormsUI.Docking;
+using ZLibNet;
 using static ResourceTypes.Collisions.Collision;
 using static UnluacNET.TableLiteral;
 using Collision = ResourceTypes.Collisions.Collision;
@@ -42,6 +43,7 @@ namespace Mafia2Tool
     public partial class MapEditor : Form
     {
         private SceneData SceneData = new SceneData();
+        private List<SceneDataContainer> sceneDatas = new List<SceneDataContainer>();
         private SceneData ImportedScene;
         private InputClass Input { get; set; }
         private GraphicsClass Graphics { get; set; }
@@ -79,7 +81,10 @@ namespace Mafia2Tool
         public MapEditor(FileInfo info,SceneData sceneData)
         {
             SceneData = sceneData;
-            TextureLoader.ScenePath = SceneData.ScenePath;
+            TextureLoader.ScenePath = SceneData.ScenePath;//todo: probably make list of scenepaths there
+            SceneDataContainer sdc = new SceneDataContainer();
+            sdc.SceneData = sceneData;
+            sceneDatas.Add(sdc);
             InitializeComponent();
             Localise();
 
@@ -238,7 +243,7 @@ namespace Mafia2Tool
                 SceneData.Actors = new Actor[0];
                 SceneData.CreateNewActor();
 
-                LoadActorFiles();
+                LoadActorFiles(new SceneDataContainer(),null);//todo
             }
 
             // Should have atleast one file, try to link actors.
@@ -395,10 +400,15 @@ namespace Mafia2Tool
 
         public void PopulateList()
         {
-            TreeNode tree = SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
+            SceneDataContainer sdc = sceneDatas[sceneDatas.Count - 1];
+            TreeNode scenetree = new TreeNode();
+            scenetree.Text = sdc.SceneData.ScenePath;
+            scenetree.Tag = sdc;
+            TreeNode tree = sdc.SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
             tree.Tag = SceneData.FrameResource.Header;
             frameResourceRoot = tree;
-            dSceneTree.AddToTree(tree);
+            dSceneTree.AddToTree(scenetree);
+            dSceneTree.AddToTree(tree,scenetree);
         }
         
         public void PopulateImportedData(string ImportedFilename)
@@ -844,11 +854,15 @@ namespace Mafia2Tool
 
         private void BuildRenderObjects()
         {
+            SceneDataContainer sdc = sceneDatas[sceneDatas.Count - 1];
+            
+            TreeNode sceneNode = dSceneTree.GetSceneDataTreeNode(sdc.SceneData.ScenePath);
+            SceneData sceneData = sdc.SceneData;
             Dictionary<int, IRenderer> assets = new Dictionary<int, IRenderer>();
 
-            if (SceneData.FrameResource != null && SceneData.FrameNameTable != null)
+            if (sceneData.FrameResource != null && sceneData.FrameNameTable != null)
             {
-                foreach(FrameObjectBase FrameObject in SceneData.FrameResource.FrameObjects.Values)
+                foreach(FrameObjectBase FrameObject in sceneData.FrameResource.FrameObjects.Values)
                 {
                     IRenderer NewAsset = BuildRenderObjectFromFrame(FrameObject,assets);
                     if(NewAsset != null)
@@ -857,23 +871,25 @@ namespace Mafia2Tool
                     }
                 }
             }
-            if (SceneData.roadMap != null && ToolkitSettings.Experimental)
+            if (sceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Road Data");
                 TreeNode node2 = new TreeNode("Junction Data");
                 node.Tag = node2.Tag = "Folder";
+                sdc.roadRoot = node;
+                sdc.junctionRoot = node2;
                 roadRoot = node;
                 junctionRoot = node2;
 
-                for (int i = 0; i < SceneData.roadMap.Roads.Count; i++)
+                for (int i = 0; i < sceneData.roadMap.Roads.Count; i++)
                 {
-                    IRoadDefinition RoadDef = SceneData.roadMap.Roads[i];
+                    IRoadDefinition RoadDef = sceneData.roadMap.Roads[i];
                     if(RoadDef.Direction == RoadDirection.Backwards)
                     {
                         continue;
                     }
 
-                    IRoadSpline RoadSpline = SceneData.roadMap.Splines[RoadDef.RoadSplineIndex];
+                    IRoadSpline RoadSpline = sceneData.roadMap.Splines[RoadDef.RoadSplineIndex];
                     RenderRoad road = new RenderRoad();
                     int generatedID = RefManager.GetNewRefID();
                     road.Init(RoadDef, RoadSpline);
@@ -886,11 +902,11 @@ namespace Mafia2Tool
                     node.Nodes.Add(child);
                 }
 
-                for (int i = 0; i < SceneData.roadMap.Crossroads.Count; i++)
+                for (int i = 0; i < sceneData.roadMap.Crossroads.Count; i++)
                 {
                     int generatedID = RefManager.GetNewRefID();
                     RenderJunction junction = new RenderJunction();
-                    junction.Init(SceneData.roadMap.Crossroads[i], Graphics);
+                    junction.Init(sceneData.roadMap.Crossroads[i], Graphics);
                     assets.Add(generatedID, junction);
                     TreeNode child = new TreeNode(i.ToString());
                     child.Text = "Junction ID: " + i;
@@ -899,23 +915,23 @@ namespace Mafia2Tool
                     junctionRoot.Nodes.Add(child);
                 }
 
-                dSceneTree.AddToTree(node);
-                dSceneTree.AddToTree(node2);
+                dSceneTree.AddToTree(node,sceneNode);
+                dSceneTree.AddToTree(node2,sceneNode);
             }
-            if (SceneData.HPDData != null)
+            if (sceneData.HPDData != null)
             {
                 int generatedID = RefManager.GetNewRefID();
                 TreeNode navNode = new TreeNode();
                 navNode.Text = string.Format("HPD");
                 navNode.Name = generatedID.ToString();
 
-                for (int i = 0; i < SceneData.HPDData.HPDEntries.Length; i++)
+                for (int i = 0; i < sceneData.HPDData.HPDEntries.Length; i++)
                 {
                     generatedID = RefManager.GetNewRefID();
                     TreeNode hpdNode = new TreeNode();
                     hpdNode.Text = string.Format("NODE: {0}", i);
                     hpdNode.Name = generatedID.ToString();
-                    var item = SceneData.HPDData.HPDEntries[i];
+                    var item = sceneData.HPDData.HPDEntries[i];
                     RenderBoundingBox bbox = new RenderBoundingBox();
                     BoundingBox box = new BoundingBox(item.BBoxMin, item.BBoxMax);
                     bbox.Init(box);
@@ -923,26 +939,27 @@ namespace Mafia2Tool
                     hpdNode.Tag = box;
                     navNode.Nodes.Add(hpdNode);
                 }
-                dSceneTree.AddToTree(navNode);
+                dSceneTree.AddToTree(navNode,sceneNode);
             }
-            if (SceneData.OBJData != null && SceneData.OBJData.Length > 0)
+            if (sceneData.OBJData != null && sceneData.OBJData.Length > 0)
             {
                 OBJDataRoot = new TreeNode();
                 OBJDataRoot.Tag = "Folder";
                 OBJDataRoot.Name = OBJDataRoot.Text = "Navigation: OBJDATA";
+                sdc.OBJDataRoot = OBJDataRoot;
 
-                var data = new OBJData[SceneData.OBJData.Length];
-                for (int i = 0; i < SceneData.OBJData.Length; i++)
+                var data = new OBJData[sceneData.OBJData.Length];
+                for (int i = 0; i < sceneData.OBJData.Length; i++)
                 {
-                    data[i] = (OBJData)SceneData.OBJData[i].Data;
+                    data[i] = (OBJData)sceneData.OBJData[i].Data;
                 }
 
                 TreeNode Grids = Graphics.SetNavigationGrid(data);
                 OBJDataRoot.Nodes.Add(Grids);
 
-                for (int i = 0; i < SceneData.OBJData.Length; i++)
+                for (int i = 0; i < sceneData.OBJData.Length; i++)
                 {
-                    var obj = (SceneData.OBJData[i].Data as OBJData);
+                    var obj = (sceneData.OBJData[i].Data as OBJData);
                     RenderNav navigationPoints = new RenderNav(Graphics);
                     navigationPoints.Init(obj);
 
@@ -963,38 +980,40 @@ namespace Mafia2Tool
                     OBJDataRoot.Nodes.Add(navNode);
                 }
 
-                dSceneTree.AddToTree(OBJDataRoot);
+                dSceneTree.AddToTree(OBJDataRoot,sceneNode);
             }
-            if (SceneData.AIWorlds != null && SceneData.AIWorlds.Length > 0)
+            if (sceneData.AIWorlds != null && sceneData.AIWorlds.Length > 0)
             {
                 AIWorldRoot = new TreeNode();
                 AIWorldRoot.Tag = "Folder";
                 AIWorldRoot.Name = AIWorldRoot.Text = "Navigation: AIWORLD";
+                sdc.AIWorldRoot = AIWorldRoot;
 
-                var data = new AIWorld[SceneData.AIWorlds.Length];
-                for (int i = 0; i < SceneData.AIWorlds.Length; i++)
+                var data = new AIWorld[sceneData.AIWorlds.Length];
+                for (int i = 0; i < sceneData.AIWorlds.Length; i++)
                 {
-                    data[i] = (AIWorld)SceneData.AIWorlds[i].Data;
+                    data[i] = (AIWorld)sceneData.AIWorlds[i].Data;
                     data[i].ConstructRenderable(Graphics);
 
                     TreeNode AIWorldNode = data[i].PopulateTreeNode();
                     AIWorldRoot.Nodes.Add(AIWorldNode);
                 }
 
-                dSceneTree.AddToTree(AIWorldRoot);
+                dSceneTree.AddToTree(AIWorldRoot,sceneNode);
             }
-            if (SceneData.Collisions != null)
+            if (false)
             {
                 TreeNode node = new TreeNode("Collision Data");
                 node.Tag = "Folder";
                 collisionRoot = node;
+                sdc.collisionRoot = node;
 
-                for (int i = 0; i != SceneData.Collisions.Models.Count; i++)
+                for (int i = 0; i != sceneData.Collisions.Models.Count; i++)
                 {
-                    Collision.CollisionModel data = SceneData.Collisions.Models.ElementAt(i).Value;
+                    Collision.CollisionModel data = sceneData.Collisions.Models.ElementAt(i).Value;
                     RenderStaticCollision collision = new RenderStaticCollision();
                     collision.ConvertCollisionToRender(data.Hash, data.Mesh);
-                    RenderStorageSingleton.Instance.StaticCollisions.Add(SceneData.Collisions.Models.ElementAt(i).Key, collision);
+                    RenderStorageSingleton.Instance.StaticCollisions.Add(sceneData.Collisions.Models.ElementAt(i).Key, collision);
                     TreeNode treeNode = new TreeNode(data.Hash.ToString());
                     treeNode.Text = data.Hash.ToString();
                     treeNode.Name = data.Hash.ToString();
@@ -1002,9 +1021,9 @@ namespace Mafia2Tool
                     dSceneTree.AddToTree(treeNode, collisionRoot);
                 }
 
-                for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
+                for (int i = 0; i != sceneData.Collisions.Placements.Count; i++)
                 {
-                    Collision.Placement placement = SceneData.Collisions.Placements[i];
+                    Collision.Placement placement = sceneData.Collisions.Placements[i];
                     TreeNode[] nodes = collisionRoot.Nodes.Find(placement.Hash.ToString(), false);
 
                     if (nodes.Length > 0)
@@ -1022,18 +1041,19 @@ namespace Mafia2Tool
                     }
 
                 }
-                dSceneTree.AddToTree(node);
+                dSceneTree.AddToTree(node,sceneNode);
                 collisionRoot.Collapse(false);
             }
-            if(SceneData.ATLoader != null)
+            if(sceneData.ATLoader != null)
             {
                 animalTrafficRoot = new TreeNode("Animal Traffic Paths");
                 animalTrafficRoot.Tag = "Folder";
-                for (int i = 0; i < SceneData.ATLoader.Paths.Length; i++)
+                sdc.animalTrafficRoot = animalTrafficRoot;
+                for (int i = 0; i < sceneData.ATLoader.Paths.Length; i++)
                 {
                     int refID = RefManager.GetNewRefID();
                     RenderATP atp = new RenderATP();
-                    atp.Init(SceneData.ATLoader.Paths[i]);
+                    atp.Init(sceneData.ATLoader.Paths[i]);
                     TreeNode child = new TreeNode();
                     child.Text = animalTrafficRoot.Nodes.Count.ToString();
                     child.Name = refID.ToString();
@@ -1041,20 +1061,20 @@ namespace Mafia2Tool
                     assets.Add(refID, atp);
                     animalTrafficRoot.Nodes.Add(child);
                 }
-                dSceneTree.AddToTree(animalTrafficRoot);
+                dSceneTree.AddToTree(animalTrafficRoot,sceneNode);
             }
 
-            if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
+            if (sceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
-                LoadActorFiles();
+                LoadActorFiles(sdc,sceneNode);
             }
 
-            for(int i = 0; i < SceneData.FrameNameTable.FrameData.Length; i++)
+            for(int i = 0; i < sceneData.FrameNameTable.FrameData.Length; i++)
             {
-                FrameNameTable.Data data = SceneData.FrameNameTable.FrameData[i];
+                FrameNameTable.Data data = sceneData.FrameNameTable.FrameData[i];
                 if (data.FrameIndex != -1)
                 {
-                    FrameObjectBase frame = (SceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
+                    FrameObjectBase frame = (sceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
                     if (frame != null)
                     {
                         frame.FrameNameTableFlags = data.Flags;
@@ -1063,7 +1083,7 @@ namespace Mafia2Tool
                 }
             }
 
-            foreach (var pair in SceneData.FrameResource.FrameObjects)
+            foreach (var pair in sceneData.FrameResource.FrameObjects)
             {
                 FrameObjectBase frame = (pair.Value as FrameObjectBase);
                 if (assets.ContainsKey(frame.RefID))
@@ -1074,17 +1094,18 @@ namespace Mafia2Tool
 
             Graphics.InitObjectStack = assets;
 
-            if (SceneData.Translokator != null && ToolkitSettings.Experimental)
+            if (sceneData.Translokator != null && ToolkitSettings.Experimental)
             {
                 ToggleTranslokatorTint.Enabled = true;
                 dSceneTree.hasTranslokatorData = true;
                 translokatorRoot = new TreeNode("Translokator Items");
                 translokatorRoot.Tag = "Folder";
+                sdc.translokatorRoot = translokatorRoot;
                 TreeNode ogNode = new TreeNode("Objects Groups");
                 ogNode.Tag = "Folder";
-                for (int z = 0; z < SceneData.Translokator.ObjectGroups.Length; z++)
+                for (int z = 0; z < sceneData.Translokator.ObjectGroups.Length; z++)
                 {
-                    ObjectGroup objectGroup = SceneData.Translokator.ObjectGroups[z];
+                    ObjectGroup objectGroup = sceneData.Translokator.ObjectGroups[z];
                     TreeNode objectGroupNode = new TreeNode(String.Format("Object Group: [{0}]", objectGroup.ActorType));
                     objectGroupNode.Tag = objectGroup;
                     for (int y = 0; y < objectGroup.Objects.Length; y++)
@@ -1093,7 +1114,7 @@ namespace Mafia2Tool
                         TreeNode objNode = new TreeNode(obj.Name.ToString());
                         objNode.Tag = obj;
                         objectGroupNode.Nodes.Add(objNode);
-                        FrameObjectBase groupRef = SceneData.FrameResource.GetObjectByHash<FrameObjectBase>(obj.Name.Hash);
+                        FrameObjectBase groupRef = sceneData.FrameResource.GetObjectByHash<FrameObjectBase>(obj.Name.Hash);
 
                         bool hasMesh = false;
 
@@ -1132,9 +1153,9 @@ namespace Mafia2Tool
 
                 TreeNode gridNode = new TreeNode("Grids");
                 gridNode.Tag = "Folder";
-                for (int i = 0; i < SceneData.Translokator.Grids.Length; i++)
+                for (int i = 0; i < sceneData.Translokator.Grids.Length; i++)
                 {
-                    Grid grid = SceneData.Translokator.Grids[i];
+                    Grid grid = sceneData.Translokator.Grids[i];
                     TreeNode child = new TreeNode("Grid " + i);
                     child.Tag = grid;
                     child.Checked = false;
@@ -1143,8 +1164,8 @@ namespace Mafia2Tool
 
                 translokatorRoot.Nodes.Add(gridNode);
 
-                dSceneTree.AddToTree(translokatorRoot);
-                Graphics.BuildTranslokatorGrid(SceneData.Translokator);
+                dSceneTree.AddToTree(translokatorRoot,sceneNode);
+                Graphics.BuildTranslokatorGrid(sceneData.Translokator);
             }
         }
 
@@ -1259,13 +1280,15 @@ namespace Mafia2Tool
             //ToolkitAssert.Ensure(!worldTransform.IsNaN(), string.Format("Frame: {0} caused NaN()!", name.ToString()));
         }
 
-        private void LoadActorFiles()
+        private void LoadActorFiles(SceneDataContainer sdc,TreeNode sceneNode)
         {
+            SceneData sceneData = sdc.SceneData;
             actorRoot = new TreeNode("Actor Items");
             actorRoot.Tag = "Folder";
-            for (int z = 0; z < SceneData.Actors.Length; z++)
+            sdc.actorRoot = actorRoot;
+            for (int z = 0; z < sceneData.Actors.Length; z++)
             {
-                Actor actor = SceneData.Actors[z];
+                Actor actor = sceneData.Actors[z];
                 TreeNode actorFile = new TreeNode("Actor File " + z);
                 actorFile.Tag = "Folder";
                 actorRoot.Nodes.Add(actorFile);
@@ -1295,7 +1318,7 @@ namespace Mafia2Tool
                 FixActorDefintions(actor);
             }
 
-            dSceneTree.AddToTree(actorRoot);
+            dSceneTree.AddToTree(actorRoot,sceneNode);
         }
 
         private void TreeViewUpdateSelected()
@@ -2883,6 +2906,38 @@ namespace Mafia2Tool
         {
             Graphics.DeleteAsset(e.FrameRefID);
         }
+
+        private void LoadFrameResource_Click(object sender, EventArgs e)
+        {
+            if (FrameResourceBrowser.ShowDialog() == DialogResult.OK)
+            {
+                string Filename = FrameResourceBrowser.FileName;
+                
+                SceneData sceneData = new SceneData();
+                sceneData.ScenePath = Path.GetDirectoryName(Filename);
+                sceneData.BuildData(false);
+                SceneDataContainer sdc = new SceneDataContainer();
+                sdc.SceneData = sceneData;
+                sceneDatas.Add(sdc);
+
+                TextureLoader.ScenePath = sceneData.ScenePath;
+                PopulateList();
+                BuildRenderObjects();
+            }
+        }
+    }
+    public class SceneDataContainer
+    {
+        public SceneData SceneData;
+        public TreeNode frameResourceRoot;
+        public TreeNode collisionRoot;
+        public TreeNode roadRoot;
+        public TreeNode junctionRoot;
+        public TreeNode animalTrafficRoot;
+        public TreeNode actorRoot;
+        public TreeNode AIWorldRoot;
+        public TreeNode OBJDataRoot;
+        public TreeNode translokatorRoot;
     }
 }
 
