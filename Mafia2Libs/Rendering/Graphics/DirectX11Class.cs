@@ -56,10 +56,12 @@ namespace Rendering.Graphics
             };
 
             // Create Device and DeviceContext
+            // Note: When using DriverType.Hardware, pass null for adapter - the system selects the default adapter.
+            // The adapter obtained above is only used for querying display modes, not for device creation.
+            adapter.Dispose();
             ID3D11Device TempDevice = null;
             ID3D11DeviceContext TempDeviceContext = null;
-            D3D11.D3D11CreateDevice(adapter, DriverType.Hardware, DeviceCreationFlags.None, null, out TempDevice, out TempDeviceContext);
-            adapter.Dispose(); // Dispose adapter after its last use
+            D3D11.D3D11CreateDevice(null, DriverType.Hardware, DeviceCreationFlags.None, null, out TempDevice, out TempDeviceContext);
 
             Device = TempDevice.QueryInterface<ID3D11Device1>();
             DeviceContext = TempDeviceContext.QueryInterface<ID3D11DeviceContext1>();

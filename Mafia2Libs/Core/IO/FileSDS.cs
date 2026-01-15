@@ -14,10 +14,34 @@ namespace Core.IO
         {
         }
 
+        /// <summary>
+        /// Validates that a target path is within the expected base directory to prevent path traversal attacks.
+        /// </summary>
+        private static bool IsPathWithinDirectory(string targetPath, string baseDirectory)
+        {
+            string fullTarget = Path.GetFullPath(targetPath);
+            string fullBase = Path.GetFullPath(baseDirectory);
+
+            // Ensure base directory ends with separator for accurate comparison
+            if (!fullBase.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                fullBase += Path.DirectorySeparatorChar;
+            }
+
+            return fullTarget.StartsWith(fullBase, StringComparison.OrdinalIgnoreCase);
+        }
+
         public override bool Open()
         {
-            string backupFolder = Path.Combine(file.Directory.FullName, "BackupSDS");
-            string extractedFolder = Path.Combine(file.Directory.FullName, "extracted");
+            string baseDir = file.Directory.FullName;
+            string backupFolder = Path.GetFullPath(Path.Combine(baseDir, "BackupSDS"));
+            string extractedFolder = Path.GetFullPath(Path.Combine(baseDir, "extracted"));
+
+            // Validate paths are within expected directory (prevent path traversal)
+            if (!IsPathWithinDirectory(backupFolder, baseDir) || !IsPathWithinDirectory(extractedFolder, baseDir))
+            {
+                throw new InvalidOperationException("Invalid path detected - potential path traversal attack.");
+            }
 
             // Only create backups if enabled.
             if (ToolkitSettings.bBackupEnabled)
@@ -64,12 +88,19 @@ namespace Core.IO
         public override void Save()
         {
             var game = GameStorage.Instance.GetSelectedGame();
-            string Folder = Path.Combine(file.Directory.FullName, "extracted", file.Name);
+            string Folder = Path.GetFullPath(Path.Combine(file.Directory.FullName, "extracted", file.Name));
             SaveSDSWithCustomFolder(game.GameType, Folder);
         }
 
         public void SaveSDSWithCustomFolder(GamesEnumerator GameType, string Folder)
         {
+            // Validate folder path exists and is a directory
+            string fullPath = Path.GetFullPath(Folder);
+            if (!Directory.Exists(fullPath))
+            {
+                throw new DirectoryNotFoundException($"Source folder does not exist: {fullPath}");
+            }
+
             ArchiveFile archiveFile = new ArchiveFile();
             archiveFile.Platform = Platform.PC;
             archiveFile.SetGameType(GameType);

@@ -109,7 +109,7 @@ namespace Mafia2Tool
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Failed to read actor {0}", item);
+                        Console.WriteLine("Failed to read actor {0}: {1}", item, ex.Message);
                     }
                 }
             }

@@ -24,11 +24,28 @@ namespace ResourceTypes.SDSConfig
             Read(br);
         }
 
+        // Maximum allowed string table size (16 MB) to prevent DoS from malformed files
+        private const int MaxStringTableSize = 16 * 1024 * 1024;
+
         public void Read(BinaryReader br)
         {
             Strings = new();
 
             int Length = br.ReadInt32();
+
+            // Validate size to prevent DoS from crafted files
+            if (Length < 0 || Length > MaxStringTableSize)
+            {
+                throw new InvalidDataException($"Invalid string table size: {Length}. Maximum allowed: {MaxStringTableSize}");
+            }
+
+            // Check if stream has enough data
+            long remaining = br.BaseStream.Length - br.BaseStream.Position;
+            if (Length > remaining)
+            {
+                throw new InvalidDataException($"String table size ({Length}) exceeds remaining stream data ({remaining})");
+            }
+
             var _data = br.ReadBytes(Length);
             var Data = new byte[Length];
 

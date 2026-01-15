@@ -135,9 +135,9 @@ namespace Rendering.Graphics
                 DDSTextureLoader.CreateDDSTextureFromFile(d3d, d3dContext, texturePath, out ddsResource, out _temp, 4096, out mode);
                 return _temp;
             }
-            catch
+            catch (Exception ex)
             {
-                Log.WriteLine(string.Format("Failed to load file: {0}", fileName), LoggingTypes.FATAL, LogCategoryTypes.IO);
+                Log.WriteLine(string.Format("Failed to load file: {0}. Error: {1}", fileName, ex.Message), LoggingTypes.FATAL, LogCategoryTypes.IO);
                 return null;
             }
             

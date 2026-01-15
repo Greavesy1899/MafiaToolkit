@@ -220,9 +220,9 @@ namespace Mafia2Tool
                 {
                     matLib.ReadMatFile(MTLBrowser.FileName);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Failed to load the selected .MTL!");
+                    MessageBox.Show($"Failed to load the selected .MTL!\n\nError: {ex.Message}", "Material Editor", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else

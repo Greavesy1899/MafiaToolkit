@@ -521,7 +521,7 @@ namespace Mafia2Tool
                 frame2.Refs = tempRefs;
 
                 int tempIcon = node1.ImageIndex;
-                int tepmIconSelect = node1.SelectedImageIndex;
+                int tempIconSelect = node1.SelectedImageIndex;
                 node1.Tag = frame2;
                 node1.Name = frame2.RefID.ToString();
                 node1.Text = frame2.ToString();
@@ -532,7 +532,7 @@ namespace Mafia2Tool
                 node2.Name = frame1.RefID.ToString();
                 node2.Text = frame1.ToString();
                 node2.ImageIndex = tempIcon;
-                node2.SelectedImageIndex = tepmIconSelect;
+                node2.SelectedImageIndex = tempIconSelect;
                 
                 TreeNode parent1 = node1.Parent;
                 TreeNode parent2 = node2.Parent;
