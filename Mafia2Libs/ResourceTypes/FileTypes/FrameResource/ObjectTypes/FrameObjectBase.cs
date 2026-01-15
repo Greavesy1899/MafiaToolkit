@@ -1,7 +1,7 @@
 ﻿using Rendering.Core;
 using Rendering.Graphics;
 using ResourceTypes.FrameNameTable;
-using ResourceTypes.Misc;
+using ResourceTypes.FrameProps;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -99,7 +99,7 @@ namespace ResourceTypes.FrameResource
         public int Index { get; set; }
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public FrameProps.FrameInfo OurFrameProps { get; set; }
+        public FramePropsEntry OurFrameProps { get; set; }
 
         public FrameObjectBase(FrameResource OwningResource) : base(OwningResource)
         {

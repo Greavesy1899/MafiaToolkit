@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using Gibbed.IO;
 using Mafia2Tool;
 using Utils.Extensions;
-using ResourceTypes.Misc;
+using ResourceTypes.FrameProps;
 using Utils.Logging;
 
 namespace ResourceTypes.FrameResource
@@ -30,7 +30,7 @@ namespace ResourceTypes.FrameResource
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
 
-        private FrameProps FramePropContents;
+        private FramePropsFile FramePropContents;
 
         // allows external systems to listen for when a Frame has been removed from the FrameResource
         // See @OnFrameRemovedArgs for what arguments are passed through the event
@@ -106,7 +106,7 @@ namespace ResourceTypes.FrameResource
             SceneData = sceneData;
             if (File.Exists("FrameProps.bin"))
             {
-                FramePropContents = new FrameProps(new FileInfo("FrameProps.bin"));
+                FramePropContents = new FramePropsFile(new FileInfo("FrameProps.bin"));
             }
 
             using (MemoryStream reader = new MemoryStream(File.ReadAllBytes(file), false))
@@ -564,7 +564,7 @@ namespace ResourceTypes.FrameResource
 
                 if(FramePropContents != null)
                 {
-                    obj.OurFrameProps = FramePropContents.GetFramePropsFor(obj.Name.Hash);
+                    obj.OurFrameProps = FramePropContents.GetFramePropsEntry(obj.Name.Hash);
                 }
 
                 if (obj is FrameObjectModel)

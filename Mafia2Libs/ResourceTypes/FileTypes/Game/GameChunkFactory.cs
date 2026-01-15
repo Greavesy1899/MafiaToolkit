@@ -17,23 +17,23 @@ namespace ResourceTypes.CGame
                     break;
 
                 case 2:
-                    chunk = new Type2Chunk(br);
+                    chunk = new SDSEntries(br);
                     break;
 
                 case 3:
-                    chunk = new Type3Chunk(br);
+                    chunk = new WeatherSettings(br);
                     break;
 
                 case 4:
-                    chunk = new Type4Chunk(br);
+                    chunk = new GameFlags(br);
                     break;
 
                 case 5:
-                    chunk = new Type5Chunk(br);
+                    chunk = new MissionSettings(br);
                     break;
 
                 default:
-                    chunk = new TempChunk(br, Type);
+                    chunk = new UnknownChunk(br, Type);
 
                     break;
             }

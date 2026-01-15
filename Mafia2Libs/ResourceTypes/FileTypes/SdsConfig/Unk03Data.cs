@@ -4,14 +4,21 @@ using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.SDSConfig
 {
+    /// <summary>
+    /// S_VirtualSlot structure - container for SDS configuration items
+    /// Based on reverse engineering of C_SlotManager::S_ConfigSDS::Open
+    /// </summary>
     [PropertyClassAllowReflection]
     public class Unk03Data
     {
         [PropertyForceAsAttributeAttribute]
         public string Name { get; set; } = "";
-        public int Unk01 { get; set; }
-        public int Unk02 { get; set; }
-        public Unk04Data[] Unk04Data { get; set; } = new Unk04Data[0];
+        /// <summary>Memory budget (primary) in bytes</summary>
+        public uint MemoryBudget1 { get; set; }
+        /// <summary>Memory budget (secondary) in bytes</summary>
+        public uint MemoryBudget2 { get; set; }
+        /// <summary>SDS configuration items within this virtual slot</summary>
+        public Unk04Data[] SDSItems { get; set; } = new Unk04Data[0];
         [PropertyIgnoreByReflector]
         public List<string> Strings
         {
@@ -19,7 +26,7 @@ namespace ResourceTypes.SDSConfig
             {
                 List<string> s = new() { Name };
 
-                foreach (var data in Unk04Data)
+                foreach (var data in SDSItems)
                 {
                     s.AddRange(data.Strings);
                 }
@@ -42,26 +49,26 @@ namespace ResourceTypes.SDSConfig
             short StringTableOffset = br.ReadInt16();
             Name = sdsConfig.StringTable.Strings[StringTableOffset];
 
-            Unk01 = br.ReadInt32();
-            Unk02 = br.ReadInt32();
+            MemoryBudget1 = br.ReadUInt32();
+            MemoryBudget2 = br.ReadUInt32();
 
             short Count = br.ReadInt16();
-            Unk04Data = new Unk04Data[Count];
+            SDSItems = new Unk04Data[Count];
 
-            for (int i = 0; i < Unk04Data.Length; i++)
+            for (int i = 0; i < SDSItems.Length; i++)
             {
-                Unk04Data[i] = new(br, sdsConfig);
+                SDSItems[i] = new(br, sdsConfig);
             }
         }
 
         public void Write(BinaryWriter bw, SdsConfigFile sdsConfig)
         {
             bw.Write((short)sdsConfig.StringTable.Offsets[Name]);
-            bw.Write(Unk01);
-            bw.Write(Unk02);
-            bw.Write((short)Unk04Data.Length);
+            bw.Write(MemoryBudget1);
+            bw.Write(MemoryBudget2);
+            bw.Write((short)SDSItems.Length);
 
-            foreach (var val in Unk04Data)
+            foreach (var val in SDSItems)
             {
                 val.Write(bw, sdsConfig);
             }

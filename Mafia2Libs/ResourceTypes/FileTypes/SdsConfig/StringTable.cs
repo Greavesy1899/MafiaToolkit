@@ -5,6 +5,10 @@ using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.SDSConfig
 {
+    /// <summary>
+    /// String table for sdsconfig.bin with bitwise NOT encoding
+    /// Strings are stored as null-terminated and encoded with ~byte for each byte
+    /// </summary>
     [PropertyClassAllowReflection]
     public class StringTable
     {

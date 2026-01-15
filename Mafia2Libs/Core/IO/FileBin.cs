@@ -1,6 +1,8 @@
 ﻿using Mafia2Tool;
 using ResourceTypes.CGame;
 using ResourceTypes.EntityActivator;
+using ResourceTypes.FrameProps;
+using ResourceTypes.GameParams;
 using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;
 using ResourceTypes.Sound;
@@ -21,6 +23,7 @@ namespace Core.IO
         private const uint EntityActivatorMagic = 0x656E7461;
         private const uint TyresMagic = 0x12345678;
         private const uint CGameMagic = 0x676D7072;
+        private const uint FramePropsMagic = 0x66726D70;
 
         public FileBin(FileInfo info) : base(info) { }
 
@@ -81,35 +84,23 @@ namespace Core.IO
             }
             else if (CheckFileMagic(file, CGameMagic))
             {
-                SaveFileDialog saveFile = new SaveFileDialog()
-                {
-                    InitialDirectory = Path.GetDirectoryName(file.FullName),
-                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
-                    Filter = "XML (*.xml)|*.xml"
-                };
-
-                if (saveFile.ShowDialog() == DialogResult.OK)
-                {
-                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
-                    CGame loader = new CGame(file);
-                    loader.ConvertToXML(saveFile.FileName);
-                }
+                CGameEditor editor = new CGameEditor(file);
+                return true;
             }
             else if (CheckFileMagic(file, SDSConfigMagic))
             {
-                SaveFileDialog saveFile = new SaveFileDialog()
-                {
-                    InitialDirectory = Path.GetDirectoryName(file.FullName),
-                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
-                    Filter = "XML (*.xml)|*.xml"
-                };
-
-                if (saveFile.ShowDialog() == DialogResult.OK)
-                {
-                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
-                    SdsConfigFile loader = new SdsConfigFile(file);
-                    loader.ConvertToXML(saveFile.FileName);
-                }
+                SdsConfigEditor editor = new SdsConfigEditor(file);
+                return true;
+            }
+            else if (CheckFileMagic(file, FramePropsMagic))
+            {
+                FramePropsEditor editor = new FramePropsEditor(file);
+                return true;
+            }
+            else if (IsGameParamsFile(file))
+            {
+                GameParamsEditor editor = new GameParamsEditor(file);
+                return true;
             }
             else
             {
@@ -187,6 +178,42 @@ namespace Core.IO
                     loader.WriteToFile(file.FullName);
                 }
             }
+            else if (CheckFileMagic(file, FramePropsMagic))
+            {
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    FramePropsFile loader = new FramePropsFile(file);
+                    loader.ConvertFromXML(openFile.FileName);
+
+                    File.Copy(file.FullName, file.FullName + "_old", true);
+                    loader.WriteToFile(file.FullName);
+                }
+            }
+            else if (IsGameParamsFile(file))
+            {
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    GameParamsFile loader = new GameParamsFile(file);
+                    loader.ConvertFromXML(openFile.FileName);
+
+                    File.Copy(file.FullName, file.FullName + "_old", true);
+                    loader.WriteToFile(file.FullName);
+                }
+            }
             else
             {
                 OpenFileDialog openFile = new OpenFileDialog()
@@ -205,6 +232,11 @@ namespace Core.IO
                     loader.WriteToFile(file.FullName, false);
                 }
             }
+        }
+
+        private bool IsGameParamsFile(FileInfo file)
+        {
+            return file.Name.Equals("gameparams.bin", System.StringComparison.OrdinalIgnoreCase);
         }
 
         private bool CheckFileMagic(FileInfo file, uint Magic)

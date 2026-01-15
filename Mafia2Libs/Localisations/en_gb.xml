@@ -314,6 +314,23 @@
 	<!-- Property Descriptions Strings-->
 	<String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
 
+	<!-- SDS Config Editor Strings-->
+	<String ID="$SDSCONFIG_EDITOR_TITLE">SDS Config Editor</String>
+	<String ID="$EXPAND_ALL">Expand All</String>
+	<String ID="$COLLAPSE_ALL">Collapse All</String>
+
+	<!-- CGame Editor Strings (Mafia 2 Game Files) -->
+	<String ID="$CGAME_EDITOR_TITLE">Game Editor</String>
+	<String ID="$CGAME_ADD_SLOT">Add Preload Slot</String>
+	<String ID="$CGAME_DELETE_SLOT">Delete Preload Slot</String>
+
+	<!-- FrameProps Editor Strings -->
+	<String ID="$FRAMEPROPS_EDITOR_TITLE">FrameProps Editor</String>
+	<String ID="$FRAMEPROPS_ADD_ENTRY">Add Frame Entry</String>
+	<String ID="$FRAMEPROPS_DELETE_ENTRY">Delete Frame Entry</String>
+	<String ID="$FRAMEPROPS_ADD_PROPERTY">Add Property</String>
+	<String ID="$FRAMEPROPS_DELETE_PROPERTY">Delete Property</String>
+
 	<!-- XBIN Editor Strings-->
 	<String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
 	<String ID="$IMPORT_XBIN">Import from .xml</String>
