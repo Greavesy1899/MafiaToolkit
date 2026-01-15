@@ -708,9 +708,8 @@ namespace ResourceTypes.GameParams
     {
         public override void Read(GameParamsBitReader br)
         {
-            // Just read base data (flags + name) to see what this is
+            // Just read base data (flags + name)
             base.Read(br);
-            GameParamsFile.DebugLog.AppendLine($"    [Type9] Read: flags=0x{EntryFlags:X8}, name='{ParamName}'");
         }
 
         public override string ToString()
@@ -800,18 +799,6 @@ namespace ResourceTypes.GameParams
                 byte b = ReadByte();
                 if (b == 0) break;
                 sb.Append((char)b);
-            }
-            return sb.ToString();
-        }
-
-        public string GetHexDump(int startByte, int count)
-        {
-            StringBuilder sb = new();
-            int end = Math.Min(startByte + count, data.Length);
-            for (int i = startByte; i < end; i++)
-            {
-                sb.Append($"{data[i]:X2} ");
-                if ((i - startByte + 1) % 16 == 0) sb.AppendLine();
             }
             return sb.ToString();
         }
