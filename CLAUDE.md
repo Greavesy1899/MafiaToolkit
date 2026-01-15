@@ -6,6 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 MafiaToolkit is a Windows .NET modding toolkit for the Mafia game series (Mafia II, Mafia III, Mafia I: DE, Mafia II: DE). It provides file format parsers, editors, and a 3D map editor with DirectX 11 rendering.
 
+### Supported Games
+
+| Game | SDS | Materials | Map Editor | XBin |
+|------|-----|-----------|------------|------|
+| Mafia II | ✓ | ✓ | ✓ | - |
+| Mafia II: Definitive Edition | ✓ | ✓ | ✓ | - |
+| Mafia III | ✓ | ✓ | - | ✓ |
+| Mafia I: Definitive Edition | ✓ | ✓ | - | ✓ |
+
+Mafia 1 Classic is **not** supported.
+
 ## Build Commands
 
 ### Main Toolkit (C# / .NET 7)
@@ -47,6 +58,8 @@ Mafia2Libs/                     # Main toolkit source
 │   ├── Navigation/             # AI/traffic pathfinding (NAV, NHV, NOV)
 │   ├── Prefab/                 # Prefabricated object templates
 │   ├── SDSConfig/              # Hierarchical game configuration
+│   ├── GameParams/             # BitStream-encoded game parameters
+│   ├── FrameProps/             # Frame properties with FNV64 hashes
 │   └── M3.XBin/                # XBin game data containers
 ├── Gibbed.*/                   # Archive serialization (Gibbed's code)
 ├── Rendering/                  # DirectX 11 graphics engine
@@ -124,3 +137,10 @@ All game resources implement `IResourceType` interface with `Serialize`/`Deseria
 
 ### Rendering Objects
 Implement `IRenderer` interface in `Rendering/Graphics/RenderTypes/`. Use `RenderableFactory` to create instances from resource types.
+
+### Adding New Editor Forms
+1. Create `<Name>Editor.cs` form in `Forms/` with TreeView + PropertyGrid layout
+2. Add constructor accepting `FileInfo` parameter
+3. Register in `FileBin.cs` or `FileFactory` based on file extension/magic
+4. Add localization strings in `Utils/Language/` resource files
+5. Standard menu structure: File (Save, Reload, Exit), Tools (Export XML, Import XML)
