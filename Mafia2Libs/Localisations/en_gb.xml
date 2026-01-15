@@ -319,6 +319,11 @@
 	<String ID="$EXPAND_ALL">Expand All</String>
 	<String ID="$COLLAPSE_ALL">Collapse All</String>
 
+	<!-- CGame Editor Strings (Mafia 2 Game Files) -->
+	<String ID="$CGAME_EDITOR_TITLE">Game Editor</String>
+	<String ID="$CGAME_ADD_SLOT">Add Preload Slot</String>
+	<String ID="$CGAME_DELETE_SLOT">Delete Preload Slot</String>
+
 	<!-- XBIN Editor Strings-->
 	<String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
 	<String ID="$IMPORT_XBIN">Import from .xml</String>

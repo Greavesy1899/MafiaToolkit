@@ -81,19 +81,8 @@ namespace Core.IO
             }
             else if (CheckFileMagic(file, CGameMagic))
             {
-                SaveFileDialog saveFile = new SaveFileDialog()
-                {
-                    InitialDirectory = Path.GetDirectoryName(file.FullName),
-                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
-                    Filter = "XML (*.xml)|*.xml"
-                };
-
-                if (saveFile.ShowDialog() == DialogResult.OK)
-                {
-                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
-                    CGame loader = new CGame(file);
-                    loader.ConvertToXML(saveFile.FileName);
-                }
+                CGameEditor editor = new CGameEditor(file);
+                return true;
             }
             else if (CheckFileMagic(file, SDSConfigMagic))
             {
