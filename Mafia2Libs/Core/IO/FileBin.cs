@@ -1,6 +1,7 @@
 ﻿using Mafia2Tool;
 using ResourceTypes.CGame;
 using ResourceTypes.EntityActivator;
+using ResourceTypes.FrameProps;
 using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;
 using ResourceTypes.Sound;
@@ -21,6 +22,7 @@ namespace Core.IO
         private const uint EntityActivatorMagic = 0x656E7461;
         private const uint TyresMagic = 0x12345678;
         private const uint CGameMagic = 0x676D7072;
+        private const uint FramePropsMagic = 0x66726D70;
 
         public FileBin(FileInfo info) : base(info) { }
 
@@ -87,6 +89,11 @@ namespace Core.IO
             else if (CheckFileMagic(file, SDSConfigMagic))
             {
                 SdsConfigEditor editor = new SdsConfigEditor(file);
+                return true;
+            }
+            else if (CheckFileMagic(file, FramePropsMagic))
+            {
+                FramePropsEditor editor = new FramePropsEditor(file);
                 return true;
             }
             else
@@ -159,6 +166,24 @@ namespace Core.IO
                 if (openFile.ShowDialog() == DialogResult.OK)
                 {
                     SdsConfigFile loader = new SdsConfigFile(file);
+                    loader.ConvertFromXML(openFile.FileName);
+
+                    File.Copy(file.FullName, file.FullName + "_old", true);
+                    loader.WriteToFile(file.FullName);
+                }
+            }
+            else if (CheckFileMagic(file, FramePropsMagic))
+            {
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    InitialDirectory = Path.GetDirectoryName(file.FullName),
+                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                    Filter = "XML (*.xml)|*.xml"
+                };
+
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    FramePropsFile loader = new FramePropsFile(file);
                     loader.ConvertFromXML(openFile.FileName);
 
                     File.Copy(file.FullName, file.FullName + "_old", true);
