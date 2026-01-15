@@ -7,6 +7,16 @@ using Utils.Logging;
 
 namespace ResourceTypes.SDSConfig
 {
+    /// <summary>
+    /// Parser for sdsconfig.bin - Mafia 2 streaming configuration file
+    /// Based on reverse engineering of C_SlotManager::S_ConfigSDS::Open
+    ///
+    /// File Structure:
+    /// - Header: magic (0x73647370 'psds'), version (2), string table size
+    /// - String Table: bitwise NOT encoded null-terminated strings
+    /// - Entry Count: uint16
+    /// - Entries: Array of SetSDS (Template) structures
+    /// </summary>
     public class SdsConfigFile
     {
         public static uint Magic = 0x73647370; // 'psds'

@@ -97,19 +97,8 @@ namespace Core.IO
             }
             else if (CheckFileMagic(file, SDSConfigMagic))
             {
-                SaveFileDialog saveFile = new SaveFileDialog()
-                {
-                    InitialDirectory = Path.GetDirectoryName(file.FullName),
-                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
-                    Filter = "XML (*.xml)|*.xml"
-                };
-
-                if (saveFile.ShowDialog() == DialogResult.OK)
-                {
-                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
-                    SdsConfigFile loader = new SdsConfigFile(file);
-                    loader.ConvertToXML(saveFile.FileName);
-                }
+                SdsConfigEditor editor = new SdsConfigEditor(file);
+                return true;
             }
             else
             {
