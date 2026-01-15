@@ -25,7 +25,7 @@ namespace Mafia2Tool
 
         private void Localise()
         {
-            Text = Language.GetString("$GAMEPARAMS_EDITOR_TITLE");
+            Text = Language.GetString("$GAMEPARAMS_EDITOR_TITLE") + " (Read-Only)";
             Button_File.Text = Language.GetString("$FILE");
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
@@ -33,6 +33,13 @@ namespace Mafia2Tool
             Button_Tools.Text = Language.GetString("$TOOLS");
             Button_ExportXml.Text = Language.GetString("$EXPORT_XML");
             Button_ImportXml.Text = Language.GetString("$IMPORT_XML");
+
+            // Disable editing features - file is read-only for now
+            Button_Save.Enabled = false;
+            Button_ExportXml.Enabled = false;
+            Button_ImportXml.Enabled = false;
+            Button_Tools.Enabled = false;
+            PropertyGrid_Main.Enabled = false;
         }
 
         private void BuildData()
@@ -148,28 +155,14 @@ namespace Mafia2Tool
 
         private void PropertyGrid_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
         {
-            MarkAsEdited();
-            BuildData();
+            // Editing disabled - file is read-only for now
+            // MarkAsEdited();
+            // BuildData();
         }
 
         private void GameParamsEditor_Closing(object sender, FormClosingEventArgs e)
         {
-            if (bIsFileEdited)
-            {
-                System.Windows.MessageBoxResult saveChanges = System.Windows.MessageBox.Show(
-                    Language.GetString("$SAVE_PROMPT"),
-                    "Toolkit",
-                    System.Windows.MessageBoxButton.YesNoCancel);
-
-                if (saveChanges == System.Windows.MessageBoxResult.Yes)
-                {
-                    Save();
-                }
-                else if (saveChanges == System.Windows.MessageBoxResult.Cancel)
-                {
-                    e.Cancel = true;
-                }
-            }
+            // Editing disabled - no unsaved changes prompt needed
         }
 
         private void MarkAsEdited()

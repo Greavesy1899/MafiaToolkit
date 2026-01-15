@@ -92,39 +92,175 @@ namespace ResourceTypes.GameParams
             }
         }
 
+        /// <summary>
+        /// Scan forward looking for a valid entry start (byte-aligned Container with ASCII name)
+        /// </summary>
+        private bool ScanForNextValidEntry(GameParamsBitReader br, out int foundTypeId)
+        {
+            foundTypeId = 0;
+            int maxScanBytes = 50000; // Scan up to 50KB for next valid entry (file is ~66KB)
+            int startByte = br.CurrentBytePosition;
+
+            for (int i = 0; i < maxScanBytes && br.CurrentBytePosition < br.TotalBytes - 40; i++)
+            {
+                // Align to next byte boundary
+                br.RestorePosition((startByte + i, 0));
+
+                var savedPos = br.SavePosition();
+
+                // Try to read as a Container (type 5) or Array (type 6) - most top-level entries are these
+                int typeId = (int)br.ReadBits(TypeIdBits);
+
+                // Only look for Containers/Arrays - they're the main structural elements
+                if (typeId == 5 || typeId == 6)
+                {
+                    // Try to read flags + name
+                    uint flags = br.ReadBits(32);
+                    string name = br.ReadString(32);
+
+                    // Check if name looks valid:
+                    // - Must be at least 3 chars (avoid false positives like "ew")
+                    // - Must start with ASCII uppercase letter A-Z (game uses PascalCase)
+                    // - All chars must be ASCII alphanumeric or underscore
+                    if (name.Length >= 3 && name.Length <= 30 && name[0] >= 'A' && name[0] <= 'Z')
+                    {
+                        bool validName = true;
+                        foreach (char c in name)
+                        {
+                            // Only allow ASCII: A-Z, a-z, 0-9, _
+                            bool isAsciiLetter = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+                            bool isAsciiDigit = c >= '0' && c <= '9';
+                            if (!isAsciiLetter && !isAsciiDigit && c != '_')
+                            {
+                                validName = false;
+                                break;
+                            }
+                        }
+
+                        if (validName)
+                        {
+                            // Found a valid-looking entry! Restore to just after typeId
+                            br.RestorePosition(savedPos);
+                            br.ReadBits(TypeIdBits); // Re-read typeId to position correctly
+                            foundTypeId = typeId;
+                            return true;
+                        }
+                    }
+                }
+
+                // Also try other known types if they happen to have valid names
+                // This catches things like standalone Bool, Int, Float, String params at top level
+                else if (typeId >= 0 && typeId <= 4 || typeId == 7)
+                {
+                    // Read flags + name (we already read typeId above)
+                    uint flags = br.ReadBits(32);
+                    string name = br.ReadString(32);
+
+                    // Same validation as containers - ASCII only
+                    if (name.Length >= 3 && name.Length <= 30 && name[0] >= 'A' && name[0] <= 'Z')
+                    {
+                        bool validName = true;
+                        foreach (char c in name)
+                        {
+                            bool isAsciiLetter = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+                            bool isAsciiDigit = c >= '0' && c <= '9';
+                            if (!isAsciiLetter && !isAsciiDigit && c != '_')
+                            {
+                                validName = false;
+                                break;
+                            }
+                        }
+
+                        if (validName)
+                        {
+                            br.RestorePosition(savedPos);
+                            br.ReadBits(TypeIdBits);
+                            foundTypeId = typeId;
+                            return true;
+                        }
+                    }
+                }
+
+                // Not valid, restore and try next byte
+                br.RestorePosition(savedPos);
+            }
+
+            return false;
+        }
+
         private void ParseEntriesFromBitReader(GameParamsBitReader br)
         {
             Entries.Clear();
+            int entryIndex = 0;
 
             while (!br.IsAtEnd)
             {
+                int posBeforeType = br.CurrentBytePosition;
+                int bitBeforeType = br.CurrentBitPosition;
+
                 // Read 4-bit type ID
                 int typeId = (int)br.ReadBits(TypeIdBits);
 
                 if (typeId == TerminatorType)
                 {
-                    break;
+                    // Continue scanning for more data after terminator
+                    if (ScanForNextValidEntry(br, out int foundTypeId))
+                    {
+                        typeId = foundTypeId;
+                        // Fall through to process this entry
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
 
-                GameParamEntry entry = GameParamEntry.CreateForType(typeId);
-                entry.TypeId = typeId;
-                entry.Read(br);
-                Entries.Add(entry);
+                try
+                {
+                    GameParamEntry entry = GameParamEntry.CreateForType(typeId);
+                    entry.TypeId = typeId;
+
+                    // Try to read - if we hit padding/invalid data, try to scan forward
+                    if (!entry.TryRead(br))
+                    {
+                        // Try to find next valid entry by scanning forward
+                        if (ScanForNextValidEntry(br, out int foundTypeId))
+                        {
+                            // Read the found entry
+                            entry = GameParamEntry.CreateForType(foundTypeId);
+                            entry.TypeId = foundTypeId;
+                            if (entry.TryRead(br))
+                            {
+                                Entries.Add(entry);
+                                entryIndex++;
+                                continue;
+                            }
+                        }
+
+                        break;
+                    }
+
+                    Entries.Add(entry);
+                    entryIndex++;
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidDataException(
+                        $"Failed to parse entry {entryIndex} (typeId={typeId}) at byte {posBeforeType}, bit {bitBeforeType}: {ex.Message}", ex);
+                }
             }
         }
 
         public void WriteToFile(FileInfo file)
         {
-            WriteToFile(file.FullName);
+            // Writing disabled - file format is read-only for now
+            throw new NotSupportedException("GameParams writing is not supported yet.");
         }
 
         public void WriteToFile(string fileName)
         {
-            using (MemoryStream ms = new())
-            {
-                Write(ms);
-                File.WriteAllBytes(fileName, ms.ToArray());
-            }
+            // Writing disabled - file format is read-only for now
+            throw new NotSupportedException("GameParams writing is not supported yet.");
         }
 
         public void Write(Stream s)
@@ -152,18 +288,14 @@ namespace ResourceTypes.GameParams
 
         public void ConvertToXML(string filename)
         {
-            XElement root = ReflectionHelpers.ConvertPropertyToXML(this);
-            root.Save(filename);
+            // XML export disabled - file format is read-only for now
+            throw new NotSupportedException("GameParams XML export is not supported yet.");
         }
 
         public void ConvertFromXML(string filename)
         {
-            XElement loadedDoc = XElement.Load(filename);
-            GameParamsFile fileContents = ReflectionHelpers.ConvertToPropertyFromXML<GameParamsFile>(loadedDoc);
-
-            Flags = fileContents.Flags;
-            Name = fileContents.Name;
-            Entries = fileContents.Entries;
+            // XML import disabled - file format is read-only for now
+            throw new NotSupportedException("GameParams XML import is not supported yet.");
         }
     }
 
@@ -189,6 +321,7 @@ namespace ResourceTypes.GameParams
         /// <summary>
         /// Creates the appropriate entry type based on type ID.
         /// Type mappings from IDA analysis of Mafia 2 executable:
+        /// - Type 0: Base param (flags + name only, no value data)
         /// - Type 1: IntParam (GetType at 0x11BBCC0 returns 1, vtable 0x190BEF8)
         /// - Type 2: FloatParam (GetType at 0x11BC030 returns 2, vtable 0x190BF68)
         /// - Type 3: StringParam (GetType at 0x11BC150 returns 3)
@@ -202,6 +335,7 @@ namespace ResourceTypes.GameParams
         {
             return typeId switch
             {
+                0 => new GameParamBoolEntry(),       // BoolParam variant (same as Type 7)
                 1 => new GameParamIntEntry(),        // IntParam
                 2 => new GameParamFloatEntry(),      // FloatParam
                 3 => new GameParamStringEntry(),     // StringParam
@@ -209,7 +343,8 @@ namespace ResourceTypes.GameParams
                 5 => new GameParamContainerEntry(),  // C_GameParams - Container
                 6 => new GameParamArrayEntry(),      // C_GameParamArray - Array container (same Parse as type 5)
                 7 => new GameParamBoolEntry(),       // BoolParam
-                _ => new GameParamEntry()            // Unknown type - read base only
+                9 => new GameParamUnknown9Entry(),   // Unknown type 9 - needs investigation
+                _ => throw new InvalidDataException($"Unknown GameParam type ID: {typeId}. This would cause bit alignment corruption.")
             };
         }
 
@@ -218,6 +353,34 @@ namespace ResourceTypes.GameParams
             // Base read: flags and name common to all types
             EntryFlags = br.ReadBits(32);
             ParamName = br.ReadString(32);
+
+            // Validate name - if it contains non-printable chars, we have alignment issues
+            // Allow digits at start (for indexed entries like "00", "01")
+            foreach (char c in ParamName)
+            {
+                if (c < 0x20 || c > 0x7E)
+                {
+                    throw new InvalidDataException(
+                        $"Invalid character 0x{(int)c:X2} in param name '{ParamName}' at byte {br.CurrentBytePosition}. This indicates bit alignment corruption.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Try to read the entry, returns false if name contains invalid characters
+        /// (indicating we've hit padding/uninitialized data)
+        /// </summary>
+        public virtual bool TryRead(GameParamsBitReader br)
+        {
+            try
+            {
+                Read(br);
+                return true;
+            }
+            catch (InvalidDataException)
+            {
+                return false; // Hit padding/garbage data
+            }
         }
 
         public virtual void Write(GameParamsBitWriter bw)
@@ -316,11 +479,19 @@ namespace ResourceTypes.GameParams
             Step = br.ReadFloat();
 
             // Calculate bits needed for normalized range
-            double range = (MaxValue - MinValue) / Step;
-            int bits = CalculateBitsForRange((uint)range);
+            // When min/max span entire float range or range is too large, store raw 32-bit float
+            int bits = GetBitsForValue(out bool useRawFloat);
 
-            uint normalized = br.ReadBits(bits);
-            CurrentValue = MinValue + (float)(normalized * Step);
+            if (useRawFloat)
+            {
+                // Range too large - read as raw 32-bit float
+                CurrentValue = br.ReadFloat();
+            }
+            else
+            {
+                uint normalized = br.ReadBits(bits);
+                CurrentValue = MinValue + (float)(normalized * Step);
+            }
         }
 
         public override void Write(GameParamsBitWriter bw)
@@ -331,10 +502,40 @@ namespace ResourceTypes.GameParams
             bw.WriteFloat(MaxValue);
             bw.WriteFloat(Step);
 
+            int bits = GetBitsForValue(out bool useRawFloat);
+
+            if (useRawFloat)
+            {
+                bw.WriteFloat(CurrentValue);
+            }
+            else
+            {
+                uint normalized = Step != 0 ? (uint)((CurrentValue - MinValue) / Step) : 0;
+                bw.WriteBits(normalized, bits);
+            }
+        }
+
+        private int GetBitsForValue(out bool useRawFloat)
+        {
+            useRawFloat = false;
+
+            // Check for full float range or invalid step
+            if (Step == 0 || float.IsNaN(Step) || float.IsInfinity(Step) ||
+                float.IsInfinity(MinValue) || float.IsInfinity(MaxValue) ||
+                MinValue <= float.MinValue / 2 || MaxValue >= float.MaxValue / 2)
+            {
+                useRawFloat = true;
+                return 32;
+            }
+
             double range = (MaxValue - MinValue) / Step;
-            int bits = CalculateBitsForRange((uint)range);
-            uint normalized = (uint)((CurrentValue - MinValue) / Step);
-            bw.WriteBits(normalized, bits);
+            if (range <= 0 || range > uint.MaxValue || double.IsNaN(range) || double.IsInfinity(range))
+            {
+                useRawFloat = true;
+                return 32;
+            }
+
+            return CalculateBitsForRange((uint)range);
         }
 
         private static int CalculateBitsForRange(uint range)
@@ -432,8 +633,12 @@ namespace ResourceTypes.GameParams
 
             // Read child entries until terminator
             Children.Clear();
+            int childIndex = 0;
             while (!br.IsAtEnd)
             {
+                int posBeforeType = br.CurrentBytePosition;
+                int bitBeforeType = br.CurrentBitPosition;
+
                 int typeId = (int)br.ReadBits(GameParamsFile.TypeIdBits);
 
                 if (typeId == GameParamsFile.TerminatorType)
@@ -441,10 +646,26 @@ namespace ResourceTypes.GameParams
                     break;
                 }
 
-                GameParamEntry child = CreateForType(typeId);
-                child.TypeId = typeId;
-                child.Read(br);
-                Children.Add(child);
+                try
+                {
+                    GameParamEntry child = CreateForType(typeId);
+                    child.TypeId = typeId;
+
+                    // Try to read - if we hit invalid data (padding), treat as end of children
+                    if (!child.TryRead(br))
+                    {
+                        br.RestorePosition((posBeforeType, bitBeforeType)); // Restore to before typeId
+                        break;
+                    }
+
+                    Children.Add(child);
+                    childIndex++;
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidDataException(
+                        $"Failed to parse child {childIndex} of '{ParamName}' (typeId={typeId}) at byte {posBeforeType}, bit {bitBeforeType}: {ex.Message}", ex);
+                }
             }
         }
 
@@ -481,6 +702,24 @@ namespace ResourceTypes.GameParams
     }
 
     /// <summary>
+    /// Type 9: Unknown entry type - just reads base data for debugging
+    /// </summary>
+    public class GameParamUnknown9Entry : GameParamEntry
+    {
+        public override void Read(GameParamsBitReader br)
+        {
+            // Just read base data (flags + name) to see what this is
+            base.Read(br);
+            GameParamsFile.DebugLog.AppendLine($"    [Type9] Read: flags=0x{EntryFlags:X8}, name='{ParamName}'");
+        }
+
+        public override string ToString()
+        {
+            return $"[Type9] {ParamName}";
+        }
+    }
+
+    /// <summary>
     /// BitStream reader for gameparams.bin format
     /// Uses DWORD-based bit reading like the game engine
     /// </summary>
@@ -493,6 +732,15 @@ namespace ResourceTypes.GameParams
         public bool IsAtEnd => bytePosition >= data.Length;
         public int CurrentBytePosition => bytePosition;
         public int CurrentBitPosition => bitPosition;
+        public int TotalBytes => data.Length;
+
+        public (int bytePos, int bitPos) SavePosition() => (bytePosition, bitPosition);
+
+        public void RestorePosition((int bytePos, int bitPos) pos)
+        {
+            bytePosition = pos.bytePos;
+            bitPosition = pos.bitPos;
+        }
 
         public GameParamsBitReader(Stream s)
         {
