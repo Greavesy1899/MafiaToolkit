@@ -41,7 +41,7 @@ namespace Rendering.Graphics
             //VideoCardMemory = adapterDescription.DedicatedVideoMemory >> 10 >> 10;
             //VideoCardDescription = adapterDescription.Description.Trim('\0');
             monitor.Dispose();
-            adapter.Dispose();
+            // NOTE: adapter disposal moved after D3D11CreateDevice call (was use-after-free bug)
 
             var swapChainDesc = new SwapChainDescription()
             {
@@ -59,6 +59,7 @@ namespace Rendering.Graphics
             ID3D11Device TempDevice = null;
             ID3D11DeviceContext TempDeviceContext = null;
             D3D11.D3D11CreateDevice(adapter, DriverType.Hardware, DeviceCreationFlags.None, null, out TempDevice, out TempDeviceContext);
+            adapter.Dispose(); // Dispose adapter after its last use
 
             Device = TempDevice.QueryInterface<ID3D11Device1>();
             DeviceContext = TempDeviceContext.QueryInterface<ID3D11DeviceContext1>();

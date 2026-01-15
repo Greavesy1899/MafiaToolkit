@@ -1,4 +1,3 @@
-﻿using Mafia2Tool;
 using ResourceTypes.CGame;
 using ResourceTypes.EntityActivator;
 using ResourceTypes.FrameProps;
@@ -14,16 +13,17 @@ namespace Core.IO
 {
     public class FileBin : FileBase
     {
-        private const uint StreamMapMagic = 0x4D727453;
-        private const uint TapIndicesMagic = 0x30504154;
-        private const uint SDSConfigMagic = 0x73647370;
-        private const uint CityShopsMagic = 0x63747368;
-        private const uint CityAreasMagic = 0x63746172;
-        private const uint ShopMenu2Magic = 0x73686D32;
-        private const uint EntityActivatorMagic = 0x656E7461;
-        private const uint TyresMagic = 0x12345678;
-        private const uint CGameMagic = 0x676D7072;
-        private const uint FramePropsMagic = 0x66726D70;
+        // Magic numbers for different BIN file types (exposed for factory registration)
+        public const uint StreamMapMagic = 0x4D727453;
+        public const uint TapIndicesMagic = 0x30504154;
+        public const uint SDSConfigMagic = 0x73647370;
+        public const uint CityShopsMagic = 0x63747368;
+        public const uint CityAreasMagic = 0x63746172;
+        public const uint ShopMenu2Magic = 0x73686D32;
+        public const uint EntityActivatorMagic = 0x656E7461;
+        public const uint TyresMagic = 0x12345678;
+        public const uint CGameMagic = 0x676D7072;
+        public const uint FramePropsMagic = 0x66726D70;
 
         public FileBin(FileInfo info) : base(info) { }
 
@@ -34,92 +34,80 @@ namespace Core.IO
 
         public override bool Open()
         {
-            if (CheckFileMagic(file, CityAreasMagic))
+            // Use the editor factory to create the appropriate editor
+            // This decouples Core.IO from Forms - editors are registered in BinEditorRegistration.cs
+            if (BinEditorFactory.TryCreateEditor(file))
             {
-                CityAreaEditor editor = new CityAreaEditor(file);
                 return true;
             }
-            else if (CheckFileMagic(file, CityShopsMagic))
-            {
-                CityShopEditor editor = new CityShopEditor(file);
-                return true;
-            }
-            else if (CheckFileMagic(file, ShopMenu2Magic))
-            {
-                ShopMenu2Editor editor = new ShopMenu2Editor(file);
-                return true;
-            }
-            else if(CheckFileMagic(file, TapIndicesMagic))
+
+            // Fallback for unregistered types: export to XML
+            return HandleUnregisteredFile(file);
+        }
+
+        /// <summary>
+        /// Handles files that don't have a registered editor by offering XML export.
+        /// </summary>
+        private bool HandleUnregisteredFile(FileInfo file)
+        {
+            // Check for specific types that export directly to XML
+            if (CheckFileMagic(file, TapIndicesMagic))
             {
                 TAPIndices editor = new TAPIndices();
                 editor.ReadFromFile(file);
                 return true;
             }
-            else if(CheckFileMagic(file, StreamMapMagic))
-            {
-                StreamEditor editor = new StreamEditor(file); 
-                return true;
-            }
-            else if(CheckFileMagic(file, EntityActivatorMagic))
+            else if (CheckFileMagic(file, EntityActivatorMagic))
             {
                 EntityActivator data = new EntityActivator();
                 data.ReadFromFile(file);
                 return true;
             }
-            else if(CheckFileMagic(file, TyresMagic))
+            else if (CheckFileMagic(file, TyresMagic))
             {
-                SaveFileDialog saveFile = new SaveFileDialog()
+                return ExportToXml(file, (f, savePath) =>
                 {
-                    InitialDirectory = Path.GetDirectoryName(file.FullName),
-                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
-                    Filter = "XML (*.xml)|*.xml"
-                };
-
-                if (saveFile.ShowDialog() == DialogResult.OK)
-                {
-                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
-                    Tyres loader = new Tyres(file);
-                    loader.ConvertToXML(saveFile.FileName);
-                }
-            }
-            else if (CheckFileMagic(file, CGameMagic))
-            {
-                CGameEditor editor = new CGameEditor(file);
-                return true;
-            }
-            else if (CheckFileMagic(file, SDSConfigMagic))
-            {
-                SdsConfigEditor editor = new SdsConfigEditor(file);
-                return true;
-            }
-            else if (CheckFileMagic(file, FramePropsMagic))
-            {
-                FramePropsEditor editor = new FramePropsEditor(file);
-                return true;
-            }
-            else if (IsGameParamsFile(file))
-            {
-                GameParamsEditor editor = new GameParamsEditor(file);
-                return true;
+                    Tyres loader = new Tyres(f);
+                    loader.ConvertToXML(savePath);
+                });
             }
             else
             {
-                SaveFileDialog saveFile = new SaveFileDialog()
+                // Default: treat as SoundSectorResource
+                return ExportToXml(file, (f, savePath) =>
                 {
-                    InitialDirectory = Path.GetDirectoryName(file.FullName),
-                    FileName = Path.GetFileNameWithoutExtension(file.FullName),
-                    Filter = "XML (*.xml)|*.xml"
-                };
-
-                if (saveFile.ShowDialog() == DialogResult.OK)
-                {
-                    // Unsure on how we should handle this. For now we will just try and hope the loader works.
-                    SoundSectorResource loader = new SoundSectorResource(file);
-                    loader.ConvertToXML(saveFile.FileName);
-                }
+                    SoundSectorResource loader = new SoundSectorResource(f);
+                    loader.ConvertToXML(savePath);
+                });
             }
+        }
 
+        /// <summary>
+        /// Helper method for XML export dialog pattern.
+        /// </summary>
+        private static bool ExportToXml(FileInfo file, System.Action<FileInfo, string> exportAction)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog()
+            {
+                InitialDirectory = Path.GetDirectoryName(file.FullName),
+                FileName = Path.GetFileNameWithoutExtension(file.FullName),
+                Filter = "XML (*.xml)|*.xml"
+            };
+
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                exportAction(file, saveFile.FileName);
+                return true;
+            }
             return false;
+        }
+
+        /// <summary>
+        /// Check if a file is a GameParams file by filename.
+        /// </summary>
+        public static bool IsGameParamsFile(FileInfo file)
+        {
+            return file.Name.Equals("gameparams.bin", System.StringComparison.OrdinalIgnoreCase);
         }
 
         public override void Save()
@@ -234,12 +222,10 @@ namespace Core.IO
             }
         }
 
-        private bool IsGameParamsFile(FileInfo file)
-        {
-            return file.Name.Equals("gameparams.bin", System.StringComparison.OrdinalIgnoreCase);
-        }
-
-        private bool CheckFileMagic(FileInfo file, uint Magic)
+        /// <summary>
+        /// Check if a file starts with the given magic number.
+        /// </summary>
+        public static bool CheckFileMagic(FileInfo file, uint Magic)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
             {

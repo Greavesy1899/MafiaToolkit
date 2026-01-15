@@ -36,6 +36,10 @@ namespace Mafia2Tool
             // Load INI
             CheckINIExists();
             ToolkitSettings.ReadINI();
+
+            // Register BIN file editors with the factory
+            // This decouples Core.IO from Forms - see BinEditorRegistration.cs
+            Mafia2Tool.Forms.BinEditorRegistration.Initialize();
             CheckIfNewUpdate();
 
             GameStorage.Instance.InitStorage();

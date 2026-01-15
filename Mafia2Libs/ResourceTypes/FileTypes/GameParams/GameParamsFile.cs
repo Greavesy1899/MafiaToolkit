@@ -30,6 +30,7 @@ namespace ResourceTypes.GameParams
     {
         public const int TerminatorType = 8;
         public const int TypeIdBits = 4; // Calculated from game code
+        public const int MaxRecursionDepth = 50; // Prevent stack overflow from malformed files
 
         [Category("Header")]
         public uint Flags { get; set; }
@@ -348,8 +349,15 @@ namespace ResourceTypes.GameParams
             };
         }
 
-        public virtual void Read(GameParamsBitReader br)
+        public virtual void Read(GameParamsBitReader br, int depth = 0)
         {
+            // Check recursion depth to prevent stack overflow from malformed files
+            if (depth > GameParamsFile.MaxRecursionDepth)
+            {
+                throw new InvalidDataException(
+                    $"Maximum recursion depth ({GameParamsFile.MaxRecursionDepth}) exceeded while parsing '{ParamName}'. File may be malformed.");
+            }
+
             // Base read: flags and name common to all types
             EntryFlags = br.ReadBits(32);
             ParamName = br.ReadString(32);
@@ -370,11 +378,11 @@ namespace ResourceTypes.GameParams
         /// Try to read the entry, returns false if name contains invalid characters
         /// (indicating we've hit padding/uninitialized data)
         /// </summary>
-        public virtual bool TryRead(GameParamsBitReader br)
+        public virtual bool TryRead(GameParamsBitReader br, int depth = 0)
         {
             try
             {
-                Read(br);
+                Read(br, depth);
                 return true;
             }
             catch (InvalidDataException)
@@ -409,9 +417,9 @@ namespace ResourceTypes.GameParams
         [Category("Value")]
         public int CurrentValue { get; set; }
 
-        public override void Read(GameParamsBitReader br)
+        public override void Read(GameParamsBitReader br, int depth = 0)
         {
-            base.Read(br);
+            base.Read(br, depth);
 
             MinValue = (int)br.ReadBits(32);
             MaxValue = (int)br.ReadBits(32);
@@ -470,9 +478,9 @@ namespace ResourceTypes.GameParams
         [Category("Value")]
         public float CurrentValue { get; set; }
 
-        public override void Read(GameParamsBitReader br)
+        public override void Read(GameParamsBitReader br, int depth = 0)
         {
-            base.Read(br);
+            base.Read(br, depth);
 
             MinValue = br.ReadFloat();
             MaxValue = br.ReadFloat();
@@ -568,9 +576,9 @@ namespace ResourceTypes.GameParams
         [Category("Value")]
         public string Value { get; set; } = "";
 
-        public override void Read(GameParamsBitReader br)
+        public override void Read(GameParamsBitReader br, int depth = 0)
         {
-            base.Read(br);
+            base.Read(br, depth);
 
             // 32-bit unknown field (stored at offset 44 in game)
             StringFlags = br.ReadBits(32);
@@ -601,9 +609,9 @@ namespace ResourceTypes.GameParams
         [Category("Value")]
         public bool Value { get; set; }
 
-        public override void Read(GameParamsBitReader br)
+        public override void Read(GameParamsBitReader br, int depth = 0)
         {
-            base.Read(br);
+            base.Read(br, depth);
             Value = br.ReadBits(1) != 0;
         }
 
@@ -627,9 +635,9 @@ namespace ResourceTypes.GameParams
         [Category("Children")]
         public List<GameParamEntry> Children { get; set; } = new();
 
-        public override void Read(GameParamsBitReader br)
+        public override void Read(GameParamsBitReader br, int depth = 0)
         {
-            base.Read(br);
+            base.Read(br, depth);
 
             // Read child entries until terminator
             Children.Clear();
@@ -652,7 +660,8 @@ namespace ResourceTypes.GameParams
                     child.TypeId = typeId;
 
                     // Try to read - if we hit invalid data (padding), treat as end of children
-                    if (!child.TryRead(br))
+                    // Pass incremented depth to detect infinite recursion
+                    if (!child.TryRead(br, depth + 1))
                     {
                         br.RestorePosition((posBeforeType, bitBeforeType)); // Restore to before typeId
                         break;
@@ -706,10 +715,10 @@ namespace ResourceTypes.GameParams
     /// </summary>
     public class GameParamUnknown9Entry : GameParamEntry
     {
-        public override void Read(GameParamsBitReader br)
+        public override void Read(GameParamsBitReader br, int depth = 0)
         {
             // Just read base data (flags + name)
-            base.Read(br);
+            base.Read(br, depth);
         }
 
         public override string ToString()
