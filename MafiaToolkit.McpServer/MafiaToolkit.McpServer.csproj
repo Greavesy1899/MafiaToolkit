@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>MafiaToolkit.McpServer</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <!-- MCP Server Dependencies -->
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" Version="0.2.0-preview.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- Reference DLLs from Mafia2Libs/libs -->
+  <ItemGroup>
+    <Reference Include="Gibbed.IO">
+      <HintPath>..\Mafia2Libs\libs\Gibbed.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="zlibnet">
+      <HintPath>..\Mafia2Libs\libs\zlibnet.dll</HintPath>
+    </Reference>
+    <Reference Include="OodleSharp">
+      <HintPath>..\Mafia2Libs\libs\OodleSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Copy DLLs to output -->
+  <ItemGroup>
+    <Content Include="..\Mafia2Libs\libs\Gibbed.IO.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libs\Gibbed.IO.dll</Link>
+    </Content>
+    <Content Include="..\Mafia2Libs\libs\zlibnet.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libs\zlibnet.dll</Link>
+    </Content>
+    <Content Include="..\Mafia2Libs\libs\OodleSharp.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libs\OodleSharp.dll</Link>
+    </Content>
+  </ItemGroup>
+
+  <!-- Link source files from Mafia2Libs -->
+  <!-- Gibbed.Mafia2.FileFormats -->
+  <ItemGroup>
+    <Compile Include="..\Mafia2Libs\Gibbed.Mafia2.FileFormats\ArchiveEncryption.cs" Link="Linked\Gibbed.Mafia2.FileFormats\ArchiveEncryption.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Mafia2.FileFormats\TEA.cs" Link="Linked\Gibbed.Mafia2.FileFormats\TEA.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Mafia2.FileFormats\Archive\FileHeader.cs" Link="Linked\Gibbed.Mafia2.FileFormats\Archive\FileHeader.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Mafia2.FileFormats\Archive\Platform.cs" Link="Linked\Gibbed.Mafia2.FileFormats\Archive\Platform.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Mafia2.FileFormats\Archive\ResourceEntry.cs" Link="Linked\Gibbed.Mafia2.FileFormats\Archive\ResourceEntry.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Mafia2.FileFormats\Archive\ResourceHeader.cs" Link="Linked\Gibbed.Mafia2.FileFormats\Archive\ResourceHeader.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Mafia2.FileFormats\Archive\ResourceType.cs" Link="Linked\Gibbed.Mafia2.FileFormats\Archive\ResourceType.cs" />
+  </ItemGroup>
+
+  <!-- Gibbed.Illusion.FileFormats -->
+  <ItemGroup>
+    <Compile Include="..\Mafia2Libs\Gibbed.Illusion.FileFormats\BlockReaderStream.cs" Link="Linked\Gibbed.Illusion.FileFormats\BlockReaderStream.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Illusion.FileFormats\CompressedBlockHeader.cs" Link="Linked\Gibbed.Illusion.FileFormats\CompressedBlockHeader.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Illusion.FileFormats\FNV32.cs" Link="Linked\Gibbed.Illusion.FileFormats\FNV32.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Illusion.FileFormats\FNV64.cs" Link="Linked\Gibbed.Illusion.FileFormats\FNV64.cs" />
+    <Compile Include="..\Mafia2Libs\Gibbed.Illusion.FileFormats\StreamHelpers.cs" Link="Linked\Gibbed.Illusion.FileFormats\StreamHelpers.cs" />
+  </ItemGroup>
+
+  <!-- Configure runtime for DLL loading -->
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="SubdirectoriesToProbe" Value="\\libs\\" />
+  </ItemGroup>
+</Project>
