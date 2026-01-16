@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.XPath;
 using Gibbed.Illusion.FileFormats;
@@ -7,7 +11,7 @@ using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Utils.Settings;
 
-namespace MafiaToolkit.McpServer.Services;
+namespace Mafia2Tool.MCP.Services;
 
 /// <summary>
 /// Information about an opened SDS archive
@@ -73,15 +77,6 @@ public class SdsService
         public DateTime LastAccessed { get; set; }
     }
 
-    public SdsService()
-    {
-        // Register code page 1252 for encoding support
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-        // Initialize GameStorage with default games
-        GameStorage.Instance.InitStorage();
-    }
-
     /// <summary>
     /// Lists all SDS files in a directory
     /// </summary>
@@ -114,10 +109,16 @@ public class SdsService
     }
 
     /// <summary>
+    /// Last error encountered during file operations
+    /// </summary>
+    public string? LastError { get; private set; }
+
+    /// <summary>
     /// Opens an SDS file and returns its metadata
     /// </summary>
     public SdsFileInfo? OpenFile(string filePath, GamesEnumerator? gameType = null)
     {
+        LastError = null;
         var normalizedPath = Path.GetFullPath(filePath);
 
         // Check cache first
@@ -129,23 +130,13 @@ public class SdsService
 
         if (!File.Exists(normalizedPath))
         {
+            LastError = $"File not found: {normalizedPath}";
             return null;
         }
 
         try
         {
             var fileInfo = new FileInfo(normalizedPath);
-
-            // Set game type if provided
-            if (gameType.HasValue)
-            {
-                GameStorage.Instance.SetSelectedGameByType(gameType.Value);
-            }
-            else
-            {
-                // Default to Mafia II
-                GameStorage.Instance.SetSelectedGameByType(GamesEnumerator.MafiaII);
-            }
 
             // Read the SDS file
             using var inputStream = File.OpenRead(normalizedPath);
@@ -236,16 +227,14 @@ public class SdsService
             CleanupCache();
 
             // Dispose unwrapped stream if we created one
-            if (unwrapped != null)
-            {
-                unwrapped.Dispose();
-            }
+            unwrapped?.Dispose();
 
             return sdsInfo;
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"[SdsService] Error opening file: {ex.Message}");
+            LastError = $"{ex.GetType().Name}: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"[SdsService] Error opening file: {ex}");
             return null;
         }
     }
