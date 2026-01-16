@@ -519,6 +519,183 @@ public class SdsTools
         }
     }
 
+    /// <summary>
+    /// Export a resource to a file
+    /// </summary>
+    [McpServerTool(Name = "export_resource_to_file"), Description("Export a resource from an SDS archive to a file on disk")]
+    public string ExportResourceToFile(
+        [Description("Full path to the SDS file")] string sdsPath,
+        [Description("Resource index (0-based)")] int resourceIndex,
+        [Description("Output file path (if not specified, uses resource name in current directory)")] string? outputPath = null)
+    {
+        try
+        {
+            var resourceInfo = _sdsService.GetResourceInfo(sdsPath, resourceIndex);
+            if (resourceInfo == null)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Resource not found" });
+            }
+
+            var data = _sdsService.ExtractResource(sdsPath, resourceIndex);
+            if (data == null)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Failed to extract resource" });
+            }
+
+            // Determine output path
+            if (string.IsNullOrEmpty(outputPath))
+            {
+                var baseName = resourceInfo.Name ?? $"resource_{resourceIndex}";
+                var extension = GetExtensionForType(resourceInfo.TypeName);
+                outputPath = Path.Combine(Environment.CurrentDirectory, baseName + extension);
+            }
+
+            // Ensure directory exists
+            var directory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllBytes(outputPath, data);
+
+            return JsonSerializer.Serialize(new
+            {
+                success = true,
+                resource = new
+                {
+                    index = resourceIndex,
+                    typeName = resourceInfo.TypeName,
+                    name = resourceInfo.Name
+                },
+                output = new
+                {
+                    path = outputPath,
+                    size = data.Length,
+                    sizeFormatted = FormatSize(data.Length)
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Export multiple resources to a directory
+    /// </summary>
+    [McpServerTool(Name = "export_resources_batch"), Description("Export multiple resources from an SDS archive to a directory")]
+    public string ExportResourcesBatch(
+        [Description("Full path to the SDS file")] string sdsPath,
+        [Description("Output directory path")] string outputDirectory,
+        [Description("Filter by resource type (e.g., 'Texture', 'Script'). Leave empty for all")] string? typeFilter = null,
+        [Description("Maximum number of resources to export")] int limit = 100)
+    {
+        try
+        {
+            var sdsInfo = _sdsService.OpenFile(sdsPath);
+            if (sdsInfo == null)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = "Failed to open SDS file" });
+            }
+
+            // Ensure output directory exists
+            if (!Directory.Exists(outputDirectory))
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+
+            var resources = sdsInfo.Resources.AsEnumerable();
+            if (!string.IsNullOrEmpty(typeFilter))
+            {
+                resources = resources.Where(r => r.TypeName.Contains(typeFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var toExport = resources.Take(limit).ToList();
+            var exported = new List<object>();
+            var errors = new List<object>();
+
+            foreach (var resource in toExport)
+            {
+                try
+                {
+                    var data = _sdsService.ExtractResource(sdsPath, resource.Index);
+                    if (data == null)
+                    {
+                        errors.Add(new { index = resource.Index, error = "Failed to extract" });
+                        continue;
+                    }
+
+                    var baseName = resource.Name ?? $"resource_{resource.Index}";
+                    // Sanitize filename
+                    baseName = string.Join("_", baseName.Split(Path.GetInvalidFileNameChars()));
+                    var extension = GetExtensionForType(resource.TypeName);
+                    var outputPath = Path.Combine(outputDirectory, baseName + extension);
+
+                    // Handle duplicates
+                    int counter = 1;
+                    while (File.Exists(outputPath))
+                    {
+                        outputPath = Path.Combine(outputDirectory, $"{baseName}_{counter}{extension}");
+                        counter++;
+                    }
+
+                    File.WriteAllBytes(outputPath, data);
+
+                    exported.Add(new
+                    {
+                        index = resource.Index,
+                        name = resource.Name,
+                        outputFile = Path.GetFileName(outputPath),
+                        size = data.Length
+                    });
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(new { index = resource.Index, error = ex.Message });
+                }
+            }
+
+            return JsonSerializer.Serialize(new
+            {
+                success = true,
+                outputDirectory,
+                typeFilter,
+                totalMatching = toExport.Count,
+                exportedCount = exported.Count,
+                errorCount = errors.Count,
+                exported,
+                errors = errors.Count > 0 ? errors : null
+            });
+        }
+        catch (Exception ex)
+        {
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+        }
+    }
+
+    private static string GetExtensionForType(string typeName)
+    {
+        return typeName.ToLowerInvariant() switch
+        {
+            "texture" => ".dds",
+            "mipmap" => ".dds",
+            "script" => ".lua",
+            "xml" => ".xml",
+            "flash" => ".swf",
+            "sound" => ".fsb",
+            "cutscene" => ".cut",
+            "frameresource" => ".fr",
+            "effects" => ".eff",
+            "collisions" => ".col",
+            "fxactor" => ".fxa",
+            "tables" => ".tbl",
+            "animatedtexture" => ".ifl",
+            _ => ".bin"
+        };
+    }
+
     private static string FormatSize(long bytes)
     {
         string[] sizes = { "B", "KB", "MB", "GB" };
