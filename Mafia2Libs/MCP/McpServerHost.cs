@@ -152,7 +152,7 @@ public static class McpServerHost
                 {
                     access_token = "local-access-token",
                     token_type = "Bearer",
-                    expires_in = 3600
+                    expires_in = 315360000 // 10 years
                 }));
 
                 // Map MCP SSE endpoint
