@@ -3,9 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Xml.XPath;
-using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
 using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
@@ -138,23 +135,18 @@ public class SdsService
         {
             var fileInfo = new FileInfo(normalizedPath);
 
-            // Read the SDS file
+            // Use the existing ArchiveFile class which handles Oodle compression
+            var archive = new ArchiveFile();
+
+            // Set game type if provided
+            if (gameType.HasValue)
+            {
+                archive.SetGameType(gameType.Value);
+            }
+
+            // Read the SDS file using existing toolkit code
             using var inputStream = File.OpenRead(normalizedPath);
-
-            // Try to unwrap encrypted files
-            Stream dataStream;
-            var unwrapped = ArchiveEncryption.Unwrap(inputStream);
-            if (unwrapped != null)
-            {
-                dataStream = unwrapped;
-            }
-            else
-            {
-                inputStream.Position = 0;
-                dataStream = inputStream;
-            }
-
-            var archive = ReadArchive(dataStream, out var resourceEntries);
+            archive.Deserialize(inputStream);
 
             // Try to detect game type from version
             var detectedGame = archive.Version switch
@@ -164,17 +156,16 @@ public class SdsService
                 _ => gameType ?? GamesEnumerator.MafiaII
             };
 
-            // Extract resource names from XML if available
-            var resourceNames = ExtractResourceNames(archive.ResourceInfoXml, resourceEntries.Count);
-
             // Build resource info list
             var resources = new List<SdsResourceInfo>();
-            for (int i = 0; i < resourceEntries.Count; i++)
+            for (int i = 0; i < archive.ResourceEntries.Count; i++)
             {
-                var entry = resourceEntries[i];
+                var entry = archive.ResourceEntries[i];
                 var typeName = entry.TypeId >= 0 && entry.TypeId < archive.ResourceTypes.Count
                     ? archive.ResourceTypes[entry.TypeId].Name
                     : "Unknown";
+
+                var name = i < archive.ResourceNames.Count ? archive.ResourceNames[i] : null;
 
                 resources.Add(new SdsResourceInfo
                 {
@@ -188,7 +179,7 @@ public class SdsService
                     SlotVramRequired = entry.SlotVramRequired,
                     OtherRamRequired = entry.OtherRamRequired,
                     OtherVramRequired = entry.OtherVramRequired,
-                    Name = i < resourceNames.Count ? resourceNames[i] : null
+                    Name = name
                 });
             }
 
@@ -215,19 +206,16 @@ public class SdsService
                 DetectedGameType = detectedGame
             };
 
-            // Cache the result
+            // Cache the result with the archive's resource entries
             _cache[normalizedPath] = new CachedSdsFile
             {
                 Info = sdsInfo,
-                Entries = resourceEntries,
+                Entries = archive.ResourceEntries,
                 LastAccessed = DateTime.UtcNow
             };
 
             // Clean up old cache entries
             CleanupCache();
-
-            // Dispose unwrapped stream if we created one
-            unwrapped?.Dispose();
 
             return sdsInfo;
         }
@@ -318,140 +306,6 @@ public class SdsService
         _cache.TryRemove(normalizedPath, out _);
     }
 
-    private ArchiveData ReadArchive(Stream input, out List<ResourceEntry> resourceEntries)
-    {
-        resourceEntries = new List<ResourceEntry>();
-        var archive = new ArchiveData();
-
-        var basePosition = input.Position;
-
-        // Check magic
-        var magic = input.ReadValueU32(Endian.Big);
-        if (magic != 0x53445300) // 'SDS\0'
-        {
-            throw new FormatException($"Invalid SDS signature: 0x{magic:X8}");
-        }
-
-        input.Seek(8, SeekOrigin.Begin);
-        var platform = (Platform)input.ReadValueU32(Endian.Big);
-        var endian = platform == Platform.PC ? Endian.Little : Endian.Big;
-
-        input.Seek(4, SeekOrigin.Begin);
-        var version = input.ReadValueU32(endian);
-
-        if (version != 19 && version != 20)
-        {
-            throw new FormatException($"Unsupported SDS version: {version}");
-        }
-
-        input.Seek(12, SeekOrigin.Begin);
-
-        // Read file header
-        using (var headerData = input.ReadToMemoryStreamSafe(52, endian))
-        {
-            archive.FileHeader = FileHeader.Read(headerData, endian);
-        }
-
-        // Read resource types
-        input.Position = basePosition + archive.FileHeader.ResourceTypeTableOffset;
-        var resourceTypeCount = input.ReadValueU32(endian);
-        archive.ResourceTypes = new List<ResourceType>();
-        for (uint i = 0; i < resourceTypeCount; i++)
-        {
-            archive.ResourceTypes.Add(ResourceType.Read(input, endian));
-        }
-
-        // Read resources from block stream
-        input.Position = basePosition + archive.FileHeader.BlockTableOffset;
-        var blockStream = BlockReaderStream.FromStream(input, endian);
-
-        for (uint i = 0; i < archive.FileHeader.ResourceCount; i++)
-        {
-            var headerSize = version == 20 ? 34 : 26;
-            ResourceHeader resourceHeader;
-            using (var data = blockStream.ReadToMemoryStreamSafe(headerSize, endian))
-            {
-                resourceHeader = ResourceHeader.Read(data, endian, version);
-            }
-
-            if (resourceHeader.Size < 30)
-            {
-                throw new FormatException("Invalid resource header size");
-            }
-
-            var dataSize = (int)resourceHeader.Size - (headerSize + 4);
-            var resourceData = blockStream.ReadBytes(dataSize);
-
-            resourceEntries.Add(new ResourceEntry
-            {
-                TypeId = (int)resourceHeader.TypeId,
-                Version = resourceHeader.Version,
-                Data = resourceData,
-                FileHash = resourceHeader.FileHash,
-                SlotRamRequired = resourceHeader.SlotRamRequired,
-                SlotVramRequired = resourceHeader.SlotVramRequired,
-                OtherRamRequired = resourceHeader.OtherRamRequired,
-                OtherVramRequired = resourceHeader.OtherVramRequired
-            });
-        }
-
-        // Read XML info if present
-        if (archive.FileHeader.XmlOffset != 0)
-        {
-            input.Position = basePosition + archive.FileHeader.XmlOffset;
-            var xmlLength = (int)(input.Length - input.Position);
-            if (xmlLength > 0)
-            {
-                archive.ResourceInfoXml = input.ReadString(xmlLength, Encoding.ASCII);
-            }
-        }
-
-        archive.Version = version;
-        archive.Platform = platform;
-        archive.Endian = endian;
-        archive.SlotRamRequired = archive.FileHeader.SlotRamRequired;
-        archive.SlotVramRequired = archive.FileHeader.SlotVramRequired;
-        archive.OtherRamRequired = archive.FileHeader.OtherRamRequired;
-        archive.OtherVramRequired = archive.FileHeader.OtherVramRequired;
-
-        return archive;
-    }
-
-    private List<string?> ExtractResourceNames(string? xml, int count)
-    {
-        var names = new List<string?>(new string?[count]);
-
-        if (string.IsNullOrEmpty(xml))
-        {
-            return names;
-        }
-
-        try
-        {
-            using var reader = new StringReader(xml);
-            var doc = new XPathDocument(reader);
-            var nav = doc.CreateNavigator();
-            var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
-
-            int index = 0;
-            while (nodes.MoveNext() && index < count)
-            {
-                var name = nodes.Current?.Value;
-                if (!string.IsNullOrEmpty(name) && name != "not available")
-                {
-                    names[index] = name;
-                }
-                index++;
-            }
-        }
-        catch
-        {
-            // Failed to parse XML, return empty names
-        }
-
-        return names;
-    }
-
     private void CleanupCache()
     {
         var cutoff = DateTime.UtcNow - _cacheExpiration;
@@ -463,54 +317,6 @@ public class SdsService
         foreach (var key in keysToRemove)
         {
             _cache.TryRemove(key, out _);
-        }
-    }
-
-    private class ArchiveData
-    {
-        public uint Version { get; set; }
-        public Platform Platform { get; set; }
-        public Endian Endian { get; set; }
-        public uint SlotRamRequired { get; set; }
-        public uint SlotVramRequired { get; set; }
-        public uint OtherRamRequired { get; set; }
-        public uint OtherVramRequired { get; set; }
-        public FileHeader FileHeader { get; set; }
-        public List<ResourceType> ResourceTypes { get; set; } = new();
-        public string? ResourceInfoXml { get; set; }
-    }
-
-    // Internal ResourceHeader struct since original is internal
-    private struct ResourceHeader
-    {
-        public uint TypeId;
-        public uint Size;
-        public ushort Version;
-        public ulong FileHash;
-        public uint SlotRamRequired;
-        public uint SlotVramRequired;
-        public uint OtherRamRequired;
-        public uint OtherVramRequired;
-
-        public static ResourceHeader Read(Stream input, Endian endian, uint version)
-        {
-            ResourceHeader instance;
-            instance.FileHash = 0;
-            instance.TypeId = input.ReadValueU32(endian);
-            instance.Size = input.ReadValueU32(endian);
-            instance.Version = input.ReadValueU16(endian);
-
-            if (version == 20)
-            {
-                instance.FileHash = input.ReadValueU64(endian);
-            }
-
-            instance.SlotRamRequired = input.ReadValueU32(endian);
-            instance.SlotVramRequired = input.ReadValueU32(endian);
-            instance.OtherRamRequired = input.ReadValueU32(endian);
-            instance.OtherVramRequired = input.ReadValueU32(endian);
-
-            return instance;
         }
     }
 }

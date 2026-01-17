@@ -120,7 +120,7 @@ public class SdsTools
             var info = _sdsService.OpenFile(filePath);
             if (info == null)
             {
-                return JsonSerializer.Serialize(new { success = false, error = "Failed to open SDS file" });
+                return JsonSerializer.Serialize(new { success = false, error = _sdsService.LastError ?? "Failed to open SDS file" });
             }
 
             return JsonSerializer.Serialize(new
@@ -160,7 +160,7 @@ public class SdsTools
             var info = _sdsService.OpenFile(filePath);
             if (info == null)
             {
-                return JsonSerializer.Serialize(new { success = false, error = "Failed to open SDS file" });
+                return JsonSerializer.Serialize(new { success = false, error = _sdsService.LastError ?? "Failed to open SDS file" });
             }
 
             var resources = info.Resources.AsEnumerable();
@@ -320,7 +320,7 @@ public class SdsTools
             var info = _sdsService.OpenFile(filePath);
             if (info == null)
             {
-                return JsonSerializer.Serialize(new { success = false, error = "Failed to open SDS file" });
+                return JsonSerializer.Serialize(new { success = false, error = _sdsService.LastError ?? "Failed to open SDS file" });
             }
 
             var typeStats = info.Resources
