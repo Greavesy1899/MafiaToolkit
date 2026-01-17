@@ -84,6 +84,8 @@ namespace Core.IO
                     return new FileIFL(info);
                 case "AN2":
                     return new FileAnimation2(info);
+                case "CCDB":
+                    return new FileCCDB(info);
                 default:
                     return new FileBase(info);
             }

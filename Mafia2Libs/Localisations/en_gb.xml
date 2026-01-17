@@ -336,6 +336,9 @@
 	<String ID="$IMPORT_XBIN">Import from .xml</String>
 	<String ID="$EXPORT_XBIN">Export to .xml</String>
 
+	<!-- CCDB Editor Strings-->
+	<String ID="$CCDB_EDITOR_TITLE">CCDB Editor (Spawn Profiles)</String>
+
 	<!-- ATP Editor Strings -->
 	<String ID="$ATP_EDITOR_TITLE">AnimalTrafficPaths Editor</String>
 	<String ID="$ADD_ATP">Add</String>
