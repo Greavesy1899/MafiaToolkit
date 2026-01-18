@@ -579,86 +579,138 @@ namespace ResourceTypes.CCDB
         private void ParseChoicesArray(BinaryReader reader, int expectedCount)
         {
             uint count = reader.ReadUInt32();
-            System.Diagnostics.Debug.WriteLine($"[GENR] Parsing {count} choices at position 0x{reader.BaseStream.Position:X}");
+            long dataStart = reader.BaseStream.Position;
+            System.Diagnostics.Debug.WriteLine($"[GENR] Parsing {count} choices at position 0x{dataStart:X}");
 
-            // The GENR format uses embedded field names for each object.
-            // We need to find C_Choice objects by searching for their type hash 0x33BA57D7
-            // or field names like "m_PieceSets"
+            // GENR format: each C_Choice object starts with type hash 0x33BA57D7
+            // Structure after hash: 12 bytes header + 1 byte padding + fields
+            // Each field: 1 byte length + name + 13 bytes type info + data
 
-            // Read a larger chunk to analyze the format
-            long startPos = reader.BaseStream.Position;
-            int chunkSize = Math.Min(2000, (int)(_streamLength - startPos));
-            byte[] chunk = new byte[chunkSize];
-            reader.Read(chunk, 0, chunkSize);
-
-            // Search for C_Choice type hash (0x33BA57D7 = D7 57 BA 33 in little-endian)
             byte[] choiceHash = { 0xD7, 0x57, 0xBA, 0x33 };
-            System.Diagnostics.Debug.WriteLine($"[GENR] Searching for C_Choice type hash in first {chunkSize} bytes...");
+            int parsed = 0;
 
-            for (int i = 0; i < chunkSize - 4; i++)
+            // Search entire remaining file for C_Choice objects
+            while (parsed < count && reader.BaseStream.Position + 50 < _streamLength)
             {
-                if (chunk[i] == choiceHash[0] && chunk[i + 1] == choiceHash[1] &&
-                    chunk[i + 2] == choiceHash[2] && chunk[i + 3] == choiceHash[3])
+                // Find next C_Choice type hash
+                long searchStart = reader.BaseStream.Position;
+                long hashPos = -1;
+
+                for (long pos = searchStart; pos < Math.Min(searchStart + 50000, _streamLength - 4); pos++)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[GENR] Found C_Choice hash at offset +{i} (0x{startPos + i:X})");
-
-                    // Show context
-                    int ctxStart = Math.Max(0, i - 8);
-                    int ctxEnd = Math.Min(chunkSize, i + 20);
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append("  Context: ");
-                    for (int j = ctxStart; j < ctxEnd; j++)
+                    reader.BaseStream.Position = pos;
+                    byte b0 = reader.ReadByte();
+                    if (b0 == choiceHash[0])
                     {
-                        if (j == i) sb.Append("[");
-                        sb.Append($"{chunk[j]:X2} ");
-                        if (j == i + 3) sb.Append("] ");
-                    }
-                    System.Diagnostics.Debug.WriteLine(sb.ToString());
-                }
-            }
-
-            // Search for "m_PieceSets" field name (0x0B = length 11)
-            byte[] pieceSetsPattern = Encoding.ASCII.GetBytes("m_PieceSets");
-            System.Diagnostics.Debug.WriteLine($"[GENR] Searching for 'm_PieceSets' field name...");
-
-            int foundPieceSets = 0;
-            for (int i = 0; i < chunkSize - 12; i++)
-            {
-                if (chunk[i] == 0x0B) // Length byte for 11-char string
-                {
-                    bool match = true;
-                    for (int j = 0; j < pieceSetsPattern.Length && match; j++)
-                    {
-                        if (chunk[i + 1 + j] != pieceSetsPattern[j])
-                            match = false;
-                    }
-                    if (match)
-                    {
-                        foundPieceSets++;
-                        if (foundPieceSets <= 5)
+                        byte b1 = reader.ReadByte();
+                        byte b2 = reader.ReadByte();
+                        byte b3 = reader.ReadByte();
+                        if (b1 == choiceHash[1] && b2 == choiceHash[2] && b3 == choiceHash[3])
                         {
-                            System.Diagnostics.Debug.WriteLine($"[GENR] Found 'm_PieceSets' at offset +{i} (0x{startPos + i:X})");
-
-                            // After field name, read the vector count
-                            int afterName = i + 1 + 11; // Skip length + name
-                            if (afterName + 20 < chunkSize)
-                            {
-                                // Show next 20 bytes to understand format
-                                StringBuilder sb = new StringBuilder();
-                                sb.Append("  After name: ");
-                                for (int j = 0; j < 20; j++)
-                                    sb.Append($"{chunk[afterName + j]:X2} ");
-                                System.Diagnostics.Debug.WriteLine(sb.ToString());
-                            }
+                            hashPos = pos;
+                            break;
                         }
                     }
                 }
+
+                if (hashPos < 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[GENR] No more C_Choice hashes found after {parsed} choices");
+                    break;
+                }
+
+                // Position after the type hash
+                reader.BaseStream.Position = hashPos + 4;
+
+                // Skip 12 bytes header + 1 byte padding = 13 bytes
+                reader.BaseStream.Position += 13;
+
+                // Now parse fields: m_PieceSets, m_RangeIndexes, m_Channels, m_Tags, m_Flags
+                var choice = ParseChoiceFields(reader);
+                if (choice != null)
+                {
+                    choice.Ref = $"Choice_{parsed}";
+                    SharedChoices.Add(choice);
+                    parsed++;
+
+                    if (parsed % 500 == 0)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {parsed} choices at 0x{reader.BaseStream.Position:X}");
+                }
+                else
+                {
+                    // Skip ahead to avoid getting stuck
+                    reader.BaseStream.Position = hashPos + 20;
+                }
             }
 
-            System.Diagnostics.Debug.WriteLine($"[GENR] Found {foundPieceSets} 'm_PieceSets' occurrences in first {chunkSize} bytes");
+            System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoicesArray complete: {parsed} choices");
+        }
 
-            // For now, mark as not implemented - need to parse GENR format properly
-            System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoicesArray: GENR format parsing not yet implemented");
+        private CCDBChoice ParseChoiceFields(BinaryReader reader)
+        {
+            try
+            {
+                var choice = new CCDBChoice();
+                choice.PieceSets = new List<uint>();
+                choice.RangeIndexes = new List<ushort>();
+                choice.Channels = new List<uint>();
+                choice.Tags = new List<CCDBTag>();
+
+                // Parse m_PieceSets
+                if (!TryReadFieldName(reader, "m_PieceSets"))
+                    return null;
+                SkipTypeInfo(reader, 13); // Skip type info
+                uint pieceSetsCount = reader.ReadUInt32();
+                if (pieceSetsCount > 100) return null;
+                for (int i = 0; i < pieceSetsCount; i++)
+                    choice.PieceSets.Add(reader.ReadUInt32());
+
+                // Parse m_RangeIndexes
+                if (!TryReadFieldName(reader, "m_RangeIndexes"))
+                    return null;
+                SkipTypeInfo(reader, 13);
+                uint rangeCount = reader.ReadUInt32();
+                if (rangeCount > 100) return null;
+                for (int i = 0; i < rangeCount; i++)
+                    choice.RangeIndexes.Add(reader.ReadUInt16());
+
+                // Parse m_Channels
+                if (!TryReadFieldName(reader, "m_Channels"))
+                    return null;
+                SkipTypeInfo(reader, 13);
+                uint channelCount = reader.ReadUInt32();
+                if (channelCount > 100) return null;
+                for (int i = 0; i < channelCount; i++)
+                    choice.Channels.Add(reader.ReadUInt32());
+
+                // Skip m_Tags (complex map structure) and m_Flags
+                // Find end marker (8 zeros before next type hash or end)
+                // For now just read m_Flags if we can find it
+                choice.Flags = 0;
+
+                return choice;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private bool TryReadFieldName(BinaryReader reader, string expectedName)
+        {
+            if (reader.BaseStream.Position + expectedName.Length + 1 > _streamLength)
+                return false;
+
+            byte len = reader.ReadByte();
+            if (len != expectedName.Length)
+            {
+                reader.BaseStream.Position--; // Put back the byte
+                return false;
+            }
+
+            byte[] nameBytes = reader.ReadBytes(len);
+            string name = Encoding.ASCII.GetString(nameBytes);
+            return name == expectedName;
         }
 
         /// <summary>
