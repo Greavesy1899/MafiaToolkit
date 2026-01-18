@@ -445,6 +445,14 @@ namespace ResourceTypes.CCDB
         /// <summary>
         /// Find and parse all C_Choice objects in the data section.
         /// Uses field name search to locate the m_SharedChoices array.
+        ///
+        /// GENR vector format (from IDA DeserializeContainer):
+        /// - Field name: 1 byte length + N bytes name
+        /// - Type info: 4B type hash + 1B flags + 4B val1 + 4B val2 = 13 bytes
+        /// - Container header: 8 bytes
+        /// - Count: 4 bytes
+        /// - Type infos for elements (variable length, ends with marker)
+        /// - Elements: each C_OwningPtr has 8B header + 8B ref + inline object data
         /// </summary>
         public void ParseSharedChoices(byte[] data, BinaryReader reader, int expectedCount)
         {
@@ -455,22 +463,67 @@ namespace ResourceTypes.CCDB
             {
                 System.Diagnostics.Debug.WriteLine($"[GENR] Found m_SharedChoices at 0x{fieldPos:X}");
 
-                // After field name, there's type info and then the vector data
-                // Skip: length byte (1) + name (15) + type info (varies)
-                long searchStart = fieldPos + 1 + 15;
+                // Calculate positions based on GENR format from IDA
+                long afterName = fieldPos + 1 + 15; // After length byte + "m_SharedChoices"
 
-                // Look for the count value
+                // Dump 48 bytes for debugging
+                if (afterName + 48 < data.Length)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Bytes at 0x{afterName:X}:");
+                    for (int row = 0; row < 3; row++)
+                    {
+                        long off = afterName + row * 16;
+                        System.Diagnostics.Debug.WriteLine($"  0x{off:X4}: " +
+                            $"{data[off]:X2} {data[off+1]:X2} {data[off+2]:X2} {data[off+3]:X2} " +
+                            $"{data[off+4]:X2} {data[off+5]:X2} {data[off+6]:X2} {data[off+7]:X2} " +
+                            $"{data[off+8]:X2} {data[off+9]:X2} {data[off+10]:X2} {data[off+11]:X2} " +
+                            $"{data[off+12]:X2} {data[off+13]:X2} {data[off+14]:X2} {data[off+15]:X2}");
+                    }
+
+                    // Parse known offsets
+                    uint typeHash = BitConverter.ToUInt32(data, (int)afterName);
+                    byte flags = data[afterName + 4];
+                    uint val1 = BitConverter.ToUInt32(data, (int)afterName + 5);
+                    uint val2 = BitConverter.ToUInt32(data, (int)afterName + 9);
+
+                    System.Diagnostics.Debug.WriteLine($"[GENR] TypeInfo: hash=0x{typeHash:X8} flags=0x{flags:X2} val1={val1} val2={val2}");
+
+                    // Container header at offset +13
+                    ulong containerHeader = BitConverter.ToUInt64(data, (int)afterName + 13);
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Container header: 0x{containerHeader:X16}");
+
+                    // Count at offset +21
+                    uint count = BitConverter.ToUInt32(data, (int)afterName + 21);
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Count at +21: {count}");
+
+                    // Also try other offsets in case format varies
+                    for (int testOff = 13; testOff <= 30; testOff += 4)
+                    {
+                        uint testCount = BitConverter.ToUInt32(data, (int)afterName + testOff);
+                        if (testCount == expectedCount)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Found expected count {expectedCount} at offset +{testOff}");
+                            reader.BaseStream.Position = afterName + testOff;
+                            ParseChoicesArray(reader, expectedCount);
+                            return;
+                        }
+                    }
+                }
+
+                // Fallback: search for count value
+                long searchStart = fieldPos + 1 + 15;
                 if (TryFindVectorStart(data, searchStart, expectedCount, out long vectorStart))
                 {
                     reader.BaseStream.Position = vectorStart;
                     ParseChoicesArray(reader, expectedCount);
+                    return;
                 }
+
+                System.Diagnostics.Debug.WriteLine($"[GENR] Could not find count {expectedCount} in expected location");
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("[GENR] m_SharedChoices field not found, using scan");
-                // Fallback: scan for choice patterns after profiles
-                ScanForChoices(reader, expectedCount);
+                System.Diagnostics.Debug.WriteLine("[GENR] m_SharedChoices field not found");
             }
         }
 
@@ -527,49 +580,6 @@ namespace ResourceTypes.CCDB
             }
 
             System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoicesArray complete: {parsed} choices");
-        }
-
-        private void ScanForChoices(BinaryReader reader, int expectedCount)
-        {
-            // Scan the data section for choice-like patterns
-            System.Diagnostics.Debug.WriteLine("[GENR] Scanning for choice patterns...");
-
-            long scanStart = _dataStart;
-            int parsed = 0;
-            int consecutiveFailures = 0;
-
-            reader.BaseStream.Position = scanStart;
-
-            while (parsed < expectedCount && reader.BaseStream.Position + 50 < _streamLength)
-            {
-                long pos = reader.BaseStream.Position;
-
-                var choice = ParseChoice(reader);
-                if (choice != null)
-                {
-                    choice.Ref = $"Choice_{parsed}";
-                    SharedChoices.Add(choice);
-                    parsed++;
-                    consecutiveFailures = 0;
-
-                    if (parsed % 500 == 0)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] Scan: {parsed} choices at 0x{reader.BaseStream.Position:X}");
-                }
-                else
-                {
-                    consecutiveFailures++;
-                    reader.BaseStream.Position = pos + 4;
-
-                    if (consecutiveFailures > 1000)
-                    {
-                        // Jump ahead
-                        reader.BaseStream.Position = pos + 1000;
-                        consecutiveFailures = 0;
-                    }
-                }
-            }
-
-            System.Diagnostics.Debug.WriteLine($"[GENR] Scan complete: {parsed} choices");
         }
 
         /// <summary>
