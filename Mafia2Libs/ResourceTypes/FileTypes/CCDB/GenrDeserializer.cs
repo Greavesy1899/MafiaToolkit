@@ -579,15 +579,55 @@ namespace ResourceTypes.CCDB
         private void ParseChoicesArray(BinaryReader reader, int expectedCount)
         {
             uint count = reader.ReadUInt32();
-            System.Diagnostics.Debug.WriteLine($"[GENR] Parsing {count} choices");
+            System.Diagnostics.Debug.WriteLine($"[GENR] Parsing {count} choices at position 0x{reader.BaseStream.Position:X}");
+
+            // Dump first 32 bytes after count to understand format
+            long afterCount = reader.BaseStream.Position;
+            if (afterCount + 32 < _streamLength)
+            {
+                byte[] preview = new byte[32];
+                reader.Read(preview, 0, 32);
+                reader.BaseStream.Position = afterCount;
+
+                System.Diagnostics.Debug.WriteLine($"[GENR] First 32 bytes after count:");
+                System.Diagnostics.Debug.WriteLine($"  {preview[0]:X2} {preview[1]:X2} {preview[2]:X2} {preview[3]:X2} " +
+                    $"{preview[4]:X2} {preview[5]:X2} {preview[6]:X2} {preview[7]:X2} " +
+                    $"{preview[8]:X2} {preview[9]:X2} {preview[10]:X2} {preview[11]:X2} " +
+                    $"{preview[12]:X2} {preview[13]:X2} {preview[14]:X2} {preview[15]:X2}");
+                System.Diagnostics.Debug.WriteLine($"  {preview[16]:X2} {preview[17]:X2} {preview[18]:X2} {preview[19]:X2} " +
+                    $"{preview[20]:X2} {preview[21]:X2} {preview[22]:X2} {preview[23]:X2} " +
+                    $"{preview[24]:X2} {preview[25]:X2} {preview[26]:X2} {preview[27]:X2} " +
+                    $"{preview[28]:X2} {preview[29]:X2} {preview[30]:X2} {preview[31]:X2}");
+            }
 
             int parsed = 0;
             int failures = 0;
 
-            while (parsed < count && failures < 20 && reader.BaseStream.Position + 20 < _streamLength)
+            // vector<C_OwningPtr<C_Choice>> format:
+            // Each element is a C_OwningPtr which has 8-byte header + 8-byte reference
+            // The actual C_Choice data follows inline (not via reference resolution)
+
+            while (parsed < count && failures < 50 && reader.BaseStream.Position + 20 < _streamLength)
             {
-                // Each C_OwningPtr element may have type info prefix
                 long elementStart = reader.BaseStream.Position;
+
+                // Skip C_OwningPtr header (8 bytes) + reference (8 bytes) = 16 bytes total
+                // Then read inline C_Choice data
+                if (reader.BaseStream.Position + 16 > _streamLength)
+                    break;
+
+                // Read and log first few element headers to understand pattern
+                if (parsed < 3)
+                {
+                    ulong header = reader.ReadUInt64();
+                    ulong reference = reader.ReadUInt64();
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Element {parsed}: header=0x{header:X16}, ref=0x{reference:X16}");
+                    // After header+ref, try to parse inline C_Choice
+                }
+                else
+                {
+                    reader.BaseStream.Position += 16; // Skip header + reference
+                }
 
                 var choice = ParseChoice(reader);
                 if (choice != null)
@@ -598,16 +638,17 @@ namespace ResourceTypes.CCDB
                     failures = 0;
 
                     if (parsed % 500 == 0)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {parsed} choices");
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {parsed} choices at 0x{reader.BaseStream.Position:X}");
                 }
                 else
                 {
                     failures++;
-                    reader.BaseStream.Position = elementStart + 4; // Skip and try next position
+                    // Try skipping different amounts to find correct alignment
+                    reader.BaseStream.Position = elementStart + 4;
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoicesArray complete: {parsed} choices");
+            System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoicesArray complete: {parsed} choices (failures={failures})");
         }
 
         /// <summary>
