@@ -510,16 +510,44 @@ namespace ResourceTypes.CCDB
                     }
                 }
 
-                // Fallback: search for count value
-                long searchStart = fieldPos + 1 + 15;
-                if (TryFindVectorStart(data, searchStart, expectedCount, out long vectorStart))
+                // Search entire file for the count value to understand format
+                byte[] countBytes = BitConverter.GetBytes((uint)expectedCount);
+                System.Diagnostics.Debug.WriteLine($"[GENR] Searching for count {expectedCount} (0x{expectedCount:X4}) in entire file...");
+
+                for (long pos = 0; pos < data.Length - 4; pos++)
                 {
-                    reader.BaseStream.Position = vectorStart;
-                    ParseChoicesArray(reader, expectedCount);
-                    return;
+                    if (data[pos] == countBytes[0] && data[pos + 1] == countBytes[1] &&
+                        data[pos + 2] == countBytes[2] && data[pos + 3] == countBytes[3])
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Found count {expectedCount} at offset 0x{pos:X}");
+
+                        // Show context: 16 bytes before and 16 bytes after
+                        long ctxStart = Math.Max(0, pos - 16);
+                        long ctxEnd = Math.Min(data.Length, pos + 20);
+
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append($"  Context at 0x{ctxStart:X}: ");
+                        for (long i = ctxStart; i < ctxEnd; i++)
+                        {
+                            if (i == pos) sb.Append("[");
+                            sb.Append($"{data[i]:X2}");
+                            if (i == pos + 3) sb.Append("]");
+                            sb.Append(" ");
+                        }
+                        System.Diagnostics.Debug.WriteLine(sb.ToString());
+
+                        // Try parsing from this position
+                        reader.BaseStream.Position = pos;
+                        ParseChoicesArray(reader, expectedCount);
+                        if (SharedChoices.Count > 0)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Successfully parsed {SharedChoices.Count} choices from offset 0x{pos:X}");
+                            return;
+                        }
+                    }
                 }
 
-                System.Diagnostics.Debug.WriteLine($"[GENR] Could not find count {expectedCount} in expected location");
+                System.Diagnostics.Debug.WriteLine($"[GENR] Could not find count {expectedCount} anywhere in file");
             }
             else
             {
