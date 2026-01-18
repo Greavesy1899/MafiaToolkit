@@ -581,74 +581,84 @@ namespace ResourceTypes.CCDB
             uint count = reader.ReadUInt32();
             System.Diagnostics.Debug.WriteLine($"[GENR] Parsing {count} choices at position 0x{reader.BaseStream.Position:X}");
 
-            // Dump first 32 bytes after count to understand format
-            long afterCount = reader.BaseStream.Position;
-            if (afterCount + 32 < _streamLength)
+            // The GENR format uses embedded field names for each object.
+            // We need to find C_Choice objects by searching for their type hash 0x33BA57D7
+            // or field names like "m_PieceSets"
+
+            // Read a larger chunk to analyze the format
+            long startPos = reader.BaseStream.Position;
+            int chunkSize = Math.Min(2000, (int)(_streamLength - startPos));
+            byte[] chunk = new byte[chunkSize];
+            reader.Read(chunk, 0, chunkSize);
+
+            // Search for C_Choice type hash (0x33BA57D7 = D7 57 BA 33 in little-endian)
+            byte[] choiceHash = { 0xD7, 0x57, 0xBA, 0x33 };
+            System.Diagnostics.Debug.WriteLine($"[GENR] Searching for C_Choice type hash in first {chunkSize} bytes...");
+
+            for (int i = 0; i < chunkSize - 4; i++)
             {
-                byte[] preview = new byte[32];
-                reader.Read(preview, 0, 32);
-                reader.BaseStream.Position = afterCount;
-
-                System.Diagnostics.Debug.WriteLine($"[GENR] First 32 bytes after count:");
-                System.Diagnostics.Debug.WriteLine($"  {preview[0]:X2} {preview[1]:X2} {preview[2]:X2} {preview[3]:X2} " +
-                    $"{preview[4]:X2} {preview[5]:X2} {preview[6]:X2} {preview[7]:X2} " +
-                    $"{preview[8]:X2} {preview[9]:X2} {preview[10]:X2} {preview[11]:X2} " +
-                    $"{preview[12]:X2} {preview[13]:X2} {preview[14]:X2} {preview[15]:X2}");
-                System.Diagnostics.Debug.WriteLine($"  {preview[16]:X2} {preview[17]:X2} {preview[18]:X2} {preview[19]:X2} " +
-                    $"{preview[20]:X2} {preview[21]:X2} {preview[22]:X2} {preview[23]:X2} " +
-                    $"{preview[24]:X2} {preview[25]:X2} {preview[26]:X2} {preview[27]:X2} " +
-                    $"{preview[28]:X2} {preview[29]:X2} {preview[30]:X2} {preview[31]:X2}");
-            }
-
-            int parsed = 0;
-            int failures = 0;
-
-            // vector<C_OwningPtr<C_Choice>> format:
-            // Each element is a C_OwningPtr which has 8-byte header + 8-byte reference
-            // The actual C_Choice data follows inline (not via reference resolution)
-
-            while (parsed < count && failures < 50 && reader.BaseStream.Position + 20 < _streamLength)
-            {
-                long elementStart = reader.BaseStream.Position;
-
-                // Skip C_OwningPtr header (8 bytes) + reference (8 bytes) = 16 bytes total
-                // Then read inline C_Choice data
-                if (reader.BaseStream.Position + 16 > _streamLength)
-                    break;
-
-                // Read and log first few element headers to understand pattern
-                if (parsed < 3)
+                if (chunk[i] == choiceHash[0] && chunk[i + 1] == choiceHash[1] &&
+                    chunk[i + 2] == choiceHash[2] && chunk[i + 3] == choiceHash[3])
                 {
-                    ulong header = reader.ReadUInt64();
-                    ulong reference = reader.ReadUInt64();
-                    System.Diagnostics.Debug.WriteLine($"[GENR] Element {parsed}: header=0x{header:X16}, ref=0x{reference:X16}");
-                    // After header+ref, try to parse inline C_Choice
-                }
-                else
-                {
-                    reader.BaseStream.Position += 16; // Skip header + reference
-                }
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Found C_Choice hash at offset +{i} (0x{startPos + i:X})");
 
-                var choice = ParseChoice(reader);
-                if (choice != null)
-                {
-                    choice.Ref = $"Choice_{parsed}";
-                    SharedChoices.Add(choice);
-                    parsed++;
-                    failures = 0;
-
-                    if (parsed % 500 == 0)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {parsed} choices at 0x{reader.BaseStream.Position:X}");
-                }
-                else
-                {
-                    failures++;
-                    // Try skipping different amounts to find correct alignment
-                    reader.BaseStream.Position = elementStart + 4;
+                    // Show context
+                    int ctxStart = Math.Max(0, i - 8);
+                    int ctxEnd = Math.Min(chunkSize, i + 20);
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("  Context: ");
+                    for (int j = ctxStart; j < ctxEnd; j++)
+                    {
+                        if (j == i) sb.Append("[");
+                        sb.Append($"{chunk[j]:X2} ");
+                        if (j == i + 3) sb.Append("] ");
+                    }
+                    System.Diagnostics.Debug.WriteLine(sb.ToString());
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoicesArray complete: {parsed} choices (failures={failures})");
+            // Search for "m_PieceSets" field name (0x0B = length 11)
+            byte[] pieceSetsPattern = Encoding.ASCII.GetBytes("m_PieceSets");
+            System.Diagnostics.Debug.WriteLine($"[GENR] Searching for 'm_PieceSets' field name...");
+
+            int foundPieceSets = 0;
+            for (int i = 0; i < chunkSize - 12; i++)
+            {
+                if (chunk[i] == 0x0B) // Length byte for 11-char string
+                {
+                    bool match = true;
+                    for (int j = 0; j < pieceSetsPattern.Length && match; j++)
+                    {
+                        if (chunk[i + 1 + j] != pieceSetsPattern[j])
+                            match = false;
+                    }
+                    if (match)
+                    {
+                        foundPieceSets++;
+                        if (foundPieceSets <= 5)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Found 'm_PieceSets' at offset +{i} (0x{startPos + i:X})");
+
+                            // After field name, read the vector count
+                            int afterName = i + 1 + 11; // Skip length + name
+                            if (afterName + 20 < chunkSize)
+                            {
+                                // Show next 20 bytes to understand format
+                                StringBuilder sb = new StringBuilder();
+                                sb.Append("  After name: ");
+                                for (int j = 0; j < 20; j++)
+                                    sb.Append($"{chunk[afterName + j]:X2} ");
+                                System.Diagnostics.Debug.WriteLine(sb.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[GENR] Found {foundPieceSets} 'm_PieceSets' occurrences in first {chunkSize} bytes");
+
+            // For now, mark as not implemented - need to parse GENR format properly
+            System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoicesArray: GENR format parsing not yet implemented");
         }
 
         /// <summary>
