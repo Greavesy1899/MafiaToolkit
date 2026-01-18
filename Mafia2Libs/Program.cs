@@ -1,5 +1,6 @@
 ﻿using Core.IO;
 using Mafia2Tool.Forms;
+using Mafia2Tool.MCP;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -21,11 +22,15 @@ namespace Mafia2Tool
             ToolkitAssemblyLoadContext.SetupLoadContext();
             ToolkitExceptionHandler.Initialise();
 
+            // Start MCP server in background for AI assistant integration
+            McpServerHost.Start();
+
             if (args.Length > 0)
             {
                 CheckINIExists();
                 ToolkitSettings.ReadINI();
                 ProcessCommandArguments(args);
+                McpServerHost.Stop();
                 return;
             }
 
@@ -50,6 +55,7 @@ namespace Mafia2Tool
             {
                 GameStorage.Instance.SetSelectedGameByIndex(ToolkitSettings.DefaultGame);
                 OpenGameExplorer();
+                McpServerHost.Stop();
                 return;
             }
 
@@ -59,6 +65,8 @@ namespace Mafia2Tool
                 selector.Dispose();
                 OpenGameExplorer();
             }
+
+            McpServerHost.Stop();
         }
 
         private static void ProcessCommandArguments(string[] Args)

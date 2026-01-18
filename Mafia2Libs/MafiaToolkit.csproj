@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mafia2Tool</RootNamespace>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -319,6 +319,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DockPanelSuite" Version="3.1.0" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="0.4.0-preview.3" />
     <PackageReference Include="Octokit" Version="8.0.1" />
     <PackageReference Include="SharpGLTF.Core" Version="1.0.3" />
     <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.3" />
