@@ -117,63 +117,24 @@ namespace ResourceTypes.CCDB
 
             try
             {
-                using (MemoryStream ms = new MemoryStream(data))
-                using (BinaryReader reader = new BinaryReader(ms))
+                // Use the new GENR deserializer
+                var deserializer = new GenrDeserializer();
+                if (deserializer.Deserialize(data))
                 {
-                    long streamLength = reader.BaseStream.Length;
+                    // Copy results
+                    SpawnProfiles.AddRange(deserializer.Profiles);
+                    SharedChoices.AddRange(deserializer.SharedChoices);
+                    Ranges.AddRange(deserializer.RangeValues);
+                    PieceSets.AddRange(deserializer.PieceSets);
 
-                    // First, dump the header to understand the format
-                    System.Diagnostics.Debug.WriteLine($"[CCDB] File size: {streamLength} bytes");
-                    System.Diagnostics.Debug.WriteLine($"[CCDB] First 64 bytes hex dump:");
-                    int dumpSize = (int)Math.Min(64, streamLength);
-                    byte[] header = new byte[dumpSize];
-                    reader.Read(header, 0, dumpSize);
-                    reader.BaseStream.Position = 0;
+                    // Extract version info from data
+                    ExtractVersionInfo(data);
 
-                    for (int i = 0; i < dumpSize; i += 16)
-                    {
-                        string hex = "";
-                        string ascii = "";
-                        for (int j = 0; j < 16 && (i + j) < dumpSize; j++)
-                        {
-                            hex += $"{header[i + j]:X2} ";
-                            char c = (char)header[i + j];
-                            ascii += (c >= 32 && c < 127) ? c : '.';
-                        }
-                        System.Diagnostics.Debug.WriteLine($"[CCDB]   {i:X4}: {hex,-48} {ascii}");
-                    }
-
-                    // Check if this is GENR format at start or has a header
-                    uint magic = reader.ReadUInt32();
-
-                    if (magic == 0x524E4547) // "GENR" in little-endian at start
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[CCDB] Detected GENR format at start");
-                        reader.BaseStream.Position = 0;
-                        ReadFromBinaryGenr(reader, data, streamLength);
-                    }
-                    else
-                    {
-                        // Check if there's a type registry header before GENR
-                        // Format: [size/flags 4B][zeros 8B][typeCount 4B][typeHashes][typeCounts][GENR...]
-                        reader.BaseStream.Position = 0;
-
-                        // Try to detect the header format by scanning for GENR
-                        long genrOffset = FindGenrOffset(data);
-
-                        if (genrOffset > 0)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"[CCDB] Found GENR at offset 0x{genrOffset:X}, parsing header...");
-                            reader.BaseStream.Position = 0;
-                            ReadFromBinaryWithHeader(reader, data, streamLength, genrOffset);
-                        }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine($"[CCDB] Unknown format, magic=0x{magic:X8}, trying pattern scan...");
-                            reader.BaseStream.Position = 0;
-                            ReadFromBinaryUnknown(reader, data, streamLength);
-                        }
-                    }
+                    System.Diagnostics.Debug.WriteLine($"[CCDB] GenrDeserializer: {SpawnProfiles.Count} profiles, {SharedChoices.Count} choices");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[CCDB] GenrDeserializer failed");
                 }
             }
             catch (Exception ex)
@@ -182,6 +143,32 @@ namespace ResourceTypes.CCDB
                 System.Diagnostics.Debug.WriteLine($"[CCDB] Stack trace: {ex.StackTrace}");
             }
         }
+
+        private void ExtractVersionInfo(byte[] data)
+        {
+            // Find GENR and extract version
+            for (int i = 0; i < Math.Min(data.Length - 20, 1024); i++)
+            {
+                if (data[i] == 0x47 && data[i + 1] == 0x45 && data[i + 2] == 0x4E && data[i + 3] == 0x52)
+                {
+                    using (var ms = new MemoryStream(data, i + 4, 16))
+                    using (var reader = new BinaryReader(ms))
+                    {
+                        ushort versionMinor = reader.ReadUInt16();
+                        ushort versionMajor = reader.ReadUInt16();
+                        Version = versionMajor;
+                        HeaderVersion = $"{versionMajor}.{versionMinor}";
+
+                        uint rootType = reader.ReadUInt32();
+                        RootTypeID = $"0x{rootType:X8}";
+                    }
+                    break;
+                }
+            }
+        }
+
+        // NOTE: Old binary parsing methods below are kept for reference but no longer used
+        // ReadFromBinaryGenr, ReadFromBinaryWithHeader, ReadFromBinaryUnknown, etc.
 
         private long FindGenrOffset(byte[] data)
         {

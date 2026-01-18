@@ -621,7 +621,14 @@ namespace ResourceTypes.CCDB
                     ParseSharedChoices(data, _reader, expectedChoices);
                 }
 
-                System.Diagnostics.Debug.WriteLine($"[GENR] Result: {Profiles.Count} profiles, {SharedChoices.Count} choices");
+                // Parse range values
+                int expectedRanges = GetExpectedCount(TYPE_C_RANGE_WITH_CHANCE);
+                if (expectedRanges > 0)
+                {
+                    ParseRangeValues(data, _reader, expectedRanges);
+                }
+
+                System.Diagnostics.Debug.WriteLine($"[GENR] Result: {Profiles.Count} profiles, {SharedChoices.Count} choices, {RangeValues.Count} ranges");
                 return true;
             }
         }
@@ -719,6 +726,62 @@ namespace ResourceTypes.CCDB
                     if (parsed % 500 == 0)
                         System.Diagnostics.Debug.WriteLine($"[GENR] Scan: {parsed} profiles at 0x{reader.BaseStream.Position:X}");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Parse a C_RangeWithChance from the binary stream.
+        /// Structure (12 bytes):
+        /// - m_MinValue: float at offset 0
+        /// - m_MaxValue: float at offset 4
+        /// - m_Chance: float at offset 8
+        /// </summary>
+        private CCDBRange ParseRangeWithChance(BinaryReader reader)
+        {
+            if (reader.BaseStream.Position + 12 > _streamLength)
+                return null;
+
+            float minVal = reader.ReadSingle();
+            float maxVal = reader.ReadSingle();
+            float chance = reader.ReadSingle();
+
+            // Validate
+            if (float.IsNaN(minVal) || float.IsNaN(maxVal) || float.IsNaN(chance))
+                return null;
+            if (float.IsInfinity(minVal) || float.IsInfinity(maxVal) || float.IsInfinity(chance))
+                return null;
+            if (chance < 0 || chance > 1.0f)
+                return null;
+
+            return new CCDBRange
+            {
+                Min = minVal,
+                Max = maxVal,
+                Chance = chance
+            };
+        }
+
+        /// <summary>
+        /// Find and parse range values from m_RangeValues field.
+        /// </summary>
+        public void ParseRangeValues(byte[] data, BinaryReader reader, int expectedCount)
+        {
+            if (expectedCount <= 0) return;
+
+            long fieldPos = FindFieldByName(data, "m_RangeValues", _dataStart);
+
+            if (fieldPos > 0 && TryFindVectorStart(data, fieldPos + 14, expectedCount, out long vectorStart))
+            {
+                reader.BaseStream.Position = vectorStart + 4;
+
+                for (int i = 0; i < expectedCount && reader.BaseStream.Position + 12 <= _streamLength; i++)
+                {
+                    var range = ParseRangeWithChance(reader);
+                    if (range != null)
+                        RangeValues.Add(range);
+                }
+
+                System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {RangeValues.Count} range values");
             }
         }
     }
