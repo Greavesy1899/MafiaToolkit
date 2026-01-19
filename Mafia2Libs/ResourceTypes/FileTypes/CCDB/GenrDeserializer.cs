@@ -769,7 +769,7 @@ namespace ResourceTypes.CCDB
                 uint count2 = reader.ReadUInt32();
                 if (count2 > 100) continue;
 
-                // Skip rangeIndexes data
+                // Skip rangeIndexes data (each ushort is 2 bytes)
                 long afterRangeIndexes = reader.BaseStream.Position + (count2 * 2);
                 if (afterRangeIndexes + 12 > _streamLength) continue;
 
@@ -944,22 +944,35 @@ namespace ResourceTypes.CCDB
                 choice.Tags = new List<CCDBTag>();
 
                 // Dump bytes for first few choices
-                if (_choiceDebugCount < 3)
+                if (_choiceDebugCount < 5)
                 {
-                    byte[] preview = new byte[40];
+                    byte[] preview = new byte[80];
                     long savedPos = reader.BaseStream.Position;
-                    int bytesRead = reader.Read(preview, 0, 40);
+                    int bytesRead = reader.Read(preview, 0, 80);
                     reader.BaseStream.Position = savedPos;
                     System.Diagnostics.Debug.WriteLine($"[GENR] Raw choice #{_choiceDebugCount} at 0x{choiceStart:X}:");
-                    System.Diagnostics.Debug.WriteLine($"  {BitConverter.ToString(preview, 0, Math.Min(bytesRead, 40)).Replace("-", " ")}");
+                    System.Diagnostics.Debug.WriteLine($"  Row 0: {BitConverter.ToString(preview, 0, Math.Min(bytesRead, 40)).Replace("-", " ")}");
+                    if (bytesRead > 40)
+                        System.Diagnostics.Debug.WriteLine($"  Row 1: {BitConverter.ToString(preview, 40, Math.Min(bytesRead - 40, 40)).Replace("-", " ")}");
                 }
 
-                // m_PieceSets: count + uint32 array
+                // GENR vector field format: [flags:4] [type_hash:4] [size:4] [count:4] [elements]
+                // Each field has a 12-byte header before the count+elements
+
+                // m_PieceSets: vector<uint32>
+                long posPieceSets = reader.BaseStream.Position;
+                uint pieceSetsFlags = reader.ReadUInt32();
+                uint pieceSetsType = reader.ReadUInt32();
+                uint pieceSetsSize = reader.ReadUInt32();
                 uint pieceSetsCount = reader.ReadUInt32();
-                if (pieceSetsCount > 500)
+
+                if (_choiceDebugCount < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   @0x{posPieceSets:X}: pieceSets flags={pieceSetsFlags} type=0x{pieceSetsType:X8} size={pieceSetsSize} count={pieceSetsCount}");
+
+                if (pieceSetsCount > 500 || pieceSetsType != 0xC2725761) // TYPE_PIECESET
                 {
-                    if (_choiceDebugCount < 3)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] pieceSetsCount={pieceSetsCount} too large at 0x{choiceStart:X}");
+                    if (_choiceDebugCount < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] pieceSets invalid: count={pieceSetsCount} type=0x{pieceSetsType:X8}");
                     reader.BaseStream.Position = choiceStart;
                     _choiceDebugCount++;
                     return null;
@@ -968,42 +981,77 @@ namespace ResourceTypes.CCDB
                 for (int i = 0; i < pieceSetsCount; i++)
                     choice.PieceSets.Add(reader.ReadUInt32());
 
-                // m_RangeIndexes: count + uint32 array (was thought to be ushort, but data shows uint32)
+                // m_RangeIndexes: vector<unsigned short>
+                long posRangeIdx = reader.BaseStream.Position;
+                uint rangeIdxFlags = reader.ReadUInt32();
+                uint rangeIdxType = reader.ReadUInt32();
+                uint rangeIdxSize = reader.ReadUInt32();
                 uint rangeIndexCount = reader.ReadUInt32();
-                if (rangeIndexCount > 500)
+
+                if (_choiceDebugCount < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   @0x{posRangeIdx:X}: rangeIdx flags={rangeIdxFlags} type=0x{rangeIdxType:X8} size={rangeIdxSize} count={rangeIndexCount}");
+
+                if (rangeIndexCount > 500 || rangeIdxType != 0x73517674) // TYPE_STV
                 {
-                    if (_choiceDebugCount < 3)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] rangeIndexCount={rangeIndexCount} too large");
+                    if (_choiceDebugCount < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] rangeIdx invalid: count={rangeIndexCount} type=0x{rangeIdxType:X8}");
                     reader.BaseStream.Position = choiceStart;
                     _choiceDebugCount++;
                     return null;
                 }
 
-                for (int i = 0; i < rangeIndexCount; i++)
-                    choice.RangeIndexes.Add((ushort)reader.ReadUInt32()); // Read as uint32 but store as ushort
+                // Read ushort elements - stored as 2 bytes each (no padding)
+                // Use size field to determine actual data bytes: size - 4 (for count) = element bytes
+                uint rangeIdxDataBytes = rangeIdxSize - 4;
+                uint actualRangeCount = rangeIdxDataBytes / 2;
+                if (actualRangeCount != rangeIndexCount && _choiceDebugCount < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   rangeIdx count mismatch: header says {rangeIndexCount}, size says {actualRangeCount}");
 
-                // m_Channels: count + uint32 array
-                uint channelsCount = reader.ReadUInt32();
-                if (channelsCount > 500)
+                for (int i = 0; i < actualRangeCount; i++)
                 {
-                    if (_choiceDebugCount < 3)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] channelsCount={channelsCount} too large");
+                    ushort value = reader.ReadUInt16();
+                    choice.RangeIndexes.Add(value);
+                }
+
+                // m_Channels: vector<uint32> - uses TYPE_PIECESET (0xC2725761)
+                long posChannels = reader.BaseStream.Position;
+                uint channelsFlags = reader.ReadUInt32();
+                uint channelsType = reader.ReadUInt32();
+                uint channelsSize = reader.ReadUInt32();
+                uint channelsCount = reader.ReadUInt32();
+
+                if (_choiceDebugCount < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   @0x{posChannels:X}: channels flags={channelsFlags} type=0x{channelsType:X8} size={channelsSize} count={channelsCount}");
+
+                if (channelsCount > 500 || channelsType != 0xC2725761) // TYPE_PIECESET for channels
+                {
+                    if (_choiceDebugCount < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] channels invalid: count={channelsCount} type=0x{channelsType:X8}");
                     reader.BaseStream.Position = choiceStart;
                     _choiceDebugCount++;
                     return null;
                 }
 
                 for (int i = 0; i < channelsCount; i++)
+                {
                     choice.Channels.Add(reader.ReadUInt32());
+                }
+
+                if (_choiceDebugCount < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   After channels: pos=0x{reader.BaseStream.Position:X}");
 
                 // m_Tags: count + map entries
                 // Tag format is complex - map<C_HashNameString, C_TagValueList>
                 // For elements with tags, we'll find m_Flags by scanning backwards from next TYPE_C_CHOICE
+                long posTags = reader.BaseStream.Position;
                 uint tagsCount = reader.ReadUInt32();
+                if (_choiceDebugCount < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   @0x{posTags:X}: tagsCount={tagsCount}");
+
                 if (tagsCount > 100)
                 {
-                    if (_choiceDebugCount < 3)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] tagsCount={tagsCount} too large");
+                    if (_choiceDebugCount < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] tagsCount={tagsCount} too large at 0x{posTags:X}");
                     reader.BaseStream.Position = choiceStart;
                     _choiceDebugCount++;
                     return null;
