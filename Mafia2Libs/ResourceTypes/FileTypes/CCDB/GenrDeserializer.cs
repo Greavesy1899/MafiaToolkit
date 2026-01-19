@@ -18,7 +18,7 @@ namespace ResourceTypes.CCDB
         public const uint TYPE_C_SPAWN_PROFILE = 0x340319E3;
         public const uint TYPE_C_CHOICE = 0x33BA57D7;
         public const uint TYPE_S_WEIGHTED_CHOICE = 0x245A5C55;  // Updated from IDA analysis
-        public const uint TYPE_C_RANGE_WITH_CHANCE = 0x62554927;  // Updated from IDA analysis
+        public const uint TYPE_C_RANGE_WITH_CHANCE = 0x62575527;  // From IDA: C_RangeWithChance type hash = 1649704231
         public const uint TYPE_C_RANGE_WITH_CHANCE_ALT = 0x21232777;  // Alternate hash from GENR files
         public const uint TYPE_C_PIECE_SET = 0x75DD667F;  // Updated from IDA analysis
         public const uint TYPE_C_COMBINABLE_PIECE = 0x42964A0F;
@@ -1983,9 +1983,12 @@ namespace ResourceTypes.CCDB
                 reader.BaseStream.Position = pos + 4;
                 bool looksLikeRangeArray = true;
                 int validRanges = 0;
+                int nonZeroChanceCount = 0;
+                int nonZeroValueCount = 0;
+                HashSet<string> uniqueValues = new HashSet<string>();
 
-                // Sample first 10 to see if they look like valid Ranges
-                for (int i = 0; i < Math.Min(10, (int)actualCount); i++)
+                // Sample first 20 to see if they look like valid Ranges with variance
+                for (int i = 0; i < Math.Min(20, (int)actualCount); i++)
                 {
                     float min = reader.ReadSingle();
                     float max = reader.ReadSingle();
@@ -2009,12 +2012,47 @@ namespace ResourceTypes.CCDB
                         looksLikeRangeArray = false;
                         break;
                     }
+
+                    // Track non-zero values and variance
+                    // For character generation Ranges, meaningful chance is typically 0.1-1.0
+                    if (chance >= 0.05f && chance <= 1.0f) nonZeroChanceCount++;
+                    if (Math.Abs(min) > 0.001f || Math.Abs(max) > 0.001f) nonZeroValueCount++;
+                    uniqueValues.Add($"{min:F4}_{max:F4}_{chance:F4}");
+
                     validRanges++;
                 }
 
+                // Validation requirements:
+                // - At least 5 valid entries
+                // - At least 3 unique value combinations (variance) - rejects arrays of all zeros
+                // - At least 1 entry with non-zero min or max value - confirms it's not all (0, 0, chance)
+                bool hasVariance = uniqueValues.Count >= 3;
+                bool hasNonZeroData = nonZeroValueCount >= 1;
+
+                // Debug: show why this position was accepted or rejected
                 if (looksLikeRangeArray && validRanges >= 5)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[GENR] Found potential Range array: count={actualCount} at 0x{pos:X}");
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Testing Range array at 0x{pos:X}: count={actualCount}, valid={validRanges}, unique={uniqueValues.Count}, nonZeroValue={nonZeroValueCount}");
+
+                    // Show first few values for debugging
+                    reader.BaseStream.Position = pos + 4;
+                    for (int d = 0; d < Math.Min(5, (int)actualCount); d++)
+                    {
+                        float dMin = reader.ReadSingle();
+                        float dMax = reader.ReadSingle();
+                        float dChance = reader.ReadSingle();
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Sample[{d}]: min={dMin:F4}, max={dMax:F4}, chance={dChance:F4}");
+                    }
+
+                    if (!hasVariance || !hasNonZeroData)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   REJECTED: hasVariance={hasVariance}, hasNonZeroData={hasNonZeroData}");
+                    }
+                }
+
+                if (looksLikeRangeArray && validRanges >= 5 && hasVariance && hasNonZeroData)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[GENR] ACCEPTED Range array: count={actualCount} at 0x{pos:X}");
 
                     // Parse all ranges
                     reader.BaseStream.Position = pos + 4;
@@ -2043,8 +2081,80 @@ namespace ResourceTypes.CCDB
                 }
             }
 
+            // PRIORITY 2.5: Pattern-based search - find consecutive valid Range triplets
+            System.Diagnostics.Debug.WriteLine($"[GENR] Count-based search failed, trying pattern-based search for consecutive valid Ranges...");
+
+            // Scan for sequences of 12-byte blocks that look like valid (min, max, chance) triplets
+            for (long scanPos = _dataStart; scanPos < data.Length - expectedCount * 12; scanPos += 4)
+            {
+                reader.BaseStream.Position = scanPos;
+                int consecutiveValid = 0;
+                HashSet<string> scanUniqueValues = new HashSet<string>();
+                int scanNonZeroChance = 0;
+
+                // Check if this position starts a sequence of valid Ranges
+                int scanNonZeroValue = 0;
+                while (reader.BaseStream.Position + 12 <= _streamLength)
+                {
+                    float min = reader.ReadSingle();
+                    float max = reader.ReadSingle();
+                    float chance = reader.ReadSingle();
+
+                    // Valid Range criteria - be generous with bounds
+                    if (float.IsNaN(min) || float.IsNaN(max) || float.IsNaN(chance) ||
+                        float.IsInfinity(min) || float.IsInfinity(max) || float.IsInfinity(chance))
+                        break;
+                    if (chance < 0 || chance > 10.0f)  // Allow higher chance values (could be weights)
+                        break;
+                    if (Math.Abs(min) > 100 || Math.Abs(max) > 100) // Wider bounds
+                        break;
+
+                    consecutiveValid++;
+                    if (chance >= 0.05f && chance <= 1.0f) scanNonZeroChance++;
+                    if (Math.Abs(min) > 0.001f || Math.Abs(max) > 0.001f) scanNonZeroValue++;
+                    scanUniqueValues.Add($"{min:F4}_{max:F4}_{chance:F4}");
+
+                    // If we found enough valid entries with some variance, this is likely the data
+                    // Relaxed: require variance (unique >= 5) and at least some non-zero values
+                    if (consecutiveValid >= expectedCount / 2 && scanUniqueValues.Count >= 5 && scanNonZeroValue >= 1)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Pattern search found {consecutiveValid} valid Ranges at 0x{scanPos:X}");
+
+                        // Reset and parse all
+                        reader.BaseStream.Position = scanPos;
+                        for (int i = 0; i < expectedCount && reader.BaseStream.Position + 12 <= _streamLength; i++)
+                        {
+                            float rMin = reader.ReadSingle();
+                            float rMax = reader.ReadSingle();
+                            float rChance = reader.ReadSingle();
+
+                            // Stop if we hit invalid data (use same relaxed bounds as detection)
+                            if (float.IsNaN(rMin) || float.IsNaN(rMax) || float.IsNaN(rChance) ||
+                                rChance < 0 || rChance > 10.0f || Math.Abs(rMin) > 100 || Math.Abs(rMax) > 100)
+                                break;
+
+                            RangeValues.Add(new CCDBRange { Min = rMin, Max = rMax, Chance = rChance });
+                            if (RangeValues.Count <= 5 || RangeValues.Count % 200 == 0)
+                                System.Diagnostics.Debug.WriteLine($"[GENR] Range[{RangeValues.Count - 1}]: Min={rMin:F4}, Max={rMax:F4}, Chance={rChance:F4}");
+                        }
+
+                        if (RangeValues.Count > expectedCount / 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Pattern search found {RangeValues.Count} ranges");
+                            return;
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Pattern search only got {RangeValues.Count} ranges, continuing...");
+                            RangeValues.Clear();
+                        }
+                        break;
+                    }
+                }
+            }
+
             // PRIORITY 3: Fall back to type marker approach (likely to return 0 results if all are empty refs)
-            System.Diagnostics.Debug.WriteLine($"[GENR] Array search failed, using type marker approach...");
+            System.Diagnostics.Debug.WriteLine($"[GENR] Pattern search failed, using type marker approach...");
 
             uint typeHash = TYPE_C_RANGE_WITH_CHANCE_ALT; // 0x21232777 is the hash seen in GENR files
             byte[] typeHashBytes = BitConverter.GetBytes(typeHash);
