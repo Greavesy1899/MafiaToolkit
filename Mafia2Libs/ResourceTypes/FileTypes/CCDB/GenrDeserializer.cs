@@ -697,7 +697,20 @@ namespace ResourceTypes.CCDB
                 {
                     failures++;
                     if (failures <= 5)
+                    {
                         System.Diagnostics.Debug.WriteLine($"[GENR] Failed to parse choice at 0x{elemStart:X}, failures={failures}");
+
+                        // Dump raw bytes at failure location
+                        long savedDbg = reader.BaseStream.Position;
+                        reader.BaseStream.Position = elemStart;
+                        byte[] failBytes = new byte[Math.Min(80, _streamLength - elemStart)];
+                        int read = reader.Read(failBytes, 0, failBytes.Length);
+                        reader.BaseStream.Position = savedDbg;
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Bytes at failure 0x{elemStart:X}:");
+                        System.Diagnostics.Debug.WriteLine($"  {BitConverter.ToString(failBytes, 0, Math.Min(read, 40)).Replace("-", " ")}");
+                        if (read > 40)
+                            System.Diagnostics.Debug.WriteLine($"  {BitConverter.ToString(failBytes, 40, Math.Min(read - 40, 40)).Replace("-", " ")}");
+                    }
 
                     // Try to recover by searching for next valid element
                     long recovered = TryRecoverNextElement(reader, elemStart);
@@ -734,6 +747,32 @@ namespace ResourceTypes.CCDB
                         match = false;
                 }
                 if (match)
+                {
+                    reader.BaseStream.Position = savedPos;
+                    return pos;
+                }
+            }
+
+            reader.BaseStream.Position = savedPos;
+            return -1;
+        }
+
+        /// <summary>
+        /// Find a field header with format=4 and specified type hash.
+        /// Returns the position of the format field (start of the 12-byte header).
+        /// </summary>
+        private long FindTypeMarkerWithFormat(BinaryReader reader, long searchStart, uint typeHash, int maxSearch)
+        {
+            long savedPos = reader.BaseStream.Position;
+
+            for (long pos = searchStart; pos < Math.Min(searchStart + maxSearch, _streamLength - 12); pos++)
+            {
+                reader.BaseStream.Position = pos;
+                uint format = reader.ReadUInt32();
+                uint type = reader.ReadUInt32();
+
+                // Look for format=4 followed by the type hash
+                if (format == 4 && type == typeHash)
                 {
                     reader.BaseStream.Position = savedPos;
                     return pos;
@@ -986,31 +1025,67 @@ namespace ResourceTypes.CCDB
                 uint rangeIdxFlags = reader.ReadUInt32();
                 uint rangeIdxType = reader.ReadUInt32();
                 uint rangeIdxSize = reader.ReadUInt32();
-                uint rangeIndexCount = reader.ReadUInt32();
 
                 if (_choiceDebugCount < 5)
-                    System.Diagnostics.Debug.WriteLine($"[GENR]   @0x{posRangeIdx:X}: rangeIdx flags={rangeIdxFlags} type=0x{rangeIdxType:X8} size={rangeIdxSize} count={rangeIndexCount}");
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   @0x{posRangeIdx:X}: rangeIdx flags={rangeIdxFlags} type=0x{rangeIdxType:X8} size={rangeIdxSize}");
 
-                if (rangeIndexCount > 500 || rangeIdxType != 0x73517674) // TYPE_STV
+                // Handle format=0 (empty/null field) or invalid header
+                // When format=0 or type doesn't match, try to find next valid header
+                if (rangeIdxFlags == 0 || rangeIdxType != 0x73517674 || rangeIdxSize > 10000)
                 {
                     if (_choiceDebugCount < 5)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] rangeIdx invalid: count={rangeIndexCount} type=0x{rangeIdxType:X8}");
-                    reader.BaseStream.Position = choiceStart;
-                    _choiceDebugCount++;
-                    return null;
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   rangeIdx has unusual format, scanning for next field...");
+
+                    // Seek back to start of suspected header and scan for TYPE_PIECESET (channels)
+                    reader.BaseStream.Position = posRangeIdx;
+                    long channelsPos = FindTypeMarkerWithFormat(reader, posRangeIdx, 0xC2725761, 200);
+
+                    if (channelsPos > posRangeIdx)
+                    {
+                        // Found channels, rangeIdx is empty
+                        reader.BaseStream.Position = channelsPos;
+                        if (_choiceDebugCount < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Found channels at 0x{channelsPos:X}, treating rangeIdx as empty");
+                    }
+                    else
+                    {
+                        // Can't find channels, fail
+                        if (_choiceDebugCount < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR] rangeIdx invalid and no channels found");
+                        reader.BaseStream.Position = choiceStart;
+                        _choiceDebugCount++;
+                        return null;
+                    }
                 }
-
-                // Read ushort elements - stored as 2 bytes each (no padding)
-                // Use size field to determine actual data bytes: size - 4 (for count) = element bytes
-                uint rangeIdxDataBytes = rangeIdxSize - 4;
-                uint actualRangeCount = rangeIdxDataBytes / 2;
-                if (actualRangeCount != rangeIndexCount && _choiceDebugCount < 5)
-                    System.Diagnostics.Debug.WriteLine($"[GENR]   rangeIdx count mismatch: header says {rangeIndexCount}, size says {actualRangeCount}");
-
-                for (int i = 0; i < actualRangeCount; i++)
+                else
                 {
-                    ushort value = reader.ReadUInt16();
-                    choice.RangeIndexes.Add(value);
+                    // Normal rangeIdx field - read the data
+                    uint rangeIndexCount = reader.ReadUInt32();
+
+                    if (_choiceDebugCount < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   rangeIdx count={rangeIndexCount}");
+
+                    if (rangeIndexCount > 500)
+                    {
+                        if (_choiceDebugCount < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR] rangeIdx count={rangeIndexCount} too large");
+                        reader.BaseStream.Position = choiceStart;
+                        _choiceDebugCount++;
+                        return null;
+                    }
+
+                    // Read ushort elements - stored as 2 bytes each (no padding)
+                    // Use size field to determine actual data bytes: size - 4 (for count) = element bytes
+                    uint rangeIdxDataBytes = rangeIdxSize - 4;
+                    uint actualRangeCount = rangeIdxDataBytes / 2;
+                    if (actualRangeCount != rangeIndexCount && _choiceDebugCount < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   rangeIdx count mismatch: header says {rangeIndexCount}, size says {actualRangeCount}");
+
+                    for (int i = 0; i < actualRangeCount; i++)
+                    {
+                        ushort value = reader.ReadUInt16();
+                        choice.RangeIndexes.Add(value);
+                    }
                 }
 
                 // m_Channels: vector<uint32> - uses TYPE_PIECESET (0xC2725761)
@@ -1139,7 +1214,7 @@ namespace ResourceTypes.CCDB
                 if (_choiceDebugCount < 3)
                 {
                     System.Diagnostics.Debug.WriteLine($"[GENR] Parsed choice #{_choiceDebugCount}: " +
-                        $"pieceSets={pieceSetsCount}, rangeIndexes={rangeIndexCount}, " +
+                        $"pieceSets={pieceSetsCount}, rangeIndexes={choice.RangeIndexes.Count}, " +
                         $"channels={channelsCount}, tags={tagsCount}, flags=0x{choice.Flags:X}");
                 }
 
