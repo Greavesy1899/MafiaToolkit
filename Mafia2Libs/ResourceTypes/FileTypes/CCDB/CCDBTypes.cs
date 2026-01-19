@@ -196,30 +196,53 @@ namespace ResourceTypes.CCDB
     }
 
     /// <summary>
-    /// Represents a piece set
-    /// Binary layout (from IDA analysis):
-    /// - m_Id at offset 0 (8 bytes, C_HashName)
-    /// - m_Ranges at offset 8 (array)
-    /// - m_RangeCount at offset 40 (uint)
+    /// Represents a piece set (C_PieceSet from binary)
+    /// Binary layout (from IDA analysis of C_PieceSet at 0x100999a10):
+    /// - Size: 64 bytes
+    /// - m_Weight at offset 4 (uint)
+    /// - m_ChanceToSpawn at offset 8 (float)
+    /// - m_PieceIds at offset 16 (vector of C_HashName)
+    ///
+    /// Note: XML format uses C_Range structure which has different fields (m_Id, m_Ranges, m_RangeCount)
     /// </summary>
     [TypeConverter(typeof(ExpandableObjectConverter)), PropertyClassAllowReflection]
     public class CCDBPieceSet
     {
-        [Category("Identifiers"), Description("Piece set identifier hash")]
+        // Binary C_PieceSet fields (type hash 0x75DD667F)
+        [Category("Binary Data"), Description("Weight value")]
+        public uint Weight { get; set; }
+
+        [Category("Binary Data"), Description("Chance to spawn (0.0-1.0)")]
+        public float ChanceToSpawn { get; set; }
+
+        [Browsable(false)]
+        public List<CCDBHashName> PieceIds { get; set; } = new List<CCDBHashName>();
+
+        [Category("Binary Data"), Description("Piece IDs (hash names)")]
+        public CCDBHashName[] PieceIdsArray
+        {
+            get => PieceIds.ToArray();
+            set => PieceIds = new List<CCDBHashName>(value ?? Array.Empty<CCDBHashName>());
+        }
+
+        // XML C_Range fields (for backwards compatibility with XML parsing)
+        [Category("XML Data"), Description("Piece set identifier hash (from XML C_Range)")]
         public CCDBHashName Id { get; set; } = new CCDBHashName();
 
         [Browsable(false)]
         public List<uint> Ranges { get; set; } = new List<uint>();
 
-        [Category("Data"), Description("Range indices")]
+        [Category("XML Data"), Description("Range indices (from XML C_Range)")]
         public uint[] RangesArray
         {
             get => Ranges.ToArray();
             set => Ranges = new List<uint>(value ?? Array.Empty<uint>());
         }
 
-        [Category("Data"), Description("Range count")]
+        [Category("XML Data"), Description("Range count (from XML C_Range)")]
         public uint RangeCount { get; set; }
+
+        public const int BinarySize = 64;
 
         public static CCDBPieceSet FromXElement(XElement element)
         {
@@ -250,9 +273,32 @@ namespace ResourceTypes.CCDB
             return pieceSet;
         }
 
+        public static CCDBPieceSet FromBinary(BinaryReader reader)
+        {
+            CCDBPieceSet pieceSet = new CCDBPieceSet();
+
+            // Skip first 4 bytes (likely padding or base class)
+            reader.ReadUInt32();
+
+            pieceSet.Weight = reader.ReadUInt32();
+            pieceSet.ChanceToSpawn = reader.ReadSingle();
+
+            // Read vector<C_HashName> at offset 16
+            // Vector format: [data_ptr:8][size:8][capacity:8]
+            // For serialized data, this is typically: [count:4][hash values...]
+            // But we need to handle the GENR vector format
+
+            return pieceSet;
+        }
+
         public override string ToString()
         {
-            return $"PieceSet: {Id} ({Ranges.Count} ranges)";
+            if (PieceIds.Count > 0)
+                return $"PieceSet: Weight={Weight}, Chance={ChanceToSpawn:F2}, {PieceIds.Count} pieces";
+            else if (Ranges.Count > 0 || Id.Hash != 0)
+                return $"PieceSet: {Id} ({Ranges.Count} ranges)";
+            else
+                return "PieceSet (empty)";
         }
     }
 

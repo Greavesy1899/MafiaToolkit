@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace ResourceTypes.CCDB
@@ -16,10 +17,11 @@ namespace ResourceTypes.CCDB
         public const uint TYPE_C_SPAWN_PROFILE_DB = 0x65F20A93;
         public const uint TYPE_C_SPAWN_PROFILE = 0x340319E3;
         public const uint TYPE_C_CHOICE = 0x33BA57D7;
-        public const uint TYPE_S_WEIGHTED_CHOICE = 0x7D5A48C0;
-        public const uint TYPE_C_RANGE_WITH_CHANCE = 0x3E29F1D9;
-        public const uint TYPE_C_PIECE_SET = 0x42694B5F;
+        public const uint TYPE_S_WEIGHTED_CHOICE = 0x245A5C55;  // Updated from IDA analysis
+        public const uint TYPE_C_RANGE_WITH_CHANCE = 0x62554927;  // Updated from IDA analysis
+        public const uint TYPE_C_PIECE_SET = 0x75DD667F;  // Updated from IDA analysis
         public const uint TYPE_C_COMBINABLE_PIECE = 0x42964A0F;
+        public const uint TYPE_C_RANGE = 0x77B959E0;  // New from IDA analysis
 
         private BinaryReader _reader;
         private long _dataStart;
@@ -50,6 +52,7 @@ namespace ResourceTypes.CCDB
                 TYPE_C_RANGE_WITH_CHANCE => "C_RangeWithChance",
                 TYPE_C_PIECE_SET => "C_PieceSet",
                 TYPE_C_COMBINABLE_PIECE => "C_CombinablePiece",
+                TYPE_C_RANGE => "C_Range",
                 _ => $"Unknown_0x{hash:X8}"
             };
         }
@@ -1730,7 +1733,14 @@ namespace ResourceTypes.CCDB
                     ParseRangeValues(data, _reader, expectedRanges);
                 }
 
-                System.Diagnostics.Debug.WriteLine($"[GENR] Result: {Profiles.Count} profiles, {SharedChoices.Count} choices, {RangeValues.Count} ranges");
+                // Parse piece sets
+                int expectedPieceSets = GetExpectedCount(TYPE_C_PIECE_SET);
+                if (expectedPieceSets > 0)
+                {
+                    ParsePieceSets(data, _reader, expectedPieceSets);
+                }
+
+                System.Diagnostics.Debug.WriteLine($"[GENR] Result: {Profiles.Count} profiles, {SharedChoices.Count} choices, {RangeValues.Count} ranges, {PieceSets.Count} piece sets");
                 return true;
             }
         }
@@ -1886,5 +1896,325 @@ namespace ResourceTypes.CCDB
                 System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {RangeValues.Count} range values");
             }
         }
+
+        /// <summary>
+        /// Find and parse piece sets from m_PieceSets field (at C_SpawnProfileDB level).
+        /// Based on IDA analysis of C_SpawnProfileDB::RegisterAttributes:
+        /// - m_PieceSets is at offset 112
+        /// - Type: vector&lt;C_OwningPtr&lt;C_PieceSet&gt;&gt;
+        /// C_PieceSet structure from IDA analysis of C_PieceSet::C_ThisTypeInfo:
+        /// - offset 4: m_Weight (uint)
+        /// - offset 8: m_ChanceToSpawn (float)
+        /// - offset 16: m_PieceIds (vector&lt;C_HashName&gt;)
+        /// </summary>
+        public void ParsePieceSets(byte[] data, BinaryReader reader, int expectedCount)
+        {
+            if (expectedCount <= 0) return;
+
+            System.Diagnostics.Debug.WriteLine($"[GENR] Looking for {expectedCount} C_PieceSet objects using type marker approach...");
+            System.Diagnostics.Debug.WriteLine($"[GENR] TYPE_C_PIECE_SET = 0x{TYPE_C_PIECE_SET:X8}");
+
+            // Use same approach as ParseChoicesArray - find TYPE_C_PIECE_SET markers
+            // Each C_PieceSet in GENR format:
+            // - [4 bytes] TYPE_C_PIECE_SET marker (0x75DD667F)
+            // - [data] m_Weight (uint), m_ChanceToSpawn (float), m_PieceIds (vector<C_HashName>)
+
+            // Find all TYPE_C_PIECE_SET markers in data section
+            byte[] typeHashBytes = BitConverter.GetBytes(TYPE_C_PIECE_SET);
+            List<long> markerPositions = new List<long>();
+
+            for (long pos = _dataStart; pos < data.Length - 4; pos++)
+            {
+                if (data[pos] == typeHashBytes[0] && data[pos + 1] == typeHashBytes[1] &&
+                    data[pos + 2] == typeHashBytes[2] && data[pos + 3] == typeHashBytes[3])
+                {
+                    markerPositions.Add(pos);
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[GENR] Found {markerPositions.Count} TYPE_C_PIECE_SET markers in data section");
+
+            if (markerPositions.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("[GENR] No TYPE_C_PIECE_SET markers found, trying alternate approach...");
+                ScanForPieceSetsFromTypeHash(data, reader, expectedCount);
+                System.Diagnostics.Debug.WriteLine($"[GENR] Final PieceSet count: {PieceSets.Count}");
+                return;
+            }
+
+            // Show first few markers for debugging
+            for (int i = 0; i < Math.Min(5, markerPositions.Count); i++)
+            {
+                DumpBytes(data, markerPositions[i], 48, $"TYPE_C_PIECE_SET marker[{i}]");
+            }
+
+            // Parse each marker
+            int parsed = 0;
+            int failures = 0;
+
+            foreach (var markerPos in markerPositions)
+            {
+                if (parsed >= expectedCount) break;
+                if (failures >= 50) break;
+
+                // Position reader right after the type marker (4 bytes)
+                reader.BaseStream.Position = markerPos + 4;
+
+                var pieceSet = ParsePieceSetAfterMarker(reader);
+
+                if (pieceSet != null)
+                {
+                    PieceSets.Add(pieceSet);
+                    parsed++;
+                    failures = 0;
+
+                    if (parsed <= 5 || parsed % 200 == 0)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{parsed-1}]: Weight={pieceSet.Weight}, Chance={pieceSet.ChanceToSpawn:F2}, PieceIds={pieceSet.PieceIds.Count} at 0x{markerPos:X}");
+                }
+                else
+                {
+                    failures++;
+                    if (failures <= 10)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Failed to parse PieceSet at marker 0x{markerPos:X}");
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[GENR] Final PieceSet count: {PieceSets.Count} (expected {expectedCount})");
+        }
+
+        /// <summary>
+        /// Fallback method to find PieceSets by searching for the type hash in type info.
+        /// </summary>
+        private void ScanForPieceSetsFromTypeHash(byte[] data, BinaryReader reader, int expectedCount)
+        {
+            // Search for the C_PieceSet type hash (0x75DD667F)
+            byte[] typeHashBytes = BitConverter.GetBytes(TYPE_C_PIECE_SET);
+
+            for (long pos = _dataStart; pos < data.Length - 20; pos++)
+            {
+                if (data[pos] == typeHashBytes[0] && data[pos + 1] == typeHashBytes[1] &&
+                    data[pos + 2] == typeHashBytes[2] && data[pos + 3] == typeHashBytes[3])
+                {
+                    // Found type hash, look for count within next 64 bytes
+                    for (int offset = 5; offset <= 64; offset += 4)
+                    {
+                        if (pos + offset + 4 >= data.Length) break;
+
+                        uint potentialCount = BitConverter.ToUInt32(data, (int)(pos + offset));
+                        if (potentialCount == expectedCount)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Found type hash at 0x{pos:X}, count at offset +{offset}");
+
+                            long parseStart = pos + offset + 4;
+                            reader.BaseStream.Position = parseStart;
+
+                            // Try parsing
+                            int parsed = 0;
+                            int failures = 0;
+                            while (parsed < expectedCount && failures < 10 && reader.BaseStream.Position + 16 <= _streamLength)
+                            {
+                                long objStart = reader.BaseStream.Position;
+                                var pieceSet = ParsePieceSetAfterMarker(reader);
+
+                                if (pieceSet != null)
+                                {
+                                    PieceSets.Add(pieceSet);
+                                    parsed++;
+                                    failures = 0;
+                                }
+                                else
+                                {
+                                    failures++;
+                                    reader.BaseStream.Position = objStart + 4;
+                                }
+                            }
+
+                            if (PieceSets.Count > expectedCount / 2)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[GENR] Fallback found {PieceSets.Count} piece sets");
+                                return;
+                            }
+                            else
+                            {
+                                PieceSets.Clear();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Debug helper to dump bytes at a position.
+        /// </summary>
+        private void DumpBytes(byte[] data, long pos, int count, string label)
+        {
+            if (pos < 0) pos = 0;
+            if (pos >= data.Length) return;
+
+            System.Diagnostics.Debug.WriteLine($"[GENR] {label} at 0x{pos:X}:");
+            for (int row = 0; row < count / 16 && pos + row * 16 < data.Length; row++)
+            {
+                long off = pos + row * 16;
+                var sb = new StringBuilder($"  0x{off:X4}: ");
+                for (int i = 0; i < 16 && off + i < data.Length; i++)
+                    sb.Append($"{data[off + i]:X2} ");
+                sb.Append(" | ");
+                for (int i = 0; i < 16 && off + i < data.Length; i++)
+                {
+                    char c = (char)data[off + i];
+                    sb.Append(c >= 32 && c < 127 ? c : '.');
+                }
+                System.Diagnostics.Debug.WriteLine(sb.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Parse a C_PieceSet after finding its TYPE_C_PIECE_SET marker.
+        /// GENR format for class attributes uses: [flags:4][type_hash:4][size:4][data]
+        /// For simple values: data = the value
+        /// For vectors: data = [count:4][elements...]
+        ///
+        /// C_PieceSet attributes from IDA:
+        /// - m_Weight (uint)
+        /// - m_ChanceToSpawn (float)
+        /// - m_PieceIds (vector&lt;C_HashName&gt;)
+        /// </summary>
+        private CCDBPieceSet ParsePieceSetAfterMarker(BinaryReader reader)
+        {
+            long startPos = reader.BaseStream.Position;
+            int debugId = PieceSets.Count;
+
+            try
+            {
+                // Dump bytes for first few
+                if (debugId < 5)
+                {
+                    byte[] preview = new byte[80];
+                    long savedPos = reader.BaseStream.Position;
+                    int bytesRead = reader.Read(preview, 0, 80);
+                    reader.BaseStream.Position = savedPos;
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Raw PieceSet #{debugId} at 0x{startPos:X}:");
+                    System.Diagnostics.Debug.WriteLine($"  Row 0: {BitConverter.ToString(preview, 0, Math.Min(bytesRead, 40)).Replace("-", " ")}");
+                    if (bytesRead > 40)
+                        System.Diagnostics.Debug.WriteLine($"  Row 1: {BitConverter.ToString(preview, 40, Math.Min(bytesRead - 40, 40)).Replace("-", " ")}");
+                }
+
+                var pieceSet = new CCDBPieceSet();
+
+                // m_Weight: [flags:4][type_hash:4][size:4][value:4]
+                uint weightFlags = reader.ReadUInt32();
+                uint weightType = reader.ReadUInt32();
+                uint weightSize = reader.ReadUInt32();
+
+                if (debugId < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   @0x{startPos:X}: m_Weight flags={weightFlags} type=0x{weightType:X8} size={weightSize}");
+
+                // Weight flags should be 4 (value type), size should be 4
+                if (weightFlags != 4 || weightSize != 4)
+                {
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid m_Weight header");
+                    return null;
+                }
+
+                pieceSet.Weight = reader.ReadUInt32();
+
+                // m_ChanceToSpawn: [flags:4][type_hash:4][size:4][value:4]
+                uint chanceFlags = reader.ReadUInt32();
+                uint chanceType = reader.ReadUInt32();
+                uint chanceSize = reader.ReadUInt32();
+
+                if (debugId < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   m_ChanceToSpawn flags={chanceFlags} type=0x{chanceType:X8} size={chanceSize}");
+
+                if (chanceFlags != 4 || chanceSize != 4)
+                {
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid m_ChanceToSpawn header");
+                    return null;
+                }
+
+                pieceSet.ChanceToSpawn = reader.ReadSingle();
+
+                // m_PieceIds: [flags:4][type_hash:4][size:4][count:4][elements...]
+                // OR for empty: [flags=2:4][reference:8][type_hash:4] (no count/elements)
+                uint pieceIdsFlags = reader.ReadUInt32();
+
+                if (debugId < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   m_PieceIds flags={pieceIdsFlags}");
+
+                if (pieceIdsFlags == 2)
+                {
+                    // flags=2 means empty vector or object reference
+                    // Format: [flags=2:4][reference:8][type_hash:4]
+                    reader.ReadUInt64(); // skip 8-byte reference (usually zeros for empty)
+                    reader.ReadUInt32(); // skip 4-byte type hash
+                    // PieceIds remains empty (already initialized empty)
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   m_PieceIds is empty (flags=2 format)");
+                }
+                else if (pieceIdsFlags == 4)
+                {
+                    uint pieceIdsType = reader.ReadUInt32();
+                    uint pieceIdsSize = reader.ReadUInt32();
+
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   m_PieceIds type=0x{pieceIdsType:X8} size={pieceIdsSize}");
+
+                    int pieceIdCount = reader.ReadInt32();
+
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   m_PieceIds count={pieceIdCount}");
+
+                    if (pieceIdCount < 0 || pieceIdCount > 100)
+                    {
+                        if (debugId < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid pieceIdCount: {pieceIdCount}");
+                        return null;
+                    }
+
+                    for (int i = 0; i < pieceIdCount; i++)
+                    {
+                        if (reader.BaseStream.Position + 8 > _streamLength)
+                            return null;
+                        ulong hash = reader.ReadUInt64();
+                        pieceSet.PieceIds.Add(new CCDBHashName { Hash = hash });
+                    }
+                }
+                else
+                {
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid m_PieceIds flags: {pieceIdsFlags}");
+                    return null;
+                }
+
+                // Validate final values
+                if (pieceSet.Weight == 0 || pieceSet.Weight > 100000)
+                {
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid Weight value: {pieceSet.Weight}");
+                    return null;
+                }
+
+                if (pieceSet.ChanceToSpawn < 0 || pieceSet.ChanceToSpawn > 2.0f)
+                {
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid ChanceToSpawn value: {pieceSet.ChanceToSpawn}");
+                    return null;
+                }
+
+                if (debugId < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   Parsed: Weight={pieceSet.Weight}, Chance={pieceSet.ChanceToSpawn:F4}, PieceIds={pieceSet.PieceIds.Count}");
+
+                return pieceSet;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[GENR] Error parsing PieceSet at 0x{startPos:X}: {ex.Message}");
+                return null;
+            }
+        }
+
     }
 }
