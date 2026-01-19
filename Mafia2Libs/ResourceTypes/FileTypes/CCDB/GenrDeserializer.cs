@@ -696,20 +696,25 @@ namespace ResourceTypes.CCDB
                 else
                 {
                     failures++;
-                    if (failures <= 5)
+                    // Always log failures when we've parsed many choices (late failures)
+                    bool isLateFailure = parsed > 5000;
+                    if (failures <= 5 || isLateFailure)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[GENR] Failed to parse choice at 0x{elemStart:X}, failures={failures}");
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Failed to parse choice at 0x{elemStart:X}, failures={failures}, parsed={parsed}");
 
-                        // Dump raw bytes at failure location
+                        // Dump raw bytes at failure location - use 160 bytes for more context
                         long savedDbg = reader.BaseStream.Position;
                         reader.BaseStream.Position = elemStart;
-                        byte[] failBytes = new byte[Math.Min(80, _streamLength - elemStart)];
+                        byte[] failBytes = new byte[Math.Min(160, _streamLength - elemStart)];
                         int read = reader.Read(failBytes, 0, failBytes.Length);
                         reader.BaseStream.Position = savedDbg;
                         System.Diagnostics.Debug.WriteLine($"[GENR] Bytes at failure 0x{elemStart:X}:");
-                        System.Diagnostics.Debug.WriteLine($"  {BitConverter.ToString(failBytes, 0, Math.Min(read, 40)).Replace("-", " ")}");
-                        if (read > 40)
-                            System.Diagnostics.Debug.WriteLine($"  {BitConverter.ToString(failBytes, 40, Math.Min(read - 40, 40)).Replace("-", " ")}");
+                        for (int row = 0; row < 4 && row * 40 < read; row++)
+                        {
+                            int rowStart = row * 40;
+                            int rowLen = Math.Min(40, read - rowStart);
+                            System.Diagnostics.Debug.WriteLine($"  +{rowStart:X2}: {BitConverter.ToString(failBytes, rowStart, rowLen).Replace("-", " ")}");
+                        }
                     }
 
                     // Try to recover by searching for next valid element
@@ -1010,11 +1015,49 @@ namespace ResourceTypes.CCDB
 
                 if (pieceSetsCount > 500 || pieceSetsType != 0xC2725761) // TYPE_PIECESET
                 {
-                    if (_choiceDebugCount < 5)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] pieceSets invalid: count={pieceSetsCount} type=0x{pieceSetsType:X8}");
-                    reader.BaseStream.Position = choiceStart;
-                    _choiceDebugCount++;
-                    return null;
+                    // Check if we hit an element header with format != 4
+                    // Format types from IDA analysis:
+                    // - format=2: skip 8+4=12 bytes after format field
+                    // - format=4: standard value header
+                    // - format=0: type info header follows
+
+                    // Always log format-2 detection for debugging
+                    if (pieceSetsFlags == 2)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Detected format=2 at 0x{choiceStart:X}, pieceSetsType=0x{pieceSetsType:X8}");
+
+                    if (pieceSetsFlags == 2)
+                    {
+                        // Format 2: skip remaining header (we read 16 bytes already, but format-2 has 16 byte header)
+                        // Total format-2 header: [format:4][8 bytes][4 bytes] = 16 bytes, then actual data
+                        long newStart = choiceStart + 16;
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Format=2 element header at 0x{choiceStart:X}, adjusting start to 0x{newStart:X}");
+
+                        reader.BaseStream.Position = newStart;
+                        pieceSetsFlags = reader.ReadUInt32();
+                        pieceSetsType = reader.ReadUInt32();
+                        pieceSetsSize = reader.ReadUInt32();
+                        pieceSetsCount = reader.ReadUInt32();
+
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Adjusted @0x{newStart:X}: pieceSets flags={pieceSetsFlags} type=0x{pieceSetsType:X8} size={pieceSetsSize} count={pieceSetsCount}");
+
+                        // Validate again
+                        if (pieceSetsCount > 500 || pieceSetsType != 0xC2725761)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[GENR] pieceSets still invalid after format-2 adjustment");
+                            reader.BaseStream.Position = choiceStart;
+                            _choiceDebugCount++;
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        bool isLate = SharedChoices.Count > 5000;
+                        if (_choiceDebugCount < 5 || isLate)
+                            System.Diagnostics.Debug.WriteLine($"[GENR] pieceSets invalid at 0x{posPieceSets:X}: flags={pieceSetsFlags} count={pieceSetsCount} type=0x{pieceSetsType:X8} size={pieceSetsSize} (parsed={SharedChoices.Count})");
+                        reader.BaseStream.Position = choiceStart;
+                        _choiceDebugCount++;
+                        return null;
+                    }
                 }
 
                 for (int i = 0; i < pieceSetsCount; i++)
@@ -1050,8 +1093,9 @@ namespace ResourceTypes.CCDB
                     else
                     {
                         // Can't find channels, fail
-                        if (_choiceDebugCount < 5)
-                            System.Diagnostics.Debug.WriteLine($"[GENR] rangeIdx invalid and no channels found");
+                        bool isLate = SharedChoices.Count > 5000;
+                        if (_choiceDebugCount < 5 || isLate)
+                            System.Diagnostics.Debug.WriteLine($"[GENR] rangeIdx invalid at 0x{posRangeIdx:X} and no channels found (flags={rangeIdxFlags} type=0x{rangeIdxType:X8} size={rangeIdxSize}, parsed={SharedChoices.Count})");
                         reader.BaseStream.Position = choiceStart;
                         _choiceDebugCount++;
                         return null;
@@ -1067,8 +1111,9 @@ namespace ResourceTypes.CCDB
 
                     if (rangeIndexCount > 500)
                     {
-                        if (_choiceDebugCount < 5)
-                            System.Diagnostics.Debug.WriteLine($"[GENR] rangeIdx count={rangeIndexCount} too large");
+                        bool isLate = SharedChoices.Count > 5000;
+                        if (_choiceDebugCount < 5 || isLate)
+                            System.Diagnostics.Debug.WriteLine($"[GENR] rangeIdx count={rangeIndexCount} too large at 0x{posRangeIdx:X} (parsed={SharedChoices.Count})");
                         reader.BaseStream.Position = choiceStart;
                         _choiceDebugCount++;
                         return null;
@@ -1100,8 +1145,9 @@ namespace ResourceTypes.CCDB
 
                 if (channelsCount > 500 || channelsType != 0xC2725761) // TYPE_PIECESET for channels
                 {
-                    if (_choiceDebugCount < 5)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] channels invalid: count={channelsCount} type=0x{channelsType:X8}");
+                    bool isLate = SharedChoices.Count > 5000;
+                    if (_choiceDebugCount < 5 || isLate)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] channels invalid at 0x{posChannels:X}: count={channelsCount} type=0x{channelsType:X8} flags={channelsFlags} size={channelsSize} (parsed={SharedChoices.Count})");
                     reader.BaseStream.Position = choiceStart;
                     _choiceDebugCount++;
                     return null;
@@ -1125,8 +1171,9 @@ namespace ResourceTypes.CCDB
 
                 if (tagsCount > 100)
                 {
-                    if (_choiceDebugCount < 5)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] tagsCount={tagsCount} too large at 0x{posTags:X}");
+                    bool isLate = SharedChoices.Count > 5000;
+                    if (_choiceDebugCount < 5 || isLate)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] tagsCount={tagsCount} too large at 0x{posTags:X} (parsed={SharedChoices.Count})");
                     reader.BaseStream.Position = choiceStart;
                     _choiceDebugCount++;
                     return null;
@@ -1171,12 +1218,70 @@ namespace ResourceTypes.CCDB
                         }
                     }
 
-                    // Fallback: try to parse tags with simplified format
-                    // Tag format: each entry is hash(8) + count(4) + values
+                    // Fallback: For the last element(s) where no next TYPE_C_CHOICE exists
+                    // The tag structure is complex and the simplified parsing doesn't work.
+                    // Instead, try to find m_Flags using size-based calculation or accept default.
+
+                    bool isLateChoice = SharedChoices.Count > 5000;
+                    if (isLateChoice)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Last choice fallback: no next TYPE_C_CHOICE marker found, tags={tagsCount} at 0x{tagStart:X}");
+
+                        // For the last choice, try to estimate tag section size using the pattern:
+                        // Each tag entry appears to have variable size based on a size field
+                        // Look for a known pattern that indicates end of tags (e.g., m_Flags is often 0x80000000 or 0x00000000)
+
+                        // Search for a reasonable flags value after tags
+                        // Tags typically end with m_Flags which is often 0x80000000 or small values
+                        long searchStart = tagStart;
+                        long searchEnd = Math.Min(tagStart + 500, _streamLength - 4);
+                        bool foundFlags = false;
+
+                        for (long pos = searchStart; pos < searchEnd; pos += 4)
+                        {
+                            reader.BaseStream.Position = pos;
+                            uint potentialFlags = reader.ReadUInt32();
+
+                            // m_Flags for choices is typically 0x80000000 or 0x00000000
+                            if (potentialFlags == 0x80000000 || potentialFlags == 0x00000000)
+                            {
+                                // Verify this looks like end of tags by checking what follows
+                                // After the last choice, there should be end-of-section data or next section
+                                if (reader.BaseStream.Position + 4 <= _streamLength)
+                                {
+                                    uint nextValue = reader.ReadUInt32();
+                                    // If next value is a reasonable pattern (not another tag hash), this might be flags
+                                    if (nextValue < 0x10000 || nextValue == 0 || (nextValue & 0xFF000000) != 0)
+                                    {
+                                        choice.Flags = potentialFlags;
+                                        System.Diagnostics.Debug.WriteLine($"[GENR] Last choice: found flags=0x{potentialFlags:X} at 0x{pos:X}");
+                                        foundFlags = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!foundFlags)
+                        {
+                            // Accept with default flags if we can't find them
+                            choice.Flags = 0x80000000; // Common default
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Last choice: using default flags=0x80000000");
+                        }
+
+                        // Position reader at end of data for this choice
+                        reader.BaseStream.Position = _streamLength;
+                        _choiceDebugCount++;
+                        return choice;
+                    }
+
+                    // Original fallback for early choices (should rarely hit)
                     for (int i = 0; i < tagsCount; i++)
                     {
                         if (reader.BaseStream.Position + 12 > _streamLength)
                         {
+                            if (_choiceDebugCount < 5)
+                                System.Diagnostics.Debug.WriteLine($"[GENR] Tags overflow at tag {i}/{tagsCount}, pos=0x{reader.BaseStream.Position:X} (parsed={SharedChoices.Count})");
                             reader.BaseStream.Position = choiceStart;
                             _choiceDebugCount++;
                             return null;
@@ -1190,7 +1295,7 @@ namespace ResourceTypes.CCDB
                         if (valueCount > 100)
                         {
                             if (_choiceDebugCount < 3)
-                                System.Diagnostics.Debug.WriteLine($"[GENR] Tag valueCount={valueCount} too large");
+                                System.Diagnostics.Debug.WriteLine($"[GENR] Tag valueCount={valueCount} too large at pos 0x{reader.BaseStream.Position:X} (parsed={SharedChoices.Count})");
                             reader.BaseStream.Position = choiceStart;
                             _choiceDebugCount++;
                             return null;
@@ -1201,6 +1306,8 @@ namespace ResourceTypes.CCDB
 
                         if (reader.BaseStream.Position > _streamLength)
                         {
+                            if (_choiceDebugCount < 5)
+                                System.Diagnostics.Debug.WriteLine($"[GENR] Tag values overflow at tag {i}, valueCount={valueCount}, pos=0x{reader.BaseStream.Position:X} (parsed={SharedChoices.Count})");
                             reader.BaseStream.Position = choiceStart;
                             _choiceDebugCount++;
                             return null;
@@ -1223,8 +1330,9 @@ namespace ResourceTypes.CCDB
             }
             catch (Exception ex)
             {
-                if (_choiceDebugCount < 5)
-                    System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoiceRaw exception at 0x{choiceStart:X}: {ex.Message}");
+                bool isLate = SharedChoices.Count > 5000;
+                if (_choiceDebugCount < 5 || isLate)
+                    System.Diagnostics.Debug.WriteLine($"[GENR] ParseChoiceRaw exception at 0x{choiceStart:X}: {ex.Message} (parsed={SharedChoices.Count})");
                 reader.BaseStream.Position = choiceStart;
                 _choiceDebugCount++;
                 return null;
