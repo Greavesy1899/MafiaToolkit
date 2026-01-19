@@ -1961,8 +1961,90 @@ namespace ResourceTypes.CCDB
                 }
             }
 
-            // PRIORITY 2: Find TYPE_C_RANGE_WITH_CHANCE markers and filter to actual instances
-            System.Diagnostics.Debug.WriteLine($"[GENR] m_RangeValues field not found, using type marker approach...");
+            // PRIORITY 2: Search entire file for count value and try to find contiguous array
+            System.Diagnostics.Debug.WriteLine($"[GENR] Searching for Range count {expectedCount} in entire file...");
+
+            // Search for the count as a uint32 anywhere in the file
+            byte[] countBytes = BitConverter.GetBytes((uint)expectedCount);
+            byte[] countBytesAlt = BitConverter.GetBytes((uint)(expectedCount - 1)); // Sometimes count is off by 1
+
+            for (long pos = _dataStart; pos < data.Length - 4 - expectedCount * 12; pos++)
+            {
+                bool foundCount = (data[pos] == countBytes[0] && data[pos + 1] == countBytes[1] &&
+                                   data[pos + 2] == countBytes[2] && data[pos + 3] == countBytes[3]) ||
+                                  (data[pos] == countBytesAlt[0] && data[pos + 1] == countBytesAlt[1] &&
+                                   data[pos + 2] == countBytesAlt[2] && data[pos + 3] == countBytesAlt[3]);
+
+                if (!foundCount) continue;
+
+                uint actualCount = BitConverter.ToUInt32(data, (int)pos);
+
+                // Check if followed by valid-looking Range data (12 bytes each: 3 floats)
+                reader.BaseStream.Position = pos + 4;
+                bool looksLikeRangeArray = true;
+                int validRanges = 0;
+
+                // Sample first 10 to see if they look like valid Ranges
+                for (int i = 0; i < Math.Min(10, (int)actualCount); i++)
+                {
+                    float min = reader.ReadSingle();
+                    float max = reader.ReadSingle();
+                    float chance = reader.ReadSingle();
+
+                    // Valid Range: min <= max, chance 0-1, values not NaN/Inf
+                    if (float.IsNaN(min) || float.IsNaN(max) || float.IsNaN(chance) ||
+                        float.IsInfinity(min) || float.IsInfinity(max) || float.IsInfinity(chance))
+                    {
+                        looksLikeRangeArray = false;
+                        break;
+                    }
+                    if (chance < 0 || chance > 2.0f)
+                    {
+                        looksLikeRangeArray = false;
+                        break;
+                    }
+                    // Check for reasonable height/weight values (0-10 meters/kg range for character generation)
+                    if (Math.Abs(min) > 100 || Math.Abs(max) > 100)
+                    {
+                        looksLikeRangeArray = false;
+                        break;
+                    }
+                    validRanges++;
+                }
+
+                if (looksLikeRangeArray && validRanges >= 5)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Found potential Range array: count={actualCount} at 0x{pos:X}");
+
+                    // Parse all ranges
+                    reader.BaseStream.Position = pos + 4;
+                    for (int i = 0; i < actualCount && reader.BaseStream.Position + 12 <= _streamLength; i++)
+                    {
+                        float min = reader.ReadSingle();
+                        float max = reader.ReadSingle();
+                        float chance = reader.ReadSingle();
+
+                        RangeValues.Add(new CCDBRange { Min = min, Max = max, Chance = chance });
+
+                        if (i < 5 || i % 200 == 0)
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Range[{i}]: Min={min:F4}, Max={max:F4}, Chance={chance:F4}");
+                    }
+
+                    if (RangeValues.Count > expectedCount / 2)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {RangeValues.Count} ranges from array at 0x{pos:X}");
+                        return;
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Only got {RangeValues.Count} ranges, continuing search...");
+                        RangeValues.Clear();
+                    }
+                }
+            }
+
+            // PRIORITY 3: Fall back to type marker approach (likely to return 0 results if all are empty refs)
+            System.Diagnostics.Debug.WriteLine($"[GENR] Array search failed, using type marker approach...");
 
             uint typeHash = TYPE_C_RANGE_WITH_CHANCE_ALT; // 0x21232777 is the hash seen in GENR files
             byte[] typeHashBytes = BitConverter.GetBytes(typeHash);
@@ -2050,8 +2132,16 @@ namespace ResourceTypes.CCDB
             {
                 uint firstFlags = reader.ReadUInt32();
 
+                // Skip non-standard flags (likely TYPE INFO schema definitions)
+                // Valid instance flags are 0, 2, or 4
+                if (firstFlags != 0 && firstFlags != 2 && firstFlags != 4)
+                {
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Unknown flags={firstFlags} for C_RangeWithChance at 0x{startPos:X}");
+                    return null;
+                }
+
                 // flags=0 means inline object marker - not a real Range instance
-                // This appears in the data stream as part of other structures
                 if (firstFlags == 0)
                 {
                     if (debugId < 5)
@@ -2059,75 +2149,26 @@ namespace ResourceTypes.CCDB
                     return null;
                 }
 
-                // flags=2 means reference/inline format
-                // Format: [flags:4][8-byte ref]
-                // For C_RangeWithChance with ref=0, values default to 0 OR there's inline data
+                // flags=2 means reference format: [flags:4][ref:8]
+                // When ref=0, it's an empty/null reference - NO DATA follows
                 if (firstFlags == 2)
                 {
                     ulong refValue = reader.ReadUInt64();
 
-                    // If ref is 0, check if there's inline data or use defaults
+                    // ref=0 means empty/null reference
+                    // The bytes after belong to the NEXT field, not this Range
                     if (refValue == 0)
                     {
-                        // Peek at all potential values to determine how many are actually inline
-                        long peekPos = reader.BaseStream.Position;
-                        uint raw1 = reader.ReadUInt32();  // Potential min (or next token flags)
-                        uint raw2 = reader.ReadUInt32();  // Potential max (or next token type/flags)
-                        uint raw3 = reader.ReadUInt32();  // Potential chance (or next token data)
-                        reader.BaseStream.Position = peekPos;  // Reset position
-
-                        // Check if raw1 is flags (0, 2, 4) - if so, there's NO inline data
-                        if ((raw1 == 0 || raw1 == 2 || raw1 == 4) && raw2 > 0x01000000)
-                        {
-                            // No inline data - use default values
-                            if (debugId < 5)
-                                System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, ref=0): no inline data, defaults 0,0,0");
-                            return new CCDBRange { Min = 0, Max = 0, Chance = 0 };
-                        }
-
-                        // raw1 is likely a float - read it
-                        float minValue = reader.ReadSingle();
-
-                        // Check if the NEXT uint (raw2) is flags for a new token
-                        // Flags are small values (0, 2, 4), type hashes are large (>0x01000000)
-                        bool nextIsToken = (raw2 == 0 || raw2 == 2 || raw2 == 4) && raw3 > 0x01000000;
-
-                        if (nextIsToken)
-                        {
-                            // Only 1 float was inline - this is the "value" for the Range
-                            // Interpret as: min=value, max=value, chance=1.0 (100%)
-                            if (debugId < 5)
-                                System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, single): value={minValue:F4} -> min=max={minValue:F4}, chance=1.0");
-                            return new CCDBRange { Min = minValue, Max = minValue, Chance = 1.0f };
-                        }
-
-                        // More than 1 float - read max
-                        float maxValue = reader.ReadSingle();
-
-                        // Check if the THIRD value (raw3) is flags for a new token
-                        bool thirdIsToken = (raw3 == 0 || raw3 == 2 || raw3 == 4);
-
-                        if (thirdIsToken)
-                        {
-                            // Only 2 floats were inline
-                            if (debugId < 5)
-                                System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, double): min={minValue:F4}, max={maxValue:F4}, chance=1.0");
-                            return new CCDBRange { Min = minValue, Max = maxValue, Chance = 1.0f };
-                        }
-
-                        // All 3 floats are inline
-                        float chance = reader.ReadSingle();
-
                         if (debugId < 5)
-                            System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, full): min={minValue:F4}, max={maxValue:F4}, chance={chance:F4}");
-                        return new CCDBRange { Min = minValue, Max = maxValue, Chance = chance };
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, ref=0): empty reference, skipping");
+                        return null; // Skip empty references - they don't contain valid Range data
                     }
                     else
                     {
-                        // Non-zero ref - values are stored elsewhere, use defaults for now
+                        // Non-zero ref - values are stored elsewhere (not supported)
                         if (debugId < 5)
-                            System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, ref=0x{refValue:X}): external ref, using defaults");
-                        return new CCDBRange { Min = 0, Max = 0, Chance = 0 };
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, ref=0x{refValue:X}): external ref, skipping");
+                        return null;
                     }
                 }
 
