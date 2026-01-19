@@ -19,6 +19,7 @@ namespace ResourceTypes.CCDB
         public const uint TYPE_C_CHOICE = 0x33BA57D7;
         public const uint TYPE_S_WEIGHTED_CHOICE = 0x245A5C55;  // Updated from IDA analysis
         public const uint TYPE_C_RANGE_WITH_CHANCE = 0x62554927;  // Updated from IDA analysis
+        public const uint TYPE_C_RANGE_WITH_CHANCE_ALT = 0x21232777;  // Alternate hash from GENR files
         public const uint TYPE_C_PIECE_SET = 0x75DD667F;  // Updated from IDA analysis
         public const uint TYPE_C_COMBINABLE_PIECE = 0x42964A0F;
         public const uint TYPE_C_RANGE = 0x77B959E0;  // New from IDA analysis
@@ -50,6 +51,7 @@ namespace ResourceTypes.CCDB
                 TYPE_C_CHOICE => "C_Choice",
                 TYPE_S_WEIGHTED_CHOICE => "S_WeightedChoice",
                 TYPE_C_RANGE_WITH_CHANCE => "C_RangeWithChance",
+                TYPE_C_RANGE_WITH_CHANCE_ALT => "C_RangeWithChance",
                 TYPE_C_PIECE_SET => "C_PieceSet",
                 TYPE_C_COMBINABLE_PIECE => "C_CombinablePiece",
                 TYPE_C_RANGE => "C_Range",
@@ -1726,8 +1728,10 @@ namespace ResourceTypes.CCDB
                     ParseSharedChoices(data, _reader, expectedChoices);
                 }
 
-                // Parse range values
+                // Parse range values - try both type hashes (different game versions use different hashes)
                 int expectedRanges = GetExpectedCount(TYPE_C_RANGE_WITH_CHANCE);
+                if (expectedRanges == 0)
+                    expectedRanges = GetExpectedCount(TYPE_C_RANGE_WITH_CHANCE_ALT);
                 if (expectedRanges > 0)
                 {
                     ParseRangeValues(data, _reader, expectedRanges);
@@ -1874,26 +1878,334 @@ namespace ResourceTypes.CCDB
         }
 
         /// <summary>
-        /// Find and parse range values from m_RangeValues field.
+        /// Find and parse range values from m_RangeValues field in C_SpawnProfileDB.
+        /// C_RangeWithChance structure from IDA:
+        /// - m_MinValue (float) at offset 0
+        /// - m_MaxValue (float) at offset 4
+        /// - m_Chance (float) at offset 8
+        /// Total size: 12 bytes
         /// </summary>
         public void ParseRangeValues(byte[] data, BinaryReader reader, int expectedCount)
         {
             if (expectedCount <= 0) return;
 
+            System.Diagnostics.Debug.WriteLine($"[GENR] Looking for {expectedCount} C_RangeWithChance objects...");
+
+            // PRIORITY 1: Find the m_RangeValues field directly (this is where the actual array lives)
             long fieldPos = FindFieldByName(data, "m_RangeValues", _dataStart);
-
-            if (fieldPos > 0 && TryFindVectorStart(data, fieldPos + 14, expectedCount, out long vectorStart))
+            if (fieldPos > 0)
             {
-                reader.BaseStream.Position = vectorStart + 4;
+                System.Diagnostics.Debug.WriteLine($"[GENR] Found m_RangeValues field at 0x{fieldPos:X}");
 
-                for (int i = 0; i < expectedCount && reader.BaseStream.Position + 12 <= _streamLength; i++)
+                // After field name, look for the vector header
+                // Format: [flags:4][type:4][size:4][count:4][elements...]
+                reader.BaseStream.Position = fieldPos + 14; // Skip "m_RangeValues" (13 chars + null or length byte)
+
+                // Search for the vector start pattern within 200 bytes
+                long searchEnd = Math.Min(reader.BaseStream.Position + 200, _streamLength - 20);
+                bool foundArray = false;
+
+                while (reader.BaseStream.Position < searchEnd)
                 {
-                    var range = ParseRangeWithChance(reader);
-                    if (range != null)
-                        RangeValues.Add(range);
+                    long testPos = reader.BaseStream.Position;
+                    uint flags = reader.ReadUInt32();
+
+                    // Vector field typically has flags=4
+                    if (flags == 4)
+                    {
+                        uint vectorTypeHash = reader.ReadUInt32();
+                        uint size = reader.ReadUInt32();
+
+                        // Check if size looks reasonable for an array of Ranges
+                        // Each Range could be 12 bytes (3 floats) packed, or larger with headers
+                        if (size > 0 && size < 500000)
+                        {
+                            // Try to find count - might be in the size field or after
+                            uint possibleCount = size / 12; // If packed 12-byte elements
+
+                            // Or the count might be the next uint
+                            long afterHeader = reader.BaseStream.Position;
+                            uint explicitCount = reader.ReadUInt32();
+
+                            // Check if explicit count matches expected
+                            if (explicitCount == expectedCount || (explicitCount > 0 && explicitCount <= expectedCount + 10))
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[GENR] Found RangeValues array: count={explicitCount} at 0x{afterHeader:X}");
+
+                                // Parse the array elements
+                                for (int i = 0; i < explicitCount && reader.BaseStream.Position + 12 <= _streamLength; i++)
+                                {
+                                    var range = ParseRangeElement(reader, i);
+                                    if (range != null)
+                                    {
+                                        RangeValues.Add(range);
+                                        if (i < 5 || i % 200 == 0)
+                                            System.Diagnostics.Debug.WriteLine($"[GENR] Range[{i}]: Min={range.Min:F2}, Max={range.Max:F2}, Chance={range.Chance:F2}");
+                                    }
+                                }
+                                foundArray = true;
+                                break;
+                            }
+
+                            reader.BaseStream.Position = afterHeader; // Reset and continue searching
+                        }
+                    }
+
+                    reader.BaseStream.Position = testPos + 1; // Move forward and try again
                 }
 
-                System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {RangeValues.Count} range values");
+                if (foundArray)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {RangeValues.Count} ranges from m_RangeValues field");
+                    return;
+                }
+            }
+
+            // PRIORITY 2: Find TYPE_C_RANGE_WITH_CHANCE markers and filter to actual instances
+            System.Diagnostics.Debug.WriteLine($"[GENR] m_RangeValues field not found, using type marker approach...");
+
+            uint typeHash = TYPE_C_RANGE_WITH_CHANCE_ALT; // 0x21232777 is the hash seen in GENR files
+            byte[] typeHashBytes = BitConverter.GetBytes(typeHash);
+            List<long> markerPositions = new List<long>();
+
+            for (long pos = _dataStart; pos < data.Length - 4; pos++)
+            {
+                if (data[pos] == typeHashBytes[0] && data[pos + 1] == typeHashBytes[1] &&
+                    data[pos + 2] == typeHashBytes[2] && data[pos + 3] == typeHashBytes[3])
+                {
+                    markerPositions.Add(pos);
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[GENR] Found {markerPositions.Count} TYPE_C_RANGE_WITH_CHANCE markers");
+
+            if (markerPositions.Count == 0) return;
+
+            // Show first few markers for debugging
+            for (int i = 0; i < Math.Min(5, markerPositions.Count); i++)
+            {
+                DumpBytes(data, markerPositions[i], 48, $"TYPE_C_RANGE_WITH_CHANCE marker[{i}]");
+            }
+
+            // Parse each marker
+            HashSet<string> seenValues = new HashSet<string>(); // Track unique values
+            foreach (var markerPos in markerPositions)
+            {
+                reader.BaseStream.Position = markerPos + 4; // Skip type hash
+                var range = ParseRangeAfterMarker(reader, RangeValues.Count);
+                if (range != null)
+                {
+                    // Track unique values to detect if we're parsing duplicates
+                    string key = $"{range.Min:F4}_{range.Max:F4}_{range.Chance:F4}";
+                    seenValues.Add(key);
+
+                    RangeValues.Add(range);
+                    if (RangeValues.Count <= 5 || RangeValues.Count % 200 == 0)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Range[{RangeValues.Count - 1}]: Min={range.Min:F2}, Max={range.Max:F2}, Chance={range.Chance:F2} at 0x{markerPos:X}");
+                }
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[GENR] Final Range count: {RangeValues.Count} (expected {expectedCount}), unique values: {seenValues.Count}");
+
+            // If we have very few unique values compared to total, warn about possible duplicate parsing
+            if (seenValues.Count < RangeValues.Count / 10 && RangeValues.Count > 100)
+            {
+                System.Diagnostics.Debug.WriteLine($"[GENR] WARNING: Only {seenValues.Count} unique Range values out of {RangeValues.Count} - may be parsing duplicates!");
+            }
+        }
+
+        /// <summary>
+        /// Parse a single C_RangeWithChance element from a contiguous array.
+        /// Elements are stored as: [min:float][max:float][chance:float] = 12 bytes each
+        /// </summary>
+        private CCDBRange ParseRangeElement(BinaryReader reader, int index)
+        {
+            try
+            {
+                // In a packed array, elements are just 3 consecutive floats
+                float min = reader.ReadSingle();
+                float max = reader.ReadSingle();
+                float chance = reader.ReadSingle();
+
+                return new CCDBRange { Min = min, Max = max, Chance = chance };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Parse a C_RangeWithChance after its type marker.
+        /// The format varies based on flags:
+        /// - flags=0: Inline object reference, skip (not a real instance)
+        /// - flags=2: Reference format [flags:4][ref:8] - values are 0,0,0 if ref=0, or check for inline data
+        /// - flags=4: Value format [flags:4][type:4][size:4][value] for each field
+        /// </summary>
+        private CCDBRange ParseRangeAfterMarker(BinaryReader reader, int debugId)
+        {
+            long startPos = reader.BaseStream.Position;
+
+            try
+            {
+                uint firstFlags = reader.ReadUInt32();
+
+                // flags=0 means inline object marker - not a real Range instance
+                // This appears in the data stream as part of other structures
+                if (firstFlags == 0)
+                {
+                    if (debugId < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR]   Skipping flags=0 Range marker (inline reference)");
+                    return null;
+                }
+
+                // flags=2 means reference/inline format
+                // Format: [flags:4][8-byte ref]
+                // For C_RangeWithChance with ref=0, values default to 0 OR there's inline data
+                if (firstFlags == 2)
+                {
+                    ulong refValue = reader.ReadUInt64();
+
+                    // If ref is 0, check if there's inline data or use defaults
+                    if (refValue == 0)
+                    {
+                        // Peek at all potential values to determine how many are actually inline
+                        long peekPos = reader.BaseStream.Position;
+                        uint raw1 = reader.ReadUInt32();  // Potential min (or next token flags)
+                        uint raw2 = reader.ReadUInt32();  // Potential max (or next token type/flags)
+                        uint raw3 = reader.ReadUInt32();  // Potential chance (or next token data)
+                        reader.BaseStream.Position = peekPos;  // Reset position
+
+                        // Check if raw1 is flags (0, 2, 4) - if so, there's NO inline data
+                        if ((raw1 == 0 || raw1 == 2 || raw1 == 4) && raw2 > 0x01000000)
+                        {
+                            // No inline data - use default values
+                            if (debugId < 5)
+                                System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, ref=0): no inline data, defaults 0,0,0");
+                            return new CCDBRange { Min = 0, Max = 0, Chance = 0 };
+                        }
+
+                        // raw1 is likely a float - read it
+                        float minValue = reader.ReadSingle();
+
+                        // Check if the NEXT uint (raw2) is flags for a new token
+                        // Flags are small values (0, 2, 4), type hashes are large (>0x01000000)
+                        bool nextIsToken = (raw2 == 0 || raw2 == 2 || raw2 == 4) && raw3 > 0x01000000;
+
+                        if (nextIsToken)
+                        {
+                            // Only 1 float was inline - this is the "value" for the Range
+                            // Interpret as: min=value, max=value, chance=1.0 (100%)
+                            if (debugId < 5)
+                                System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, single): value={minValue:F4} -> min=max={minValue:F4}, chance=1.0");
+                            return new CCDBRange { Min = minValue, Max = minValue, Chance = 1.0f };
+                        }
+
+                        // More than 1 float - read max
+                        float maxValue = reader.ReadSingle();
+
+                        // Check if the THIRD value (raw3) is flags for a new token
+                        bool thirdIsToken = (raw3 == 0 || raw3 == 2 || raw3 == 4);
+
+                        if (thirdIsToken)
+                        {
+                            // Only 2 floats were inline
+                            if (debugId < 5)
+                                System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, double): min={minValue:F4}, max={maxValue:F4}, chance=1.0");
+                            return new CCDBRange { Min = minValue, Max = maxValue, Chance = 1.0f };
+                        }
+
+                        // All 3 floats are inline
+                        float chance = reader.ReadSingle();
+
+                        if (debugId < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, full): min={minValue:F4}, max={maxValue:F4}, chance={chance:F4}");
+                        return new CCDBRange { Min = minValue, Max = maxValue, Chance = chance };
+                    }
+                    else
+                    {
+                        // Non-zero ref - values are stored elsewhere, use defaults for now
+                        if (debugId < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=2, ref=0x{refValue:X}): external ref, using defaults");
+                        return new CCDBRange { Min = 0, Max = 0, Chance = 0 };
+                    }
+                }
+
+                // flags=4 means value format with full headers
+                if (firstFlags == 4)
+                {
+                    uint minType = reader.ReadUInt32();
+                    uint minSize = reader.ReadUInt32();
+
+                    if (minSize != 4)
+                    {
+                        if (debugId < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid m_MinValue size={minSize}");
+                        return null;
+                    }
+
+                    float minValue = reader.ReadSingle();
+
+                    // m_MaxValue
+                    uint maxFlags = reader.ReadUInt32();
+                    uint maxType = reader.ReadUInt32();
+                    uint maxSize = reader.ReadUInt32();
+
+                    if (maxFlags != 4 || maxSize != 4)
+                    {
+                        if (debugId < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid m_MaxValue header (flags={maxFlags}, size={maxSize})");
+                        return null;
+                    }
+
+                    float maxValue = reader.ReadSingle();
+
+                    // m_Chance
+                    uint chanceFlags = reader.ReadUInt32();
+                    uint chanceType = reader.ReadUInt32();
+                    uint chanceSize = reader.ReadUInt32();
+
+                    if (chanceFlags != 4 || chanceSize != 4)
+                    {
+                        if (debugId < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid m_Chance header (flags={chanceFlags}, size={chanceSize})");
+                        return null;
+                    }
+
+                    float chance = reader.ReadSingle();
+
+                    // Validate
+                    if (minValue >= -10000 && minValue <= 10000 &&
+                        maxValue >= -10000 && maxValue <= 10000 &&
+                        chance >= 0 && chance <= 2.0f)
+                    {
+                        if (debugId < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Range (flags=4): min={minValue:F2}, max={maxValue:F2}, chance={chance:F2}");
+
+                        return new CCDBRange
+                        {
+                            Min = minValue,
+                            Max = maxValue,
+                            Chance = chance
+                        };
+                    }
+                    else
+                    {
+                        if (debugId < 5)
+                            System.Diagnostics.Debug.WriteLine($"[GENR]   Invalid range values (flags=4): min={minValue}, max={maxValue}, chance={chance}");
+                        return null;
+                    }
+                }
+
+                // Unknown flags - skip this marker
+                if (debugId < 5)
+                    System.Diagnostics.Debug.WriteLine($"[GENR]   Unknown flags={firstFlags} for C_RangeWithChance at 0x{startPos:X}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[GENR] Error parsing Range at 0x{startPos:X}: {ex.Message}");
+                return null;
             }
         }
 
@@ -1907,19 +2219,127 @@ namespace ResourceTypes.CCDB
         /// - offset 8: m_ChanceToSpawn (float)
         /// - offset 16: m_PieceIds (vector&lt;C_HashName&gt;)
         /// </summary>
+        /// <summary>
+        /// Parse PieceSets from m_PieceSets field in C_SpawnProfileDB.
+        /// C_SpawnProfileDB has m_PieceSets: vector&lt;C_OwningPtr&lt;C_PieceSet&gt;&gt; at offset 112
+        /// Each C_PieceSet has:
+        /// - m_Weight (uint) at offset 4
+        /// - m_ChanceToSpawn (float) at offset 8
+        /// - m_PieceIds (vector&lt;C_HashName&gt;) at offset 16
+        /// </summary>
         public void ParsePieceSets(byte[] data, BinaryReader reader, int expectedCount)
         {
             if (expectedCount <= 0) return;
 
-            System.Diagnostics.Debug.WriteLine($"[GENR] Looking for {expectedCount} C_PieceSet objects using type marker approach...");
+            System.Diagnostics.Debug.WriteLine($"[GENR] Looking for {expectedCount} C_PieceSet objects...");
+
+            // PRIORITY 1: Find the m_PieceSets field directly
+            long fieldPos = FindFieldByName(data, "m_PieceSets", _dataStart);
+            if (fieldPos > 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[GENR] Found m_PieceSets field at 0x{fieldPos:X}");
+
+                // After field name, look for the vector header
+                // Format: [type_hash:4][flags:1][size:4] or [flags:4][type_hash:4][size:4][count:4]
+                reader.BaseStream.Position = fieldPos + 1 + 11; // Skip length byte + "m_PieceSets"
+
+                // Search for the vector start pattern within 200 bytes
+                long searchEnd = Math.Min(reader.BaseStream.Position + 200, _streamLength - 20);
+                bool foundArray = false;
+
+                // Dump bytes for debugging
+                if (reader.BaseStream.Position + 64 < _streamLength)
+                {
+                    long dumpPos = reader.BaseStream.Position;
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Bytes after m_PieceSets field at 0x{dumpPos:X}:");
+                    for (int row = 0; row < 4; row++)
+                    {
+                        long off = dumpPos + row * 16;
+                        if (off + 16 > _streamLength) break;
+                        reader.BaseStream.Position = off;
+                        byte[] rowData = reader.ReadBytes(16);
+                        System.Diagnostics.Debug.WriteLine($"  0x{off:X4}: {BitConverter.ToString(rowData).Replace("-", " ")}");
+                    }
+                    reader.BaseStream.Position = dumpPos;
+                }
+
+                while (reader.BaseStream.Position < searchEnd)
+                {
+                    long testPos = reader.BaseStream.Position;
+                    uint flags = reader.ReadUInt32();
+
+                    // Vector field typically has flags=4
+                    if (flags == 4)
+                    {
+                        uint typeHash = reader.ReadUInt32();
+                        uint size = reader.ReadUInt32();
+
+                        System.Diagnostics.Debug.WriteLine($"[GENR] Testing vector at 0x{testPos:X}: flags={flags} type=0x{typeHash:X8} size={size}");
+
+                        if (size > 0 && size < 5000000)
+                        {
+                            // The count should be the next uint
+                            long afterHeader = reader.BaseStream.Position;
+                            uint explicitCount = reader.ReadUInt32();
+
+                            System.Diagnostics.Debug.WriteLine($"[GENR] Potential count at 0x{afterHeader:X}: {explicitCount}");
+
+                            if (explicitCount == expectedCount || (explicitCount > 0 && explicitCount <= expectedCount + 10))
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[GENR] Found PieceSets array: count={explicitCount} at 0x{afterHeader:X}");
+
+                                // Parse the array elements
+                                int parsed = 0;
+                                int failures = 0;
+
+                                while (parsed < explicitCount && failures < 20 && reader.BaseStream.Position + 16 <= _streamLength)
+                                {
+                                    var pieceSet = ParsePieceSetFromArray(reader, parsed);
+                                    if (pieceSet != null)
+                                    {
+                                        PieceSets.Add(pieceSet);
+                                        parsed++;
+                                        failures = 0;
+
+                                        if (parsed <= 5 || parsed % 500 == 0)
+                                            System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{parsed-1}]: Weight={pieceSet.Weight}, Chance={pieceSet.ChanceToSpawn:F2}, PieceIds={pieceSet.PieceIds.Count}");
+                                    }
+                                    else
+                                    {
+                                        failures++;
+                                    }
+                                }
+
+                                if (PieceSets.Count > expectedCount / 2)
+                                {
+                                    foundArray = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"[GENR] Only parsed {PieceSets.Count}, continuing search...");
+                                    PieceSets.Clear();
+                                }
+                            }
+
+                            reader.BaseStream.Position = afterHeader;
+                        }
+                    }
+
+                    reader.BaseStream.Position = testPos + 1;
+                }
+
+                if (foundArray)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Parsed {PieceSets.Count} piece sets from m_PieceSets field");
+                    return;
+                }
+            }
+
+            // PRIORITY 2: Fall back to type marker approach
+            System.Diagnostics.Debug.WriteLine($"[GENR] m_PieceSets field not found, using type marker approach...");
             System.Diagnostics.Debug.WriteLine($"[GENR] TYPE_C_PIECE_SET = 0x{TYPE_C_PIECE_SET:X8}");
 
-            // Use same approach as ParseChoicesArray - find TYPE_C_PIECE_SET markers
-            // Each C_PieceSet in GENR format:
-            // - [4 bytes] TYPE_C_PIECE_SET marker (0x75DD667F)
-            // - [data] m_Weight (uint), m_ChanceToSpawn (float), m_PieceIds (vector<C_HashName>)
-
-            // Find all TYPE_C_PIECE_SET markers in data section
             byte[] typeHashBytes = BitConverter.GetBytes(TYPE_C_PIECE_SET);
             List<long> markerPositions = new List<long>();
 
@@ -1948,38 +2368,196 @@ namespace ResourceTypes.CCDB
                 DumpBytes(data, markerPositions[i], 48, $"TYPE_C_PIECE_SET marker[{i}]");
             }
 
-            // Parse each marker
-            int parsed = 0;
-            int failures = 0;
+            // Parse each marker, tracking unique values
+            int parsedCount = 0;
+            int failureCount = 0;
+            HashSet<string> seenValues = new HashSet<string>();
 
             foreach (var markerPos in markerPositions)
             {
-                if (parsed >= expectedCount) break;
-                if (failures >= 50) break;
+                if (parsedCount >= expectedCount) break;
+                if (failureCount >= 50) break;
 
-                // Position reader right after the type marker (4 bytes)
                 reader.BaseStream.Position = markerPos + 4;
 
                 var pieceSet = ParsePieceSetAfterMarker(reader);
 
                 if (pieceSet != null)
                 {
-                    PieceSets.Add(pieceSet);
-                    parsed++;
-                    failures = 0;
+                    string key = $"{pieceSet.Weight}_{pieceSet.ChanceToSpawn:F4}_{pieceSet.PieceIds.Count}";
+                    seenValues.Add(key);
 
-                    if (parsed <= 5 || parsed % 200 == 0)
-                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{parsed-1}]: Weight={pieceSet.Weight}, Chance={pieceSet.ChanceToSpawn:F2}, PieceIds={pieceSet.PieceIds.Count} at 0x{markerPos:X}");
+                    PieceSets.Add(pieceSet);
+                    parsedCount++;
+                    failureCount = 0;
+
+                    if (parsedCount <= 5 || parsedCount % 200 == 0)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{parsedCount-1}]: Weight={pieceSet.Weight}, Chance={pieceSet.ChanceToSpawn:F2}, PieceIds={pieceSet.PieceIds.Count} at 0x{markerPos:X}");
                 }
                 else
                 {
-                    failures++;
-                    if (failures <= 10)
+                    failureCount++;
+                    if (failureCount <= 10)
                         System.Diagnostics.Debug.WriteLine($"[GENR] Failed to parse PieceSet at marker 0x{markerPos:X}");
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine($"[GENR] Final PieceSet count: {PieceSets.Count} (expected {expectedCount})");
+            System.Diagnostics.Debug.WriteLine($"[GENR] Final PieceSet count: {PieceSets.Count} (expected {expectedCount}), unique values: {seenValues.Count}");
+
+            if (seenValues.Count < PieceSets.Count / 10 && PieceSets.Count > 100)
+            {
+                System.Diagnostics.Debug.WriteLine($"[GENR] WARNING: Only {seenValues.Count} unique PieceSet values out of {PieceSets.Count} - may be parsing duplicates!");
+            }
+        }
+
+        /// <summary>
+        /// Parse a C_PieceSet from a contiguous array (field-based approach).
+        /// Each element in the array is a C_OwningPtr&lt;C_PieceSet&gt; serialized inline.
+        /// </summary>
+        private CCDBPieceSet ParsePieceSetFromArray(BinaryReader reader, int index)
+        {
+            long startPos = reader.BaseStream.Position;
+
+            try
+            {
+                // Dump first few for debugging
+                if (index < 5)
+                {
+                    byte[] preview = new byte[80];
+                    long savedPos = reader.BaseStream.Position;
+                    int bytesRead = reader.Read(preview, 0, Math.Min(80, (int)(_streamLength - savedPos)));
+                    reader.BaseStream.Position = savedPos;
+                    System.Diagnostics.Debug.WriteLine($"[GENR] Raw PieceSet[{index}] at 0x{startPos:X}:");
+                    System.Diagnostics.Debug.WriteLine($"  {BitConverter.ToString(preview, 0, Math.Min(bytesRead, 40)).Replace("-", " ")}");
+                }
+
+                // Check if this is a C_OwningPtr (might have flags first)
+                uint firstValue = reader.ReadUInt32();
+
+                // If firstValue looks like flags (0, 2, 4), handle accordingly
+                if (firstValue == 0 || firstValue == 2)
+                {
+                    // Null/empty pointer
+                    if (index < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{index}] is empty (flags={firstValue})");
+
+                    // Skip reference bytes
+                    if (firstValue == 2)
+                        reader.ReadUInt64(); // 8-byte ref
+
+                    return new CCDBPieceSet(); // Return empty
+                }
+
+                // Check for TYPE_C_PIECE_SET marker
+                if (firstValue == TYPE_C_PIECE_SET)
+                {
+                    // Found type marker, parse the PieceSet fields
+                    return ParsePieceSetAfterMarker(reader);
+                }
+
+                // firstValue might be flags=4 for inline object
+                if (firstValue == 4)
+                {
+                    uint typeHash = reader.ReadUInt32();
+
+                    if (index < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{index}] inline: type=0x{typeHash:X8}");
+
+                    // Check if this is the C_PieceSet type
+                    if (typeHash == TYPE_C_PIECE_SET)
+                    {
+                        uint size = reader.ReadUInt32();
+                        // Now parse the actual PieceSet fields
+                        return ParsePieceSetAfterMarker(reader);
+                    }
+                }
+
+                // Reset and try parsing as raw PieceSet data
+                reader.BaseStream.Position = startPos;
+
+                var pieceSet = new CCDBPieceSet();
+
+                // Try parsing as direct field values
+                // Format: [flags:4][type:4][size:4][value] for each field
+
+                // m_Weight
+                uint weightFlags = reader.ReadUInt32();
+                if (weightFlags != 4)
+                {
+                    if (index < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{index}] unexpected weightFlags: {weightFlags}");
+                    reader.BaseStream.Position = startPos + 4;
+                    return null;
+                }
+
+                uint weightType = reader.ReadUInt32();
+                uint weightSize = reader.ReadUInt32();
+                if (weightSize != 4)
+                {
+                    if (index < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{index}] unexpected weightSize: {weightSize}");
+                    return null;
+                }
+                pieceSet.Weight = reader.ReadUInt32();
+
+                // m_ChanceToSpawn
+                uint chanceFlags = reader.ReadUInt32();
+                if (chanceFlags != 4)
+                {
+                    if (index < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{index}] unexpected chanceFlags: {chanceFlags}");
+                    return null;
+                }
+
+                uint chanceType = reader.ReadUInt32();
+                uint chanceSize = reader.ReadUInt32();
+                if (chanceSize != 4)
+                {
+                    if (index < 5)
+                        System.Diagnostics.Debug.WriteLine($"[GENR] PieceSet[{index}] unexpected chanceSize: {chanceSize}");
+                    return null;
+                }
+                pieceSet.ChanceToSpawn = reader.ReadSingle();
+
+                // m_PieceIds
+                uint pieceIdsFlags = reader.ReadUInt32();
+                if (pieceIdsFlags == 2)
+                {
+                    // Empty vector
+                    reader.ReadUInt64(); // reference
+                    reader.ReadUInt32(); // type hash
+                }
+                else if (pieceIdsFlags == 4)
+                {
+                    uint pieceIdsType = reader.ReadUInt32();
+                    uint pieceIdsSize = reader.ReadUInt32();
+                    int pieceIdCount = reader.ReadInt32();
+
+                    if (pieceIdCount > 0 && pieceIdCount <= 100)
+                    {
+                        for (int i = 0; i < pieceIdCount; i++)
+                        {
+                            if (reader.BaseStream.Position + 8 > _streamLength)
+                                break;
+                            ulong hash = reader.ReadUInt64();
+                            pieceSet.PieceIds.Add(new CCDBHashName { Hash = hash });
+                        }
+                    }
+                }
+
+                // Validate
+                if (pieceSet.Weight == 0 || pieceSet.Weight > 100000)
+                    return null;
+                if (pieceSet.ChanceToSpawn < 0 || pieceSet.ChanceToSpawn > 2.0f)
+                    return null;
+
+                return pieceSet;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[GENR] Error parsing PieceSet[{index}] at 0x{startPos:X}: {ex.Message}");
+                return null;
+            }
         }
 
         /// <summary>
