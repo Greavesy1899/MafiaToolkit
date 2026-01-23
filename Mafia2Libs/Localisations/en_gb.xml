@@ -341,6 +341,18 @@
 	<String ID="$ADD_ATP">Add</String>
 	<String ID="$DELETE_ATP">Delete</String>
 
+	<!-- XML Editor Strings -->
+	<String ID="$XML_EDITOR_TITLE">XML Editor</String>
+	<String ID="$XML_FORMAT">Format XML</String>
+	<String ID="$XML_VALIDATE">Validate XML</String>
+	<String ID="$XML_VALID">XML is valid.</String>
+	<String ID="$XML_INVALID">XML validation failed:</String>
+	<String ID="$XML_VALIDATION">XML Validation</String>
+	<String ID="$FIND">Find</String>
+	<String ID="$REPLACE">Replace</String>
+	<String ID="$GO_TO_LINE">Go to Line</String>
+	<String ID="$RELOAD_CONFIRM">Discard changes and reload from disk?</String>
+
 	<!-- Exception Form-->
 	<String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>
 	<String ID="$EXCEPTION_CONTINUE">Continue</String>

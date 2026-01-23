@@ -28,8 +28,9 @@ namespace Core.IO
             }
             else
             {
-                // Base class *should* open as process.
-                return base.Open();
+                // Open in built-in XML editor
+                XMLEditor editor = new XMLEditor(file);
+                return true;
             }
         }
     }
