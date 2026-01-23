@@ -66,7 +66,7 @@ namespace Utils.Settings
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
             ini = new IniFile();
-            ElapsedTime = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            ElapsedTime = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
             TexturePath = ReadKey("TexturePath", "ModelViewer");
             CustomStateText = ReadKey("CustomStateText", "Discord", "Developing mods.");

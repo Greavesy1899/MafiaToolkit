@@ -126,6 +126,9 @@
 	<String ID="$TEXTURE_DIRECTORY">Texture Directory</String>
 	<String ID="$SELECT_TEX_FOLDER">Select the folder which contains textures.</String>
 
+	<!-- SDSContent Editor Form Strings-->
+	<String ID="$SDSCONTENT_EDITOR_TITLE">SDSContent Editor</String>
+
 	<!-- Collision Editor Form Strings-->
 	<String ID="$SAVE">Save</String>
 	<String ID="$RELOAD">Reload</String>

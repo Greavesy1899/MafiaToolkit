@@ -193,12 +193,18 @@ namespace Utils.Types
                         resource.ReadResourceEntry(nodes);
                         break;
                     default:
-                        MessageBox.Show("Did not load type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // Unknown resource type - create a base resource to avoid null reference
+                        resource = new BaseResource();
+                        resource.ReadResourceEntry(nodes);
+                        System.Diagnostics.Debug.WriteLine($"Unknown resource type: {resourceType}");
                         break;
                 }
 
-                TreeNode node = BuildResourceTreeNode(resource.GetFileName(), resource);
-                resources[resourceType].Add(node);
+                if (resource != null)
+                {
+                    TreeNode node = BuildResourceTreeNode(resource.GetFileName(), resource);
+                    resources[resourceType].Add(node);
+                }
             }
         }
 

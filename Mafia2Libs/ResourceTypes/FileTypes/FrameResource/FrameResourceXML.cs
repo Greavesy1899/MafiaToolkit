@@ -75,7 +75,12 @@ namespace ResourceTypes.FrameResource
             iterator.Current.MoveToNext();
             FileName = iterator.Current.Value;
             iterator.Current.MoveToNext();
-            EntryVersion = iterator.Current.ValueAsInt;
+
+            // Use TryParse to handle potential overflow from hash values in malformed XML
+            if (int.TryParse(iterator.Current.Value, out int versionValue))
+            {
+                EntryVersion = versionValue;
+            }
         }
 
         public virtual void WriteResourceEntry(XmlWriter writer)
@@ -104,7 +109,7 @@ namespace ResourceTypes.FrameResource
         public override void ReadResourceEntry(XPathNodeIterator iterator)
         {
             iterator.Current.MoveToNext();
-            int numTables = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int numTables);
             Tables = new string[numTables];
             for (int i = 0; i < numTables; i++)
             {
@@ -112,7 +117,8 @@ namespace ResourceTypes.FrameResource
                 Tables[i] = iterator.Current.Value;
             }
             iterator.Current.MoveToNext();
-            EntryVersion = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int versionValue);
+            EntryVersion = versionValue;
         }
 
         public override void WriteResourceEntry(XmlWriter writer)
@@ -149,7 +155,7 @@ namespace ResourceTypes.FrameResource
             iterator.Current.MoveToNext();
             FileName = iterator.Current.Value;
             iterator.Current.MoveToNext();
-            int numScripts = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int numScripts);
             Scripts = new string[numScripts];
             for(int i = 0; i < numScripts; i++)
             {
@@ -157,7 +163,8 @@ namespace ResourceTypes.FrameResource
                 Scripts[i] = iterator.Current.Value;
             }
             iterator.Current.MoveToNext();
-            EntryVersion = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int versionValue);
+            EntryVersion = versionValue;
         }
 
         public override void WriteResourceEntry(XmlWriter writer)
@@ -212,13 +219,17 @@ namespace ResourceTypes.FrameResource
             iterator.Current.MoveToNext();
             XMLTag = iterator.Current.Value;
             iterator.Current.MoveToNext();
-            Unk1 = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int unk1Value);
+            Unk1 = unk1Value;
             iterator.Current.MoveToNext();
-            Unk3 = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int unk3Value);
+            Unk3 = unk3Value;
             iterator.Current.MoveToNext();
-            FailedToDecompile = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int failedValue);
+            FailedToDecompile = failedValue;
             iterator.Current.MoveToNext();
-            EntryVersion = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int versionValue);
+            EntryVersion = versionValue;
         }
 
         public override void WriteResourceEntry(XmlWriter writer)
@@ -252,12 +263,14 @@ namespace ResourceTypes.FrameResource
             iterator.Current.MoveToNext();
             if (iterator.Current.Name.Equals("Unk2_V4"))
             {
-                Unk2_V4 = iterator.Current.ValueAsInt;
+                int.TryParse(iterator.Current.Value, out int unk2Value);
+                Unk2_V4 = unk2Value;
                 iterator.Current.MoveToNext();
             }
 
             // Whichever outcomes happens, we will be at the version value by now.
-            EntryVersion = iterator.Current.ValueAsInt;
+            int.TryParse(iterator.Current.Value, out int versionValue);
+            EntryVersion = versionValue;
         }
 
         public override void WriteResourceEntry(XmlWriter writer)
@@ -292,9 +305,23 @@ namespace ResourceTypes.FrameResource
             iterator.Current.MoveToNext();
             FileName = iterator.Current.Value;
             iterator.Current.MoveToNext();
-            HasMIP = iterator.Current.ValueAsInt;
-            iterator.Current.MoveToNext();
-            EntryVersion = iterator.Current.ValueAsInt;
+
+            // Handle both old format (File, HasMIP, Version) and potentially
+            // new format where HasMIP might be missing or have a different name
+            if (iterator.Current.Name.Equals("HasMIP"))
+            {
+                if (int.TryParse(iterator.Current.Value, out int mipValue))
+                {
+                    HasMIP = mipValue;
+                }
+                iterator.Current.MoveToNext();
+            }
+
+            // Read version - handle potential overflow from hash values
+            if (int.TryParse(iterator.Current.Value, out int versionValue))
+            {
+                EntryVersion = versionValue;
+            }
         }
 
         public override void WriteResourceEntry(XmlWriter writer)
