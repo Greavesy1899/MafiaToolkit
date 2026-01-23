@@ -40,6 +40,7 @@ namespace Toolkit.Forms
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Tools.Text = Language.GetString("$TOOLS");
             Button_Copy.Text = Language.GetString("$COPY");
             Button_Paste.Text = Language.GetString("$PASTE");
             Button_Delete.Text = Language.GetString("$DELETE");

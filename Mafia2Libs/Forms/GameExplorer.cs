@@ -79,9 +79,12 @@ namespace Mafia2Tool
             ContextSDSPack.Text = Language.GetString("$PACK");
             ContextOpenFolder.Text = Language.GetString("$OPEN_FOLDER_EXPLORER");
             ContextSDSUnpackAll.Text = Language.GetString("$UNPACK_ALL_SDS");
-            ContextDeleteSelectedFiles.Text = Language.GetString("$DELETE_SELECTED_OBJECTS");
+            ContextDeleteSelectedFiles.Text = Language.GetString("$DELETE_SELECTED_FILES");
             ContextUnpackSelectedSDS.Text = Language.GetString("$UNPACK_SELECTED_SDS");
             ContextPackSelectedSDS.Text = Language.GetString("$PACK_SELECTED_SDS");
+            ContextFileExport.Text = Language.GetString("$FILE_EXPORT");
+            ContextFileImport.Text = Language.GetString("$FILE_IMPORT");
+            ContextForceBigEndian.Text = Language.GetString("$FORCE_BIG_ENDIAN");
             ContextView.Text = Language.GetString("$VIEW");
             ContextViewIcon.Text = Language.GetString("$ICON");
             ContextViewDetails.Text = Language.GetString("$DETAILS");
@@ -97,8 +100,8 @@ namespace Mafia2Tool
             RunGameButton.Text = Language.GetString("$BTN_RUN_MII");
             ExitEditorButton.Text = Language.GetString("$EXIT");
             OptionsItem.Text = Language.GetString("$OPTIONS");
-            PackCurrentSDSButton.Text = Language.GetString("$UNPACK_SELECTED_SDS");
-            UnpackCurrentSDSButton.Text = Language.GetString("$PACK_SELECTED_SDS");
+            PackCurrentSDSButton.Text = Language.GetString("$PACK_CUR_SDS");
+            UnpackCurrentSDSButton.Text = Language.GetString("$UNPACK_CUR_SDS");
             UnpackAllSDSButton.Text = Language.GetString("$UNPACK_ALL_SDS");
             SelectGameButton.Text = Language.GetString("$SELECT_GAME");
 

@@ -42,14 +42,14 @@ namespace Mafia2Tool
             toolButton.Text = Language.GetString("$TOOLS");
             Button_AddMaterial.Text = Language.GetString("$MATERIAL_ADD");
             Text = Language.GetString("$MATERIAL_EDITOR_TITLE");
-            Button_Delete.Text = Language.GetString("$MATERIAL_DELETE");
+            Button_Delete.Text = Language.GetString("$DELETE_SEL_MAT");
             CancelButton.Text = Language.GetString("$CANCEL");
             MergeButton.Text = Language.GetString("$MERGE");
             Button_MergeMTL.Text = Language.GetString("$MERGE_MTL");
             OverWriteLabel.Text = Language.GetString("$CONFLICTING_MATS");
             NewMaterialLabel.Text = Language.GetString("$NEW_MATS");
             SelectAllNewButton.Text = SelectAllOverwriteButton.Text = Language.GetString("$SELECT_ALL");
-            Button_ExportSelected.Text = Language.GetString("$EXPORT_MATS");
+            Button_ExportSelected.Text = Language.GetString("$EXPORT_SELECTED");
             Label_SearchType.Text = Language.GetString("$LABEL_SEARCHTYPE");
             Button_Search.Text = Language.GetString("$SEARCH");
 

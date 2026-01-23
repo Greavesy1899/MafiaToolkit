@@ -43,7 +43,7 @@ namespace Mafia2Tool.Forms
         {
             Button_Search.Text = Language.GetString("$SEARCH");
             Label_SearchBar.Text = Language.GetString("$LABEL_SEARCHBAR");
-            Label_SelectMatLib.Text = Language.GetString("$LABEL_SELECTMATLIBRARY");
+            Label_SelectMatLib.Text = Language.GetString("$LABEL_SELECTMATLIB");
             Label_SearchType.Text = Language.GetString("$LABEL_SEARCHTYPE");
             Text = Language.GetString("$TITLE_MATERIALBROWSER");
 

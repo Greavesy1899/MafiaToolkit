@@ -1,4 +1,4 @@
-<Localisation lANG="FR_FR">
+﻿<Localisation lANG="FR_FR">
 	<!-- Generic String -->
 	<String ID="$CONTINUE">Continuer</String>
 	<String ID="$CANCEL">Annuler</String>
@@ -8,7 +8,7 @@
 
 	<!-- Game Explorer Strings -->
 	<String ID="$ABOUT">About</String>
-	<String ID="$THANKS">Remerciements spéciaux</String>
+	<String ID="$THANKS">Remerciements spÃ©ciaux</String>
 	<String ID="$VIEW">Vue</String>
 	<String ID="$FILE">Fichier</String>
 	<String ID="$TOOLS">Outils</String>
@@ -16,9 +16,9 @@
 	<String ID="$BTN_RUN_MII">Lancer Mafia II</String>
 	<String ID="$EXIT">Quitter</String>
 	<String ID="$OPTIONS">Options</String>
-	<String ID="$SELECT_MII_FOLDER">Sélectionnez votre dossier Mafia II. Il doit contenir le fichier "mafia2.exe" ou "mafia II Definitive Edition.exe"</String>
+	<String ID="$SELECT_MII_FOLDER">SÃ©lectionnez votre dossier Mafia II. Il doit contenir le fichier "mafia2.exe" ou "mafia II Definitive Edition.exe"</String>
 	<String ID="$ICON">Icone</String>
-	<String ID="$DETAILS">Détails</String>
+	<String ID="$DETAILS">DÃ©tails</String>
 	<String ID="$SMALL_ICON">Petit icon</String>
 	<String ID="$LIST">Liste</String>
 	<String ID="$TILE">Tile</String>
@@ -30,7 +30,7 @@
 	<String ID="$OPEN_FOLDER_EXPLORER">Ouvrir le dossier dans l'explorateur</String>
 	<String ID="$PACK">Pack</String>
 	<String ID="$UNPACK">Unpack</String>
-	<String ID="$LAST_MODIFIED">Dernière modification</String>
+	<String ID="$LAST_MODIFIED">DerniÃ¨re modification</String>
 	<String ID="$NAME">Nom</String>
 	<String ID="$SIZE">Taille</String>
 	<String ID="$TYPE">Type</String>
@@ -50,26 +50,26 @@
 	<String ID="$SELECT_GAME">Select Game</String>
 
 	<!-- Main Options Strings-->
-	<String ID="$GENERAL">Général</String>
+	<String ID="$GENERAL">GÃ©nÃ©ral</String>
 	<String ID="$SDS_OPTIONS">Options SDS</String>
-	<String ID="$MODEL_EXPORTING">Modèles/Export</String>
+	<String ID="$MODEL_EXPORTING">ModÃ¨les/Export</String>
 	<String ID="$MATERIAL_LIBS">Librairies Material</String>
 
 	<!-- General Options Strings-->
 	<String ID="$ENABLE_DEBUG_LOGGING">Activer logger</String>
 	<String ID="$MII_DIRECTORY">Dossier Mafia II</String>
 	<String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
-	<String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Temps passé activé</String>
-	<String ID="$DISCORD_TOGGLE_STATE">Etat activé</String>
-	<String ID="$DISCORD_TOGGLE_DETAILS">Détails activé</String>
-	<String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence activé</String>
+	<String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Temps passÃ© activÃ©</String>
+	<String ID="$DISCORD_TOGGLE_STATE">Etat activÃ©</String>
+	<String ID="$DISCORD_TOGGLE_DETAILS">DÃ©tails activÃ©</String>
+	<String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence activÃ©</String>
 	<String ID="$LANGUAGE_ENGLISH">English</String>
-	<String ID="$LANGUAGE_RUSSIAN">русский</String>
-	<String ID="$LANGUAGE_CZECH">čeština</String>
+	<String ID="$LANGUAGE_RUSSIAN">Ñ€ÑƒÑÑÐºÐ¸Ð¹</String>
+	<String ID="$LANGUAGE_CZECH">ÄeÅ¡tina</String>
 	<String ID="$LANGUAGE_POLISH">Polish</String>
-	<String ID="$LANGUAGE_FRENCH">Français</String>
-	<String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
-	<String ID="$LANGUAGE_ARABIC">اللغة العربية</String>
+	<String ID="$LANGUAGE_FRENCH">FranÃ§ais</String>
+	<String ID="$LANGUAGE_SLOVAK">SlovenÄina</String>
+	<String ID="$LANGUAGE_ARABIC">Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</String>
 	<String ID="$LANGUAGE_OPTION">Langue de l'interface</String>
 	<String ID="$SAVE_PROMPT">Enregistrer avant de fermer?</String>
 
@@ -80,18 +80,18 @@
 
 	<!-- Model/Exporting Option Strings-->
 	<String ID="$EXPORT_PATH_TITLE">Chemin d'export:</String>
-	<String ID="$EXPORT_PATH_DESC">Sélectionnez la destination d'export.</String>
-	<String ID="$EXPORT_MODELTYPE_TITLE">Format d'export du modèle:</String>
+	<String ID="$EXPORT_PATH_DESC">SÃ©lectionnez la destination d'export.</String>
+	<String ID="$EXPORT_MODELTYPE_TITLE">Format d'export du modÃ¨le:</String>
 
 	<!-- Material Libs Option Strings-->
-	<String ID="$MATERIAL_LIB_REMOVE">Supprimer la librairie sélectionnée</String>
+	<String ID="$MATERIAL_LIB_REMOVE">Supprimer la librairie sÃ©lectionnÃ©e</String>
 	<String ID="$MATERIAL_LIB_ADD">Ajouter librairie</String>
-	<String ID="$MATERIAL_LIB_SELECTED">Librairies sélectionnées</String>
+	<String ID="$MATERIAL_LIB_SELECTED">Librairies sÃ©lectionnÃ©es</String>
 
 	<!-- SDS Options -->
 	<String ID="$SDS_COMPRESSION_TYPE">Type compression</String>
-	<String ID="$SDS_UNCOMPRESSED">Décompressé</String>
-	<String ID="$SDS_COMPRESSED">Compressé</String>
+	<String ID="$SDS_UNCOMPRESSED">DÃ©compressÃ©</String>
+	<String ID="$SDS_COMPRESSED">CompressÃ©</String>
 	<String ID="$SDS_ONEBLOCK">Un seul bloc</String>
 	<String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups.</String>
 	<String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
@@ -108,7 +108,7 @@
 	<String ID="$RENDER_SCREENEAR">Screen proche</String>
 	<String ID="$RENDER_CAMERASPEED">Vitesse camera</String>
 	<String ID="$TEXTURE_DIRECTORY">Dossier texture</String>
-	<String ID="$SELECT_TEX_FOLDER">Sélectionnez le dossier qui contient les tetures</String>
+	<String ID="$SELECT_TEX_FOLDER">SÃ©lectionnez le dossier qui contient les tetures</String>
 
 	<!-- Collision Editor Form Strings-->
 	<String ID="$SAVE">Sauvegarder</String>
@@ -117,7 +117,7 @@
 	<String ID="$COLLISION_ADD">Ajouter collision</String>
 	<String ID="$PLACEMENT_DELETE">Supprimer instance</String>
 	<String ID="$PLACEMENT_ADD">Ajouter instance</String>
-	<String ID="$SELECT_MODEL_FILE">Sélectionner un modèle.</String>
+	<String ID="$SELECT_MODEL_FILE">SÃ©lectionner un modÃ¨le.</String>
 	<String ID="$COLLISION_EDITOR_TITLE">Editeur de collision</String>
 
 	<!-- Material Editor Form Strings-->
@@ -140,17 +140,17 @@
 	<String ID="$TITLE_MATERIALBROWSER">Material Browser</String>
 
 	<!-- FrameResource Editor Form Strings-->
-	<String ID="$FRAME_EDITOR_EXPORT_BTN">Exporter les modèles..</String>
-	<String ID="$FRAME_EDITOR_MODELS">Modèles FrameNameTable</String>
-	<String ID="$FRAME_EDITOR_ALL">Tous les modèles</String>
+	<String ID="$FRAME_EDITOR_EXPORT_BTN">Exporter les modÃ¨les..</String>
+	<String ID="$FRAME_EDITOR_MODELS">ModÃ¨les FrameNameTable</String>
+	<String ID="$FRAME_EDITOR_ALL">Tous les modÃ¨les</String>
 	<String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Ecrire par dessus le buffer</String>
-	<String ID="$FRAME_EDITOR_ADD_BUTTON">Ajouter une nouvelle entrée</String>
+	<String ID="$FRAME_EDITOR_ADD_BUTTON">Ajouter une nouvelle entrÃ©e</String>
 	<String ID="$FRAME_EDITOR_MODIFY_HEADER">Modifier le header</String>
 	<String ID="$FRAME_EDITOR_SWITCH_VIEW">Switcher la vue</String>
-	<String ID="$FRAME_EDITOR_EXTRACT3D">Extraire modèle</String>
+	<String ID="$FRAME_EDITOR_EXTRACT3D">Extraire modÃ¨le</String>
 	<String ID="$DELETE">Supprimer</String>
-	<String ID="$FRAME_EDITOR_UPDATE_PARENTS">Mettre à jour le parent</String>
-	<String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choisissez une scène à ajouter en parent.</String>
+	<String ID="$FRAME_EDITOR_UPDATE_PARENTS">Mettre Ã  jour le parent</String>
+	<String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choisissez une scÃ¨ne Ã  ajouter en parent.</String>
 	<String ID="$FRAME_EDITOR_TITLE">Editeur de FrameResource</String>
 	<String ID="$FRADD_TYPE">Type de frame</String>
 	<String ID="$QUESTION_FRADD">Entrer le nom et le type de la frame.</String>
@@ -164,6 +164,14 @@
 	<String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
 	<String ID="$ADD_ITEM">Add Item</String>
 	<String ID="$ADD_DEFINITION">Add Definition</String>
+
+	<!-- FxActor Editor -->
+	<String ID="$FXACTOR_EDITOR">FxActor Editor</String>
+	<String ID="$IMPORT">Import</String>
+	<String ID="$EXPORT">Export</String>
+
+	<!-- FxAnimSet Editor -->
+	<String ID="$FXANIMSET_EDITOR">FxAnimSet Editor</String>
 
 	<!-- EntityDataStorage Editor -->
 	<String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
@@ -198,18 +206,18 @@
 	<!-- NewObjForm Form Strings-->
 	<String ID="$NEWOBJFORM_TITLE">No;</String>
 	<String ID="$QUESTION_NOT_NEEDED">Cette option n'a pas besoin de nom.</String>
-	<String ID="$SCENE_OPTIONS">Options scène</String>
+	<String ID="$SCENE_OPTIONS">Options scÃ¨ne</String>
 	<String ID="$FSCENE_OFFSET">Offset position</String>
 
 	<!-- Error strings -->
 	<String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Could not find MafiaII 'launcher.exe', please correct the path!</String>
 	<String ID="$ERROR_TITLE">Erreur!</String>
-	<String ID="$ERROR_SELECT_ITEM">Sélectionnez un item!</String>
+	<String ID="$ERROR_SELECT_ITEM">SÃ©lectionnez un item!</String>
 	<String ID="$ERROR_DIDNT_FIND_MTL">Impossible de charger le material. Erreur : \n\n</String>
 
 	<!-- CityArea Strings -->
 	<String ID="$CITY_AREA_EDITOR_TITLE">Editeur de zones</String>
-	<String ID="$AREA_DATA">Données zone</String>
+	<String ID="$AREA_DATA">DonnÃ©es zone</String>
 	<String ID="$AREA_1">Zone 1</String>
 	<String ID="$AREA_NAME">Nom Zone</String>
 	<String ID="$AREA_2">Zone 2</String>
@@ -228,23 +236,23 @@
 	<String ID="$TABLE_ADD_COLUMN">Ajouter une colonne</String>
 
 	<!-- Renderer strings -->
-	<String ID="$CREATE">Créer</String>
+	<String ID="$CREATE">CrÃ©er</String>
 	<String ID="$VIEW_OPTIONS">Options vue</String>
-	<String ID="$VIEW_PROPERTY_GRID">Grille des proprités</String>
-	<String ID="$VIEW_SCENE_TREE">Arbre de scène</String>
-	<String ID="$VIEW_VIS_OPTIONS">Options de visibilité</String>
-	<String ID="$TOGGLE_MODELS">Activer/désactiver modèles</String>
-	<String ID="$TOGGLE_COLLISIONS">Activer/désactiver colisions</String>
-	<String ID="$TOGGLE_BOXES">Activer/désactiver boxes</String>
+	<String ID="$VIEW_PROPERTY_GRID">Grille des propritÃ©s</String>
+	<String ID="$VIEW_SCENE_TREE">Arbre de scÃ¨ne</String>
+	<String ID="$VIEW_VIS_OPTIONS">Options de visibilitÃ©</String>
+	<String ID="$TOGGLE_MODELS">Activer/dÃ©sactiver modÃ¨les</String>
+	<String ID="$TOGGLE_COLLISIONS">Activer/dÃ©sactiver colisions</String>
+	<String ID="$TOGGLE_BOXES">Activer/dÃ©sactiver boxes</String>
 	<String ID="$ADD">Ajouter..</String>
-	<String ID="$ADD_SCENE_FOLDER">Ajouter dossier scène</String>
+	<String ID="$ADD_SCENE_FOLDER">Ajouter dossier scÃ¨ne</String>
 	<String ID="$ADD_ROAD_SPLINE">Ajouter segment route</String>
 	<String ID="$VISIBLE">Visible</String>
-	<String ID="$HIDDEN">Caché</String>
+	<String ID="$HIDDEN">CachÃ©</String>
 	<String ID="$EDIT_TRANSFORM">Modifier transformation</String>
-	<String ID="$PROPERTY_GRID">Grille de propriétés</String>
-	<String ID="$TOGGLE_WIREFRAME">Activer/désactiver wireframe</String>
-	<String ID="$TOGGLE_CULLING">Activer/désactiver culling</String>
+	<String ID="$PROPERTY_GRID">Grille de propriÃ©tÃ©s</String>
+	<String ID="$TOGGLE_WIREFRAME">Activer/dÃ©sactiver wireframe</String>
+	<String ID="$TOGGLE_CULLING">Activer/dÃ©sactiver culling</String>
 	<String ID="$POSITION_X">Position X</String>
 	<String ID="$POSITION_Y">Position Y</String>
 	<String ID="$POSITION_Z">Position Z</String>
@@ -264,5 +272,224 @@
 	<String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>
 	<String ID="$EXCEPTION_CONTINUE">Continue</String>
 	<String ID="$EXCEPTION_QUIT">Quit</String>
+
+	<!-- BNK/PCK Editor Strings -->
+	<String ID="$BNK_EDITOR_TITLE">BNK Editor</String>
+	<String ID="$PCK_EDITOR_TITLE">PCK Editor</String>
+	<String ID="$REPLACE_WEM">Replace WEM</String>
+	<String ID="$IMPORT_WEM">Import WEM</String>
+	<String ID="$EXPORT_WEM">Export WEM</String>
+	<String ID="$EXPORT_ALL_WEMS">Export All WEMs</String>
+	<String ID="$DELETE_WEM">Delete WEM</String>
+	<String ID="$TRIM_WEMS">Trim WEMs</String>
+	<String ID="$WEM_EXIST_SKIP">WEM already exists, skipping...</String>
+	<String ID="$EXPORT_WEM_WITH_NAME">Export with WEM ID as filename?</String>
+	<String ID="$EDIT_HIRC">Edit HIRC</String>
+	<String ID="$LOAD_HIRC">Load HIRC</String>
+	<String ID="$HIRC_EDITOR_TITLE">HIRC Editor</String>
+
+	<!-- Cutscene Editor Strings -->
+	<String ID="$CUTSCENE_EDITOR">Cutscene Editor</String>
+
+	<!-- GameParams Editor Strings -->
+	<String ID="$GAMEPARAMS_EDITOR_TITLE">GameParams Editor</String>
+
+	<!-- Prefab Editor Strings -->
+	<String ID="$PREFAB_EDITOR_TITLE">Prefab Editor</String>
+	<String ID="$IMPORT_PREFAB">Import Prefab</String>
+	<String ID="$EXPORT_PREFAB">Export Prefab</String>
+	<String ID="$DELETE_PREFAB">Delete Prefab</String>
+
+	<!-- ShopMenu2 Editor Strings -->
+	<String ID="$SHOPMENU2_EDITOR_TITLE">ShopMenu2 Editor</String>
+	<String ID="$ADD_SHOPTYPE">Add Shop Type</String>
+	<String ID="$ADD_METAINFO">Add Meta Info</String>
+	<String ID="$DUPLICATE_ITEM">Duplicate Item</String>
+
+	<!-- Speech Editor Strings -->
+	<String ID="$SPEECH_EDITOR_TITLE">Speech Editor</String>
+
+	<!-- Stream Editor Strings -->
+	<String ID="$STREAM_EDITOR_TITLE">Stream Editor</String>
+	<String ID="$ADD_LINE">Add Line</String>
+	<String ID="$DELETE_LINE">Delete Line</String>
+	<String ID="$MOVE_UP">Move Up</String>
+	<String ID="$MOVE_DOWN">Move Down</String>
+	<String ID="$STREAM_EDITOR_CREATE_LINE_GROUP">Create Line Group</String>
+	<String ID="$STREAM_EDITOR_CREATE_STREAM_GROUP">Create Stream Group</String>
+
+	<!-- Actor Editor Additional Strings -->
+	<String ID="$ACTOR_TYPE">Actor Type</String>
+	<String ID="$ACTOR_DEFINITION_NAME">Actor Definition</String>
+	<String ID="$FRADD_NAME_TABLE">Add Frame To Name Table?</String>
+
+	<!-- Model Bundle Export Strings -->
+	<String ID="$TITLE_EXPORT_MODEL_BUNDLE">Export Model Bundle</String>
+
+	<!-- Render Options Additional Strings -->
+	<String ID="$RENDER_FOV">Field of View</String>
+	<String ID="$ENABLE_EXPERIMENTAL">Enable Experimental Features</String>
+	<String ID="$ENABLE_NAVIGATION">Enable Navigation</String>
+	<String ID="$VIEW_UTILITIES">View Utilities</String>
+	<String ID="$TOOLTIP">Drag with Left Mouse Button to set Parent1|Drag with Right Mouse Button to set Parent2|Drag with Middle Mouse Button to switch frames</String>
+	<String ID="$EDIT_LIGHTING">Edit Lighting</String>
+	<String ID="$TOGGLE_TRANSLOKATOR_TINT">Toggle Translokator Tint</String>
+	<String ID="$SCALE_X">Scale X</String>
+	<String ID="$SCALE_Y">Scale Y</String>
+	<String ID="$SCALE_Z">Scale Z</String>
+
+	<!-- List Window Additional Strings -->
+	<String ID="$SELECT_ITEM">Select an item.</String>
+	<String ID="$SELECT_PARENT">Double click to select the new parent.</String>
+	<String ID="$HOW_TO_SEARCH">To search, type the name of the frame and press the 'enter' key.</String>
+
+	<!-- Bundle Import Form -->
+	<String ID="$Q_IMPORT_MATERIALS">This import will add materials to the libraries you chose or the the first loaded library. This operation will save the libraries after adding them. Are you sure you want to create these materials?</String>
+	<String ID="$VALIDATE">Validate</String>
+	<String ID="$TAB_MATERIALS">Materials</String>
+	<String ID="$TAB_MODELS">Models</String>
+	<String ID="$TAB_VALIDATION">Validation Messages</String>
+	<String ID="$TAB_IMPORT_LOG">Import Messages</String>
+	<String ID="$LABEL_MT_CHOOSE_LIBRARY">Material Library</String>
+	<String ID="$LABEL_MT_CHOOSE_PRESET">Material Preset</String>
+	<String ID="$TITLE_IMPORT_MODEL_BUNDLE">Import Model Bundle</String>
+
+	<!-- SDSContent Editor Form Strings -->
+	<String ID="$SDSCONTENT_EDITOR_TITLE">SDSContent Editor</String>
+	<String ID="$AUTO-ADD_FILES">Auto-Add Files</String>
+	<String ID="$BATCH_IMPORT_TEX">Batch Import Textures</String>
+
+	<!-- SDS Config Editor Strings -->
+	<String ID="$SDSCONFIG_EDITOR_TITLE">SDS Config Editor</String>
+	<String ID="$EXPAND_ALL">Expand All</String>
+	<String ID="$COLLAPSE_ALL">Collapse All</String>
+
+	<!-- CGame Editor Strings -->
+	<String ID="$CGAME_EDITOR_TITLE">Game Editor</String>
+	<String ID="$CGAME_ADD_SLOT">Add Preload Slot</String>
+	<String ID="$CGAME_DELETE_SLOT">Delete Preload Slot</String>
+
+	<!-- FrameProps Editor Strings -->
+	<String ID="$FRAMEPROPS_EDITOR_TITLE">FrameProps Editor</String>
+	<String ID="$FRAMEPROPS_ADD_ENTRY">Add Frame Entry</String>
+	<String ID="$FRAMEPROPS_DELETE_ENTRY">Delete Frame Entry</String>
+	<String ID="$FRAMEPROPS_ADD_PROPERTY">Add Property</String>
+	<String ID="$FRAMEPROPS_DELETE_PROPERTY">Delete Property</String>
+
+	<!-- Translokator Strings-->
+	<String ID="$TRANSLOKATOR_EDITOR">Translokator Editor</String>
+	<String ID="$ADD_OBJECT">Add Object</String>
+	<String ID="$ADD_INSTANCE">Add Instance</String>
+	<String ID="$DELETE_OBJECT">Delete Object</String>
+	<String ID="$DELETE_INSTANCE">Delete Instance</String>
+	<String ID="$VIEW_NUM_INST">View Number of Instances</String>
+	<String ID="$ADD_DATA">Add Data</String>
+	<String ID="$DELETE_AREA">Delete Area</String>
+	<String ID="$DELETE_DATA">Delete Data</String>
+	<String ID="$DUPLICATE_DATA">Duplicate Data</String>
+
+	<!-- Renderer Additional Strings -->
+	<String ID="$IMPORT_FRAME">Import Frame</String>
+	<String ID="$IMPORT_BUNDLE">Import Model Bundle</String>
+	<String ID="$TOP">Top</String>
+	<String ID="$FRONT">Front</String>
+
+	<!-- Generic Additional Strings -->
+	<String ID="$COPY">Copy</String>
+	<String ID="$PASTE">Paste</String>
+	<String ID="$STOP">Stop</String>
+	<String ID="$UPDATE_MESSAGE1">A new version of the Mafia: Toolkit is available!</String>
+	<String ID="$UPDATE_MESSAGE2">To download, press OK.</String>
+	<String ID="$UPDATE_MESSAGE3">To use the current version, press cancel.</String>
+	<String ID="$FAILED_UPDATE_CHECK">Failed to checking for updates!</String>
+	<String ID="$DISCORD_STATE_CUSTOM">Use a custom discord state.</String>
+	<String ID="$CHECK_FOR_UPDATES">Check for Updates.</String>
+
+	<!-- Material Lib Additional Strings -->
+	<String ID="$CONFLICTING_MATS">Conflicting Materials</String>
+	<String ID="$NEW_MATS">New Materials</String>
+	<String ID="$MERGE">Merge</String>
+	<String ID="$MERGE_MTL">Merge MTL</String>
+	<String ID="$DELETE_SEL_MAT">Delete Selected Material</String>
+	<String ID="$SELECT_ALL">Select All</String>
+
+	<!-- SDS Options Additional Strings -->
+	<String ID="$SDS_COMPRESSION_RATIO">Compression Ratio</String>
+	<String ID="$SDS_TOOLTIP_COMPRESSION_RATIO">0.0 equals no compression, 1.0 equals full compression. 0.9 is default.</String>
+	<String ID="$SDS_TOOLTIP_USE_OODLE">Compress Mafia: Definitive Edition SDS using Oodle rather than zlib.</String>
+
+	<!-- ATP Editor Strings -->
+	<String ID="$ATP_EDITOR_TITLE">AnimalTrafficPaths Editor</String>
+	<String ID="$ADD_ATP">Add</String>
+	<String ID="$DELETE_ATP">Delete</String>
+
+	<!-- XML Editor Strings -->
+	<String ID="$XML_EDITOR_TITLE">XML Editor</String>
+	<String ID="$XML_FORMAT">Format XML</String>
+	<String ID="$XML_VALIDATE">Validate XML</String>
+	<String ID="$XML_VALID">XML is valid.</String>
+	<String ID="$XML_INVALID">XML validation failed:</String>
+	<String ID="$XML_VALIDATION">XML Validation</String>
+	<String ID="$FIND">Find</String>
+	<String ID="$REPLACE">Replace</String>
+	<String ID="$GO_TO_LINE">Go to Line</String>
+	<String ID="$RELOAD_CONFIRM">Discard changes and reload from disk?</String>
+
+	<!-- Additional Missing Keys -->
+	<String ID="$ACTOR_DEFINITION">Actor Definition</String>
+	<String ID="$ADD_GROUP">Add Group</String>
+	<String ID="$ADD_ROW">Add Row</String>
+	<String ID="$DELETE_ROW">Delete Row</String>
+	<String ID="$BOTTOM">Bottom</String>
+	<String ID="$SIDE">Side</String>
+	<String ID="$SIDE 2">Side 2</String>
+	<String ID="$WINDOWS">Windows</String>
+	<String ID="$CELL_DATA_TYPE">Cell Data Type</String>
+	<String ID="$VALUE_DATA_TYPE">Value Data Type</String>
+	<String ID="$VERSION">Version</String>
+	<String ID="$COOK_COLLISION">Cook Collisions</String>
+	<String ID="$COUNT">Count</String>
+	<String ID="$CREATE_LINE_GROUP">Create Line Group</String>
+	<String ID="$CREATE_STREAM_GROUP">Create Stream Group</String>
+	<String ID="$DUPLICATE_LINE">Duplicate Line</String>
+	<String ID="$CurrentModeLabel">Current Mode</String>
+	<String ID="$CUTSCENE_DELETE_ENTITY">Delete Entity</String>
+	<String ID="$CUTSCENE_DUPLICATE_ENTITY">Duplicate Entity</String>
+	<String ID="$CUTSCENE_EXPORT_ENTITY">Export Entity</String>
+	<String ID="$CUTSCENE_IMPORT_ENTITY">Import Entity</String>
+	<String ID="$DELETE_SELECTED_FILES">Delete Selected Files</String>
+	<String ID="$DISCORDSTATELABEL">Discord State:</String>
+	<String ID="$DUMP_TEXTURES">Dump Textures</String>
+	<String ID="$DUPE_METAINFO">Duplicate Meta Info</String>
+	<String ID="$EXPORT_SELECTED">Export Selected</String>
+	<String ID="$FILE_EXPORT">Export File</String>
+	<String ID="$FILE_IMPORT">Import File</String>
+	<String ID="$FORCE_BIG_ENDIAN">Force Big Endian</String>
+	<String ID="$FRADD_NAMETABLE">Add to Name Table</String>
+	<String ID="$GAMEENTRY_FOLDERPATH">Folder Path:</String>
+	<String ID="$IMPORT_AO">Import AO</String>
+	<String ID="$INDEX_SIZE_PER_BUFFER">Index Size Per Buffer</String>
+	<String ID="$VERTEX_SIZE_PER_BUFFER">Vertex Size Per Buffer</String>
+	<String ID="$LABEL">Label</String>
+	<String ID="$LABEL_SELECTMATLIB">Select Material Library:</String>
+	<String ID="$LINK_TO_ACTOR">Link to Actor</String>
+	<String ID="$LOAD_FROM_XML">Load From XML</String>
+	<String ID="$SAVE_TO_XML">Save To XML</String>
+	<String ID="$Material_Name">Material Name</String>
+	<String ID="$MT_CHOOSELIBRARY">Choose Library</String>
+	<String ID="$MT_CHOOSEPRESET">Choose Preset</String>
+	<String ID="$PACK_CUR_SDS">Pack Current SDS</String>
+	<String ID="$UNPACK_CUR_SDS">Unpack Current SDS</String>
+	<String ID="$RENDER_FIELDOFVIEW">Field of View</String>
+	<String ID="$RENDER_SCREENNEAR">Screen Near</String>
+	<String ID="$SAVE_AN2">Save AN2</String>
+	<String ID="$SAVE_DLC">Save (DLC)</String>
+	<String ID="$STREAM_MAP_EDITOR_TITLE">Stream Map Editor</String>
+	<String ID="$TAB_ANIMS">Animations</String>
+	<String ID="$TAB_MATERIAL">Material</String>
+	<String ID="$TAB_MODEL">Model</String>
+	<String ID="$TEST_CONVERT_16BIT">Test Convert 16-bit</String>
+	<String ID="$TEST_CONVERT_32BIT">Test Convert 32-bit</String>
+	<String ID="$XBIN_EDITOR">XBin Editor</String>
 
 </Localisation>

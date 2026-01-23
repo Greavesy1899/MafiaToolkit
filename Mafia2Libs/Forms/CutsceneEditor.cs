@@ -39,6 +39,13 @@ namespace Mafia2Tool.Forms
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Edit.Text = Language.GetString("$EDIT");
+            AddItemButton.Text = Language.GetString("$ADD_ITEM");
+            AddDefinitionButton.Text = Language.GetString("$ADD_DEFINITION");
+            ContextMenu_Delete.Text = Language.GetString("$CUTSCENE_DELETE_ENTITY");
+            ContextMenu_Duplicate.Text = Language.GetString("$CUTSCENE_DUPLICATE_ENTITY");
+            ContextMenu_Export.Text = Language.GetString("$CUTSCENE_EXPORT_ENTITY");
+            ContextMenu_Import.Text = Language.GetString("$CUTSCENE_IMPORT_ENTITY");
         }
 
         private void AddCutsceneToTreeView(CutsceneLoader.Cutscene Cutscene)

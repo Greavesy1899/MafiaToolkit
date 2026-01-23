@@ -33,6 +33,7 @@ namespace Mafia2Tool
             ExitButton.Text = Language.GetString("$EXIT");
             toolButton.Text = Language.GetString("$TOOLS");
             AddAreaButton.Text = Language.GetString("$ADD_AREA");
+            DeleteArea.Text = Language.GetString("$DELETE_AREA");
         }
 
         private void BuildData()

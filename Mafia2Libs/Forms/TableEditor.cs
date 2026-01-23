@@ -35,7 +35,11 @@ namespace Mafia2Tool
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
             ReloadButton.Text = Language.GetString("$RELOAD");
-            AddRowButton.Text = Language.GetString("$TABLE_ADD_ROW");
+            AddRowButton.Text = Language.GetString("$ADD_ROW");
+            DeleteRowButton.Text = Language.GetString("$DELETE_ROW");
+            Label_Version.Text = Language.GetString("$VERSION");
+            Label_DataType.Text = Language.GetString("$CELL_DATA_TYPE");
+            Label_ValueDataType.Text = Language.GetString("$VALUE_DATA_TYPE");
         }
 
         public void Initialise()

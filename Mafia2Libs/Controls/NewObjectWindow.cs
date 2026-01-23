@@ -18,6 +18,7 @@ namespace Mafia2Tool
 
         private void Localise()
         {
+            label.Text = Language.GetString("$LABEL");
             buttonCancel.Text = Language.GetString("$CANCEL");
             buttonContinue.Text = Language.GetString("$CONTINUE");
             Text = Language.GetString("$NEWOBJFORM_TITLE");

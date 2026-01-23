@@ -21,7 +21,7 @@ namespace Mafia2Tool.Controls
 
         public void LocaliseEntry()
         {
-            Label_FolderPath.Text = Language.GetString("$FOLDER_PATH_LABEL");
+            Label_FolderPath.Text = Language.GetString("$GAMEENTRY_FOLDERPATH");
             Button_SelectFolder.Text = Language.GetString("$SELECT_FOLDER");
             Button_Start.Text = Language.GetString("$START_TOOLKIT");
         }

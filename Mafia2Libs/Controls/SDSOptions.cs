@@ -21,10 +21,10 @@ namespace Forms.OptionControls
             AddTimeDateBackupsBox.Text = Language.GetString("$ADD_TIME_DATE_BACKUP");
             UnpackLUABox.Text = Language.GetString("$DECOMPILE_LUA_UNPACK");
             SDSToolFormat.Text = Language.GetString("$USE_SDS_TOOL_FORMAT");
-            CookCollisionsBox.Text = Language.GetString("$COOK_COLLISIONS");
+            CookCollisionsBox.Text = Language.GetString("$COOK_COLLISION");
             CheckBox_BackupSDS.Text = Language.GetString("$BACKUP_SDS_LABEL");
-            Label_IndexBufferSize.Text = Language.GetString("$INDEX_BUFFER_SIZE_LABEL");
-            Label_VertexBufferSize.Text = Language.GetString("$VERTEX_BUFFER_SIZE_LABEL");
+            Label_IndexBufferSize.Text = Language.GetString("$INDEX_SIZE_PER_BUFFER");
+            Label_VertexBufferSize.Text = Language.GetString("$VERTEX_SIZE_PER_BUFFER");
 
             ToolTips.SetToolTip(NumericUpDown_Ratio, Language.GetString("$SDS_TOOLTIP_COMPRESSION_RATIO"));
             ToolTips.SetToolTip(CheckBox_UseOodle, Language.GetString("$SDS_TOOLTIP_USE_OODLE"));

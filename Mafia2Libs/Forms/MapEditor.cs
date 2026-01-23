@@ -109,14 +109,20 @@ namespace Mafia2Tool
             ViewButton.Text = Language.GetString("$VIEW");
             ViewTopButton.Text = Language.GetString("$TOP");
             ViewFrontButton.Text = Language.GetString("$FRONT");
+            ViewSideButton.Text = Language.GetString("$SIDE");
+            ViewBottomButton.Text = Language.GetString("$BOTTOM");
+            ViewSide2Button.Text = Language.GetString("$SIDE 2");
             OptionsButton.Text = Language.GetString("$OPTIONS");
             ToggleWireframeButton.Text = Language.GetString("$TOGGLE_WIREFRAME");
             ToggleCullingButton.Text = Language.GetString("$TOGGLE_CULLING");
             EditLighting.Text = Language.GetString("$EDIT_LIGHTING");
             ToggleTranslokatorTint.Text = Language.GetString("$TOGGLE_TRANSLOKATOR_TINT");
+            Button_TestConvert32.Text = Language.GetString("$TEST_CONVERT_32BIT");
+            Button_TestConvert16.Text = Language.GetString("$TEST_CONVERT_16BIT");
+            Button_DumpTexture.Text = Language.GetString("$DUMP_TEXTURES");
             SceneTreeButton.Text = Language.GetString("$VIEW_SCENE_TREE");
             ObjectPropertiesButton.Text = Language.GetString("$VIEW_PROPERTY_GRID");
-            WindowButton.Text = Language.GetString("$VIEW_OPTIONS");
+            WindowButton.Text = Language.GetString("$WINDOWS");
             ViewOptionProperties.Text = Language.GetString("$VIEW_UTILITIES");
             AddButton.Text = Language.GetString("$ADD");
             Button_ImportFrame.Text = Language.GetString("$IMPORT_FRAME");
@@ -124,6 +130,7 @@ namespace Mafia2Tool
             AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
+            CurrentModeButton.Text = Language.GetString("$CurrentModeLabel");
         }
 
         private void InitDockingControls()

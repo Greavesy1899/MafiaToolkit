@@ -44,6 +44,7 @@ namespace Forms.Docking
             Text = Language.GetString("$SCENE_OUTLINER_FORMNAME");
             TabPage_Explorer.Text = Language.GetString("$SCENE_OUTLINER_EXPLORER");
             TabPage_Searcher.Text = Language.GetString("$SCENE_OUTLINER_SEARCHER");
+            LinkToActorButton.Text = Language.GetString("$LINK_TO_ACTOR");
             string xmlText = Language.GetString("$TOOLTIP");
             string tooltipText = xmlText.Replace("|", Environment.NewLine);
             if (!tooltipText.Equals("$TOOLTIP", StringComparison.InvariantCulture))

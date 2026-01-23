@@ -19,7 +19,7 @@ namespace Forms.EditorControls
         {
             Group_General.Text = Language.GetString("$GENERAL");
             Label_Type.Text = Language.GetString("$FRADD_TYPE");
-            Label_AddToNameTable.Text = Language.GetString("$FRADD_NAME_TABLE");
+            Label_AddToNameTable.Text = Language.GetString("$FRADD_NAMETABLE");
         }
 
         private FrameResourceObjectType GetTypeFromIndexToLookupTable()

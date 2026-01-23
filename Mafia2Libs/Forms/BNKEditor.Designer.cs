@@ -240,7 +240,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "BNKEditor";
-            this.Text = "$PCK_EDITOR_TITLE";
+            this.Text = "$BNK_EDITOR_TITLE";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BnkEditor_Closing);
             this.BnkContext.ResumeLayout(false);
             this.Toolstrip_Bnk.ResumeLayout(false);

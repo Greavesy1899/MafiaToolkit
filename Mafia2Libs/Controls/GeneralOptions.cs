@@ -34,7 +34,7 @@ namespace Forms.OptionControls
             languageComboBox.Items[5] = Language.GetString("$LANGUAGE_SLOVAK");
             languageComboBox.Items[6] = Language.GetString("$LANGUAGE_ARABIC");
             label1.Text = Language.GetString("$LANGUAGE_OPTION");
-            label2.Text = Language.GetString("$DISCORD_STATE_CUSTOM");
+            label2.Text = Language.GetString("$DISCORDSTATELABEL");
         }
 
         /// <summary>

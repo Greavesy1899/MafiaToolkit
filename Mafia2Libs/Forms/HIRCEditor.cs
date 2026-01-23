@@ -28,6 +28,7 @@ namespace Mafia2Tool
         private void Localise()
         {
             Text = Language.GetString("$HIRC_EDITOR_TITLE");
+            ContextExport.Text = Language.GetString("$EXPORT_WEM");
         }
 
         private void BuildData()

@@ -98,12 +98,15 @@ namespace Forms.EditorControls
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Continue.Text = Language.GetString("$CONTINUE");
             Button_StopImport.Text = Language.GetString("$STOP");
-            TabPage_Model.Text = Language.GetString("$TAB_MODELS");
-            TabPage_Material.Text = Language.GetString("$TAB_MATERIALS");
+            ImportAOBox.Text = Language.GetString("$IMPORT_AO");
+            Label_ChooseLibrary.Text = Language.GetString("$MT_CHOOSELIBRARY");
+            Label_ChoosePreset.Text = Language.GetString("$MT_CHOOSEPRESET");
+            Button_Anim_SaveAN2.Text = Language.GetString("$SAVE_AN2");
+            TabPage_Animations.Text = Language.GetString("$TAB_ANIMS");
+            TabPage_Material.Text = Language.GetString("$TAB_MATERIAL");
+            TabPage_Model.Text = Language.GetString("$TAB_MODEL");
             TabPage_Validation.Text = Language.GetString("$TAB_VALIDATION");
             TabPage_ConvertLogs.Text = Language.GetString("$TAB_IMPORT_LOG");
-            Label_ChooseLibrary.Text = Language.GetString("$LABEL_MT_CHOOSE_LIBRARY");
-            Label_ChoosePreset.Text = Language.GetString("$LABEL_MT_CHOOSE_PRESET");
             Text = Language.GetString("$TITLE_IMPORT_MODEL_BUNDLE");
         }
 

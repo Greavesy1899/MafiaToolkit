@@ -1,4 +1,4 @@
-<Localisation lANG="EN_GB">
+﻿<Localisation lANG="EN_GB">
 	<!-- Generic String -->
 	<String ID="$CONTINUE">Continue</String>
 	<String ID="$CANCEL">Cancel</String>
@@ -71,11 +71,11 @@
 	<String ID="$DISCORD_TOGGLE_DETAILS">Details Enabled</String>
 	<String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence Enabled</String>
 	<String ID="$LANGUAGE_ENGLISH">English</String>
-	<String ID="$LANGUAGE_RUSSIAN">русский</String>
-	<String ID="$LANGUAGE_CZECH">čeština</String>
+	<String ID="$LANGUAGE_RUSSIAN">Ñ€ÑƒÑÑÐºÐ¸Ð¹</String>
+	<String ID="$LANGUAGE_CZECH">ÄeÅ¡tina</String>
 	<String ID="$LANGUAGE_POLISH">Polish</String>
-	<String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
-	<String ID="$LANGUAGE_ARABIC">اللغة العربية</String>
+	<String ID="$LANGUAGE_SLOVAK">SlovenÄina</String>
+	<String ID="$LANGUAGE_ARABIC">Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</String>
 	<String ID="$LANGUAGE_OPTION">Interface Language</String>
 	<String ID="$DISCORD_STATE_CUSTOM">Use a custom discord state.</String>
 	<String ID="$CHECK_FOR_UPDATES">Check for Updates.</String>
@@ -128,6 +128,8 @@
 
 	<!-- SDSContent Editor Form Strings-->
 	<String ID="$SDSCONTENT_EDITOR_TITLE">SDSContent Editor</String>
+	<String ID="$AUTO-ADD_FILES">Auto-Add Files</String>
+	<String ID="$BATCH_IMPORT_TEX">Batch Import Textures</String>
 
 	<!-- Collision Editor Form Strings-->
 	<String ID="$SAVE">Save</String>
@@ -183,6 +185,14 @@
 	<String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
 	<String ID="$ADD_ITEM">Add Item</String>
 	<String ID="$ADD_DEFINITION">Add Definition</String>
+
+	<!-- FxActor Editor -->
+	<String ID="$FXACTOR_EDITOR">FxActor Editor</String>
+	<String ID="$IMPORT">Import</String>
+	<String ID="$EXPORT">Export</String>
+
+	<!-- FxAnimSet Editor -->
+	<String ID="$FXANIMSET_EDITOR">FxAnimSet Editor</String>
 
 	<!-- EntityDataStorage Editor -->
 	<String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
@@ -360,5 +370,117 @@
 	<String ID="$EXCEPTION_LABEL">Unhandled exception has occurred in your application. If you click continue [ENTER], the application will ignore this error and attempt to continue. If you click Quit [ESC], the application will close immediatly.</String>
 	<String ID="$EXCEPTION_CONTINUE">Continue</String>
 	<String ID="$EXCEPTION_QUIT">Quit</String>
+
+	<!-- BNK/PCK Editor Strings -->
+	<String ID="$BNK_EDITOR_TITLE">BNK Editor</String>
+	<String ID="$PCK_EDITOR_TITLE">PCK Editor</String>
+	<String ID="$REPLACE_WEM">Replace WEM</String>
+	<String ID="$IMPORT_WEM">Import WEM</String>
+	<String ID="$EXPORT_WEM">Export WEM</String>
+	<String ID="$EXPORT_ALL_WEMS">Export All WEMs</String>
+	<String ID="$DELETE_WEM">Delete WEM</String>
+	<String ID="$TRIM_WEMS">Trim WEMs</String>
+	<String ID="$WEM_EXIST_SKIP">WEM already exists, skipping...</String>
+	<String ID="$EXPORT_WEM_WITH_NAME">Export with WEM ID as filename?</String>
+	<String ID="$EDIT_HIRC">Edit HIRC</String>
+	<String ID="$LOAD_HIRC">Load HIRC</String>
+	<String ID="$HIRC_EDITOR_TITLE">HIRC Editor</String>
+
+	<!-- Cutscene Editor Strings -->
+	<String ID="$CUTSCENE_EDITOR">Cutscene Editor</String>
+
+	<!-- GameParams Editor Strings -->
+	<String ID="$GAMEPARAMS_EDITOR_TITLE">GameParams Editor</String>
+
+	<!-- Prefab Editor Strings -->
+	<String ID="$PREFAB_EDITOR_TITLE">Prefab Editor</String>
+	<String ID="$IMPORT_PREFAB">Import Prefab</String>
+	<String ID="$EXPORT_PREFAB">Export Prefab</String>
+	<String ID="$DELETE_PREFAB">Delete Prefab</String>
+
+	<!-- ShopMenu2 Editor Strings -->
+	<String ID="$SHOPMENU2_EDITOR_TITLE">ShopMenu2 Editor</String>
+	<String ID="$ADD_SHOPTYPE">Add Shop Type</String>
+	<String ID="$ADD_METAINFO">Add Meta Info</String>
+	<String ID="$DUPLICATE_ITEM">Duplicate Item</String>
+
+	<!-- Speech Editor Strings -->
+	<String ID="$SPEECH_EDITOR_TITLE">Speech Editor</String>
+
+	<!-- Stream Editor Additional Strings -->
+	<String ID="$STREAM_EDITOR_CREATE_LINE_GROUP">Create Line Group</String>
+	<String ID="$STREAM_EDITOR_CREATE_STREAM_GROUP">Create Stream Group</String>
+
+	<!-- Actor Editor Additional Strings -->
+	<String ID="$ACTOR_TYPE">Actor Type</String>
+	<String ID="$ACTOR_DEFINITION_NAME">Actor Definition</String>
+
+	<!-- Model Bundle Export Strings -->
+	<String ID="$TITLE_EXPORT_MODEL_BUNDLE">Export Model Bundle</String>
+
+	<!-- Render Options Additional Strings -->
+	<String ID="$ENABLE_EXPERIMENTAL">Enable Experimental Features</String>
+	<String ID="$ENABLE_NAVIGATION">Enable Navigation</String>
+	<String ID="$VIEW_UTILITIES">View Utilities</String>
+
+	<!-- List Window Additional Strings -->
+	<String ID="$SELECT_ITEM">Select an item.</String>
+
+	<!-- Additional Missing Keys -->
+	<String ID="$ACTOR_DEFINITION">Actor Definition</String>
+	<String ID="$ADD_GROUP">Add Group</String>
+	<String ID="$ADD_ROW">Add Row</String>
+	<String ID="$DELETE_ROW">Delete Row</String>
+	<String ID="$BOTTOM">Bottom</String>
+	<String ID="$SIDE">Side</String>
+	<String ID="$SIDE 2">Side 2</String>
+	<String ID="$WINDOWS">Windows</String>
+	<String ID="$CELL_DATA_TYPE">Cell Data Type</String>
+	<String ID="$VALUE_DATA_TYPE">Value Data Type</String>
+	<String ID="$VERSION">Version</String>
+	<String ID="$COOK_COLLISION">Cook Collisions</String>
+	<String ID="$COUNT">Count</String>
+	<String ID="$CREATE_LINE_GROUP">Create Line Group</String>
+	<String ID="$CREATE_STREAM_GROUP">Create Stream Group</String>
+	<String ID="$DUPLICATE_LINE">Duplicate Line</String>
+	<String ID="$CurrentModeLabel">Current Mode</String>
+	<String ID="$CUTSCENE_DELETE_ENTITY">Delete Entity</String>
+	<String ID="$CUTSCENE_DUPLICATE_ENTITY">Duplicate Entity</String>
+	<String ID="$CUTSCENE_EXPORT_ENTITY">Export Entity</String>
+	<String ID="$CUTSCENE_IMPORT_ENTITY">Import Entity</String>
+	<String ID="$DELETE_SELECTED_FILES">Delete Selected Files</String>
+	<String ID="$DISCORDSTATELABEL">Discord State:</String>
+	<String ID="$DUMP_TEXTURES">Dump Textures</String>
+	<String ID="$DUPE_METAINFO">Duplicate Meta Info</String>
+	<String ID="$EXPORT_SELECTED">Export Selected</String>
+	<String ID="$FILE_EXPORT">Export File</String>
+	<String ID="$FILE_IMPORT">Import File</String>
+	<String ID="$FORCE_BIG_ENDIAN">Force Big Endian</String>
+	<String ID="$FRADD_NAMETABLE">Add to Name Table</String>
+	<String ID="$GAMEENTRY_FOLDERPATH">Folder Path:</String>
+	<String ID="$IMPORT_AO">Import AO</String>
+	<String ID="$INDEX_SIZE_PER_BUFFER">Index Size Per Buffer</String>
+	<String ID="$VERTEX_SIZE_PER_BUFFER">Vertex Size Per Buffer</String>
+	<String ID="$LABEL">Label</String>
+	<String ID="$LABEL_SELECTMATLIB">Select Material Library:</String>
+	<String ID="$LINK_TO_ACTOR">Link to Actor</String>
+	<String ID="$LOAD_FROM_XML">Load From XML</String>
+	<String ID="$SAVE_TO_XML">Save To XML</String>
+	<String ID="$Material_Name">Material Name</String>
+	<String ID="$MT_CHOOSELIBRARY">Choose Library</String>
+	<String ID="$MT_CHOOSEPRESET">Choose Preset</String>
+	<String ID="$PACK_CUR_SDS">Pack Current SDS</String>
+	<String ID="$UNPACK_CUR_SDS">Unpack Current SDS</String>
+	<String ID="$RENDER_FIELDOFVIEW">Field of View</String>
+	<String ID="$RENDER_SCREENNEAR">Screen Near</String>
+	<String ID="$SAVE_AN2">Save AN2</String>
+	<String ID="$SAVE_DLC">Save (DLC)</String>
+	<String ID="$STREAM_MAP_EDITOR_TITLE">Stream Map Editor</String>
+	<String ID="$TAB_ANIMS">Animations</String>
+	<String ID="$TAB_MATERIAL">Material</String>
+	<String ID="$TAB_MODEL">Model</String>
+	<String ID="$TEST_CONVERT_16BIT">Test Convert 16-bit</String>
+	<String ID="$TEST_CONVERT_32BIT">Test Convert 32-bit</String>
+	<String ID="$XBIN_EDITOR">XBin Editor</String>
 
 </Localisation>

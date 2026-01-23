@@ -33,12 +33,16 @@ namespace Mafia2Tool
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Tools.Text = Language.GetString("$TOOLS");
             Button_Delete.Text = Language.GetString("$DELETE");
             Button_AddType.Text = Language.GetString("$ADD_SHOPTYPE");
             Button_AddMetaInfo.Text = Language.GetString("$ADD_METAINFO");
+            Button_ExportXml.Text = Language.GetString("$EXPORT_XML");
+            Button_ImportXml.Text = Language.GetString("$IMPORT_XML");
             Context_Delete.Text = Language.GetString("$DELETE");
             Context_AddType.Text = Language.GetString("$ADD_SHOPTYPE");
             Context_AddMetaInfo.Text = Language.GetString("$ADD_METAINFO");
+            Context_DuplicateMetaInfo.Text = Language.GetString("$DUPE_METAINFO");
             Context_DuplicateMetaInfoItem.Text = Language.GetString("$DUPLICATE_ITEM");
         }
 

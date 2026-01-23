@@ -52,7 +52,8 @@ namespace Forms.EditorControls
             Button_Validate.Text = Language.GetString("$VALIDATE");
             Button_Continue.Text = Language.GetString("$CONTINUE");
             Button_StopImport.Text = Language.GetString("$STOP");
-            TabPage_Model.Text = Language.GetString("$TAB_MODELS");
+            ImportAOBox.Text = Language.GetString("$IMPORT_AO");
+            TabPage_Model.Text = Language.GetString("$TAB_MODEL");
             TabPage_Validation.Text = Language.GetString("$TAB_VALIDATION");
             TabPage_ConvertLogs.Text = Language.GetString("$TAB_IMPORT_LOG");
             Text = Language.GetString("$TITLE_EXPORT_MODEL_BUNDLE");

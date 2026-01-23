@@ -41,8 +41,10 @@ namespace Mafia2Tool
             DeleteLineButton.Text = Language.GetString("$DELETE_LINE");
             MoveItemDownButton.Text = Language.GetString("$MOVE_DOWN");
             MoveItemUpButton.Text = Language.GetString("$MOVE_UP");
-            Button_CreateLineGroup.Text = Language.GetString("$STREAM_EDITOR_CREATE_LINE_GROUP");
-            Button_CreateStreamGroup.Text = Language.GetString("$STREAM_EDITOR_CREATE_STREAM_GROUP");
+            Button_CreateLineGroup.Text = Language.GetString("$CREATE_LINE_GROUP");
+            Button_CreateStreamGroup.Text = Language.GetString("$CREATE_STREAM_GROUP");
+            DuplicateLine.Text = Language.GetString("$DUPLICATE_LINE");
+            Button_Tools.Text = Language.GetString("$TOOLS");
         }
 
         private void Sort(List<StreamLoader> loaders)

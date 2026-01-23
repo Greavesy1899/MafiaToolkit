@@ -31,14 +31,17 @@ namespace Mafia2Tool
 
         private void Localise()
         {
-            Text = Language.GetString("PREFAB_EDITOR_TITLE");
+            Text = Language.GetString("$PREFAB_EDITOR_TITLE");
             Button_File.Text = Language.GetString("$FILE");
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Tools.Text = Language.GetString("$TOOLS");
             Button_Import.Text = Language.GetString("$IMPORT_PREFAB");
             Button_Export.Text = Language.GetString("$EXPORT_PREFAB");
             Button_Delete.Text = Language.GetString("$DELETE_PREFAB");
+            Context_ExportXML.Text = Language.GetString("$EXPORT_XML");
+            Context_ImportXML.Text = Language.GetString("$IMPORT_XML");
             Context_Delete.Text = Language.GetString("$DELETE");
         }
 
@@ -70,7 +73,7 @@ namespace Mafia2Tool
             prefabs.Prefabs = NewPrefabs;
             prefabs.WriteToFile(prefabFile);
 
-            Text = Language.GetString("PREFAB_EDITOR_TITLE");
+            Text = Language.GetString("$PREFAB_EDITOR_TITLE");
             bIsFileEdited = false;
         }
 
@@ -120,7 +123,7 @@ namespace Mafia2Tool
                 SelectedNode.Remove();
             }
 
-            Text = Language.GetString("PREFAB_EDITOR_TITLE") + "*";
+            Text = Language.GetString("$PREFAB_EDITOR_TITLE") + "*";
             bIsFileEdited = true;
         }
 
@@ -144,7 +147,7 @@ namespace Mafia2Tool
                 node.Name = NewPrefab.AssignedName;
                 TreeView_Prefabs.Nodes.Add(node);
 
-                Text = Language.GetString("PREFAB_EDITOR_TITLE") + "*";
+                Text = Language.GetString("$PREFAB_EDITOR_TITLE") + "*";
                 bIsFileEdited = true;
             }
         }

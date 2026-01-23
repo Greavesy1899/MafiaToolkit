@@ -31,12 +31,15 @@ namespace Mafia2Tool.Forms
             ReloadButton.Text = Language.GetString("$RELOAD");
             AddInstance.Text = Language.GetString("$ADD_INSTANCE");
             AddObject.Text = Language.GetString("$ADD_OBJECT");
+            AddGroup.Text = Language.GetString("$ADD_GROUP");
             Delete.Text = Language.GetString("$DELETE");
             Text = Language.GetString("$TRANSLOKATOR_EDITOR");
             CopyButton.Text = Language.GetString("$COPY");
             PasteButton.Text = Language.GetString("$PASTE");
             ToolsButton.Text = Language.GetString("$TOOLS");
             ViewNumInstButton.Text = Language.GetString("$VIEW_NUM_INST");
+            Button_ExportXml.Text = Language.GetString("$EXPORT_XML");
+            Button_ImportXml.Text = Language.GetString("$IMPORT_XML");
         }
 
         private void LoadFile()

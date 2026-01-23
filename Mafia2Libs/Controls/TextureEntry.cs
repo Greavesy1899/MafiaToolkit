@@ -3,6 +3,7 @@ using ResourceTypes.Materials;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Utils.Language;
 
 namespace Mafia2Tool
 {
@@ -23,7 +24,13 @@ namespace Mafia2Tool
         public TextureEntry()
         {
             InitializeComponent();
+            Localise();
             defaultColour = MaterialName.BackColor;
+        }
+
+        private void Localise()
+        {
+            MaterialName.Text = Language.GetString("$Material_Name");
         }
 
         public void SetMaterial(IMaterial material)

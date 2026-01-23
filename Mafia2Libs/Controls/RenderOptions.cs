@@ -18,8 +18,8 @@ namespace Forms.OptionControls
         {
             RenderGroup.Text = Language.GetString("$RENDER_OPTIONS");
             ScreenFarLabel.Text = Language.GetString("$RENDER_SCREENFAR");
-            ScreenNearLabel.Text = Language.GetString("$RENDER_SCREENEAR");
-            RenderFieldOfView.Text = Language.GetString("$RENDER_FOV");
+            ScreenNearLabel.Text = Language.GetString("$RENDER_SCREENNEAR");
+            RenderFieldOfView.Text = Language.GetString("$RENDER_FIELDOFVIEW");
             TexLabel.Text = Language.GetString("$TEXTURE_DIRECTORY");
             CameraSpeedLabel.Text = Language.GetString("$RENDER_CAMERASPEED");
             TexBrowser.Description = Language.GetString("$SELECT_TEX_FOLDER");

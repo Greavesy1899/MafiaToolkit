@@ -38,7 +38,10 @@ namespace Mafia2Tool
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Tools.Text = Language.GetString("$TOOLS");
+            Button_AutoAdd.Text = Language.GetString("$AUTO-ADD_FILES");
             Button_Delete.Text = Language.GetString("$DELETE");
+            Button_BatchImportTextures.Text = Language.GetString("$BATCH_IMPORT_TEX");
             Context_Delete.Text = Language.GetString("$DELETE");
         }
 

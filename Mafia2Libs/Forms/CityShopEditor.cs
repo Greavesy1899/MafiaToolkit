@@ -38,7 +38,7 @@ namespace Mafia2Tool
             AddAreaButton.Text = Language.GetString("$ADD_AREA");
             AddDataButton.Text = Language.GetString("$ADD_DATA");
             Button_SaveNonDLC.Text = Language.GetString("$SAVE") + " (Non DLC)";
-            Button_SaveDLC.Text = Language.GetString("$SAVE") + " (DLC)";
+            Button_SaveDLC.Text = Language.GetString("$SAVE_DLC");
             ReloadButton.Text = Language.GetString("$RELOAD");
             PopulateTranslokatorButton.Text = Language.GetString("$POPULATE_TRANSLOKATORS");
             DuplicateDataButton.Text = Language.GetString("$DUPLICATE_DATA");
