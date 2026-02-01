@@ -392,6 +392,9 @@
 	<!-- GameParams Editor Strings -->
 	<String ID="$GAMEPARAMS_EDITOR_TITLE">GameParams Editor</String>
 
+	<!-- FrameNameTable Editor Strings -->
+	<String ID="$FNT_EDITOR_TITLE">FrameNameTable Editor</String>
+
 	<!-- Prefab Editor Strings -->
 	<String ID="$PREFAB_EDITOR_TITLE">Prefab Editor</String>
 	<String ID="$IMPORT_PREFAB">Import Prefab</String>
