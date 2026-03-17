@@ -1,12 +1,10 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Mafia2Tool.MCP.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.AspNetCore;
@@ -108,54 +106,7 @@ public static class McpServerHost
                 // Enable CORS
                 _app.UseCors();
 
-                // Add mock OAuth endpoints to satisfy Claude Code's OAuth discovery
-                _app.MapGet("/.well-known/oauth-authorization-server", () => Results.Json(new
-                {
-                    issuer = $"http://{DefaultHost}:{port}",
-                    authorization_endpoint = $"http://{DefaultHost}:{port}/authorize",
-                    token_endpoint = $"http://{DefaultHost}:{port}/token",
-                    registration_endpoint = $"http://{DefaultHost}:{port}/register",
-                    response_types_supported = new[] { "code" },
-                    grant_types_supported = new[] { "authorization_code" },
-                    code_challenge_methods_supported = new[] { "S256" }
-                }));
-
-                _app.MapPost("/register", async (HttpContext ctx) =>
-                {
-                    // Read the request body to get redirect_uris
-                    var body = await System.Text.Json.JsonSerializer.DeserializeAsync<System.Text.Json.JsonElement>(ctx.Request.Body);
-                    var redirectUris = new[] { "http://localhost" };
-                    if (body.TryGetProperty("redirect_uris", out var uris) && uris.ValueKind == System.Text.Json.JsonValueKind.Array)
-                    {
-                        redirectUris = uris.EnumerateArray().Select(u => u.GetString() ?? "").ToArray();
-                    }
-
-                    return Results.Json(new
-                    {
-                        client_id = "mafia-toolkit-local",
-                        client_secret = "not-needed",
-                        client_id_issued_at = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                        client_secret_expires_at = 0,
-                        redirect_uris = redirectUris
-                    });
-                });
-
-                _app.MapGet("/authorize", (HttpContext ctx) =>
-                {
-                    var redirectUri = ctx.Request.Query["redirect_uri"].ToString();
-                    var state = ctx.Request.Query["state"].ToString();
-                    var code = "local-auth-code";
-                    return Results.Redirect($"{redirectUri}?code={code}&state={state}");
-                });
-
-                _app.MapPost("/token", () => Results.Json(new
-                {
-                    access_token = "local-access-token",
-                    token_type = "Bearer",
-                    expires_in = 315360000 // 10 years
-                }));
-
-                // Map MCP SSE endpoint
+                // Map MCP endpoint (no auth — local-only server bound to localhost)
                 _app.MapMcp();
 
                 Log($"Starting server on http://{DefaultHost}:{port}/sse");

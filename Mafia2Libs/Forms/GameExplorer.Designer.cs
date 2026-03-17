@@ -94,6 +94,7 @@ namespace Mafia2Tool
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.mcpStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -727,7 +728,8 @@ namespace Mafia2Tool
             // 
             this.status.Dock = System.Windows.Forms.DockStyle.Fill;
             this.status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.infoText});
+            this.infoText,
+            this.mcpStatusLabel});
             this.status.Location = new System.Drawing.Point(0, 0);
             this.status.Name = "status";
             this.status.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
@@ -739,6 +741,15 @@ namespace Mafia2Tool
             // 
             this.infoText.Name = "infoText";
             this.infoText.Size = new System.Drawing.Size(0, 25);
+            this.infoText.Spring = true;
+            this.infoText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // mcpStatusLabel
+            //
+            this.mcpStatusLabel.Name = "mcpStatusLabel";
+            this.mcpStatusLabel.Size = new System.Drawing.Size(100, 25);
+            this.mcpStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.mcpStatusLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             // 
             // GameExplorer
             // 
@@ -795,6 +806,7 @@ namespace Mafia2Tool
         private ToolStripContainer bottomContainer;
         private StatusStrip status;
         private ToolStripStatusLabel infoText;
+        private ToolStripStatusLabel mcpStatusLabel;
         private ContextMenuStrip GEContext;
         private ToolStripMenuItem ContextSDSUnpack;
         private ToolStripMenuItem ContextSDSPack;

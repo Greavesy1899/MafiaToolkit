@@ -12,6 +12,7 @@ using Utils.Extensions;
 using Utils.Language;
 using Utils.Settings;
 using Vortice.Mathematics;
+using Mafia2Tool.MCP;
 
 namespace Mafia2Tool
 {
@@ -25,6 +26,7 @@ namespace Mafia2Tool
         private FileFrameResource CachedFrameResourceFile;
 
         private FileSystemWatcher DirectoryWatcher;
+        private Timer mcpStatusTimer;
 
         public GameExplorer()
         {
@@ -48,6 +50,13 @@ namespace Mafia2Tool
             InitFileWatcher();
             FileListViewTypeController(1);
             infoText.Text = "Ready..";
+
+            // MCP server status indicator
+            UpdateMcpStatus();
+            mcpStatusTimer = new Timer();
+            mcpStatusTimer.Interval = 3000;
+            mcpStatusTimer.Tick += (s, e) => UpdateMcpStatus();
+            mcpStatusTimer.Start();
 
             // Add Attributes to System.Numerics and Vortice.Mathematics types so we can edit them in the PropertyGrid.
             TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
@@ -605,8 +614,17 @@ namespace Mafia2Tool
             Localise();
         }
 
+        private void UpdateMcpStatus()
+        {
+            bool running = McpServerHost.IsRunning;
+            mcpStatusLabel.Text = running ? "\u25CF MCP Live" : "\u25CF MCP Stopped";
+            mcpStatusLabel.ForeColor = running ? System.Drawing.Color.Green : System.Drawing.Color.Red;
+        }
+
         private void ExitProgram()
         {
+            mcpStatusTimer?.Stop();
+            mcpStatusTimer?.Dispose();
             Application.ExitThread();
             Application.Exit();
         }
