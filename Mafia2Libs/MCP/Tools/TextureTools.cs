@@ -63,7 +63,7 @@ public class TextureTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
         }
     }
 
@@ -131,7 +131,7 @@ public class TextureTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
         }
     }
 
@@ -145,7 +145,12 @@ public class TextureTools
             var sdsInfo = _sdsService.OpenFile(sdsPath);
             if (sdsInfo == null)
             {
-                return JsonSerializer.Serialize(new { success = false, error = _sdsService.LastError ?? "Failed to open SDS file" });
+                return JsonSerializer.Serialize(new
+                {
+                    success = false,
+                    error = _sdsService.LastError ?? "Failed to open SDS file",
+                    errorDetail = _sdsService.LastErrorDetail,
+                });
             }
 
             var textures = sdsInfo.Resources
@@ -222,7 +227,7 @@ public class TextureTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
         }
     }
 
@@ -250,7 +255,7 @@ public class TextureTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
         }
     }
 

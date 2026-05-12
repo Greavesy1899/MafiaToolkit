@@ -106,9 +106,15 @@ public class SdsService
     }
 
     /// <summary>
-    /// Last error encountered during file operations
+    /// Last error encountered during file operations (short message).
     /// </summary>
     public string? LastError { get; private set; }
+
+    /// <summary>
+    /// Structured detail (type, inner-exception chain, stack frames) about the LastError.
+    /// MCP tools surface this so callers can diagnose without re-running the operation.
+    /// </summary>
+    public object? LastErrorDetail { get; private set; }
 
     /// <summary>
     /// Opens an SDS file and returns its metadata
@@ -116,6 +122,7 @@ public class SdsService
     public SdsFileInfo? OpenFile(string filePath, GamesEnumerator? gameType = null)
     {
         LastError = null;
+        LastErrorDetail = null;
         var normalizedPath = Path.GetFullPath(filePath);
 
         // Check cache first
@@ -144,9 +151,13 @@ public class SdsService
                 archive.SetGameType(gameType.Value);
             }
 
-            // Read the SDS file using existing toolkit code
+            // Read the SDS file using existing toolkit code.
+            // Stock game-installed SDS files are TEA-encrypted; ArchiveEncryption.Unwrap detects
+            // that (via the "tables/fsfh.bin" marker at offset 0x90) and returns a decrypted
+            // MemoryStream, or null for unencrypted files. Mirror FileSDS.Open's behavior.
             using var inputStream = File.OpenRead(normalizedPath);
-            archive.Deserialize(inputStream);
+            using var decrypted = ArchiveEncryption.Unwrap(inputStream);
+            archive.Deserialize(decrypted ?? (Stream)inputStream);
 
             // Try to detect game type from version
             var detectedGame = archive.Version switch
@@ -222,6 +233,7 @@ public class SdsService
         catch (Exception ex)
         {
             LastError = $"{ex.GetType().Name}: {ex.Message}";
+            LastErrorDetail = Mafia2Tool.MCP.McpError.Build(ex);
             System.Diagnostics.Debug.WriteLine($"[SdsService] Error opening file: {ex}");
             return null;
         }
