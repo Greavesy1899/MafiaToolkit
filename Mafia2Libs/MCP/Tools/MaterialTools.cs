@@ -88,7 +88,7 @@ public class MaterialTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -164,7 +164,7 @@ public class MaterialTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -219,7 +219,7 @@ public class MaterialTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -276,7 +276,7 @@ public class MaterialTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 

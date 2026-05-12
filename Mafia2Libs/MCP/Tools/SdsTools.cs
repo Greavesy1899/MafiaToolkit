@@ -47,7 +47,7 @@ public class SdsTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -68,12 +68,7 @@ public class SdsTools
 
             if (info == null)
             {
-                return JsonSerializer.Serialize(new
-                {
-                    success = false,
-                    error = _sdsService.LastError ?? "Failed to open SDS file",
-                    errorDetail = _sdsService.LastErrorDetail,
-                });
+                return McpError.OpenFailureJson(_sdsService);
             }
 
             var typeGroups = info.Resources
@@ -113,7 +108,7 @@ public class SdsTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -125,12 +120,7 @@ public class SdsTools
             var info = _sdsService.OpenFile(filePath);
             if (info == null)
             {
-                return JsonSerializer.Serialize(new
-                {
-                    success = false,
-                    error = _sdsService.LastError ?? "Failed to open SDS file",
-                    errorDetail = _sdsService.LastErrorDetail,
-                });
+                return McpError.OpenFailureJson(_sdsService);
             }
 
             return JsonSerializer.Serialize(new
@@ -154,7 +144,7 @@ public class SdsTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -170,12 +160,7 @@ public class SdsTools
             var info = _sdsService.OpenFile(filePath);
             if (info == null)
             {
-                return JsonSerializer.Serialize(new
-                {
-                    success = false,
-                    error = _sdsService.LastError ?? "Failed to open SDS file",
-                    errorDetail = _sdsService.LastErrorDetail,
-                });
+                return McpError.OpenFailureJson(_sdsService);
             }
 
             var resources = info.Resources.AsEnumerable();
@@ -209,7 +194,7 @@ public class SdsTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -246,7 +231,7 @@ public class SdsTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -281,7 +266,7 @@ public class SdsTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -323,7 +308,7 @@ public class SdsTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 
@@ -335,12 +320,7 @@ public class SdsTools
             var info = _sdsService.OpenFile(filePath);
             if (info == null)
             {
-                return JsonSerializer.Serialize(new
-                {
-                    success = false,
-                    error = _sdsService.LastError ?? "Failed to open SDS file",
-                    errorDetail = _sdsService.LastErrorDetail,
-                });
+                return McpError.OpenFailureJson(_sdsService);
             }
 
             var typeStats = info.Resources
@@ -373,7 +353,7 @@ public class SdsTools
         }
         catch (Exception ex)
         {
-            return JsonSerializer.Serialize(new { success = false, error = ex.Message, errorDetail = McpError.Build(ex) });
+            return McpError.FailJson(ex);
         }
     }
 

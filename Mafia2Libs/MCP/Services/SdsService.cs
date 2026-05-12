@@ -233,7 +233,7 @@ public class SdsService
         catch (Exception ex)
         {
             LastError = $"{ex.GetType().Name}: {ex.Message}";
-            LastErrorDetail = Mafia2Tool.MCP.McpError.Build(ex);
+            LastErrorDetail = McpError.Build(ex);
             System.Diagnostics.Debug.WriteLine($"[SdsService] Error opening file: {ex}");
             return null;
         }
