@@ -104,6 +104,10 @@ namespace ResourceTypes.M3.XBin
                     XBinData = new PaintCombinationsTable(); // PaintCombinations
                     XBinData.ReadFromFile(reader);
                     break;
+                case 0xAB9158912EE359DE: // GameMelee (Mafia I: DE)
+                    XBinData = new GameMeleeTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
                 default:
                     throw new Exception("We lack the support for this type.");
                     break;
