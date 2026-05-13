@@ -112,6 +112,10 @@ namespace ResourceTypes.M3.XBin
                     XBinData = new PlotlinesTable();
                     XBinData.ReadFromFile(reader);
                     break;
+                case 0x55F318BC46D02A26: // UserServices (Mafia I: DE)
+                    XBinData = new UserServicesTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
                 // Empty MP placeholders — Mafia I: DE ships these as a hash
                 // reservation with a fixed empty body (88 bytes, identical
                 // across all MP tables).
