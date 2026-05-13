@@ -108,6 +108,24 @@ namespace ResourceTypes.M3.XBin
                     XBinData = new GameMeleeTable();
                     XBinData.ReadFromFile(reader);
                     break;
+                // Empty MP placeholders — Mafia I: DE ships these as a hash
+                // reservation with a fixed empty body (88 bytes, identical
+                // across all MP tables).
+                case 0x4DC22579671437D6: // businesses_mp
+                case 0xEF634D2F8A3F6A38: // charactertable_mp
+                case 0xDCAAA289821103EC: // cities_mp
+                case 0x2C3F50C91D8B2D8B: // game_events_mp
+                case 0x908F4C0CFFBEB487: // missions_mp
+                case 0x23CA3D65F68F175D: // persistent_characters_mp
+                case 0x9C1617718CF12257: // plotlines_mp
+                case 0x3D75F99490367D50: // quests_mp
+                case 0x9CF8F2FB8911D588: // slots_mp
+                case 0xA1408F852F76D27F: // speeches_mp
+                case 0xAC124B39C2C72AED: // streammap_mp
+                case 0x5E8198F71D5F1B07: // stringtable_mp
+                    XBinData = new EmptyMPPlaceholderTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
                 default:
                     throw new Exception("We lack the support for this type.");
                     break;
