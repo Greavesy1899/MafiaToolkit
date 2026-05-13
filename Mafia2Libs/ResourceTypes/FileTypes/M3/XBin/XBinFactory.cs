@@ -134,6 +134,63 @@ namespace ResourceTypes.M3.XBin
                     XBinData = new EmptyMPPlaceholderTable();
                     XBinData.ReadFromFile(reader);
                     break;
+                // The hashes below are recognised but their per-table
+                // struct has not yet been reverse engineered. They open
+                // as RawXBinTable (raw-byte passthrough) so users can
+                // read/save without corruption. Each is its own case so
+                // the list of "RE pending" hashes stays code-searchable.
+                case 0xA7A8EB60CE85F96C: // game_events — RE pending
+                    XBinData = new RawXBinTable("Game Events");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x3FEE4A7602DB84C2: // persistent_characters — RE pending
+                    XBinData = new RawXBinTable("Persistent Characters");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xB9CB5FF488A9211E: // speeches_game — RE pending
+                    XBinData = new RawXBinTable("Speeches");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xEBD934EE6E87AC4E: // businesses — RE pending
+                    XBinData = new RawXBinTable("Businesses");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x801E2C7A9A0AFBC4: // shops — RE pending
+                    XBinData = new RawXBinTable("Shops");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x543BB56BB88901CE: // game_main — RE pending (M3 reflection available, recover later)
+                    XBinData = new RawXBinTable("Game Main");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x00D2B1AD3096FDF2: // game_expressions — RE pending
+                    XBinData = new RawXBinTable("Game Expressions");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x00EE7A08D9C8090E: // human_items — RE pending
+                    XBinData = new RawXBinTable("Human Items");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x4AB76DA5086E620B: // xbinpathdict_ui — RE pending
+                    XBinData = new RawXBinTable("XBin Path Dictionary");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x0EB8AED848D262F8: // ui_group — RE pending
+                    XBinData = new RawXBinTable("UI Group");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xBE38EA98A1B3B982: // generic_speech_mp — RE pending
+                    XBinData = new RawXBinTable("Generic Speech MP");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xE5D1112857438D7B: // generic_speech_variations — RE pending
+                    XBinData = new RawXBinTable("Generic Speech Variations");
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x2AC1311BDF935842: // quests — RE pending
+                    XBinData = new RawXBinTable("Quests");
+                    XBinData.ReadFromFile(reader);
+                    break;
                 default:
                     throw new Exception("We lack the support for this type.");
                     break;
