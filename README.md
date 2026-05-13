@@ -86,7 +86,7 @@ Create a `.mcp.json` file in your project directory (or add to your Claude Code 
 2. In Claude Code, run `/mcp` to connect to the server
 3. Use the available tools to browse SDS archives and game files
 
-### Available Tools (24 total)
+### Available Tools (34 total)
 
 #### SDS Archive Tools (8 tools)
 
@@ -131,6 +131,30 @@ Create a `.mcp.json` file in your project directory (or add to your Claude Code 
 | `detect_format_from_bytes` | `base64Data`, `extensionHint?` | Detect file format from base64-encoded bytes. Useful for identifying extracted resources. |
 | `convert_number` | `input` | Convert between decimal, hex (0x), and binary (0b). Returns all representations plus signed values and byte array. |
 | `list_game_files` | `directoryPath`, `extensionFilter?`, `recursive` | List game files matching common Mafia extensions (.sds, .mtl, .dds, .act, .nav, .xbin, etc.). |
+
+#### SDS Config Tools (3 tools)
+
+SDS Config (`sdsconfig.bin`) defines how SDS archives are categorized into types, memory budgets, and virtual loading slots. Located at `<GameRoot>\EDIT\sdsconfig.bin`.
+
+| Tool | Parameters | Description |
+|------|------------|-------------|
+| `open_sds_config` | `filePath` | Parse `sdsconfig.bin` and return overview: magic, version, and list of template names with counts. |
+| `get_sds_config_template` | `filePath`, `templateIndex?`, `templateName?` | Get full detail for one template: `BaseSDSReferences` (SDS types with memory/priority budgets) and `VirtualSlots` with nested `SDSItems` and `SDSReferences`. |
+| `search_sds_config` | `filePath`, `pattern`, `limit?` | Search all template/slot/item/reference names by case-insensitive substring. |
+
+#### Stream Map Tools (7 tools)
+
+Stream Map (`StreamMapa.bin`) defines the world streaming grid: which assets load when the player enters a zone. The main file is at `<GameRoot>\EDIT\tables\StreamMapa.bin`; DLCs have their own copies under `dlcs\<dlc_name>\game_edit\tables\` — prefer the main file unless looking for DLC-specific content.
+
+| Tool | Parameters | Description |
+|------|------------|-------------|
+| `open_stream_map` | `filePath` | Parse `StreamMapa.bin` and return header overview: group, line, loader, and block counts plus group list. |
+| `get_stream_groups` | `filePath` | List all `StreamGroup` entries with type, loader index range, and offsets. |
+| `get_stream_lines` | `filePath`, `groupFilter?`, `offset`, `limit` | List `StreamLine` entries with optional group filter and pagination. |
+| `get_stream_line_detail` | `filePath`, `lineIndex` | Get full detail for a single `StreamLine` by index: flags, IDs, and raw unknowns. |
+| `get_stream_loaders` | `filePath`, `offset`, `limit` | List all `StreamLoader` entries (assets loaded per streaming zone) with pagination. |
+| `get_line_load_list` | `filePath`, `lineIndex` | Get the list of assets that will be loaded when a specific `StreamLine` is activated. |
+| `search_stream_lines` | `filePath`, `pattern`, `limit?` | Search `StreamLine` names and `StreamLoader` paths/entities by case-insensitive substring. |
 
 ### Supported Formats
 
