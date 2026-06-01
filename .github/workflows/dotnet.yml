@@ -18,9 +18,9 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore Mafia2Libs/MafiaToolkit.csproj
     - name: Build
-      run: dotnet build --no-restore --output "_out"
+      run: dotnet build Mafia2Libs/MafiaToolkit.csproj --no-restore --output "_out"
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:

@@ -23,10 +23,10 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore MafiaToolkit.sln
+        run: dotnet restore Mafia2Libs/MafiaToolkit.csproj
 
       - name: Build (Release x64)
-        run: dotnet build MafiaToolkit.sln --no-restore --configuration Release --output "_out"
+        run: dotnet build Mafia2Libs/MafiaToolkit.csproj --no-restore --configuration Release --output "_out"
 
       - name: Package build
         shell: pwsh
