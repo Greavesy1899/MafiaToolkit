@@ -406,6 +406,10 @@ public class UtilityTools
         if (magic32 == 0x35425346)
             return ("FSB", "FMOD Sound Bank", "Mafia II", "High");
 
+        // .eff Effects library: root chunk tag is 666 (0x29A) = C_EffectsLibrary.
+        if (magic32 == 0x29A)
+            return ("Effects", "Effects (.eff) particle/FX library", "Mafia II/DE", "High");
+
         if (extension.Equals(".xbin", StringComparison.OrdinalIgnoreCase))
             return ("XBin", "XBin Data Container", "Mafia III/I:DE", "Medium");
 
@@ -420,6 +424,9 @@ public class UtilityTools
 
         if (extension.Equals(".cut", StringComparison.OrdinalIgnoreCase))
             return ("Cutscene", "Cutscene Animation", "Mafia II/DE", "Medium");
+
+        if (extension.Equals(".eff", StringComparison.OrdinalIgnoreCase))
+            return ("Effects", "Effects (.eff) particle/FX library", "Mafia II/DE", "Medium");
 
         return ("Unknown", "Unknown format", "Unknown", "Low");
     }
