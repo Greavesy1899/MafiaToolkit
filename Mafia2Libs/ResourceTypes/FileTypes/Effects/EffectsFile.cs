@@ -428,6 +428,16 @@ namespace ResourceTypes.Effects
         [Browsable(false)] public int ScalarOffset { get; set; } = -1;          // first scalar float
         [Browsable(false)] public List<int> KeyOffsets { get; set; }            // start of each key's floats
 
+        // For keyframe add/remove (only set when the displayed keys form one simple [123] curve).
+        [Browsable(false)] public int CurveHeaderOffset { get; set; } = -1;     // header of the innermost [123]
+        [Browsable(false)] public int KeyCountOffset { get; set; } = -1;        // u32 key count in the [123] body
+        [Browsable(false)] public List<int> KeyChunkLengths { get; set; }       // full [124] chunk size per key
+        [Browsable(false)] public bool MultiCurve { get; set; }                 // keys span >1 inner curve -> no add/remove
+
+        [Browsable(false)]
+        public bool CanAddRemoveKeys =>
+            !MultiCurve && CurveHeaderOffset >= 0 && KeyCountOffset >= 0 && KeyChunkLengths != null && KeyOffsets != null;
+
         [Category("Parameter")]
         public int KeyCount => Keys?.Count ?? 0;
 
@@ -804,7 +814,8 @@ namespace ResourceTypes.Effects
                 param.IsAnimated = true;
                 param.Keys = new List<float[]>();
                 param.KeyOffsets = new List<int>();
-                CollectKeys(eff, curveStart, curveLen, param.Keys, param.KeyOffsets);
+                param.KeyChunkLengths = new List<int>();
+                CollectKeys(eff, curveStart, curveLen, param);
                 return param;
             }
 
@@ -837,7 +848,7 @@ namespace ResourceTypes.Effects
         }
 
         /// <summary>Recursively gather innermost keyframes; each [124] leaf payload yields its leading floats as [time, value...].</summary>
-        private static void CollectKeys(byte[] eff, int start, int length, List<float[]> keys, List<int> offsets)
+        private static void CollectKeys(byte[] eff, int start, int length, EffectParamInfo param)
         {
             // [123] body = u32 keyCount prefix, then [124] keys.
             foreach (int pre in new[] { 4, 0 })
@@ -846,6 +857,7 @@ namespace ResourceTypes.Effects
                 var spans = Tile(eff, start + pre, length - pre);
                 if (spans.Count == 0) continue;
 
+                bool leafCurveHere = false;
                 foreach (var key in spans)
                 {
                     if (key.Tag != CurveKeyTag) continue;
@@ -854,17 +866,41 @@ namespace ResourceTypes.Effects
                     int innerStart, innerLen;
                     if (FindCurve(eff, key.Start, key.Length, out innerStart, out innerLen))
                     {
-                        CollectKeys(eff, innerStart, innerLen, keys, offsets);
+                        CollectKeys(eff, innerStart, innerLen, param);
                     }
                     else
                     {
                         float[] f = ReadFloats(eff, key.Start, Math.Min(key.Length, 20)); // time + up to 4 values
-                        if (f.Length > 0) { keys.Add(f); offsets.Add(key.Start); }
+                        if (f.Length > 0)
+                        {
+                            param.Keys.Add(f);
+                            param.KeyOffsets.Add(key.Start);
+                            param.KeyChunkLengths.Add(key.Length + HeaderSize); // full [124] chunk size
+                            leafCurveHere = true;
+                        }
                     }
                 }
-                if (keys.Count > 0) return;
+
+                if (leafCurveHere)
+                {
+                    // This [123] directly holds float keys -> it's the editable curve.
+                    int curveHeader = start - HeaderSize;
+                    if (param.CurveHeaderOffset < 0)
+                    {
+                        param.CurveHeaderOffset = curveHeader;
+                        param.KeyCountOffset = (pre == 4) ? start : -1;
+                    }
+                    else if (param.CurveHeaderOffset != curveHeader)
+                    {
+                        param.MultiCurve = true; // keys span multiple curves -> disable add/remove
+                    }
+                }
+
+                if (param.Keys.Count > 0) return;
             }
         }
+
+        private const int HeaderSize = EffectChunk.HeaderSize;
 
         private static float[] ReadFloats(byte[] eff, int start, int length)
         {
@@ -1020,6 +1056,112 @@ namespace ResourceTypes.Effects
             byte[] bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, _editBuffer, offset, 4);
             TypedEdited = true;
+        }
+
+        /// <summary>Insert a keyframe by duplicating key <paramref name="keyIndex"/> of a simple curve param.</summary>
+        public bool AddKeyframe(EffectParamInfo p, int keyIndex)
+        {
+            if (p == null || !p.CanAddRemoveKeys) return false;
+            if (keyIndex < 0 || keyIndex >= p.KeyOffsets.Count) return false;
+            if (_editBuffer == null) _editBuffer = BuildBytes();
+            int keyStart = p.KeyOffsets[keyIndex] - EffectChunk.HeaderSize;
+            return Splice(p, keyStart, p.KeyChunkLengths[keyIndex], true);
+        }
+
+        /// <summary>Delete keyframe <paramref name="keyIndex"/> from a simple curve param (keeps at least one).</summary>
+        public bool RemoveKeyframe(EffectParamInfo p, int keyIndex)
+        {
+            if (p == null || !p.CanAddRemoveKeys) return false;
+            if (keyIndex < 0 || keyIndex >= p.KeyOffsets.Count || p.KeyOffsets.Count <= 1) return false;
+            if (_editBuffer == null) _editBuffer = BuildBytes();
+            int keyStart = p.KeyOffsets[keyIndex] - EffectChunk.HeaderSize;
+            return Splice(p, keyStart, p.KeyChunkLengths[keyIndex], false);
+        }
+
+        // Insert (duplicate) or remove a [124] key chunk at keyChunkStart, fixing the [123] key count and
+        // every enclosing chunk's size. All adjusted fields sit before the edit point, so offsets stay valid.
+        private bool Splice(EffectParamInfo p, int keyChunkStart, int keyChunkLen, bool insert)
+        {
+            List<int> chain = WalkToOffset(_editBuffer, p.CurveHeaderOffset);
+            if (chain == null) return false;
+
+            byte[] nb;
+            int delta;
+            if (insert)
+            {
+                int insertPos = keyChunkStart + keyChunkLen;
+                nb = new byte[_editBuffer.Length + keyChunkLen];
+                Array.Copy(_editBuffer, 0, nb, 0, insertPos);
+                Array.Copy(_editBuffer, keyChunkStart, nb, insertPos, keyChunkLen);     // duplicated key bytes
+                Array.Copy(_editBuffer, insertPos, nb, insertPos + keyChunkLen, _editBuffer.Length - insertPos);
+                delta = keyChunkLen;
+            }
+            else
+            {
+                nb = new byte[_editBuffer.Length - keyChunkLen];
+                Array.Copy(_editBuffer, 0, nb, 0, keyChunkStart);
+                Array.Copy(_editBuffer, keyChunkStart + keyChunkLen, nb, keyChunkStart, _editBuffer.Length - keyChunkStart - keyChunkLen);
+                delta = -keyChunkLen;
+            }
+
+            if (p.KeyCountOffset >= 0)
+            {
+                uint kc = BitConverter.ToUInt32(nb, p.KeyCountOffset);
+                Array.Copy(BitConverter.GetBytes((uint)(kc + (insert ? 1 : -1))), 0, nb, p.KeyCountOffset, 4);
+            }
+
+            foreach (int sizeOff in chain)
+            {
+                uint sz = BitConverter.ToUInt32(nb, sizeOff);
+                Array.Copy(BitConverter.GetBytes((uint)(sz + delta)), 0, nb, sizeOff, 4);
+            }
+
+            _editBuffer = nb;
+            TypedEdited = true;
+            return true;
+        }
+
+        /// <summary>Walk from the buffer root down to the chunk whose header is at targetHeader; returns the
+        /// size-field offsets of every chunk on that path (root..target inclusive).</summary>
+        private static List<int> WalkToOffset(byte[] buf, int targetHeader)
+        {
+            List<int> chain = new List<int>();
+            int pStart = 0, pEnd = buf.Length;
+            int guard = 0;
+            while (guard++ < 64)
+            {
+                int childHeader = FindChildContaining(buf, pStart, pEnd, targetHeader);
+                if (childHeader < 0) return null;
+                chain.Add(childHeader + 4);
+                if (childHeader == targetHeader) return chain;
+                uint size = BitConverter.ToUInt32(buf, childHeader + 4);
+                pStart = childHeader + 8;
+                pEnd = childHeader + (int)size;
+            }
+            return null;
+        }
+
+        // Prefix-aware: find the child chunk (within [pStart,pEnd)) whose byte range contains target.
+        private static int FindChildContaining(byte[] buf, int pStart, int pEnd, int target)
+        {
+            foreach (int pre in new[] { 0, 4, 5, 8, 12, 16, 20, 24 })
+            {
+                int s = pStart + pre;
+                if (s > pEnd) break;
+                int i = s;
+                bool ok = true;
+                int found = -1;
+                while (i < pEnd)
+                {
+                    if (pEnd - i < 8) { ok = false; break; }
+                    uint sz = BitConverter.ToUInt32(buf, i + 4);
+                    if (sz < 8 || i + (long)sz > pEnd) { ok = false; break; }
+                    if (target >= i && target < i + (int)sz) found = i;
+                    i += (int)sz;
+                }
+                if (ok && i == pEnd && found >= 0) return found;
+            }
+            return -1;
         }
 
         private byte[] BuildBytes()

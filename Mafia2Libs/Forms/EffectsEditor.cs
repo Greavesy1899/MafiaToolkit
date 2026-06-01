@@ -85,6 +85,16 @@ namespace Toolkit.Forms
             };
             valueGrid.CellEndEdit += OnValueCellEdited;
 
+            ContextMenuStrip gridMenu = new ContextMenuStrip();
+            gridMenu.Items.Add("Add key (duplicate selected)", null, (s, e) => DoKeyEdit(true));
+            gridMenu.Items.Add("Remove selected key", null, (s, e) => DoKeyEdit(false));
+            gridMenu.Opening += (s, e) =>
+            {
+                bool can = valueGrid.Tag is EffectParamInfo p && p.CanAddRemoveKeys;
+                foreach (ToolStripItem it in gridMenu.Items) it.Enabled = can;
+            };
+            valueGrid.ContextMenuStrip = gridMenu;
+
             // Right side: PropertyGrid on top, editable value grid below.
             SplitContainer rightSplit = new SplitContainer { Dock = DockStyle.Fill, Orientation = Orientation.Horizontal };
             rightSplit.Panel1.Controls.Add(propertyGrid);
@@ -266,6 +276,42 @@ namespace Toolkit.Forms
 
             effects.PatchFloat(offset, value);
             SetEdited();
+        }
+
+        private void DoKeyEdit(bool add)
+        {
+            if (!(valueGrid.Tag is EffectParamInfo p) || !p.CanAddRemoveKeys) return;
+            int row = valueGrid.CurrentCell != null ? valueGrid.CurrentCell.RowIndex : 0;
+            if (row < 0) row = 0;
+
+            System.Collections.Generic.List<int> path = GetNodePath(treeChunks.SelectedNode);
+            bool ok = add ? effects.AddKeyframe(p, row) : effects.RemoveKeyframe(p, row);
+            if (!ok) return;
+
+            SetEdited();
+            BuildTree();          // structural change shifts offsets -> reparse + rebuild
+            SelectNodePath(path); // restore selection so the grid shows the updated keys
+        }
+
+        private static System.Collections.Generic.List<int> GetNodePath(TreeNode node)
+        {
+            System.Collections.Generic.List<int> path = new System.Collections.Generic.List<int>();
+            while (node != null) { path.Insert(0, node.Index); node = node.Parent; }
+            return path;
+        }
+
+        private void SelectNodePath(System.Collections.Generic.List<int> path)
+        {
+            if (path == null || path.Count == 0) return;
+            TreeNodeCollection nodes = treeChunks.Nodes;
+            TreeNode cur = null;
+            foreach (int idx in path)
+            {
+                if (idx < 0 || idx >= nodes.Count) return;
+                cur = nodes[idx];
+                nodes = cur.Nodes;
+            }
+            if (cur != null) { cur.EnsureVisible(); treeChunks.SelectedNode = cur; }
         }
 
         private void RestoreCell(EffectParamInfo p, int row, int col)
