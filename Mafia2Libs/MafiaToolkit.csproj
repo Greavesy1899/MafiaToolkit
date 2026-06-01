@@ -357,8 +357,8 @@ del *.py
 del *.cmd</PostBuildEvent>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <AssemblyVersion>2.24</AssemblyVersion>
-    <FileVersion>2.24</FileVersion>
+    <AssemblyVersion>2.35</AssemblyVersion>
+    <FileVersion>2.35</FileVersion>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <PackageProjectUrl>https://github.com/Greavesy1899/MafiaToolkit</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
