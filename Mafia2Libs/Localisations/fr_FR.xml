@@ -492,4 +492,8 @@
 	<String ID="$TEST_CONVERT_32BIT">Test Convert 32-bit</String>
 	<String ID="$XBIN_EDITOR">XBin Editor</String>
 
+	<!-- Effects Editor Strings -->
+	<String ID="$EFFECTS_EDITOR_TITLE">Éditeur d'effets</String>
+	<String ID="$EFF_ADD_KEY">Ajouter une clé (dupliquer la sélection)</String>
+	<String ID="$EFF_REMOVE_KEY">Supprimer la clé sélectionnée</String>
 </Localisation>

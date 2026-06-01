@@ -2,6 +2,7 @@ using ResourceTypes.Effects;
 using System;
 using System.IO;
 using System.Windows.Forms;
+using Utils.Language;
 
 namespace Toolkit.Forms
 {
@@ -35,29 +36,29 @@ namespace Toolkit.Forms
 
         private void BuildUi()
         {
-            Text = "Effects Editor - " + effFile.Name;
+            Text = TitleText(false);
             ClientSize = new System.Drawing.Size(900, 560);
             KeyPreview = true;
 
             MenuStrip menu = new MenuStrip();
 
-            ToolStripMenuItem fileMenu = new ToolStripMenuItem("File");
-            ToolStripMenuItem saveItem = new ToolStripMenuItem("Save", null, (s, e) => Save())
+            ToolStripMenuItem fileMenu = new ToolStripMenuItem(Language.GetString("$FILE"));
+            ToolStripMenuItem saveItem = new ToolStripMenuItem(Language.GetString("$SAVE"), null, (s, e) => Save())
             {
                 ShortcutKeys = Keys.Control | Keys.S
             };
-            ToolStripMenuItem reloadItem = new ToolStripMenuItem("Reload", null, (s, e) => Reload())
+            ToolStripMenuItem reloadItem = new ToolStripMenuItem(Language.GetString("$RELOAD"), null, (s, e) => Reload())
             {
                 ShortcutKeys = Keys.Control | Keys.R
             };
-            ToolStripMenuItem exitItem = new ToolStripMenuItem("Exit", null, (s, e) => Close());
+            ToolStripMenuItem exitItem = new ToolStripMenuItem(Language.GetString("$EXIT"), null, (s, e) => Close());
             fileMenu.DropDownItems.Add(saveItem);
             fileMenu.DropDownItems.Add(reloadItem);
             fileMenu.DropDownItems.Add(exitItem);
 
-            ToolStripMenuItem toolsMenu = new ToolStripMenuItem("Tools");
-            toolsMenu.DropDownItems.Add(new ToolStripMenuItem("Export XML", null, (s, e) => ExportXml()));
-            toolsMenu.DropDownItems.Add(new ToolStripMenuItem("Import XML", null, (s, e) => ImportXml()));
+            ToolStripMenuItem toolsMenu = new ToolStripMenuItem(Language.GetString("$TOOLS"));
+            toolsMenu.DropDownItems.Add(new ToolStripMenuItem(Language.GetString("$EXPORT_XML"), null, (s, e) => ExportXml()));
+            toolsMenu.DropDownItems.Add(new ToolStripMenuItem(Language.GetString("$IMPORT_XML"), null, (s, e) => ImportXml()));
 
             menu.Items.Add(fileMenu);
             menu.Items.Add(toolsMenu);
@@ -86,8 +87,8 @@ namespace Toolkit.Forms
             valueGrid.CellEndEdit += OnValueCellEdited;
 
             ContextMenuStrip gridMenu = new ContextMenuStrip();
-            gridMenu.Items.Add("Add key (duplicate selected)", null, (s, e) => DoKeyEdit(true));
-            gridMenu.Items.Add("Remove selected key", null, (s, e) => DoKeyEdit(false));
+            gridMenu.Items.Add(Language.GetString("$EFF_ADD_KEY"), null, (s, e) => DoKeyEdit(true));
+            gridMenu.Items.Add(Language.GetString("$EFF_REMOVE_KEY"), null, (s, e) => DoKeyEdit(false));
             gridMenu.Opening += (s, e) =>
             {
                 bool can = valueGrid.Tag is EffectParamInfo p && p.CanAddRemoveKeys;
@@ -366,19 +367,24 @@ namespace Toolkit.Forms
             }
         }
 
+        private string TitleText(bool edited)
+        {
+            return Language.GetString("$EFFECTS_EDITOR_TITLE") + " - " + effFile.Name + (edited ? "*" : "");
+        }
+
         private void SetEdited()
         {
             if (!isEdited)
             {
                 isEdited = true;
-                Text = "Effects Editor - " + effFile.Name + "*";
+                Text = TitleText(true);
             }
         }
 
         private void SetNotEdited()
         {
             isEdited = false;
-            Text = "Effects Editor - " + effFile.Name;
+            Text = TitleText(false);
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
@@ -389,7 +395,7 @@ namespace Toolkit.Forms
             }
 
             DialogResult result = MessageBox.Show(
-                "Save changes to " + effFile.Name + "?", "Toolkit", MessageBoxButtons.YesNoCancel);
+                Language.GetString("$SAVE_PROMPT"), "Toolkit", MessageBoxButtons.YesNoCancel);
 
             if (result == DialogResult.Yes)
             {
