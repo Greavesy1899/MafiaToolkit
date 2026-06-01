@@ -1,0 +1,51 @@
+name: Release
+
+# Build the toolkit and attach a Windows x64 build to the GitHub release
+# whenever a new release is published.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write # required to upload assets to the release
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore MafiaToolkit.sln
+
+      - name: Build (Release x64)
+        run: dotnet build MafiaToolkit.sln --no-restore --configuration Release --output "_out"
+
+      - name: Package build
+        shell: pwsh
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          $zip = "MafiaToolkit-$env:TAG-win-x64.zip"
+          Compress-Archive -Path "_out\*" -DestinationPath $zip -Force
+          "ASSET=$zip" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Upload artifacts (workflow run)
+        uses: actions/upload-artifact@v4
+        with:
+          name: MafiaToolkit-win-x64
+          path: _out
+
+      - name: Attach build to release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$env:TAG" "$env:ASSET" --clobber
