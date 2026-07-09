@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using Microsoft.Win32;
 using ResourceTypes.SoundTable;
 using System.IO;
 

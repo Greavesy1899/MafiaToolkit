@@ -1,4 +1,7 @@
-﻿using ResourceTypes.Navigation;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using ResourceTypes.Navigation;
 using System.Diagnostics;
 using System.IO;
 

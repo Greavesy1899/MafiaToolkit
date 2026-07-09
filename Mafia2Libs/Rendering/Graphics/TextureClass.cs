@@ -1,4 +1,7 @@
-﻿using Gibbed.Squish;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using Gibbed.Squish;
 using Mafia2Tool;
 using ResourceTypes.Materials;
 using System;

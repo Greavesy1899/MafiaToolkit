@@ -1,4 +1,7 @@
-﻿using Forms.Docking;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using Forms.Docking;
 using Forms.EditorControls;
 using Rendering.Core;
 using Rendering.Factories;

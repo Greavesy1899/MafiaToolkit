@@ -1,4 +1,7 @@
-﻿using System;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using System;
 using Utils.Settings;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;

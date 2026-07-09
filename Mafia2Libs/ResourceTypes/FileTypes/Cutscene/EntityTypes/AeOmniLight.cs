@@ -1,4 +1,7 @@
-﻿using ResourceTypes.Cutscene.AnimEntities.LightTypes;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using ResourceTypes.Cutscene.AnimEntities.LightTypes;
 using System.ComponentModel;
 using System.IO;
 using Toolkit.Mathematics;

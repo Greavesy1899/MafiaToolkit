@@ -1,4 +1,7 @@
-﻿using Rendering.Core;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using Rendering.Core;
 using ResourceTypes.Materials;
 using System.Numerics;
 using System.Runtime.InteropServices;

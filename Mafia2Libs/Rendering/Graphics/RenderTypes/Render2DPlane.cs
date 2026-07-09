@@ -1,4 +1,7 @@
-﻿using ResourceTypes.Navigation.Traffic;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using ResourceTypes.Navigation.Traffic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Vortice.Direct3D;

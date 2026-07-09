@@ -1,4 +1,7 @@
-﻿using ResourceTypes.Animation2;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using ResourceTypes.Animation2;
 using System;
 using System.IO;
 

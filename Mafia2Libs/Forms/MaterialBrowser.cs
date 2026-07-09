@@ -1,4 +1,7 @@
-﻿using System;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using System;
 using ResourceTypes.Materials;
 using System.Windows.Forms;
 using System.Linq;

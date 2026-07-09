@@ -1,4 +1,7 @@
-﻿using FileTypes.XBin.StreamMap.Commands;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using FileTypes.XBin.StreamMap.Commands;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;

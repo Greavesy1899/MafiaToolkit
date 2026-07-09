@@ -1,4 +1,7 @@
-﻿using SharpGLTF.Schema2;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using SharpGLTF.Schema2;
 using System.Text.Json.Nodes;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter

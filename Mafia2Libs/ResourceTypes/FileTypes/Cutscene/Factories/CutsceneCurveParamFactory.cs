@@ -1,4 +1,7 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using Gibbed.Illusion.FileFormats.Hashing;
 using System;
 using System.Diagnostics;
 using System.IO;

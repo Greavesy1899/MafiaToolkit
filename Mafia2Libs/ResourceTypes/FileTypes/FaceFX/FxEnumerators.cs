@@ -1,4 +1,7 @@
-﻿namespace ResourceTypes.OC3.FaceFX
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+namespace ResourceTypes.OC3.FaceFX
 {
     public enum FxInputOp : uint
     {

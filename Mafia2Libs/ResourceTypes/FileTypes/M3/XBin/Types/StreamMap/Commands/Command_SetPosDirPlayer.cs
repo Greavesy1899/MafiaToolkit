@@ -1,4 +1,7 @@
-﻿using ResourceTypes.M3.XBin;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using ResourceTypes.M3.XBin;
 using ResourceTypes.XBin.Types;
 using System.IO;
 

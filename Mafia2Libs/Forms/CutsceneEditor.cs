@@ -1,4 +1,7 @@
-﻿using Core.IO;
+﻿// SPDX-License-Identifier: LicenseRef-PolyForm-Strict-1.0.0
+// Copyright (c) 2018-2026 Greavesy
+
+using Core.IO;
 using ResourceTypes.Cutscene;
 using ResourceTypes.Cutscene.AnimEntities;
 using System;
