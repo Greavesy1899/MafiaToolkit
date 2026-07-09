@@ -86,7 +86,7 @@ Create a `.mcp.json` file in your project directory (or add to your Claude Code 
 2. In Claude Code, run `/mcp` to connect to the server
 3. Use the available tools to browse SDS archives and game files
 
-### Available Tools (30 total)
+### Available Tools (33 total)
 
 #### SDS Archive Tools (8 tools)
 
@@ -149,6 +149,16 @@ Decode the SDS resource payloads the browsing tools only expose as opaque bytes 
 |------|------------|-------------|
 | `parse_effects_file` | `filePath`, `effectIndex?` | Parse a Mafia II `.eff` (Effects) file. Returns the effect/pattern list, or full detail (generations, operators, parameters, frames, sounds) for one effect when `effectIndex` is set. |
 | `parse_effects_from_bytes` | `base64Data`, `effectIndex?` | Parse `.eff` content from base64 bytes (e.g. the output of `extract_resource` on an 'Effects' resource). |
+
+#### Table Tools (3 tools)
+
+Read the game's data tables (the `.tbl` rows packed into the "Table" resources of `tables.sds` — weapons, cars, physics materials, etc.). Each tool accepts one of `sdsPath` (an SDS whose Table resources are enumerated), `tablePath` (a standalone `.tbl`), or `base64Data` (a Table-resource payload from `extract_resource`, with `version`). Columns carry only a 32-bit FNV name hash, so cells are positional and columns are reported by hash + type.
+
+| Tool | Parameters | Description |
+|------|------------|-------------|
+| `list_tables` | `sdsPath?`, `tablePath?`, `base64Data?`, `version?`, `gameType?` | List the data tables in the source: each table's name, name hash, row/column counts, and column hashes + types. |
+| `dump_rows` | `sdsPath?`, `tablePath?`, `base64Data?`, `version?`, `tableName?`, `offset`, `limit`, `gameType?` | Dump a table's rows (cells aligned positionally to the reported columns). `tableName` required when the source holds more than one table; matched case-insensitively, ignoring path/`.tbl` extension. Paginated. |
+| `lookup_by_row` | `sdsPath?`, `tablePath?`, `base64Data?`, `version?`, `tableName?`, `rowIndex`, `gameType?` | Look up a single row by index, returning each cell paired with its column hash and type. |
 
 ### Supported Formats
 
