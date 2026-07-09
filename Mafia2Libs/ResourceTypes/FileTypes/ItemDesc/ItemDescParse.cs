@@ -25,6 +25,8 @@ namespace ResourceTypes.ItemDesc
 
         public string FileName { get; private set; }
 
+        public ItemDescLoader() { }
+
         public ItemDescLoader(string fileName)
         {
             Log.WriteLine("Trying to Parse: " + fileName, LoggingTypes.WARNING, LogCategoryTypes.FUNCTION);

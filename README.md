@@ -86,7 +86,7 @@ Create a `.mcp.json` file in your project directory (or add to your Claude Code 
 2. In Claude Code, run `/mcp` to connect to the server
 3. Use the available tools to browse SDS archives and game files
 
-### Available Tools (24 total)
+### Available Tools (30 total)
 
 #### SDS Archive Tools (8 tools)
 
@@ -131,6 +131,24 @@ Create a `.mcp.json` file in your project directory (or add to your Claude Code 
 | `detect_format_from_bytes` | `base64Data`, `extensionHint?` | Detect file format from base64-encoded bytes. Useful for identifying extracted resources. |
 | `convert_number` | `input` | Convert between decimal, hex (0x), and binary (0b). Returns all representations plus signed values and byte array. |
 | `list_game_files` | `directoryPath`, `extensionFilter?`, `recursive` | List game files matching common Mafia extensions (.sds, .mtl, .dds, .act, .nav, .xbin, etc.). |
+
+#### Payload Decode Tools (4 tools)
+
+Decode the SDS resource payloads the browsing tools only expose as opaque bytes into structured JSON. Each accepts either a standalone `filePath` (the file the toolkit unpacks) or `base64Data` (the raw output of `extract_resource` — no wrapper is added, so it maps 1:1).
+
+| Tool | Parameters | Description |
+|------|------------|-------------|
+| `decode_actors` | `filePath?`, `base64Data?`, `offset`, `limit` | Decode an Actors (`.act`) resource: spawn/slot definitions and actor entries (entity/definition names, actor type, position/rotation/scale, frame links, extra-data type). Paginated. |
+| `decode_frame_resource` | `filePath?`, `base64Data?`, `isBigEndian?`, `includeObjects?`, `frameNameTablePath?`, `frameNameTableBase64?`, `offset`, `limit` | Decode a FrameResource (`.fr`) scene graph: header counts, scene folders, and frame objects (name, type, parents, transform). Optionally resolve top-level named frames from a FrameNameTable. Paginated. |
+| `decode_itemdesc` | `filePath?`, `base64Data?` | Decode an ItemDesc (`.ids`) resource: frame link, collision type, hashes, transform, and the decoded collision shape (box/sphere/capsule/convex). |
+| `decode_collisions` | `filePath?`, `base64Data?`, `offset`, `limit` | Decode a Collisions (`.col`) resource: platform, placements (instance transforms + hashes), and collision models (PhysX triangle meshes with vertex/triangle/section counts). Paginated. |
+
+#### Effects Tools (2 tools)
+
+| Tool | Parameters | Description |
+|------|------------|-------------|
+| `parse_effects_file` | `filePath`, `effectIndex?` | Parse a Mafia II `.eff` (Effects) file. Returns the effect/pattern list, or full detail (generations, operators, parameters, frames, sounds) for one effect when `effectIndex` is set. |
+| `parse_effects_from_bytes` | `base64Data`, `effectIndex?` | Parse `.eff` content from base64 bytes (e.g. the output of `extract_resource` on an 'Effects' resource). |
 
 ### Supported Formats
 
