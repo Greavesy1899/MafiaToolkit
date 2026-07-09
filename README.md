@@ -86,7 +86,7 @@ Create a `.mcp.json` file in your project directory (or add to your Claude Code 
 2. In Claude Code, run `/mcp` to connect to the server
 3. Use the available tools to browse SDS archives and game files
 
-### Available Tools (35 total)
+### Available Tools (36 total)
 
 #### SDS Archive Tools (8 tools)
 
@@ -132,12 +132,13 @@ Create a `.mcp.json` file in your project directory (or add to your Claude Code 
 | `convert_number` | `input` | Convert between decimal, hex (0x), and binary (0b). Returns all representations plus signed values and byte array. |
 | `list_game_files` | `directoryPath`, `extensionFilter?`, `recursive` | List game files matching common Mafia extensions (.sds, .mtl, .dds, .act, .nav, .xbin, etc.). |
 
-#### Payload Decode Tools (4 tools)
+#### Payload Decode Tools (5 tools)
 
-Decode the SDS resource payloads the browsing tools only expose as opaque bytes into structured JSON. Each accepts either a standalone `filePath` (the file the toolkit unpacks) or `base64Data` (the raw output of `extract_resource` — no wrapper is added, so it maps 1:1).
+Decode the SDS resource payloads the browsing tools only expose as opaque bytes into structured JSON. The `decode_*` tools each accept either a standalone `filePath` (the file the toolkit unpacks) or `base64Data` (the raw output of `extract_resource` — no wrapper is added, so it maps 1:1). `decode_resource` is the ergonomic shortcut: it opens the SDS, routes by the resource's typeName, and decodes in one call.
 
 | Tool | Parameters | Description |
 |------|------------|-------------|
+| `decode_resource` | `sdsPath`, `resourceIndex?`, `typeName?`, `offset`, `limit`, `gameType?` | Extract a resource from an SDS and decode it in one step, routing by typeName (Actors, FrameResource, ItemDesc, Collisions, Effects). Select by `resourceIndex` or by `typeName` (first of that type); for a FrameResource it auto-pairs the archive's lone FrameNameTable. Removes the manual extract → base64 → decode hop. |
 | `decode_actors` | `filePath?`, `base64Data?`, `offset`, `limit` | Decode an Actors (`.act`) resource: spawn/slot definitions and actor entries (entity/definition names, actor type, position/rotation/scale, frame links, extra-data type). Paginated. |
 | `decode_frame_resource` | `filePath?`, `base64Data?`, `isBigEndian?`, `includeObjects?`, `frameNameTablePath?`, `frameNameTableBase64?`, `offset`, `limit` | Decode a FrameResource (`.fr`) scene graph: header counts, scene folders, and frame objects (name, type, parents, transform). Optionally resolve top-level named frames from a FrameNameTable. Paginated. |
 | `decode_itemdesc` | `filePath?`, `base64Data?` | Decode an ItemDesc (`.ids`) resource: frame link, collision type, hashes, transform, and the decoded collision shape (box/sphere/capsule/convex). |
