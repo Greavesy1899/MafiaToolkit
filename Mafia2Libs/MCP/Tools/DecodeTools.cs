@@ -111,8 +111,8 @@ public class DecodeTools
         [Description("Include the per-object list (default: true). Set false for just header/counts.")] bool includeObjects = true,
         [Description("Optional path to a FrameNameTable (.fnt) file to resolve named frames.")] string? frameNameTablePath = null,
         [Description("Optional base64 of a FrameNameTable payload to resolve named frames.")] string? frameNameTableBase64 = null,
-        [Description("Starting index into the frame object list for pagination (default: 0)")] int offset = 0,
-        [Description("Max frame objects to return (default: 500, max: 5000)")] int limit = 500)
+        [Description("Starting index for pagination of both the frame object list and the name-table entries (default: 0)")] int offset = 0,
+        [Description("Max frame objects AND name-table entries to return (default: 500, max: 5000)")] int limit = 500)
     {
         try
         {
@@ -128,6 +128,11 @@ public class DecodeTools
             var header = frame.Header;
             object nameTable = null;
 
+            // offset/limit page BOTH the objects list and the name-table entries; without this the
+            // name table would dump every entry (~1,900 on a city FrameResource) and blow the cap.
+            limit = Math.Clamp(limit, 1, 5000);
+            offset = Math.Max(0, offset);
+
             byte[] fntBytes = LoadOptionalBytes(frameNameTablePath, frameNameTableBase64);
             if (fntBytes != null)
             {
@@ -136,16 +141,19 @@ public class DecodeTools
                 {
                     fnt.ReadFromFile(stream, isBigEndian);
                 }
+                var fd = fnt.FrameData;
+                var ntEntries = fd.Skip(offset).Take(limit).Select(d => new
+                {
+                    name = d.Name,
+                    parentName = d.ParentName,
+                    frameIndex = d.FrameIndex,
+                    flags = d.Flags.ToString()
+                }).ToList();
                 nameTable = new
                 {
-                    entryCount = fnt.FrameData.Length,
-                    entries = fnt.FrameData.Select(d => new
-                    {
-                        name = d.Name,
-                        parentName = d.ParentName,
-                        frameIndex = d.FrameIndex,
-                        flags = d.Flags.ToString()
-                    }).ToList()
+                    entryCount = fd.Length,
+                    pagination = new { offset, limit, count = ntEntries.Count, totalCount = fd.Length, hasMore = offset + ntEntries.Count < fd.Length },
+                    entries = ntEntries
                 };
             }
 
@@ -153,8 +161,6 @@ public class DecodeTools
             var frameObjects = frame.FrameObjects;
             if (includeObjects)
             {
-                limit = Math.Clamp(limit, 1, 5000);
-                offset = Math.Max(0, offset);
                 objects = frameObjects.Skip(offset).Take(limit).Select((kv, i) =>
                 {
                     var fb = kv.Value as FR.FrameObjectBase;
