@@ -86,7 +86,7 @@ Create a `.mcp.json` file in your project directory (or add to your Claude Code 
 2. In Claude Code, run `/mcp` to connect to the server
 3. Use the available tools to browse SDS archives and game files
 
-### Available Tools (33 total)
+### Available Tools (35 total)
 
 #### SDS Archive Tools (8 tools)
 
@@ -159,6 +159,15 @@ Read the game's data tables (the `.tbl` rows packed into the "Table" resources o
 | `list_tables` | `sdsPath?`, `tablePath?`, `base64Data?`, `version?`, `gameType?` | List the data tables in the source: each table's name, name hash, row/column counts, and column hashes + types. |
 | `dump_rows` | `sdsPath?`, `tablePath?`, `base64Data?`, `version?`, `tableName?`, `offset`, `limit`, `gameType?` | Dump a table's rows (cells aligned positionally to the reported columns). `tableName` required when the source holds more than one table; matched case-insensitively, ignoring path/`.tbl` extension. Paginated. |
 | `lookup_by_row` | `sdsPath?`, `tablePath?`, `base64Data?`, `version?`, `tableName?`, `rowIndex`, `gameType?` | Look up a single row by index, returning each cell paired with its column hash and type. |
+
+#### Stream Map Tools (2 tools)
+
+Read and edit `StreamMapa.bin` (magic `StrM`, version 6) — the table that maps each stream line to the SDS/assets it loads.
+
+| Tool | Parameters | Description |
+|------|------------|-------------|
+| `parse_stream_map` | `filePath?`, `base64Data?`, `section?`, `offset`, `limit` | Decode a StreamMapa.bin. `section=summary` returns counts + all groups; `section=lines\|loaders\|blocks` returns that paginated array (loader path/entity/type, line name/flags/hashes, block hashes). |
+| `edit_stream_map` | `filePath`, `find`, `replace`, `mode?`, `fields?`, `dryRun?` | Find/replace across the string fields (`path`, `entity`, `lineName`, `flags`, `groupName`) and save — the way assets get re-pointed. `dryRun` (default true) previews the changes; set `dryRun=false` to write. Keeps a `<name>_old.bin` backup. |
 
 ### Supported Formats
 

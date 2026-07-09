@@ -368,6 +368,17 @@ namespace ResourceTypes.Misc
             }
         }
 
+        public StreamMapLoader() { }
+
+        /// <summary>Parses a StreamMap from an in-memory buffer (read-only; WriteToFile needs a file).</summary>
+        public void ReadFromBytes(byte[] data)
+        {
+            using (BinaryReader reader = new BinaryReader(new MemoryStream(data, false)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
         private string ReadBufferSpecial(long start, long end, BinaryReader reader)
         {
             reader.BaseStream.Position = start;
