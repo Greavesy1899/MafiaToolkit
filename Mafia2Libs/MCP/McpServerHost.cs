@@ -26,6 +26,7 @@ public static class McpServerHost
     private static CancellationTokenSource? _cts;
     private static Task? _serverTask;
     private static readonly string LogFile = Path.Combine(Path.GetTempPath(), "MafiaToolkit_MCP.log");
+    private const long MaxLogSizeBytes = 1024 * 1024;
 
     /// <summary>
     /// Gets whether the MCP server is currently running
@@ -48,11 +49,26 @@ public static class McpServerHost
         System.Diagnostics.Debug.WriteLine($"[MCP] {message}");
     }
 
+    private static void RotateLogIfNeeded()
+    {
+        try
+        {
+            var info = new FileInfo(LogFile);
+            if (info.Exists && info.Length > MaxLogSizeBytes)
+            {
+                File.Move(LogFile, LogFile + ".old", true);
+            }
+        }
+        catch { }
+    }
+
     /// <summary>
     /// Starts the MCP server in the background
     /// </summary>
     public static void Start(int port = DefaultPort)
     {
+        RotateLogIfNeeded();
+
         if (IsRunning)
         {
             Log("Server is already running");

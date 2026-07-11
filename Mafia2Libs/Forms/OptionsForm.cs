@@ -31,16 +31,25 @@ namespace Mafia2Tool
 
         private void SwapOptionControls(UserControl control)
         {
-            splitContainer1.Panel2.Controls.Clear();
+            ClearOptionControls();
             splitContainer1.Panel2.Controls.Add(control);
             control.Dock = DockStyle.Fill;
             control.AutoSize = true;
         }
 
+        private void ClearOptionControls()
+        {
+            // Disposing a control also removes it from its parent collection.
+            while (splitContainer1.Panel2.Controls.Count > 0)
+            {
+                splitContainer1.Panel2.Controls[0].Dispose();
+            }
+        }
+
         private void NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            splitContainer1.Panel2.Controls.Clear();
-            
+            ClearOptionControls();
+
             switch(e.Node.Index)
             {
                 case 0:

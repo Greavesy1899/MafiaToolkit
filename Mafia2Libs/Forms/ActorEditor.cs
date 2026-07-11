@@ -235,19 +235,21 @@ namespace Mafia2Tool
 
         private void AddDefinitionButton_Click(object sender, System.EventArgs e)
         {
-            ListWindow window = new ListWindow();
-            window.PopulateForm(actors.Items);
-
-            if (window.ShowDialog() == DialogResult.OK)
+            using (ListWindow window = new ListWindow())
             {
-                ActorDefinition definition = actors.CreateActorDefinition((window.chosenObject as ActorEntry));
-                TreeNode node = new TreeNode(definition.Name);
-                node.Name = definition.FrameNameHash.ToString();
-                node.Tag = definition;
-                definitions.Nodes.Add(node);
+                window.PopulateForm(actors.Items);
 
-                Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
-                bIsFileEdited = true;
+                if (window.ShowDialog() == DialogResult.OK)
+                {
+                    ActorDefinition definition = actors.CreateActorDefinition((window.chosenObject as ActorEntry));
+                    TreeNode node = new TreeNode(definition.Name);
+                    node.Name = definition.FrameNameHash.ToString();
+                    node.Tag = definition;
+                    definitions.Nodes.Add(node);
+
+                    Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
+                    bIsFileEdited = true;
+                }
             }
         }
 

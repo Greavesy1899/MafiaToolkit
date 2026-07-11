@@ -315,6 +315,20 @@ public class SdsTools
         }
     }
 
+    [McpServerTool(Name = "close_sds_file"), Description("Close a cached SDS file and release its memory")]
+    public string CloseSdsFile([Description("Full path to the SDS file")] string filePath)
+    {
+        try
+        {
+            _sdsService.CloseFile(filePath);
+            return JsonSerializer.Serialize(new { success = true, filePath });
+        }
+        catch (Exception ex)
+        {
+            return McpError.FailJson(ex);
+        }
+    }
+
     [McpServerTool(Name = "get_sds_stats"), Description("Get summary statistics for an SDS file")]
     public string GetSdsStats([Description("Full path to the SDS file")] string filePath)
     {

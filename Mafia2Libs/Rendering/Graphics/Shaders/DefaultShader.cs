@@ -35,6 +35,13 @@ namespace Rendering.Graphics
 
             return true;
         }
+
+        public override void Shutdown()
+        {
+            base.Shutdown();
+            ConstantExtraParameterBuffer?.Dispose();
+            ConstantExtraParameterBuffer = null;
+        }
         public override void Render(ID3D11DeviceContext context, PrimitiveTopology type, int size, uint offset)
         {
             base.Render(context, type, size, offset);

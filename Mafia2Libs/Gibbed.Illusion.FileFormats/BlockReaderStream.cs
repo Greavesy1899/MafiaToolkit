@@ -79,6 +79,12 @@ namespace Gibbed.Illusion.FileFormats
                     this._CurrentBlock = null;
                     return false;
                 }
+                // Free the previous block's loaded data; Load re-reads from the
+                // base stream on demand, so a later seek back re-decompresses it.
+                if (this._CurrentBlock != null)
+                {
+                    this._CurrentBlock.FreeLoadedData();
+                }
                 this._CurrentBlock = block;
             }
 

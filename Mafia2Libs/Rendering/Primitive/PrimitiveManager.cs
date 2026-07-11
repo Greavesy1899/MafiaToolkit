@@ -71,6 +71,21 @@ namespace Rendering.Core
             }
         }
 
+        public void RemoveAndShutdownPrimitiveBatch(PrimitiveBatch Batch)
+        {
+            RemoveAndShutdownPrimitiveBatch(Batch.BatchID);
+        }
+
+        public void RemoveAndShutdownPrimitiveBatch(string BatchID)
+        {
+            PrimitiveBatch Batch = null;
+            if (Batches.TryGetValue(BatchID, out Batch))
+            {
+                Batches.Remove(BatchID);
+                Batch.Shutdown();
+            }
+        }
+
         public void RenderPrimitives(ID3D11Device InDevice, ID3D11DeviceContext InDeviceContext, Camera InCamera)
         {
             foreach (PrimitiveBatch Batch in Batches.Values)

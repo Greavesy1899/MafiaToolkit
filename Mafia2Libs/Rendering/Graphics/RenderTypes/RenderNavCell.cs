@@ -100,7 +100,7 @@ namespace Rendering.Graphics
         {
             if (LineBatch != null)
             {
-                OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(LineBatch);
+                OwnGraphics.OurPrimitiveManager.RemoveAndShutdownPrimitiveBatch(LineBatch);
                 LineBatch = null;
             }
         }
@@ -123,7 +123,7 @@ namespace Rendering.Graphics
             // TODO: Ideally, we should be using the same primitive batcher.
             // Problem is, calling ClearObjects on the batcher shuts down the lines too.
             // Once the RenderLine and RenderBBox has been decoupled, then this should be easier.
-            OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(LineBatch);
+            OwnGraphics.OurPrimitiveManager.RemoveAndShutdownPrimitiveBatch(LineBatch);
 
             if (DoRender)
             {

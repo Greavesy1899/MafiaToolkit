@@ -26,6 +26,7 @@ namespace Rendering.Graphics
         private ID3D11RasterizerState m_RSCullSolid { get; set; }
         private ID3D11RasterizerState m_RSCullWireFrame { get; set; }
         private ID3D11SamplerState m_SamplerState { get; set; }
+        private ID3D11BlendState m_BSAlpha { get; set; }
 
         private RasterizerDescription m_RSDesc;
         private FillMode m_FillMode = FillMode.Solid;
@@ -74,6 +75,7 @@ namespace Rendering.Graphics
             // Create SwapChain
             SwapChain = factory.CreateSwapChain(Device, swapChainDesc);
             factory.MakeWindowAssociation(WindowHandle, WindowAssociationFlags.IgnoreAltEnter);
+            factory.Dispose();
 
             var backBuffer = SwapChain.GetBuffer<ID3D11Texture2D>(0);
             m_RenderTargetView = Device.CreateRenderTargetView(backBuffer);
@@ -95,10 +97,10 @@ namespace Rendering.Graphics
             bsd.RenderTarget[0].SourceBlend = Blend.SourceAlpha;
             bsd.AlphaToCoverageEnable = true;
 
-            ID3D11BlendState bsAlpha = Device.CreateBlendState(bsd);
+            m_BSAlpha = Device.CreateBlendState(bsd);
 
             // Set Blend State
-            DeviceContext.OMSetBlendState(bsAlpha);
+            DeviceContext.OMSetBlendState(m_BSAlpha);
             BuildDepthStencilView(1920, 1080);
 
             // Create rasterizers
@@ -244,6 +246,10 @@ namespace Rendering.Graphics
             m_RSCullSolid = null;
             m_RSCullWireFrame?.Dispose();
             m_RSCullWireFrame = null;
+            m_SamplerState?.Dispose();
+            m_SamplerState = null;
+            m_BSAlpha?.Dispose();
+            m_BSAlpha = null;
             m_DepthStencilView?.Dispose();
             m_DepthStencilView = null;
             DepthStencilState?.Dispose();
@@ -273,8 +279,8 @@ namespace Rendering.Graphics
             m_RenderTargetView.Dispose();
             SwapChain.ResizeBuffers(0, w, h, Format.Unknown, SwapChainFlags.None);
             ID3D11Texture2D buffer = SwapChain.GetBuffer<ID3D11Texture2D>(0);
-            //m_RenderTargetView = 
-            //buffer.Dispose();
+            //m_RenderTargetView =
+            buffer.Dispose();
 
             //BuildDepthStencilView(w, h);
 

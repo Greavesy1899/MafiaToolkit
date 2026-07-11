@@ -28,7 +28,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             Log.WriteLine("Begin unpacking and saving files..");
 
-            XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
+            using XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
             resourceXML.WriteStartElement("SDSResource");
 
             int[] counts = new int[ResourceTypes.Count];
@@ -160,7 +160,6 @@ namespace Gibbed.Mafia2.FileFormats
 
             resourceXML.WriteEndElement();
             resourceXML.Flush();
-            resourceXML.Dispose();
         }
 
         public bool BuildResourcesVersion19(XmlDocument document, XmlDocument xmlDoc, XmlNode rootNode, string sdsFolder)

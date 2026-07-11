@@ -58,6 +58,8 @@ namespace Rendering.Graphics
 
         private void InitSplines()
         {
+            SplineBatch.ClearObjects();
+
             for (int i = 0; i < OurData.Junctions.Count; i++)
             {
                 IRoadJunction Junction = OurData.Junctions[i];
@@ -113,6 +115,12 @@ namespace Rendering.Graphics
             if (Boundary != null)
             {
                 Boundary.Shutdown();
+            }
+
+            if (SplineBatch != null)
+            {
+                OwnerGraphics.OurPrimitiveManager.RemoveAndShutdownPrimitiveBatch(SplineBatch);
+                SplineBatch = null;
             }
         }
 

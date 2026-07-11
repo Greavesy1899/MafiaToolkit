@@ -69,6 +69,11 @@ namespace Rendering.Graphics
                 col.Value.Shutdown();
             }
 
+            foreach (KeyValuePair<ulong, Image> thumbnail in TextureThumbnails)
+            {
+                thumbnail.Value?.Dispose();
+            }
+
             SplineStorage.Clear();
             StaticCollisions.Clear();
             TextureCache.Clear();

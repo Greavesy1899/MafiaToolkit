@@ -76,6 +76,7 @@ namespace Mafia2Tool
         private bool bSelectMode = false;
         private float selectTimer = 0.0f;
         private bool bHideChildren = false;
+        private DateTime lastMemoryUsageUpdate = DateTime.MinValue;
 
         private Dictionary<string, int> NamesAndDuplicationStore;
 
@@ -491,16 +492,18 @@ namespace Mafia2Tool
         {
             string name = (sender as ToolStripMenuItem).Name;
             ParentInfo.ParentType ParentType = (name == "UpdateParent1Button" ? ParentInfo.ParentType.ParentIndex1 : ParentInfo.ParentType.ParentIndex2);
-            ListWindow window = new ListWindow();
-            window.PopulateForm(ParentType,SceneData.FrameResource);
-            
-            if (window.ShowDialog() == DialogResult.OK)
+            using (ListWindow window = new ListWindow())
             {
-                FrameEntry NewParent = (window.chosenObject != null ? window.chosenObject as FrameEntry : null);
-                int ParentRefID = (NewParent != null ? NewParent.RefID : -1);
+                window.PopulateForm(ParentType, SceneData.FrameResource);
 
-                // Request parent update
-                UpdateObjectParents(ParentType, ParentRefID, NewParent);
+                if (window.ShowDialog() == DialogResult.OK)
+                {
+                    FrameEntry NewParent = (window.chosenObject != null ? window.chosenObject as FrameEntry : null);
+                    int ParentRefID = (NewParent != null ? NewParent.RefID : -1);
+
+                    // Request parent update
+                    UpdateObjectParents(ParentType, ParentRefID, NewParent);
+                }
             }
         }
 
@@ -567,7 +570,9 @@ namespace Mafia2Tool
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
             SceneData.CleanData();
-            RenderStorageSingleton.Instance.TextureCache.Clear();
+            ImportedScene?.CleanData();
+            ImportedScene = null;
+            importFRRoot = null;
             dSceneTree.Dispose();
             dImportSceneTree.Dispose();
             dPropertyGrid.Dispose();
@@ -674,8 +679,12 @@ namespace Mafia2Tool
                 UpdatePositionElement(Graphics.Camera.Position);
             }
 
-            Process process = Process.GetCurrentProcess();
-            Label_MemoryUsage.Text = string.Format("Usage: {0}", process.WorkingSet64.ConvertToMemorySize());
+            DateTime now = DateTime.UtcNow;
+            if ((now - lastMemoryUsageUpdate).TotalSeconds >= 1.0)
+            {
+                Label_MemoryUsage.Text = string.Format("Usage: {0}", Environment.WorkingSet.ConvertToMemorySize());
+                lastMemoryUsageUpdate = now;
+            }
             Label_FPS.Text = Graphics.Profile.ToString();
             Label_StatusBar.Text = Graphics.GetStatusBarText();
             return true;
@@ -1647,6 +1656,9 @@ namespace Mafia2Tool
 
         private void CancelButton_Click(object sender, EventArgs e)
         {
+            ImportedScene?.CleanData();
+            ImportedScene = null;
+            importFRRoot = null;
             Button_ImportFrame.Enabled = true;
         }
             
@@ -1898,6 +1910,11 @@ namespace Mafia2Tool
 
                 Collision.CollisionModel data = (node.Tag as Collision.CollisionModel);
                 SceneData.Collisions.RemoveModel(data);
+                RenderStaticCollision staticCollision;
+                if (RenderStorageSingleton.Instance.StaticCollisions.TryGetValue(data.Hash, out staticCollision))
+                {
+                    staticCollision.Shutdown();
+                }
                 RenderStorageSingleton.Instance.StaticCollisions.TryRemove(data.Hash);
 
                 for (int i = 0; i != node.Nodes.Count; i++)

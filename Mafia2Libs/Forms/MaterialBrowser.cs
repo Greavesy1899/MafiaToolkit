@@ -65,7 +65,13 @@ namespace Mafia2Tool.Forms
 
         private void PopulateBrowser(IMaterial[] materials)
         {
-            FlowPanel_Materials.Controls.Clear();
+            // Dispose the previous search's entries; disposing a control removes it from its parent.
+            // NB: the thumbnail Images are shared cached instances and are intentionally not disposed here.
+            SelectedEntry = null;
+            while (FlowPanel_Materials.Controls.Count > 0)
+            {
+                FlowPanel_Materials.Controls[0].Dispose();
+            }
 
             for (int x = 0; x < materials.Length; x++)
             {

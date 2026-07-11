@@ -276,6 +276,10 @@ namespace Mafia2Tool
             ATLoader = null;
             AIWorlds = null;
             OBJData = null;
+            HPDData = null;
+            Translokator = null;
+            Prefabs = null;
+            sdsContent = null;
         }
         
         //for foolfroofing, maybe the imported textures could be cached until save, then reset it, and if user doesn't save and exit, all cached textures would be deleted

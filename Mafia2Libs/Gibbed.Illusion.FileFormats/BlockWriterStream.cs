@@ -166,37 +166,37 @@ namespace Gibbed.Illusion.FileFormats
 
         private bool FlushZlibCompressedBlock(MemoryStream data, int blockLength)
         {
-            var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level9);
-            zlib.Write(this._BlockBytes, 0, blockLength);
-            zlib.Flush();
-
-            // If it doesn't fit within the range of ratio, store as uncompressed.
-            if (!IsWithinCompressionRatio((int)zlib.TotalOut, blockLength))
+            using (var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level9))
             {
+                zlib.Write(this._BlockBytes, 0, blockLength);
+                zlib.Flush();
+
+                // If it doesn't fit within the range of ratio, store as uncompressed.
+                if (!IsWithinCompressionRatio((int)zlib.TotalOut, blockLength))
+                {
+                    return false;
+                }
+
+                var compressedLength = (int)data.Length;
+                if (data.Length < blockLength)
+                {
+                    this._BaseStream.WriteValueS32(32 + compressedLength, this._Endian);
+                    this._BaseStream.WriteValueU8(1);
+                    CompressedBlockHeader compressedBlockHeader = new CompressedBlockHeader();
+                    compressedBlockHeader.SetZlibPreset();
+                    compressedBlockHeader.UncompressedSize = (uint)blockLength; //TODO: I think this should actually be alignment?
+                    compressedBlockHeader.CompressedSize = (uint)compressedLength;
+                    compressedBlockHeader.ChunkSize = (short)_Alignment;
+                    compressedBlockHeader.Unknown0C = 135200769;
+                    compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
+                    compressedBlockHeader.Write(this._BaseStream, this._Endian);
+                    this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
+                    this._BlockOffset = 0;
+                    return true;
+                }
+
                 return false;
             }
-
-            var compressedLength = (int)data.Length;
-            if (data.Length < blockLength)
-            {
-                this._BaseStream.WriteValueS32(32 + compressedLength, this._Endian);
-                this._BaseStream.WriteValueU8(1);
-                CompressedBlockHeader compressedBlockHeader = new CompressedBlockHeader();
-                compressedBlockHeader.SetZlibPreset();
-                compressedBlockHeader.UncompressedSize = (uint)blockLength; //TODO: I think this should actually be alignment?
-                compressedBlockHeader.CompressedSize = (uint)compressedLength;
-                compressedBlockHeader.ChunkSize = (short)_Alignment;
-                compressedBlockHeader.Unknown0C = 135200769;
-                compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
-                compressedBlockHeader.Write(this._BaseStream, this._Endian);
-                this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
-                this._BlockOffset = 0;
-                zlib.Close();
-                zlib.Dispose();
-                return true;
-            }
-
-            return false;
         }
 
         private bool FlushOodleCompressedBlock(MemoryStream data, int blockLength)

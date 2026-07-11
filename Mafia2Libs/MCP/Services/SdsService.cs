@@ -67,13 +67,17 @@ public class SdsResourceInfo
 /// </summary>
 public class SdsService
 {
+    private const long MaxCacheBytes = 512L * 1024 * 1024;
+
     private readonly ConcurrentDictionary<string, CachedSdsFile> _cache = new();
     private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
+    private readonly object _evictionLock = new();
 
     private class CachedSdsFile
     {
         public SdsFileInfo Info { get; init; } = null!;
         public List<ResourceEntry> Entries { get; init; } = new();
+        public long CachedBytes { get; init; }
         public DateTime LastAccessed { get; set; }
     }
 
@@ -132,6 +136,7 @@ public class SdsService
         if (_cache.TryGetValue(normalizedPath, out var cached))
         {
             cached.LastAccessed = DateTime.UtcNow;
+            CleanupCache();
             return cached.Info;
         }
 
@@ -225,6 +230,7 @@ public class SdsService
             {
                 Info = sdsInfo,
                 Entries = archive.ResourceEntries,
+                CachedBytes = archive.ResourceEntries.Sum(e => (long)(e.Data?.Length ?? 0)),
                 LastAccessed = DateTime.UtcNow
             };
 
@@ -279,7 +285,9 @@ public class SdsService
         }
 
         cached.LastAccessed = DateTime.UtcNow;
-        return cached.Entries[resourceIndex].Data;
+        var data = cached.Entries[resourceIndex].Data;
+        CleanupCache();
+        return data;
     }
 
     /// <summary>
@@ -323,15 +331,39 @@ public class SdsService
 
     private void CleanupCache()
     {
-        var cutoff = DateTime.UtcNow - _cacheExpiration;
-        var keysToRemove = _cache
-            .Where(kvp => kvp.Value.LastAccessed < cutoff)
-            .Select(kvp => kvp.Key)
-            .ToList();
-
-        foreach (var key in keysToRemove)
+        lock (_evictionLock)
         {
-            _cache.TryRemove(key, out _);
+            var cutoff = DateTime.UtcNow - _cacheExpiration;
+            var keysToRemove = _cache
+                .Where(kvp => kvp.Value.LastAccessed < cutoff)
+                .Select(kvp => kvp.Key)
+                .ToList();
+
+            foreach (var key in keysToRemove)
+            {
+                _cache.TryRemove(key, out _);
+            }
+
+            var totalBytes = _cache.Values.Sum(c => c.CachedBytes);
+            if (totalBytes <= MaxCacheBytes)
+            {
+                return;
+            }
+
+            // Evict least-recently-used entries until under the byte cap,
+            // always keeping the most recently accessed entry cached.
+            foreach (var kvp in _cache.OrderBy(kvp => kvp.Value.LastAccessed).ToList())
+            {
+                if (totalBytes <= MaxCacheBytes || _cache.Count <= 1)
+                {
+                    break;
+                }
+
+                if (_cache.TryRemove(kvp.Key, out var removed))
+                {
+                    totalBytes -= removed.CachedBytes;
+                }
+            }
         }
     }
 }

@@ -28,6 +28,7 @@ namespace Mafia2Tool
             ReadFromFile();
             Initialise();
             ShowDialog();
+            Dispose();
         }
 
         private void Localise()

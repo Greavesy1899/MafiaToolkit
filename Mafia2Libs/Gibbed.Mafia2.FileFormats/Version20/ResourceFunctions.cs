@@ -49,7 +49,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             Log.WriteLine("Begin unpacking and saving files..");
 
-            XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
+            using XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
             resourceXML.WriteStartElement("SDSResource");
 
             //TODO Cleanup this code. It's awful. (V2 26/08/18, improved to use switch)
@@ -138,7 +138,6 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteEndElement();
             resourceXML.Close();
             resourceXML.Flush();
-            resourceXML.Dispose();
         }
 
         public bool BuildResourcesVersion20(XmlDocument document, XmlDocument xmlDoc, XmlNode rootNode, string sdsFolder)

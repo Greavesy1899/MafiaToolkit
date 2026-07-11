@@ -20,12 +20,15 @@ namespace Mafia2Tool
         private FramePropsFile propsData;
 
         private TreeNode RootNode;
+        private Font RootNodeFont;
 
         private bool bIsFileEdited;
 
         public FramePropsEditor(FileInfo file)
         {
             InitializeComponent();
+            RootNodeFont = new Font(TreeView_Main.Font, FontStyle.Bold);
+            FormClosed += FramePropsEditor_Closed;
             Localise();
             propsFile = file;
             BuildData(true);
@@ -64,7 +67,7 @@ namespace Mafia2Tool
             string fileName = Path.GetFileName(propsFile.FullName);
             RootNode = new TreeNode($"FrameProps: {fileName}");
             RootNode.Tag = propsData;
-            RootNode.NodeFont = new Font(TreeView_Main.Font, FontStyle.Bold);
+            RootNode.NodeFont = RootNodeFont;
 
             // Add each frame entry
             for (int i = 0; i < propsData.Entries.Length; i++)
@@ -699,6 +702,11 @@ namespace Mafia2Tool
                     e.Cancel = true;
                 }
             }
+        }
+
+        private void FramePropsEditor_Closed(object sender, FormClosedEventArgs e)
+        {
+            RootNodeFont.Dispose();
         }
 
         private void MarkAsEdited()

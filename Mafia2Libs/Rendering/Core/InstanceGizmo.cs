@@ -31,9 +31,9 @@ namespace Rendering.Core
         
         public ID3D11ShaderResourceView LoadTexture(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
+            ID3D11Resource ddsResource = null;
             try
             {
-                ID3D11Resource ddsResource;
                 ID3D11ShaderResourceView _temp;
                 DDSTextureLoader.DDS_ALPHA_MODE mode;
                 DDSTextureLoader.CreateDDSTextureFromFile(d3d, d3dContext, "Resources/Translokator_Texture.dds", out ddsResource, out _temp, 4096, out mode);
@@ -43,6 +43,10 @@ namespace Rendering.Core
             {
                 Log.WriteLine(string.Format("Failed to load file: {0}", "Resources/Translokator_Texture.dds"), LoggingTypes.FATAL, LogCategoryTypes.IO);
                 return null;
+            }
+            finally
+            {
+                ddsResource?.Dispose();
             }
         }
 
@@ -109,6 +113,8 @@ namespace Rendering.Core
         
         public void Shutdown()
         {
+            InstanceModel.AOTexture?.Dispose();
+            InstanceModel.AOTexture = null;
             InstanceModel.Shutdown();
         }
     }

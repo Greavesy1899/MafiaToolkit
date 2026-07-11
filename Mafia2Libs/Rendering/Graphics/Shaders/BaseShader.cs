@@ -352,6 +352,8 @@ namespace Rendering.Graphics
             ConstantCameraBuffer = null;
             ConstantMatrixBuffer?.Dispose();
             ConstantMatrixBuffer = null;
+            ConstantHightlightBuffer?.Dispose();
+            ConstantHightlightBuffer = null;
             ConstantEditorParamsBuffer?.Dispose();
             ConstantEditorParamsBuffer = null;
             SamplerState?.Dispose();

@@ -263,6 +263,8 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
+            vertexBuffer?.Dispose();
+            indexBuffer?.Dispose();
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
 
@@ -305,6 +307,7 @@ namespace Rendering.Graphics
 
                 // Dispose old buffer if necessary
                 instanceBuffer?.Dispose();
+                instanceBufferView?.Dispose();
 
                 // Convert list to array
                 Matrix4x4[] transformsArray = InstanceTransforms.Values.ToArray();

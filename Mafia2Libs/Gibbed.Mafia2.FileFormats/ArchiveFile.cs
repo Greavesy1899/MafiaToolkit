@@ -323,6 +323,7 @@ namespace Gibbed.Mafia2.FileFormats
                     OtherVramRequired = resourceHeader.OtherVramRequired,
                 };
             }
+            blockStream.FreeLoadedBlocks();
             if (fileHeader.XmlOffset != 0)
             {
                 input.Position = basePosition + fileHeader.XmlOffset;
@@ -450,7 +451,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             Log.WriteLine("Begin unpacking and saving files..");
 
-            XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
+            using XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
             resourceXML.WriteStartElement("SDSResource");
 
             PatchFile patchFile = null;
@@ -632,7 +633,6 @@ namespace Gibbed.Mafia2.FileFormats
             }
             resourceXML.WriteEndElement();
             resourceXML.Flush();
-            resourceXML.Dispose();
         }
 
         public void SaveResources(FileInfo file)

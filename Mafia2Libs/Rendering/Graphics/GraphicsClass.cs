@@ -125,7 +125,6 @@ namespace Rendering.Graphics
                 structure = new M2TStructure();
                 structure.ReadFromM2T("Resources/Translokator.m2t");
                 instancePlaceholder.ConvertMTKToRenderModel(structure);
-                instancePlaceholder.InitBuffers(D3D.Device,D3D.DeviceContext);
                 InstanceGizmo = new InstanceGizmo(instancePlaceholder);
             }
 
@@ -144,10 +143,7 @@ namespace Rendering.Graphics
             Camera.SetProjectionMatrix(width, height);
             ClearRenderStack();
             selectionBox.InitBuffers(D3D.Device, D3D.DeviceContext);
-            TranslationGizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
-            sky.InitBuffers(D3D.Device, D3D.DeviceContext);
             sky.DoRender = WorldSettings.RenderSky;
-            clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
             InstanceGizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
             InstanceGizmo.InstanceModel.GetBVHBuildingTask(); // Maybe this function should be added to the IRenderer class instead? probably
             

@@ -30,6 +30,8 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
+            vertexBuffer?.Dispose();
+            indexBuffer?.Dispose();
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[2];

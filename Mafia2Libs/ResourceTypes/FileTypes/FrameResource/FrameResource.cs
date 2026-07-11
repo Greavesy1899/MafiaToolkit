@@ -326,6 +326,20 @@ namespace ResourceTypes.FrameResource
 
         public bool DeleteFrame(FrameEntry EntryToDelete)
         {
+            bool bDidRemove = DeleteFrameInternal(EntryToDelete);
+
+            if (bDidRemove)
+            {
+                // Sweep blocks (and their pooled buffers) which are no longer referenced by any remaining frame
+                SanitizeFrameData();
+                SanitizeBufferPools();
+            }
+
+            return bDidRemove;
+        }
+
+        private bool DeleteFrameInternal(FrameEntry EntryToDelete)
+        {
             // Early return out if its invalid
             if(EntryToDelete == null)
             {
@@ -351,7 +365,7 @@ namespace ResourceTypes.FrameResource
             // Remove all children
             while(BaseObject.Children.Count > 0)
             {
-                DeleteFrame(BaseObject.Children[0]);
+                DeleteFrameInternal(BaseObject.Children[0]);
             }
 
             // broadcast for other systems
@@ -365,10 +379,15 @@ namespace ResourceTypes.FrameResource
         {
             foreach(FrameObjectBase ChildObject in Scene.Children)
             {
-                DeleteFrame(ChildObject);
+                DeleteFrameInternal(ChildObject);
             }
 
-            return frameScenes.Remove(Scene.RefID);
+            bool bDidRemove = frameScenes.Remove(Scene.RefID);
+
+            SanitizeFrameData();
+            SanitizeBufferPools();
+
+            return bDidRemove;
         }
 
         public T ConstructFrameAssetOfType<T>() where T : FrameEntry
@@ -740,6 +759,43 @@ namespace ResourceTypes.FrameResource
                 }
             }
 
+        }
+
+        private void SanitizeBufferPools()
+        {
+            if (SceneData == null || SceneData.VertexBufferPool == null || SceneData.IndexBufferPool == null)
+            {
+                return;
+            }
+
+            HashSet<ulong> usedVertexBuffers = new HashSet<ulong>();
+            HashSet<ulong> usedIndexBuffers = new HashSet<ulong>();
+
+            foreach (KeyValuePair<int, FrameGeometry> pair in frameGeometries)
+            {
+                if (pair.Value.LOD == null)
+                {
+                    continue;
+                }
+
+                foreach (var lod in pair.Value.LOD)
+                {
+                    usedVertexBuffers.Add(lod.VertexBufferRef.Hash);
+                    usedIndexBuffers.Add(lod.IndexBufferRef.Hash);
+                }
+            }
+
+            foreach (ulong hash in SceneData.VertexBufferPool.Buffers.Keys.Where(key => !usedVertexBuffers.Contains(key)).ToArray())
+            {
+                SceneData.VertexBufferPool.RemoveBuffer(hash);
+                Console.WriteLine("Removed Vertex Buffer {0}", hash);
+            }
+
+            foreach (ulong hash in SceneData.IndexBufferPool.Buffers.Keys.Where(key => !usedIndexBuffers.Contains(key)).ToArray())
+            {
+                SceneData.IndexBufferPool.RemoveBuffer(hash);
+                Console.WriteLine("Removed Index Buffer {0}", hash);
+            }
         }
 
         public void UpdateFrameData()

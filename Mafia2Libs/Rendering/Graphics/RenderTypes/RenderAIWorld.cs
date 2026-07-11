@@ -34,7 +34,7 @@ namespace Rendering.Graphics
 
         public void RequestUpdate()
         {
-            OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(AIWorldBatch);
+            OwnGraphics.OurPrimitiveManager.RemoveAndShutdownPrimitiveBatch(AIWorldBatch);
 
             string BoxID = string.Format("AIWorld_{0}", RefManager.GetNewRefID());
             AIWorldBatch = new PrimitiveBatch(PrimitiveType.Box, BoxID);
@@ -53,7 +53,7 @@ namespace Rendering.Graphics
 
         public override void Shutdown()
         {
-            OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(AIWorldBatch);
+            OwnGraphics.OurPrimitiveManager.RemoveAndShutdownPrimitiveBatch(AIWorldBatch);
             AIWorldBatch = null;
         }
 

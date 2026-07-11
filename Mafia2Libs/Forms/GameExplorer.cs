@@ -612,8 +612,10 @@ namespace Mafia2Tool
         }
         private void OnOptionsItem_Clicked(object sender, EventArgs e)
         {
-            OptionsForm options = new OptionsForm();
-            options.ShowDialog();
+            using (OptionsForm options = new OptionsForm())
+            {
+                options.ShowDialog();
+            }
             Localise();
         }
 

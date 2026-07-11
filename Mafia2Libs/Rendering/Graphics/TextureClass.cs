@@ -79,11 +79,21 @@ namespace Rendering.Graphics
                 catch (Exception ex)
                 {
                     Console.WriteLine(string.Format("Error Message when using DDS Squish: {0}", ex.Message));
-                    return LoadDDSSquish("Resources/texture.dds").GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+                    Image Fallback = LoadDDSSquish("Resources/texture.dds");
+                    Image FallbackThumbnail = Fallback.GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+                    if (!RenderStorageSingleton.Instance.TextureThumbnails.ContainsValue(Fallback))
+                    {
+                        Fallback.Dispose();
+                    }
+                    return FallbackThumbnail;
                 }
 
             }
-            Image Thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+            Image Thumbnail;
+            using (Image FullImage = dds.Image())
+            {
+                Thumbnail = FullImage.GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+            }
             ToolkitAssert.Ensure(Thumbnail != null, string.Format("Thumbnail is wrong here? Trying to load: {0}", name));
 
             if(Thumbnail != null && hash != 0)
@@ -129,9 +139,9 @@ namespace Rendering.Graphics
 
         public static ID3D11ShaderResourceView LoadTexture(ID3D11Device d3d, ID3D11DeviceContext d3dContext, string fileName)
         {
+            ID3D11Resource ddsResource = null;
             try
             {
-                ID3D11Resource ddsResource;
                 ID3D11ShaderResourceView _temp;
                 DDSTextureLoader.DDS_ALPHA_MODE mode;
                 string texturePath = GetTextureFromPath(fileName);
@@ -143,7 +153,10 @@ namespace Rendering.Graphics
                 Log.WriteLine(string.Format("Failed to load file: {0}. Error: {1}", fileName, ex.Message), LoggingTypes.FATAL, LogCategoryTypes.IO);
                 return null;
             }
-            
+            finally
+            {
+                ddsResource?.Dispose();
+            }
         }
     }
 }
