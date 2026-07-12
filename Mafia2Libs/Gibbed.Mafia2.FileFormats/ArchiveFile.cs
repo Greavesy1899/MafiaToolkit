@@ -225,10 +225,22 @@ namespace Gibbed.Mafia2.FileFormats
 
             if (IsGameType(GamesEnumerator.MafiaI_DE))
             {
-                if (!OodleDllResolver.TryResolveFrom(GameStorage.Instance.GetSelectedGame().Directory))
+                // The Oodle DLL ships with the game install, so we resolve it from the
+                // selected game's directory. In headless contexts (e.g. the MCP server)
+                // no game is selected, so GetSelectedGame() may be null - fail loudly with
+                // an actionable message instead of NRE'ing or popping a modal dialog.
+                var selectedGame = GameStorage.Instance?.GetSelectedGame();
+                if (selectedGame == null)
                 {
-                    MessageBox.Show(Language.GetString("$M1DE_OODLEERROR"), "Toolkit");
-                    return;
+                    throw new InvalidOperationException(
+                        "Cannot load a Mafia I: Definitive Edition archive without a selected game: " +
+                        "the Oodle decompression DLL is resolved from the game's install directory.");
+                }
+
+                if (!OodleDllResolver.TryResolveFrom(selectedGame.Directory))
+                {
+                    throw new FileNotFoundException(
+                        $"Could not locate the Oodle DLL (oo2core_8_win64.dll) in the game directory: {selectedGame.Directory}");
                 }
             }
 
@@ -725,9 +737,10 @@ namespace Gibbed.Mafia2.FileFormats
             string FileName = "";
             _TextureNames = new Dictionary<ulong, string>();
 
-            var game = GameStorage.Instance.GetSelectedGame();
-
-            if(game.GameType == GamesEnumerator.MafiaI_DE)
+            // Use the archive's own game type (set via SetGameType) rather than the
+            // globally selected game. In headless contexts (e.g. the MCP server) there is
+            // no game selected in the UI, so GameStorage.GetSelectedGame() returns null.
+            if (IsGameType(GamesEnumerator.MafiaI_DE))
             {
                 FileName = "/Resources/GameData/M1_Textures.txt";
             }
