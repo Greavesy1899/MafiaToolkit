@@ -52,7 +52,10 @@ namespace Mafia2Tool
 
             GameStorage.Instance.InitStorage();
             Language.ReadLanguageXML();
+#if !DEBUG
+            // Skip the online update check when running under the debugger / local dev builds.
             CheckLatestRelease();
+#endif
 
             if (ToolkitSettings.SkipGameSelector)
             {
