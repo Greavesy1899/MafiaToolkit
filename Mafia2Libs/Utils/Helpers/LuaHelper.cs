@@ -12,12 +12,58 @@ namespace Utils.Lua
 {
     public class LuaHelper
     {
+        // Magic of a compiled Lua 5.x chunk: "\x1BLua" (little-endian Int32 == 1635077147).
+        public const int LuaBytecodeMagic = 1635077147;
+
         private static LFunction FileToFunction(string fn)
         {
             using (var fs = File.Open(fn, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 BHeader header = new BHeader(fs);
                 return header.Function.Parse(fs, header);
+            }
+        }
+
+        /// <summary>
+        /// True when the buffer begins with the compiled-Lua magic ("\x1BLua"). Callers pass
+        /// script bytes straight through; only bytecode can be decompiled.
+        /// </summary>
+        public static bool IsBytecode(byte[] bytes)
+        {
+            return bytes != null && bytes.Length >= 4 && BitConverter.ToInt32(bytes, 0) == LuaBytecodeMagic;
+        }
+
+        /// <summary>
+        /// Decompile compiled Lua bytecode in memory and return the reconstructed source. Unlike
+        /// <see cref="ReadFile"/> this touches no files and does not apply the LuaHelper source
+        /// fix-ups, so the output is the decompiler's verbatim reconstruction.
+        /// </summary>
+        public static string DecompileBytecode(byte[] bytecode)
+        {
+            LFunction main;
+            using (var ms = new MemoryStream(bytecode, false))
+            {
+                BHeader header = new BHeader(ms);
+                main = header.Function.Parse(ms, header);
+            }
+
+            Decompiler decompile = new Decompiler(main);
+            decompile.Decompile();
+
+            var curCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            try
+            {
+                using (var sw = new StringWriter(CultureInfo.InvariantCulture))
+                {
+                    Output output = new Output(sw);
+                    decompile.Print(output);
+                    return sw.ToString();
+                }
+            }
+            finally
+            {
+                System.Threading.Thread.CurrentThread.CurrentCulture = curCulture;
             }
         }
 
