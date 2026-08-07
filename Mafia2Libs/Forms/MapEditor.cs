@@ -174,8 +174,28 @@ namespace Mafia2Tool
 
         private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
         {
-            decimal value = (e.Delta > 0 ? CameraSpeedTool.Increment : -CameraSpeedTool.Increment);
-            CameraSpeedTool.Value += value;
+            if (Graphics?.Camera == null || e.Delta == 0)
+            {
+                return;
+            }
+
+            if ((ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                decimal step = e.Delta > 0 ? CameraSpeedTool.Increment : -CameraSpeedTool.Increment;
+                decimal value = Math.Clamp(
+                    CameraSpeedTool.Value + step,
+                    CameraSpeedTool.Minimum,
+                    CameraSpeedTool.Maximum);
+
+                CameraSpeedTool.Value = value;
+                return;
+            }
+
+            float wheelSteps = e.Delta / 120.0f;
+            float distance = ToolkitSettings.CameraSpeed * 0.5f * wheelSteps;
+            Vector3 cameraForward = Vector3Utils.FromVector4(Graphics.Camera.ViewMatrix.GetColumn(2));
+            Graphics.Camera.Position -= cameraForward * distance;
+            UpdatePositionElement(Graphics.Camera.Position);
         }
 
         private void RenderPanel_Resize(object sender, EventArgs e)
@@ -609,13 +629,22 @@ namespace Mafia2Tool
 
             if (RenderPanel.Focused)
             {
-                if (Input.IsButtonDown(MouseButtons.Right))
+                bool altLook = (ModifierKeys & Keys.Alt) == Keys.Alt && Input.IsButtonDown(MouseButtons.Left);
+                bool cameraLook = Input.IsButtonDown(MouseButtons.Right) ||
+                                  Input.IsButtonDown(MouseButtons.Middle) ||
+                                  altLook;
+
+                if (cameraLook)
                 {
-                    var dx = -0.25f * (mousePos.X - lastMousePos.X);
-                    var dy = -0.25f * (mousePos.Y - lastMousePos.Y);
-                    Graphics.RotateCamera(dx, dy);
-                    bCameraUpdated = true;
-                    
+                    float deltaX = mousePos.X - lastMousePos.X;
+                    float deltaY = mousePos.Y - lastMousePos.Y;
+
+                    if (deltaX != 0.0f || deltaY != 0.0f)
+                    {
+                        const float lookSensitivity = 0.20f;
+                        Graphics.RotateCamera(-deltaX * lookSensitivity, -deltaY * lookSensitivity);
+                        bCameraUpdated = true;
+                    }
                 }
                 else if (Input.IsButtonDown(MouseButtons.Left) && selectTimer <= 0.0f)
                 {
@@ -663,7 +692,7 @@ namespace Mafia2Tool
                     }
                 }
 
-                bCameraUpdated = Graphics.UpdateInput();
+                bCameraUpdated |= Graphics.UpdateInput();
 
                 if (selectTimer > 0.0f)
                 {
@@ -686,7 +715,10 @@ namespace Mafia2Tool
                 lastMemoryUsageUpdate = now;
             }
             Label_FPS.Text = Graphics.Profile.ToString();
-            Label_StatusBar.Text = Graphics.GetStatusBarText();
+            string statusText = Graphics.GetStatusBarText();
+            Label_StatusBar.Text = string.IsNullOrWhiteSpace(statusText)
+                ? "Move: WASD / arrows   Look: right-drag, middle-drag, or Alt+drag   Wheel: forward/back   Q/E: up/down   Shift: faster   Ctrl+wheel: speed"
+                : statusText;
             return true;
         }
 

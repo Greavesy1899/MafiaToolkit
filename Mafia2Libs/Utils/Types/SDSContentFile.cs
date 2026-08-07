@@ -21,7 +21,7 @@ namespace Utils.Types
         DirectoryInfo parent;
         Dictionary<string, List<TreeNode>> resources;
         public Dictionary<string, BaseResource> typeList = new Dictionary<string, BaseResource>();
-        static Dictionary<string, string> typeExtension = new Dictionary<string, string>();
+        static Dictionary<string, string> typeExtension = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         static readonly List<string> sortList = new List<string>() {"IndexBufferPool", "VertexBufferPool", "Texture", "FrameResource", "Effects", "FrameNameTable",
                "Actors", "EntityDataStorage", "Table", "NAV_OBJ_DATA", "NAV_AIWORLD_DATA", "PREFAB", "AnimalTrafficPaths", "Animation2","NAV_HPD_DATA",
                 "AudioSectors", "MemFile", "Collisions", "ItemDesc", "FxActor", "FxAnimSet", "Script", "Sound", "Speech", "Cutscene", "SoundTable", "XML", "Translokator", "Mipmap" };
@@ -33,7 +33,7 @@ namespace Utils.Types
         public SDSContentFile()
         {
             PopulateTypeList();
-            resources = new Dictionary<string, List<TreeNode>>();
+            resources = new Dictionary<string, List<TreeNode>>(StringComparer.OrdinalIgnoreCase);
         }
 
         private void PopulateTypeList()
@@ -68,7 +68,7 @@ namespace Utils.Types
             typeList.Add("FxActor", new BaseResource(1, "FxActor"));
             typeList.Add("FxAnimSet", new BaseResource(1, "FxAnimSet"));
 
-            typeExtension = new Dictionary<string, string>();
+            typeExtension = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             typeExtension.Add("ibp", "IndexBufferPool");
             typeExtension.Add("vbp", "VertexBufferPool");
             typeExtension.Add("fr", "FrameResource");
@@ -114,7 +114,7 @@ namespace Utils.Types
                 for(int i = 0; i < list.Count; i++)
                 {
                     var tag = (list[i].Tag as BaseResource);
-                    paths[i] = (addParentDirectory ? parent.FullName + "/" + tag.GetFileName() : tag.GetFileName());
+                    paths[i] = (addParentDirectory ? Path.Combine(parent.FullName, tag.GetFileName()) : tag.GetFileName());
                 }
                 return paths;
             }
@@ -123,15 +123,56 @@ namespace Utils.Types
 
         public void ReadFromFile(FileInfo info)
         {
-            if (!info.Name.Contains("SDSContent") && info.Extension != "xml")
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+
+            if (!info.Name.Contains("SDSContent", StringComparison.OrdinalIgnoreCase) &&
+                !info.Extension.Equals(".xml", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             parent = info.Directory;
-            XmlDocument document = new XmlDocument();
-            document.Load(info.FullName);
+            if (parent == null || !parent.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    string.Format("Unable to locate the SDS resource folder for '{0}'.", info.FullName));
+            }
 
+            resources.Clear();
+
+            if (info.Exists)
+            {
+                try
+                {
+                    XmlDocument document = new XmlDocument();
+                    document.Load(info.FullName);
+                    ReadDocumentResources(document);
+                }
+                catch (XmlException exception)
+                {
+                    System.Diagnostics.Debug.WriteLine(
+                        string.Format("SDSContent.xml is malformed; rebuilding resource discovery in memory: {0}", exception.Message));
+                    resources.Clear();
+                }
+                catch (IOException exception)
+                {
+                    System.Diagnostics.Debug.WriteLine(
+                        string.Format("SDSContent.xml could not be read; rebuilding resource discovery in memory: {0}", exception.Message));
+                    resources.Clear();
+                }
+            }
+
+            // The extracted files are authoritative for editor loading. Merge anything
+            // the manifest omitted rather than rewriting SDSContent.xml behind the user.
+            MergeRecognizedFilesFromFolder(parent);
+            Sort();
+        }
+
+        private void ReadDocumentResources(XmlDocument document)
+        {
             XPathNavigator nav = document.CreateNavigator();
             var nodes = nav.Select("/SDSResource/ResourceEntry");
             while (nodes.MoveNext() == true)
@@ -196,7 +237,6 @@ namespace Utils.Types
                         resource.ReadResourceEntry(nodes);
                         break;
                     default:
-                        // Unknown resource type - create a base resource to avoid null reference
                         resource = new BaseResource();
                         resource.ReadResourceEntry(nodes);
                         System.Diagnostics.Debug.WriteLine($"Unknown resource type: {resourceType}");
@@ -207,6 +247,31 @@ namespace Utils.Types
                 {
                     TreeNode node = BuildResourceTreeNode(resource.GetFileName(), resource);
                     resources[resourceType].Add(node);
+                }
+            }
+        }
+
+        private void MergeRecognizedFilesFromFolder(DirectoryInfo directory)
+        {
+            foreach (FileInfo info in directory.EnumerateFiles("*", SearchOption.AllDirectories))
+            {
+                string extension = info.Extension.TrimStart('.');
+                if (typeExtension.TryGetValue(extension, out string resourceType))
+                {
+                    CreateBaseResource(resourceType, info);
+                    continue;
+                }
+
+                if (info.Extension.Equals(".dds", StringComparison.OrdinalIgnoreCase) &&
+                    !info.Name.StartsWith("MIP_", StringComparison.OrdinalIgnoreCase))
+                {
+                    string relativePath = Path.GetRelativePath(parent.FullName, info.FullName);
+                    if (!HasResource("Texture") ||
+                        !resources["Texture"].Any(node =>
+                            string.Equals((node.Tag as BaseResource)?.GetFileName(), relativePath, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        CreateTextureResource(relativePath);
+                    }
                 }
             }
         }
@@ -266,7 +331,7 @@ namespace Utils.Types
             }
 
             // Check if this node already exists.
-            TreeNode ExistingNode = resources[typeName].Find(n => n.Text == node.Text);
+            TreeNode ExistingNode = resources[typeName].Find(n => string.Equals(n.Text, node.Text, StringComparison.OrdinalIgnoreCase));
             if (ExistingNode != null)
             {
                 // Warning, found existing node.
@@ -281,7 +346,7 @@ namespace Utils.Types
 
         private void CreateBaseResource(string typeName, FileInfo info)
         {
-            string fromRoot = info.FullName.Remove(0, parent.FullName.Length+1);
+            string fromRoot = Path.GetRelativePath(parent.FullName, info.FullName);
             var typeResource = typeList[typeName];
             var version = typeResource.GetSerializationVersion();
             BaseResource resource = new BaseResource();
@@ -309,8 +374,10 @@ namespace Utils.Types
             AddResource("Texture", BuildResourceTreeNode(name, resource));
 
             // Try and add the Mipmap only if it exists in the parent folder.
-            string MippedTexture = "MIP_" + name;
-            string MippedPath = GetParentFolder() + "//" + MippedTexture;
+            string relativeDirectory = Path.GetDirectoryName(name);
+            string fileName = Path.GetFileName(name);
+            string MippedTexture = Path.Combine(relativeDirectory ?? string.Empty, "MIP_" + fileName);
+            string MippedPath = Path.Combine(GetParentFolder(), MippedTexture);
             if (File.Exists(MippedPath))
             {
                 // See if we can construct MipMap resource.
@@ -333,7 +400,7 @@ namespace Utils.Types
         {
             foreach(var info in directory.GetFiles())
             {
-                var extension = info.Extension.Replace(".", string.Empty);
+                string extension = info.Extension.TrimStart('.');
                 if(typeExtension.ContainsKey(extension))
                 {
                     CreateBaseResource(typeExtension[extension], info);
@@ -343,11 +410,11 @@ namespace Utils.Types
                 //{
                 //    tables.Add(info.Name);
                 //}
-                else if(info.Extension.Contains("dds") && !info.Name.Contains("MIP_"))
+                else if(info.Extension.Equals(".dds", StringComparison.OrdinalIgnoreCase) && !info.Name.StartsWith("MIP_", StringComparison.OrdinalIgnoreCase))
                 {
                     textures.Add(info.Name);
                 }
-                else if (info.Extension.Contains("dds") && info.Name.Contains("MIP_"))
+                else if (info.Extension.Equals(".dds", StringComparison.OrdinalIgnoreCase) && info.Name.StartsWith("MIP_", StringComparison.OrdinalIgnoreCase))
                 {
                     mips.Add(info.Name);
                 }

@@ -214,30 +214,45 @@ namespace Rendering.Graphics
 
         public void SetRotation(float pitch, float yaw, float roll = 0.0f)
         {
-            Right = new Vector3(1, 0, 0);
-            Up = new Vector3(0, 1, 0);
-            Look = new Vector3(0, 0, 1);
+            Right = Vector3.UnitX;
+            Up = Vector3.UnitY;
+            Look = Vector3.UnitZ;
+            Rotation = Vector3.Zero;
+
             Pitch(pitch);
             Yaw(yaw);
         }
 
         public void Pitch(float angle)
         {
-            angle = MathHelper.ToRadians(angle);
-            Rotation.X = angle;
-            var r = Matrix4x4.CreateFromAxisAngle(Right, angle);
-            Up = Vector3.TransformNormal(Up, r);
-            Look = Vector3.TransformNormal(Look, r);
+            float radians = MathHelper.ToRadians(angle);
+            Rotation.X += radians;
+
+            Matrix4x4 rotationMatrix = Matrix4x4.CreateFromAxisAngle(Right, radians);
+            Up = Vector3.TransformNormal(Up, rotationMatrix);
+            Look = Vector3.TransformNormal(Look, rotationMatrix);
+            OrthonormalizeBasis();
         }
 
         public void Yaw(float angle)
         {
-            angle = MathHelper.ToRadians(angle);
-            Rotation.Y = angle;
-            var r = Matrix4x4.CreateRotationZ(angle);
-            Right = Vector3.TransformNormal(Right, r);
-            Up = Vector3.TransformNormal(Up, r);
-            Look = Vector3.TransformNormal(Look, r);
+            float radians = MathHelper.ToRadians(angle);
+            Rotation.Y += radians;
+
+            // Mafia II uses Z as world-up. Keeping yaw on the fixed world-up axis
+            // makes mouse-look predictable even after the camera has pitched.
+            Matrix4x4 rotationMatrix = Matrix4x4.CreateFromAxisAngle(Vector3.UnitZ, radians);
+            Right = Vector3.TransformNormal(Right, rotationMatrix);
+            Up = Vector3.TransformNormal(Up, rotationMatrix);
+            Look = Vector3.TransformNormal(Look, rotationMatrix);
+            OrthonormalizeBasis();
+        }
+
+        private void OrthonormalizeBasis()
+        {
+            Look = Vector3.Normalize(Look);
+            Right = Vector3.Normalize(Vector3.Cross(Up, Look));
+            Up = Vector3.Normalize(Vector3.Cross(Look, Right));
         }
     }
 }

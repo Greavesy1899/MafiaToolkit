@@ -49,6 +49,7 @@ namespace Mafia2Tool
         public TranslokatorLoader Translokator;
         public PrefabLoader Prefabs;
         public string ScenePath = "";
+        public string SelectedFrameResourcePath = "";
 
         public SDSContentFile sdsContent;
         private bool isBigEndian;
@@ -59,6 +60,123 @@ namespace Mafia2Tool
             var info = new FileInfo(file);
             ToolkitAssert.Ensure(info.Exists, "File [{0}] does not exist!", name);
             return info;
+        }
+
+        private string[] GetExistingResourceFiles(string resourceType)
+        {
+            return sdsContent
+                .GetResourceFiles(resourceType, true)
+                .Where(File.Exists)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(path =>
+                {
+                    int number = ExtractTrailingNumber(path);
+                    return number < 0 ? int.MaxValue : number;
+                })
+                .ThenBy(path => path, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+
+        private void AddExistingResourceFiles(string resourceType, List<FileInfo> output)
+        {
+            HashSet<string> existing = new HashSet<string>(
+                GetExistingResourceFiles(resourceType),
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (string path in sdsContent.GetResourceFiles(resourceType, true))
+            {
+                if (!existing.Contains(path))
+                {
+                    Log.WriteLine(
+                        string.Format("Skipping missing {0}: {1}", resourceType, path),
+                        LoggingTypes.WARNING);
+                }
+            }
+
+            foreach (string path in existing.OrderBy(path =>
+                     {
+                         int number = ExtractTrailingNumber(path);
+                         return number < 0 ? int.MaxValue : number;
+                     }).ThenBy(path => path, StringComparer.OrdinalIgnoreCase))
+            {
+                output.Add(new FileInfo(path));
+            }
+        }
+
+        private string GetFirstExistingResourceFile(string resourceType)
+        {
+            return GetExistingResourceFiles(resourceType).FirstOrDefault();
+        }
+
+        private static int ExtractTrailingNumber(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return -1;
+            }
+
+            string name = Path.GetFileNameWithoutExtension(path);
+            int end = name.Length - 1;
+
+            while (end >= 0 && !char.IsDigit(name[end]))
+            {
+                end--;
+            }
+
+            if (end < 0)
+            {
+                return -1;
+            }
+
+            int numberEnd = end;
+            while (end >= 0 && char.IsDigit(name[end]))
+            {
+                end--;
+            }
+
+            string number = name.Substring(end + 1, numberEnd - end);
+            return int.TryParse(number, out int value) ? value : -1;
+        }
+
+        private string ResolveFrameResourcePath()
+        {
+            if (!string.IsNullOrWhiteSpace(SelectedFrameResourcePath) && File.Exists(SelectedFrameResourcePath))
+            {
+                return Path.GetFullPath(SelectedFrameResourcePath);
+            }
+
+            return GetFirstExistingResourceFile("FrameResource");
+        }
+
+        private string ResolveRelatedResourcePath(string resourceType, string frameResourcePath)
+        {
+            string[] candidates = GetExistingResourceFiles(resourceType);
+            if (candidates.Length == 0)
+            {
+                return null;
+            }
+
+            if (candidates.Length == 1)
+            {
+                return candidates[0];
+            }
+
+            int frameNumber = ExtractTrailingNumber(frameResourcePath);
+            if (frameNumber < 0)
+            {
+                return candidates[0];
+            }
+
+            return candidates
+                .OrderBy(path =>
+                {
+                    int candidateNumber = ExtractTrailingNumber(path);
+                    return candidateNumber < 0
+                        ? int.MaxValue
+                        : Math.Abs(candidateNumber - frameNumber);
+                })
+                .ThenBy(path => path, StringComparer.OrdinalIgnoreCase)
+                .First();
         }
 
         public void BuildData(bool forceBigEndian)
@@ -79,22 +197,21 @@ namespace Mafia2Tool
             }
 
             DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
+            if (!dirInfo.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    string.Format("The extracted scene folder does not exist: {0}", ScenePath));
+            }
+
             sdsContent = new SDSContentFile();
-            sdsContent.ReadFromFile(new FileInfo(Path.Combine(ScenePath + "/SDSContent.xml")));
+            sdsContent.ReadFromFile(new FileInfo(Path.Combine(ScenePath, "SDSContent.xml")));
 
-            //IndexBuffers
-            var paths = sdsContent.GetResourceFiles("IndexBufferPool", true);
-            foreach (var item in paths)
-            {
-                ibps.Add(BuildFileInfo(item));
-            }
+            // Index/vertex pools in extracted SDS folders are occasionally missing from
+            // stale manifests. Only pass files which really exist to the pool managers.
+            AddExistingResourceFiles("IndexBufferPool", ibps);
+            AddExistingResourceFiles("VertexBufferPool", vbps);
 
-            //Vertex Buffers
-            paths = sdsContent.GetResourceFiles("VertexBufferPool", true);
-            foreach (var item in paths)
-            {
-                vbps.Add(BuildFileInfo(item));
-            }
+            var paths = Array.Empty<string>();
 
             //Actors
             if (!isBigEndian)
@@ -118,11 +235,14 @@ namespace Mafia2Tool
             }
 
             //FrameResource
-            if (sdsContent.HasResource("FrameResource"))
+            string frameResourcePath = ResolveFrameResourcePath();
+            if (string.IsNullOrWhiteSpace(frameResourcePath))
             {
-                var name = sdsContent.GetResourceFiles("FrameResource", true)[0];
-                FrameResource = new FrameResource(name, this, isBigEndian);
+                throw new FileNotFoundException(
+                    "No FrameResource file could be found in the extracted scene folder.");
             }
+
+            FrameResource = new FrameResource(frameResourcePath, this, isBigEndian);
 
             //Item Desc
             if (!isBigEndian)
@@ -130,32 +250,47 @@ namespace Mafia2Tool
                 paths = sdsContent.GetResourceFiles("ItemDesc", true);
                 foreach (var item in paths)
                 {
-                    ids.Add(new ItemDescLoader(item));
+                    if (File.Exists(item))
+                    {
+                        ids.Add(new ItemDescLoader(item));
+                    }
                 }
             }
 
             //FrameNameTable
-            if (sdsContent.HasResource("FrameNameTable"))
+            string frameNameTablePath = ResolveRelatedResourcePath("FrameNameTable", frameResourcePath);
+            if (!string.IsNullOrWhiteSpace(frameNameTablePath))
             {
-                var name = sdsContent.GetResourceFiles("FrameNameTable", true)[0];
-                FrameNameTable = new FrameNameTable(name, isBigEndian);
+                FrameNameTable = new FrameNameTable(frameNameTablePath, isBigEndian);
+            }
+            else
+            {
+                Log.WriteLine(
+                    "No matching FrameNameTable was found. Frame names may be unavailable.",
+                    LoggingTypes.WARNING);
             }
 
             //Collisions
             if (!isBigEndian && sdsContent.HasResource("Collisions"))
             {
-                var name = sdsContent.GetResourceFiles("Collisions", true)[0];
-                Collisions = new Collision(name);
+                string name = GetFirstExistingResourceFile("Collisions");
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    Collisions = new Collision(name);
+                }
             }
 
             //~ENABLE THIS SECTION AT YOUR OWN RISK
             //AnimalTrafficPaths
             if (!isBigEndian && sdsContent.HasResource("AnimalTrafficPaths"))
             {
-                var name = sdsContent.GetResourceFiles("AnimalTrafficPaths", true)[0];
+                string name = GetFirstExistingResourceFile("AnimalTrafficPaths");
                 try
                 {
-                    ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+                    if (!string.IsNullOrWhiteSpace(name))
+                    {
+                        ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -195,8 +330,21 @@ namespace Mafia2Tool
             //Translokator
             if (!isBigEndian && sdsContent.HasResource("Translokator"))
             {
-                var name = sdsContent.GetResourceFiles("Translokator", true)[0];
-                Translokator = new TranslokatorLoader(new FileInfo(name));
+                string translokatorPath = ResolveRelatedResourcePath("Translokator", frameResourcePath);
+                if (!string.IsNullOrWhiteSpace(translokatorPath))
+                {
+                    try
+                    {
+                        Translokator = new TranslokatorLoader(new FileInfo(translokatorPath));
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.WriteLine(
+                            string.Format("Failed to read Translokator '{0}': {1}", translokatorPath, exception.Message),
+                            LoggingTypes.WARNING);
+                        Translokator = null;
+                    }
+                }
             }
 
             // Kynapse Navigation
@@ -208,7 +356,10 @@ namespace Mafia2Tool
                     paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
                     foreach (var item in paths)
                     {
-                        obj.Add(new NAVData(new FileInfo(item)));
+                        if (File.Exists(item))
+                        {
+                            obj.Add(new NAVData(new FileInfo(item)));
+                        }
                     }
 
                     OBJData = obj.ToArray();
@@ -220,7 +371,10 @@ namespace Mafia2Tool
                     paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
                     foreach (var Item in paths)
                     {
-                        aiw.Add(new NAVData(new FileInfo(Item)));
+                        if (File.Exists(Item))
+                        {
+                            aiw.Add(new NAVData(new FileInfo(Item)));
+                        }
                     }
 
                     AIWorlds = aiw.ToArray();
@@ -229,9 +383,12 @@ namespace Mafia2Tool
                 // HPD DATA
                 if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
                 {
-                    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
-                    var data = new NAVData(new FileInfo(name));
-                    HPDData = (data.Data as HPDData);
+                    string name = GetFirstExistingResourceFile("NAV_HPD_DATA");
+                    if (!string.IsNullOrWhiteSpace(name))
+                    {
+                        var data = new NAVData(new FileInfo(name));
+                        HPDData = (data.Data as HPDData);
+                    }
                 }
             }
 
@@ -339,14 +496,37 @@ namespace Mafia2Tool
     {
         public static bool HasLoaded = false;
 
-        public static void Load()
+        public static void Load(string scenePath = null)
         {
             MaterialsManager.ClearLoadedMTLs();
+            HasLoaded = false;
 
             try
             {
-                MaterialsManager.ReadMatFiles(GameStorage.Instance.GetSelectedGame().Materials.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
-                HasLoaded = true;
+                List<string> searchDirectories = new List<string>();
+                if (!string.IsNullOrWhiteSpace(scenePath))
+                {
+                    DirectoryInfo sceneDirectory = new DirectoryInfo(scenePath);
+                    if (sceneDirectory.Exists)
+                    {
+                        searchDirectories.Add(sceneDirectory.FullName);
+
+                        if (sceneDirectory.Parent != null)
+                        {
+                            searchDirectories.Add(sceneDirectory.Parent.FullName);
+                        }
+                    }
+                }
+
+                string configuredMaterialList = GameStorage.Instance
+                    .GetSelectedGame()
+                    .Materials ?? string.Empty;
+
+                string[] configuredLibraries = configuredMaterialList
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                MaterialsManager.ReadMatFiles(configuredLibraries, searchDirectories);
+                HasLoaded = MaterialsManager.MaterialLibraries.Count > 0;
             }
             catch (Exception ex)
             {

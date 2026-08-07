@@ -377,46 +377,50 @@ namespace Rendering.Graphics
         public bool UpdateInput()
         {
             bool bCameraUpdated = false;
-            float Multiplier = ToolkitSettings.CameraSpeed;
+            float multiplier = ToolkitSettings.CameraSpeed;
 
-            if (Input.IsKeyDown(Keys.ShiftKey))
+            if (Input.IsKeyDown(Keys.ShiftKey) ||
+                Input.IsKeyDown(Keys.LShiftKey) ||
+                Input.IsKeyDown(Keys.RShiftKey))
             {
-                Multiplier *= 2.0f;
+                multiplier *= 2.0f;
             }
 
-            float speed = Profile.DeltaTime * Multiplier;
+            float speed = Profile.DeltaTime * multiplier;
+            Vector3 cameraRight = Vector3Utils.FromVector4(Camera.ViewMatrix.GetColumn(0));
+            Vector3 cameraForward = Vector3Utils.FromVector4(Camera.ViewMatrix.GetColumn(2));
 
-            if (Input.IsKeyDown(Keys.A))
+            if (Input.IsKeyDown(Keys.A) || Input.IsKeyDown(Keys.Left))
             {
-                Camera.Position -= Vector3Utils.FromVector4(Vector4.Multiply(Camera.ViewMatrix.GetColumn(0), speed));
+                Camera.Position -= cameraRight * speed;
                 bCameraUpdated = true;
             }
 
-            if (Input.IsKeyDown(Keys.D))
+            if (Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right))
             {
-                Camera.Position += Vector3Utils.FromVector4(Vector4.Multiply(Camera.ViewMatrix.GetColumn(0), speed));
+                Camera.Position += cameraRight * speed;
                 bCameraUpdated = true;
             }
 
-            if (Input.IsKeyDown(Keys.W))
+            if (Input.IsKeyDown(Keys.W) || Input.IsKeyDown(Keys.Up))
             {
-                Camera.Position -= Vector3Utils.FromVector4(Vector4.Multiply(Camera.ViewMatrix.GetColumn(2), speed));
+                Camera.Position -= cameraForward * speed;
                 bCameraUpdated = true;
             }
 
-            if (Input.IsKeyDown(Keys.S))
+            if (Input.IsKeyDown(Keys.S) || Input.IsKeyDown(Keys.Down))
             {
-                Camera.Position += Vector3Utils.FromVector4(Vector4.Multiply(Camera.ViewMatrix.GetColumn(2), speed));
+                Camera.Position += cameraForward * speed;
                 bCameraUpdated = true;
             }
 
-            if (Input.IsKeyDown(Keys.Q))
+            if (Input.IsKeyDown(Keys.Q) || Input.IsKeyDown(Keys.PageUp))
             {
                 Camera.Position.Z += speed;
                 bCameraUpdated = true;
             }
 
-            if (Input.IsKeyDown(Keys.E))
+            if (Input.IsKeyDown(Keys.E) || Input.IsKeyDown(Keys.PageDown))
             {
                 Camera.Position.Z -= speed;
                 bCameraUpdated = true;

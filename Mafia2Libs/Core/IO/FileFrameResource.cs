@@ -15,13 +15,14 @@ namespace Core.IO
         public FileFrameResource(FileInfo info) : base(info)
         {
             SceneData.ScenePath = info.DirectoryName;
+            SceneData.SelectedFrameResourcePath = info.FullName;
             bForceBigEndian = false;
         }
 
         public override bool Open()
         {
             //make sure to load materials.
-            MaterialData.Load();
+            MaterialData.Load(SceneData.ScenePath);
 
             //we now build scene data from GameExplorer rather than d3d viewer.
             SceneData.BuildData(bForceBigEndian);
