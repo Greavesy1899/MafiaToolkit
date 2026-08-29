@@ -4,6 +4,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using Toolkit.Core;
 using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;
@@ -98,9 +99,12 @@ namespace ResourceTypes.FrameResource
 
         public FrameObjectModel(FrameObjectModel other) : base(other)
         {
+            name = new HashName(other.name+"_copy");
             blendInfoIndex = other.blendInfoIndex;
             skeletonIndex = other.skeletonIndex;
             skeletonHierachyIndex = other.skeletonHierachyIndex;
+            SkeletonHierarchy = other.SkeletonHierarchy;
+            SkeletonHierarchy.RefID = RefManager.GetNewRefID();
             skeleton = other.skeleton;
             blendInfo = other.blendInfo;
 
@@ -115,7 +119,7 @@ namespace ResourceTypes.FrameResource
             attachmentReferences = new AttachmentReference[other.attachmentReferences.Length];
             for (int i = 0; i != attachmentReferences.Length; i++)
             {
-                attachmentReferences[i] = new AttachmentReference(other.attachmentReferences[i]);
+                attachmentReferences[i] = other.attachmentReferences[i];
             }
 
             unkFlags = other.unkFlags;
@@ -349,12 +353,6 @@ namespace ResourceTypes.FrameResource
             public AttachmentReference(MemoryStream reader, bool isBigEndian)
             {
                 ReadFromFile(reader, isBigEndian);
-            }
-
-            public AttachmentReference(AttachmentReference other)
-            {
-                attachmentIndex = other.attachmentIndex;
-                jointIndex = other.jointIndex;
             }
 
             public void ReadFromFile(MemoryStream reader, bool isBigEndian)
